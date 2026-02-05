@@ -18,13 +18,6 @@ public partial class Program
             .AllowAnyHeader()
             .AllowAnyMethod());
 
-        app.MapGet("/test", () =>
-            {
-
-                return "test";
-            })
-            .WithName("GetWeatherForecast");
-
         app.Run();
     }
 }
