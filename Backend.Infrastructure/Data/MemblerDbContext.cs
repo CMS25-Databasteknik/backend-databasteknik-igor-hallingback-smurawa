@@ -6,6 +6,7 @@ namespace Backend.Infrastructure.Data
     public sealed class MemblerDbContext(DbContextOptions<MemblerDbContext> options) : DbContext(options)
     {
         public DbSet<MemberEntity> Members => Set<MemberEntity>();
+        public DbSet<RoleEntity> Roles => Set<RoleEntity>();
         override protected void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MemberEntity>(entity =>
@@ -56,7 +57,34 @@ namespace Backend.Infrastructure.Data
 
             });
 
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<RoleEntity>(entity =>
+            {
+                entity.ToTable("Roles");
+
+                entity.HasKey(e => e.Id).HasName("PK_Roles_Id");
+
+                entity.Property(e => e.RoleName)
+                    .HasMaxLength(20)
+                    .IsRequired();
+
+                entity.HasIndex(e => e.RoleName, "UQ_Roles_RoleName")
+                    .IsUnique();
+
+            });
+
+            modelBuilder.Entity<MemberEntity>()
+                .HasMany(m => m.Roles)
+                .WithMany(r => r.Members)
+                .UsingEntity<Dictionary<string, object>>(
+                    "MemberRole",
+                    r => r.HasOne<RoleEntity>().WithMany().HasForeignKey("RoleId").OnDelete(DeleteBehavior.ClientSetNull),
+                    m => m.HasOne<MemberEntity>().WithMany().HasForeignKey("MemberId").OnDelete(DeleteBehavior.ClientSetNull),
+                    e =>
+                    {
+                        e.HasKey("MemberId", "RoleId");
+                        e.ToTable("MemberRoles");
+                    }
+                );
         }
     }
 }
