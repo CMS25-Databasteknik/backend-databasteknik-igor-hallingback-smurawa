@@ -1,6 +1,12 @@
-﻿namespace Backend.Infrastructure.Data
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Backend.Infrastructure.Data
 {
-    public class MemblerDbContext
+    public sealed class MemblerDbContext(DbContextOptions<MemblerDbContext> options) : DbContext(options)
     {
+        override protected void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
