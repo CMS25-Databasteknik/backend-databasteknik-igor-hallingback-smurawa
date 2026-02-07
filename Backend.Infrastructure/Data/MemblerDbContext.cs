@@ -7,6 +7,7 @@ namespace Backend.Infrastructure.Data
     {
         public DbSet<MemberEntity> Members => Set<MemberEntity>();
         public DbSet<RoleEntity> Roles => Set<RoleEntity>();
+        public DbSet<StatusTypeEntity> StatusTypes => Set<StatusTypeEntity>();
         override protected void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MemberEntity>(entity =>
@@ -51,9 +52,18 @@ namespace Backend.Infrastructure.Data
                     .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Members_ModifiedAtUtc")
                     .ValueGeneratedOnAddOrUpdate();
 
+                entity.Property(e => e.CurrentStatusId)
+                    .IsRequired();
+
                 entity.HasIndex(e => e.Email, "UQ_Members_Email").IsUnique();
 
                 entity.ToTable(tb => tb.HasCheckConstraint("CK_Members_Email_NotEmpty", "LTRIM(RTRIM([Email])) <> ''"));
+
+                entity.HasOne(e => e.CurrentStatus)
+                    .WithMany(s => s.Members)
+                    .HasForeignKey(e => e.CurrentStatusId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("FK_Members_StatusTypes_CurrentStatusId");
 
             });
 
@@ -85,6 +95,22 @@ namespace Backend.Infrastructure.Data
                         e.ToTable("MemberRoles");
                     }
                 );
+
+            modelBuilder.Entity<StatusTypeEntity>(entity =>
+            {
+                entity.ToTable("StatusTypes");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.StatusName)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.HasIndex(e => e.StatusName, "UQ_StatusTypes_StatusName")
+                    .IsUnique();
+            });
+
+
         }
     }
 }

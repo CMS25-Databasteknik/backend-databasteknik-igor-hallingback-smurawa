@@ -10,6 +10,8 @@
         public byte[] Concurrency { get; set; } = null!;
         public DateTime CreatedAtUtc { get; set; }
         public DateTime ModifiedAtUtc { get; set; }
+        public int CurrentStatusId { get; set; }
+        public StatusTypeEntity CurrentStatus { get; set; } = null!;
         public virtual ICollection<RoleEntity> Roles { get; set; } = [];
     }
 }
