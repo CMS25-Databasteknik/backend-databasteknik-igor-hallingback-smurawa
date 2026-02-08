@@ -4,6 +4,6 @@ namespace Backend.Infrastructure.Entities
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
-        public virtual ICollection<CourseEventInstructorEntity> CourseEventInstructors { get; set; } = [];
+        public virtual ICollection<CourseEventEntity> CourseEvents { get; set; } = [];
     }
 }

@@ -7,6 +7,9 @@ namespace Backend.Infrastructure.Entities
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
+        public byte[] Concurrency { get; set; } = null!;
+        public DateTime CreatedAtUtc { get; set; }
+        public DateTime ModifiedAtUtc { get; set; }
         public virtual ICollection<CourseRegistrationEntity> CourseRegistrations { get; set; } = [];
     }
 }

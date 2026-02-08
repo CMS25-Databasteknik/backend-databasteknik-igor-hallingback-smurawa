@@ -7,6 +7,6 @@ namespace Backend.Infrastructure.Entities
         public int RoomNumber { get; set; }
         public int Seats { get; set; }
         public LocationEntity Location { get; set; } = null!;
-        public virtual ICollection<InPlaceEventLocationEntity> InPlaceEventLocations { get; set; } = [];
+        public virtual ICollection<CourseEventEntity> CourseEvents { get; set; } = [];
     }
 }
