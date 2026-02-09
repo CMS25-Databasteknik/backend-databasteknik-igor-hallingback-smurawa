@@ -6,6 +6,7 @@ namespace Backend.Infrastructure.Data
     public sealed class CoursesOnlineDbContext(DbContextOptions<CoursesOnlineDbContext> options) : DbContext(options)
     {
         public DbSet<CourseEntity> Courses => Set<CourseEntity>();
+        public DbSet<CourseEventEntity> CourseEvents => Set<CourseEventEntity>();
         public DbSet<CourseEventTypeEntity> CourseEventTypes => Set<CourseEventTypeEntity>();
         public DbSet<InstructorEntity> Instructors => Set<InstructorEntity>();
         public DbSet<LocationEntity> Locations => Set<LocationEntity>();
