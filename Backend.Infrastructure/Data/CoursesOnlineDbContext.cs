@@ -6,6 +6,12 @@ namespace Backend.Infrastructure.Data
     public sealed class CoursesOnlineDbContext(DbContextOptions<CoursesOnlineDbContext> options) : DbContext(options)
     {
         public DbSet<CourseEntity> Courses => Set<CourseEntity>();
+        public DbSet<CourseEventTypeEntity> CourseEventTypes => Set<CourseEventTypeEntity>();
+        public DbSet<InstructorEntity> Instructors => Set<InstructorEntity>();
+        public DbSet<LocationEntity> Locations => Set<LocationEntity>();
+        public DbSet<ParticipantEntity> Participants => Set<ParticipantEntity>();
+        public DbSet<InPlaceLocationEntity> InPlaceLocations => Set<InPlaceLocationEntity>();
+        public DbSet<CourseRegistrationEntity> CourseRegistrations => Set<CourseRegistrationEntity>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
