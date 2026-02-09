@@ -1,4 +1,6 @@
+using Backend.Application.Interfaces;
 using Backend.Infrastructure.Data;
+using Backend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Presentation.API;
@@ -14,6 +16,8 @@ public partial class Program
         builder.Configuration.GetConnectionString("CoursesOnlineDatabase"),
             sql => sql.MigrationsAssembly("Backend.Infrastructure")
         ));
+        builder.Services.AddScoped<ICoursesRepository, CourseRepository>();
+
         builder.Services.AddCors();
 
         var app = builder.Build();
