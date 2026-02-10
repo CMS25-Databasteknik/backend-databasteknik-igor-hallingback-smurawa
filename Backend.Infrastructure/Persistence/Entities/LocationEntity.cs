@@ -1,4 +1,4 @@
-namespace Backend.Infrastructure.Persistence.EFC.Entities
+namespace Backend.Infrastructure.Persistence.Entities
 {
     public class LocationEntity
     {

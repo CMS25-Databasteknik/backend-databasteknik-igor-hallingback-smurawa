@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Backend.Infrastructure.Migrations
+namespace Backend.Infrastructure.Persistence.EFC.Migrations
 {
     [DbContext(typeof(CoursesOnlineDbContext))]
-    [Migration("20260208195650_GenerateInitialTables")]
+    [Migration("20260210191326_GenerateInitialTables")]
     partial class GenerateInitialTables
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Backend.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.CourseEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace Backend.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.CourseEventEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseEventEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,7 +132,7 @@ namespace Backend.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.CourseEventTypeEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseEventTypeEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -158,7 +158,7 @@ namespace Backend.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.CourseRegistrationEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseRegistrationEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -206,7 +206,7 @@ namespace Backend.Infrastructure.Migrations
                     b.ToTable("CourseRegistrations", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.InPlaceLocationEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.InPlaceLocationEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -233,7 +233,7 @@ namespace Backend.Infrastructure.Migrations
                     b.ToTable("InPlaceLocations", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.InstructorEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.InstructorEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -257,7 +257,7 @@ namespace Backend.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.LocationEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.LocationEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -293,7 +293,7 @@ namespace Backend.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.ParticipantEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.ParticipantEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -381,15 +381,15 @@ namespace Backend.Infrastructure.Migrations
                     b.ToTable("InPlaceEventLocations", (string)null);
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.CourseEventEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseEventEntity", b =>
                 {
-                    b.HasOne("Backend.Infrastructure.Entities.CourseEventTypeEntity", "CourseEventType")
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.CourseEventTypeEntity", "CourseEventType")
                         .WithMany("CourseEvents")
                         .HasForeignKey("CourseEventTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Backend.Infrastructure.Entities.CourseEntity", "Course")
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.CourseEntity", "Course")
                         .WithMany("CourseEvents")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -400,15 +400,15 @@ namespace Backend.Infrastructure.Migrations
                     b.Navigation("CourseEventType");
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.CourseRegistrationEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseRegistrationEntity", b =>
                 {
-                    b.HasOne("Backend.Infrastructure.Entities.CourseEventEntity", "CourseEvent")
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.CourseEventEntity", "CourseEvent")
                         .WithMany("Registrations")
                         .HasForeignKey("CourseEventId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Backend.Infrastructure.Entities.ParticipantEntity", "Participant")
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.ParticipantEntity", "Participant")
                         .WithMany("CourseRegistrations")
                         .HasForeignKey("ParticipantId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -419,9 +419,9 @@ namespace Backend.Infrastructure.Migrations
                     b.Navigation("Participant");
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.InPlaceLocationEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.InPlaceLocationEntity", b =>
                 {
-                    b.HasOne("Backend.Infrastructure.Entities.LocationEntity", "Location")
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.LocationEntity", "Location")
                         .WithMany("InPlaceLocations")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -432,13 +432,13 @@ namespace Backend.Infrastructure.Migrations
 
             modelBuilder.Entity("CourseEventInstructors", b =>
                 {
-                    b.HasOne("Backend.Infrastructure.Entities.CourseEventEntity", null)
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.CourseEventEntity", null)
                         .WithMany()
                         .HasForeignKey("CourseEventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend.Infrastructure.Entities.InstructorEntity", null)
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.InstructorEntity", null)
                         .WithMany()
                         .HasForeignKey("InstructorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -447,40 +447,40 @@ namespace Backend.Infrastructure.Migrations
 
             modelBuilder.Entity("InPlaceEventLocations", b =>
                 {
-                    b.HasOne("Backend.Infrastructure.Entities.CourseEventEntity", null)
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.CourseEventEntity", null)
                         .WithMany()
                         .HasForeignKey("CourseEventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend.Infrastructure.Entities.InPlaceLocationEntity", null)
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.InPlaceLocationEntity", null)
                         .WithMany()
                         .HasForeignKey("InPlaceLocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.CourseEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseEntity", b =>
                 {
                     b.Navigation("CourseEvents");
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.CourseEventEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseEventEntity", b =>
                 {
                     b.Navigation("Registrations");
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.CourseEventTypeEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseEventTypeEntity", b =>
                 {
                     b.Navigation("CourseEvents");
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.LocationEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.LocationEntity", b =>
                 {
                     b.Navigation("InPlaceLocations");
                 });
 
-            modelBuilder.Entity("Backend.Infrastructure.Entities.ParticipantEntity", b =>
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.ParticipantEntity", b =>
                 {
                     b.Navigation("CourseRegistrations");
                 });

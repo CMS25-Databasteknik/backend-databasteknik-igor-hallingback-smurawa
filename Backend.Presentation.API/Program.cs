@@ -13,15 +13,6 @@ public partial class Program
 
         builder.Services.AddOpenApi();
         builder.Services.AddInfrastructureServices(builder.Configuration);
-        //builder.Services.AddDbContext<CoursesOnlineDbContext>(options => options.UseSqlServer(
-        //builder.Configuration.GetConnectionString("CoursesOnlineDatabase"),
-        //    sql => sql.MigrationsAssembly("Backend.Infrastructure")
-        //));
-
-        builder.Services.AddOpenApi();
-        //builder.Services.AddScoped<ICoursesRepository, CourseRepository>();
-        //builder.Services.AddScoped<ICourseService, CourseService>();
-
         builder.Services.AddCors();
 
         var app = builder.Build();

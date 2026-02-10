@@ -1,7 +1,7 @@
 ﻿using Backend.Application.Interfaces;
 using Backend.Domain.Models.Course;
 using Backend.Domain.Models.CourseEvent;
-using Backend.Infrastructure.Persistence.EFC.Entities;
+using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories

@@ -1,4 +1,4 @@
-﻿using Backend.Infrastructure.Persistence.EFC.Entities;
+﻿using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence

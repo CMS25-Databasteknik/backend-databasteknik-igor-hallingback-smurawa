@@ -17,11 +17,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Backend.Application\Backend.Application.csproj" />
-    <ProjectReference Include="..\Backend.Domain\Backend.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Persistence\Migrations\" />
+    <Folder Include="Persistence\EFC\Migrations\" />
   </ItemGroup>
 
 </Project>
