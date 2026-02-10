@@ -1,4 +1,4 @@
-namespace Backend.Infrastructure.Entities
+namespace Backend.Infrastructure.Persistence.EFC.Entities
 {
     public class InPlaceLocationEntity
     {

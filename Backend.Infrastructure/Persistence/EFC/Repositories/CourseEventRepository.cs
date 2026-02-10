@@ -1,10 +1,9 @@
 using Backend.Application.Interfaces;
 using Backend.Domain.Models.CourseEvent;
-using Backend.Infrastructure.Data;
-using Backend.Infrastructure.Entities;
+using Backend.Infrastructure.Persistence.EFC.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Backend.Infrastructure.Repositories
+namespace Backend.Infrastructure.Persistence.EFC.Repositories
 {
     public class CourseEventRepository(CoursesOnlineDbContext context) : ICourseEventsRepository
     {

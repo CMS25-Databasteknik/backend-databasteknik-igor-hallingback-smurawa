@@ -1,7 +1,7 @@
-﻿using Backend.Infrastructure.Entities;
+﻿using Backend.Infrastructure.Persistence.EFC.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Backend.Infrastructure.Data
+namespace Backend.Infrastructure.Persistence
 {
     public sealed class CoursesOnlineDbContext(DbContextOptions<CoursesOnlineDbContext> options) : DbContext(options)
     {

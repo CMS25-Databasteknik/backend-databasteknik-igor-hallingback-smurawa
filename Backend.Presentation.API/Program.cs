@@ -1,8 +1,6 @@
 using Backend.Application.Interfaces;
-using Backend.Application.Services;
 using Backend.Domain.Models.Course;
-using Backend.Infrastructure.Data;
-using Backend.Infrastructure.Repositories;
+using Backend.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Presentation.API;
@@ -14,14 +12,15 @@ public partial class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddOpenApi();
-        builder.Services.AddDbContext<CoursesOnlineDbContext>(options => options.UseSqlServer(
-        builder.Configuration.GetConnectionString("CoursesOnlineDatabase"),
-            sql => sql.MigrationsAssembly("Backend.Infrastructure")
-        ));
+        builder.Services.AddInfrastructureServices(builder.Configuration);
+        //builder.Services.AddDbContext<CoursesOnlineDbContext>(options => options.UseSqlServer(
+        //builder.Configuration.GetConnectionString("CoursesOnlineDatabase"),
+        //    sql => sql.MigrationsAssembly("Backend.Infrastructure")
+        //));
 
         builder.Services.AddOpenApi();
-        builder.Services.AddScoped<ICoursesRepository, CourseRepository>();
-        builder.Services.AddScoped<ICourseService, CourseService>();
+        //builder.Services.AddScoped<ICoursesRepository, CourseRepository>();
+        //builder.Services.AddScoped<ICourseService, CourseService>();
 
         builder.Services.AddCors();
 
