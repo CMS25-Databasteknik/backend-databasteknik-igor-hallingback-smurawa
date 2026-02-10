@@ -2,7 +2,7 @@ using Backend.Application.Interfaces;
 using Backend.Application.Models;
 using Backend.Domain.Models.Course;
 
-namespace Backend.Application.Services
+namespace Backend.Application.Modules.Courses
 {
     public class CourseService(ICoursesRepository courseRepository) : ICourseService
     {

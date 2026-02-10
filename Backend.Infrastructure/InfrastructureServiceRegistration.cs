@@ -1,5 +1,5 @@
 ﻿using Backend.Application.Interfaces;
-using Backend.Application.Services;
+using Backend.Application.Modules.Courses;
 using Backend.Infrastructure.Persistence;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;

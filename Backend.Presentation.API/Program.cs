@@ -1,4 +1,4 @@
-using Backend.Application.Interfaces;
+using Backend.Application.Modules.Courses;
 using Backend.Domain.Models.Course;
 using Backend.Infrastructure;
 using Microsoft.EntityFrameworkCore;

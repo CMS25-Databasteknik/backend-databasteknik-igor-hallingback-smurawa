@@ -1,7 +1,7 @@
 using Backend.Application.Models;
 using Backend.Domain.Models.Course;
 
-namespace Backend.Application.Interfaces
+namespace Backend.Application.Modules.Courses
 {
     public interface ICourseService
     {
