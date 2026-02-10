@@ -1,4 +1,6 @@
 using Backend.Application.Interfaces;
+using Backend.Application.Services;
+using Backend.Domain.Models.Course;
 using Backend.Infrastructure.Data;
 using Backend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +18,10 @@ public partial class Program
         builder.Configuration.GetConnectionString("CoursesOnlineDatabase"),
             sql => sql.MigrationsAssembly("Backend.Infrastructure")
         ));
+
+        builder.Services.AddOpenApi();
         builder.Services.AddScoped<ICoursesRepository, CourseRepository>();
+        builder.Services.AddScoped<ICourseService, CourseService>();
 
         builder.Services.AddCors();
 
@@ -28,6 +33,28 @@ public partial class Program
             .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod());
+
+        app.MapGet("/api/courses", async (ICourseService courseService, CancellationToken cancellationToken) =>
+        {
+            var response = await courseService.GetAllCoursesAsync(cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response.Message);
+
+            return Results.Ok(response.Result);
+        })
+        .WithName("GetAllCourses");
+
+        app.MapPost("/api/courses", async (CreateCourseDto createCourseDto, ICourseService courseService, CancellationToken cancellationToken) =>
+        {
+            var response = await courseService.CreateCourseAsync(createCourseDto, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response.Message);
+
+            return Results.Created($"/api/courses/{response.Result?.Id}", response.Result);
+        })
+        .WithName("CreateCourse");
 
         app.Run();
     }
