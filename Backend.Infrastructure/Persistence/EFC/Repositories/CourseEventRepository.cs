@@ -1,5 +1,5 @@
-using Backend.Domain.Modules.Courses.Contracts;
-using Backend.Domain.Modules.Courses.Models;
+using Backend.Domain.Modules.CourseEvents.Contracts;
+using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,5 +1,6 @@
 ﻿using Backend.Application.Modules.Courses;
 using Backend.Domain.Modules.Courses.Contracts;
+using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Infrastructure.Persistence;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
