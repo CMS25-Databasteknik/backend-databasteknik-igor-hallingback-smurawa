@@ -4,5 +4,5 @@ public sealed record CreateCourseInput
 (
     string Title,
     string Description,
-    int Length
+    int DurationInDays
 );

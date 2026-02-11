@@ -1,7 +1,7 @@
+using Backend.Application.Extensions;
 using Backend.Application.Modules.Courses;
 using Backend.Domain.Models.Course;
-using Backend.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+using Backend.Infrastructure.Extensions;
 
 namespace Backend.Presentation.API;
 
@@ -12,8 +12,10 @@ public partial class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddOpenApi();
-        builder.Services.AddInfrastructureServices(builder.Configuration);
         builder.Services.AddCors();
+
+        builder.Services.AddInfrastructureServices(builder.Configuration);
+        builder.Services.AddApplication(builder.Configuration, builder.Environment);
 
         var app = builder.Build();
 

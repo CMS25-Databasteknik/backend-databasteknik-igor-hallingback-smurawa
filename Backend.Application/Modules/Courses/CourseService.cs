@@ -1,5 +1,6 @@
 using Backend.Application.Interfaces;
 using Backend.Application.Models;
+using Backend.Application.Modules.Courses.Inputs;
 using Backend.Domain.Models.Course;
 
 namespace Backend.Application.Modules.Courses
@@ -8,7 +9,7 @@ namespace Backend.Application.Modules.Courses
     {
         private readonly ICoursesRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
 
-        public async Task<ResponseResult<CourseSummaryDto>> CreateCourseAsync(CreateCourseDto course, CancellationToken cancellationToken = default)
+        public async Task<ResponseResult<CourseSummaryDto>> CreateCourseAsync(CreateCourseInput course, CancellationToken cancellationToken = default)
         {
             try
             {

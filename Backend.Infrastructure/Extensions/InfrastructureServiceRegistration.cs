@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Backend.Infrastructure;
+namespace Backend.Infrastructure.Extensions;
 
 public static class InfrastructureServiceRegistration
 {
