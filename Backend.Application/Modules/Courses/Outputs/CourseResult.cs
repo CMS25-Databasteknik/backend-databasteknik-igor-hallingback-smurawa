@@ -14,3 +14,15 @@ public sealed class CourseResult : Result
     public Course? Result { get; set; }
 
 }
+
+public sealed class CourseListResult : Result
+{
+    public IEnumerable<Course> Result { get; set; } = [];
+
+}
+
+public sealed class CourseDeleteResult : Result
+{
+    public bool Result { get; set; }
+
+}

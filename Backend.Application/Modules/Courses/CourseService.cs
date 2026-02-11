@@ -1,5 +1,4 @@
 using Backend.Application.Interfaces;
-using Backend.Application.Models;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.Courses.Outputs;
 using Backend.Domain.Models.Course;
@@ -99,7 +98,7 @@ namespace Backend.Application.Modules.Courses
             }
         }
 
-        public async Task<ResponseResult<IEnumerable<CourseSummaryDto>>> GetAllCoursesAsync(CancellationToken cancellationToken = default)
+        public async Task<CourseListResult> GetAllCoursesAsync(CancellationToken cancellationToken = default)
         {
             try
             {
@@ -107,15 +106,16 @@ namespace Backend.Application.Modules.Courses
 
                 if (!courses.Any())
                 {
-                    return new ResponseResult<IEnumerable<CourseSummaryDto>>
+                    return new CourseListResult
                     {
                         Success = true,
                         Result = courses,
+                        StatusCode = 200,
                         Message = "No courses found."
                     };
                 }
 
-                return new ResponseResult<IEnumerable<CourseSummaryDto>>
+                return new CourseListResult
                 {
                     Success = true,
                     Result = courses,
@@ -124,7 +124,7 @@ namespace Backend.Application.Modules.Courses
             }
             catch (Exception ex)
             {
-                return new ResponseResult<IEnumerable<CourseSummaryDto>>
+                return new CourseListResult
                 {
                     Success = false,
                     Message = $"An error occurred while retrieving courses: {ex.Message}"
@@ -132,13 +132,13 @@ namespace Backend.Application.Modules.Courses
             }
         }
 
-        public async Task<ResponseResult<CourseDto>> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken = default)
+        public async Task<CourseResult> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken = default)
         {
             try
             {
                 if (courseId == Guid.Empty)
                 {
-                    return new ResponseResult<CourseDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = "Course ID cannot be empty."
@@ -149,14 +149,14 @@ namespace Backend.Application.Modules.Courses
 
                 if (course == null)
                 {
-                    return new ResponseResult<CourseDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = $"Course with ID '{courseId}' not found."
                     };
                 }
 
-                return new ResponseResult<CourseDto>
+                return new CourseResult
                 {
                     Success = true,
                     Result = course,
@@ -165,7 +165,7 @@ namespace Backend.Application.Modules.Courses
             }
             catch (Exception ex)
             {
-                return new ResponseResult<CourseDto>
+                return new CourseResult
                 {
                     Success = false,
                     Message = $"An error occurred while retrieving the course: {ex.Message}"
@@ -173,13 +173,13 @@ namespace Backend.Application.Modules.Courses
             }
         }
 
-        public async Task<ResponseResult<CourseDto>> GetCourseByTitleAsync(string title, CancellationToken cancellationToken = default)
+        public async Task<CourseResult> GetCourseByTitleAsync(string title, CancellationToken cancellationToken = default)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(title))
                 {
-                    return new ResponseResult<CourseDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = "Course title cannot be empty or whitespace."
@@ -190,14 +190,14 @@ namespace Backend.Application.Modules.Courses
 
                 if (course == null)
                 {
-                    return new ResponseResult<CourseDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = $"Course with title '{title}' not found."
                     };
                 }
 
-                return new ResponseResult<CourseDto>
+                return new CourseResult
                 {
                     Success = true,
                     Result = course,
@@ -206,7 +206,7 @@ namespace Backend.Application.Modules.Courses
             }
             catch (Exception ex)
             {
-                return new ResponseResult<CourseDto>
+                return new CourseResult
                 {
                     Success = false,
                     Message = $"An error occurred while retrieving the course: {ex.Message}"
@@ -214,13 +214,13 @@ namespace Backend.Application.Modules.Courses
             }
         }
 
-        public async Task<ResponseResult<CourseSummaryDto>> UpdateCourseAsync(UpdateCourseDto course, CancellationToken cancellationToken = default)
+        public async Task<CourseResult> UpdateCourseAsync(UpdateCourseDto course, CancellationToken cancellationToken = default)
         {
             try
             {
                 if (course == null)
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = "Course cannot be null."
@@ -229,7 +229,7 @@ namespace Backend.Application.Modules.Courses
 
                 if (course.Id == Guid.Empty)
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = "Course ID cannot be empty."
@@ -238,7 +238,7 @@ namespace Backend.Application.Modules.Courses
 
                 if (string.IsNullOrWhiteSpace(course.Title))
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = "Course title cannot be empty or whitespace."
@@ -247,7 +247,7 @@ namespace Backend.Application.Modules.Courses
 
                 if (string.IsNullOrWhiteSpace(course.Description))
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = "Course description cannot be empty or whitespace."
@@ -256,7 +256,7 @@ namespace Backend.Application.Modules.Courses
 
                 if (course.DurationInDays <= 0)
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = "Course duration must be greater than zero."
@@ -266,7 +266,7 @@ namespace Backend.Application.Modules.Courses
                 var existingCourse = await _courseRepository.GetCourseByIdAsync(course.Id, cancellationToken);
                 if (existingCourse == null)
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = $"Course with ID '{course.Id}' not found."
@@ -276,7 +276,7 @@ namespace Backend.Application.Modules.Courses
                 var courseWithSameTitle = await _courseRepository.GetCourseByTitleAsync(course.Title, cancellationToken);
                 if (courseWithSameTitle != null && courseWithSameTitle.Id != course.Id)
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = $"Another course with the title '{course.Title}' already exists."
@@ -287,14 +287,14 @@ namespace Backend.Application.Modules.Courses
 
                 if (result == null)
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
                         Message = "Failed to update course."
                     };
                 }
 
-                return new ResponseResult<CourseSummaryDto>
+                return new CourseResult
                 {
                     Success = true,
                     Result = result,
@@ -303,7 +303,7 @@ namespace Backend.Application.Modules.Courses
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("modified by another user"))
             {
-                return new ResponseResult<CourseSummaryDto>
+                return new CourseResult
                 {
                     Success = false,
                     Message = "The course was modified by another user. Please refresh and try again."
@@ -311,7 +311,7 @@ namespace Backend.Application.Modules.Courses
             }
             catch (Exception ex)
             {
-                return new ResponseResult<CourseSummaryDto>
+                return new CourseResult
                 {
                     Success = false,
                     Message = $"An error occurred while updating the course: {ex.Message}"
@@ -319,13 +319,13 @@ namespace Backend.Application.Modules.Courses
             }
         }
 
-        public async Task<ResponseResult<bool>> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken = default)
+        public async Task<CourseDeleteResult> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken = default)
         {
             try
             {
                 if (courseId == Guid.Empty)
                 {
-                    return new ResponseResult<bool>
+                    return new CourseDeleteResult
                     {
                         Success = false,
                         Message = "Course ID cannot be empty.",
@@ -336,7 +336,7 @@ namespace Backend.Application.Modules.Courses
                 var existingCourse = await _courseRepository.GetCourseByIdAsync(courseId, cancellationToken);
                 if (existingCourse == null)
                 {
-                    return new ResponseResult<bool>
+                    return new CourseDeleteResult
                     {
                         Success = false,
                         Message = $"Course with ID '{courseId}' not found.",
@@ -348,7 +348,7 @@ namespace Backend.Application.Modules.Courses
 
                 if (!result)
                 {
-                    return new ResponseResult<bool>
+                    return new CourseDeleteResult
                     {
                         Success = false,
                         Message = "Failed to delete course.",
@@ -356,7 +356,7 @@ namespace Backend.Application.Modules.Courses
                     };
                 }
 
-                return new ResponseResult<bool>
+                return new CourseDeleteResult
                 {
                     Success = true,
                     Message = "Course deleted successfully.",
@@ -365,7 +365,7 @@ namespace Backend.Application.Modules.Courses
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("associated course events"))
             {
-                return new ResponseResult<bool>
+                return new CourseDeleteResult
                 {
                     Success = false,
                     Message = "Cannot delete course because it has associated course events. Please delete the course events first.",
@@ -374,7 +374,7 @@ namespace Backend.Application.Modules.Courses
             }
             catch (Exception ex)
             {
-                return new ResponseResult<bool>
+                return new CourseDeleteResult
                 {
                     Success = false,
                     Message = $"An error occurred while deleting the course: {ex.Message}",

@@ -9,7 +9,7 @@ namespace Backend.Application.Interfaces
         Task<Course?> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken);
         Task<Course?> GetCourseByTitleAsync(string title, CancellationToken cancellationToken);
         Task<Course?> UpdateCourseAsync(UpdateCourseDto course, CancellationToken cancellationToken);
-        Task<IEnumerable<Course>> GetAllCoursesAsync(CancellationToken cancellationToken);
+        Task<IReadOnlyList<Course>> GetAllCoursesAsync(CancellationToken cancellationToken);
         Task<bool> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken);
     }
 }
