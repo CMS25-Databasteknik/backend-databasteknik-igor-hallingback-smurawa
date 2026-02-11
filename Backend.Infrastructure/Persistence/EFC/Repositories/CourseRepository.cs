@@ -55,7 +55,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             return [.. entities.Select(ToModel)];
         }
 
-        public async Task<CourseWithEvents> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken)
+        public async Task<CourseWithEvents?> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken)
         {
             if (courseId == Guid.Empty)
                 throw new ArgumentException("Id is required", nameof(courseId));
