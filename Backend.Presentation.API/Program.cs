@@ -1,9 +1,7 @@
-using Backend.Application.Interfaces;
-using Backend.Application.Services;
-using Backend.Domain.Models.Course;
-using Backend.Infrastructure.Data;
-using Backend.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
+using Backend.Application.Extensions;
+using Backend.Application.Modules.Courses;
+using Backend.Application.Modules.Courses.Inputs;
+using Backend.Infrastructure.Extensions;
 
 namespace Backend.Presentation.API;
 
@@ -14,16 +12,10 @@ public partial class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddOpenApi();
-        builder.Services.AddDbContext<CoursesOnlineDbContext>(options => options.UseSqlServer(
-        builder.Configuration.GetConnectionString("CoursesOnlineDatabase"),
-            sql => sql.MigrationsAssembly("Backend.Infrastructure")
-        ));
-
-        builder.Services.AddOpenApi();
-        builder.Services.AddScoped<ICoursesRepository, CourseRepository>();
-        builder.Services.AddScoped<ICourseService, CourseService>();
-
         builder.Services.AddCors();
+
+        builder.Services.AddInfrastructureServices(builder.Configuration);
+        builder.Services.AddApplication(builder.Configuration, builder.Environment);
 
         var app = builder.Build();
 
@@ -45,12 +37,12 @@ public partial class Program
         })
         .WithName("GetAllCourses");
 
-        app.MapPost("/api/courses", async (CreateCourseDto createCourseDto, ICourseService courseService, CancellationToken cancellationToken) =>
+        app.MapPost("/api/courses", async (CreateCourseInput createCourseInput, ICourseService courseService, CancellationToken cancellationToken) =>
         {
-            var response = await courseService.CreateCourseAsync(createCourseDto, cancellationToken);
+            var response = await courseService.CreateCourseAsync(createCourseInput, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response.Message);
+                return Results.Problem(detail: response.Message, statusCode: response.StatusCode);
 
             return Results.Created($"/api/courses/{response.Result?.Id}", response.Result);
         })
