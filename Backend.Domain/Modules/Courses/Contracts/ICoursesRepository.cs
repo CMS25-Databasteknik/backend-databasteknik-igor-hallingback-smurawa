@@ -1,14 +1,15 @@
 ﻿using Backend.Domain.Models.Course;
+using Backend.Domain.Modules.Courses.Models;
 
 namespace Backend.Application.Interfaces
 {
     public interface ICoursesRepository
     {
-        Task<CourseSummaryDto> CreateCourseAsync(CreateCourseDto course, CancellationToken cancellationToken);
-        Task<CourseDto?> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken);
-        Task<CourseDto?> GetCourseByTitleAsync(string title, CancellationToken cancellationToken);
-        Task<CourseSummaryDto?> UpdateCourseAsync(UpdateCourseDto course, CancellationToken cancellationToken);
-        Task<IEnumerable<CourseSummaryDto>> GetAllCoursesAsync(CancellationToken cancellationToken);
+        Task<Course> CreateCourseAsync(Course course, CancellationToken cancellationToken);
+        Task<Course?> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken);
+        Task<Course?> GetCourseByTitleAsync(string title, CancellationToken cancellationToken);
+        Task<Course?> UpdateCourseAsync(UpdateCourseDto course, CancellationToken cancellationToken);
+        Task<IEnumerable<Course>> GetAllCoursesAsync(CancellationToken cancellationToken);
         Task<bool> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken);
     }
 }

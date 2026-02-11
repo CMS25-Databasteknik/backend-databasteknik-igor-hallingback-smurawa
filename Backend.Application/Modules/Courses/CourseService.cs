@@ -3,6 +3,7 @@ using Backend.Application.Models;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.Courses.Outputs;
 using Backend.Domain.Models.Course;
+using Backend.Domain.Modules.Courses.Models;
 
 namespace Backend.Application.Modules.Courses
 {
@@ -70,26 +71,19 @@ namespace Backend.Application.Modules.Courses
                     };
                 }
 
-                var createCourseDto = new CreateCourseDto(
+                var newCourse = new Course(
                     course.Title,
                     course.Description,
                     course.DurationInDays
                 );
 
-                var result = await _courseRepository.CreateCourseAsync(createCourseDto, cancellationToken);
-
-                var courseModel = new Backend.Domain.Modules.Courses.Models.Course(
-                    result.Id,
-                    result.Title,
-                    result.Description,
-                    result.DurationInDays
-                );
+                var result = await _courseRepository.CreateCourseAsync(newCourse, cancellationToken);
 
                 return new CourseResult
                 {
                     Success = true,
                     StatusCode = 201,
-                    Result = courseModel,
+                    Result = newCourse,
                     Message = "Course created successfully."
                 };
             }
