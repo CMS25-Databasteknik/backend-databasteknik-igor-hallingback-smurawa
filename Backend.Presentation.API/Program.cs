@@ -1,7 +1,6 @@
 using Backend.Application.Extensions;
 using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
-using Backend.Domain.Models.Course;
 using Backend.Infrastructure.Extensions;
 
 namespace Backend.Presentation.API;
