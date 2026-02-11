@@ -6,7 +6,6 @@ public sealed class CourseWithEvents
     public string Title { get; }
     public string Description { get; }
     public int DurationInDays { get; }
-
     public IReadOnlyList<CourseEvent> CourseEvents { get; }
 
     public CourseWithEvents(
@@ -14,7 +13,7 @@ public sealed class CourseWithEvents
         string title,
         string description,
         int durationInDays,
-        IEnumerable<CourseEvent>? courseEvents = null)
+        IEnumerable<CourseEvent> courseEvents)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("Course id cannot be empty.", nameof(id));
