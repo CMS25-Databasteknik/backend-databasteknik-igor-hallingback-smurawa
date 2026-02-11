@@ -2,8 +2,7 @@
 
 public sealed record UpdateCourseInput
 (
-    Guid Id,
     string Title,
     string Description,
-    int Length
+    int DurationInDays
 );
