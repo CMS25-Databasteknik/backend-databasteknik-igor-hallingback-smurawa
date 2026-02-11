@@ -1,6 +1,7 @@
 using Backend.Application.Interfaces;
 using Backend.Application.Models;
 using Backend.Application.Modules.Courses.Inputs;
+using Backend.Application.Modules.Courses.Outputs;
 using Backend.Domain.Models.Course;
 
 namespace Backend.Application.Modules.Courses
@@ -9,42 +10,50 @@ namespace Backend.Application.Modules.Courses
     {
         private readonly ICoursesRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
 
-        public async Task<ResponseResult<CourseSummaryDto>> CreateCourseAsync(CreateCourseInput course, CancellationToken cancellationToken = default)
+        public async Task<CourseResult> CreateCourseAsync(CreateCourseInput course, CancellationToken cancellationToken = default)
         {
             try
             {
                 if (course == null)
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 400,
+                        Result = null,
                         Message = "Course cannot be null."
                     };
                 }
 
                 if (string.IsNullOrWhiteSpace(course.Title))
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 400,
+                        Result = null,
                         Message = "Course title cannot be empty or whitespace."
                     };
                 }
 
                 if (string.IsNullOrWhiteSpace(course.Description))
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 400,
+                        Result = null,
                         Message = "Course description cannot be empty or whitespace."
                     };
                 }
 
                 if (course.DurationInDays <= 0)
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 400,
+                        Result = null,
                         Message = "Course duration must be greater than zero."
                     };
                 }
@@ -52,27 +61,45 @@ namespace Backend.Application.Modules.Courses
                 var existingCourse = await _courseRepository.GetCourseByTitleAsync(course.Title, cancellationToken);
                 if (existingCourse != null)
                 {
-                    return new ResponseResult<CourseSummaryDto>
+                    return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 409,
+                        Result = null,
                         Message = $"A course with the title '{course.Title}' already exists."
                     };
                 }
 
-                var result = await _courseRepository.CreateCourseAsync(course, cancellationToken);
+                var createCourseDto = new CreateCourseDto(
+                    course.Title,
+                    course.Description,
+                    course.DurationInDays
+                );
 
-                return new ResponseResult<CourseSummaryDto>
+                var result = await _courseRepository.CreateCourseAsync(createCourseDto, cancellationToken);
+
+                var courseModel = new Backend.Domain.Modules.Courses.Models.Course(
+                    result.Id,
+                    result.Title,
+                    result.Description,
+                    result.DurationInDays
+                );
+
+                return new CourseResult
                 {
                     Success = true,
-                    Result = result,
+                    StatusCode = 201,
+                    Result = courseModel,
                     Message = "Course created successfully."
                 };
             }
             catch (Exception ex)
             {
-                return new ResponseResult<CourseSummaryDto>
+                return new CourseResult
                 {
                     Success = false,
+                    StatusCode = 500,
+                    Result = null,
                     Message = $"An error occurred while creating the course: {ex.Message}"
                 };
             }

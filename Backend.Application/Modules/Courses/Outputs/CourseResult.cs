@@ -10,5 +10,6 @@ public class Result
 
 public sealed class CourseResult : Result
 {
-    public Course? Value { get; set; }
+    public Course? Result { get; set; }
+    public string? Message { get; set; }
 }

@@ -1,5 +1,6 @@
 using Backend.Application.Extensions;
 using Backend.Application.Modules.Courses;
+using Backend.Application.Modules.Courses.Inputs;
 using Backend.Domain.Models.Course;
 using Backend.Infrastructure.Extensions;
 
@@ -37,12 +38,12 @@ public partial class Program
         })
         .WithName("GetAllCourses");
 
-        app.MapPost("/api/courses", async (CreateCourseDto createCourseDto, ICourseService courseService, CancellationToken cancellationToken) =>
+        app.MapPost("/api/courses", async (CreateCourseInput createCourseInput, ICourseService courseService, CancellationToken cancellationToken) =>
         {
-            var response = await courseService.CreateCourseAsync(createCourseDto, cancellationToken);
+            var response = await courseService.CreateCourseAsync(createCourseInput, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response.Message);
+                return Results.Problem(detail: response.Message, statusCode: response.StatusCode);
 
             return Results.Created($"/api/courses/{response.Result?.Id}", response.Result);
         })
