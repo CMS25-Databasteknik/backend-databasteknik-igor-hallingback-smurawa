@@ -1,14 +1,14 @@
-using Backend.Domain.Models.CourseEvent;
+using Backend.Domain.Modules.Courses.Models;
 
 namespace Backend.Application.Interfaces
 {
     public interface ICourseEventsRepository
     {
-        Task<CourseEventSummaryDto> CreateCourseEventAsync(CreateCourseEventDto courseEvent, CancellationToken cancellationToken);
-        Task<CourseEventDto?> GetCourseEventByIdAsync(Guid courseEventId, CancellationToken cancellationToken);
-        Task<IEnumerable<CourseEventSummaryDto>> GetAllCourseEventsAsync(CancellationToken cancellationToken);
-        Task<IEnumerable<CourseEventSummaryDto>> GetCourseEventsByCourseIdAsync(Guid courseId, CancellationToken cancellationToken);
-        Task<CourseEventSummaryDto?> UpdateCourseEventAsync(UpdateCourseEventDto courseEvent, CancellationToken cancellationToken);
+        Task<CourseEvent> CreateCourseEventAsync(CourseEvent courseEvent, CancellationToken cancellationToken);
+        Task<CourseEvent?> GetCourseEventByIdAsync(Guid courseEventId, CancellationToken cancellationToken);
+        Task<IReadOnlyList<CourseEvent>> GetAllCourseEventsAsync(CancellationToken cancellationToken);
+        Task<IReadOnlyList<CourseEvent>> GetCourseEventsByCourseIdAsync(Guid courseId, CancellationToken cancellationToken);
+        Task<CourseEvent?> UpdateCourseEventAsync(CourseEvent courseEvent, CancellationToken cancellationToken);
         Task<bool> DeleteCourseEventAsync(Guid courseEventId, CancellationToken cancellationToken);
     }
 }
