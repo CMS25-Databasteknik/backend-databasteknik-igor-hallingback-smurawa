@@ -2,12 +2,23 @@
 
 public sealed class Course
 {
+    public Guid Id { get; }
     public string Title { get; }
     public string Description { get; }
     public int DurationInDays { get; }
 
-    public Course(string title, string description, int durationInDays)
+    public IReadOnlyList<CourseEvent> CourseEvents { get; }
+
+    public Course(
+        Guid id,
+        string title,
+        string description,
+        int durationInDays,
+        IEnumerable<CourseEvent>? courseEvents = null)
     {
+        if (id == Guid.Empty)
+            throw new ArgumentException("Course id cannot be empty.", nameof(id));
+
         if (string.IsNullOrWhiteSpace(title))
             throw new ArgumentException("Course title cannot be empty.", nameof(title));
 
@@ -16,8 +27,10 @@ public sealed class Course
 
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(durationInDays);
 
+        Id = id;
         Title = title.Trim();
         Description = description.Trim();
         DurationInDays = durationInDays;
+        CourseEvents = courseEvents?.ToList() ?? [];
     }
 }

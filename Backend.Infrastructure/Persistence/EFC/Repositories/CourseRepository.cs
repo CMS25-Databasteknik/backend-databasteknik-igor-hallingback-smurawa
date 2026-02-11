@@ -1,6 +1,5 @@
 ﻿using Backend.Application.Interfaces;
-using Backend.Domain.Models.Course;
-using Backend.Domain.Models.CourseEvent;
+using Backend.Domain.Modules.Courses.Models;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,8 +9,12 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
     {
         private readonly CoursesOnlineDbContext _context = context;
 
-        public async Task<CourseSummaryDto> CreateCourseAsync(CreateCourseDto course, CancellationToken cancellationToken)
+        public static Course ToModel(CourseEntity entity)
+            => new(entity.Id, entity.Title, entity.Description, entity.DurationInDays);
+
+        public async Task<Course> CreateCourseAsync(Course course, CancellationToken cancellationToken)
         {
+
             var entity = new CourseEntity
             {
                 Id = Guid.NewGuid(),
@@ -23,7 +26,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             _context.Courses.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new CourseSummaryDto(entity.Id, entity.Title, entity.Description, entity.DurationInDays);
+            return ToModel(entity);
         }
 
         public async Task<bool> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken)
@@ -42,32 +45,32 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<CourseSummaryDto>> GetAllCoursesAsync(CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<Course>> GetAllCoursesAsync(CancellationToken cancellationToken)
         {
             var entities = await _context.Courses
                 .AsNoTracking()
                 .OrderByDescending(c => c.CreatedAtUtc)
-                .Select(e => new CourseSummaryDto(e.Id, e.Title, e.Description, e.DurationInDays))
                 .ToListAsync(cancellationToken);
 
-            return entities;
+            return [.. entities.Select(ToModel)];
         }
 
-        public async Task<CourseDto?> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken)
+        public async Task<Course> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken)
         {
             if (courseId == Guid.Empty)
                 throw new ArgumentException("Id is required", nameof(courseId));
 
-            var dto = await _context.Courses
+            var course = await _context.Courses
                 .AsNoTracking()
                 .Where(c => c.Id == courseId)
-                .Select(c => new CourseDto(
+                .Select(c => new Course(
                     c.Id,
                     c.Title,
                     c.Description,
                     c.DurationInDays,
-                    c.CourseEvents.Select(ce => new CourseEventDto(
+                    c.CourseEvents.Select(ce => new CourseEvent(
                         ce.Id,
+                        ce.CourseId,
                         ce.EventDate,
                         ce.Price,
                         ce.Seats,
@@ -76,36 +79,10 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 ))
                 .SingleOrDefaultAsync(cancellationToken);
 
-            return dto;
+            return course;
         }
 
-        public async Task<CourseDto?> GetCourseByTitleAsync(string title, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("Title is required", nameof(title));
-
-            var dto = await _context.Courses
-                .AsNoTracking()
-                .Where(c => c.Title == title)
-                .Select(c => new CourseDto(
-                    c.Id,
-                    c.Title,
-                    c.Description,
-                    c.DurationInDays,
-                    c.CourseEvents.Select(ce => new CourseEventDto(
-                        ce.Id,
-                        ce.EventDate,
-                        ce.Price,
-                        ce.Seats,
-                        ce.CourseEventTypeId
-                    ))
-                ))
-                .SingleOrDefaultAsync(cancellationToken);
-
-            return dto;
-        }
-
-        public async Task<CourseSummaryDto?> UpdateCourseAsync(UpdateCourseDto course, CancellationToken cancellationToken)
+        public async Task<Course?> UpdateCourseAsync(Course course, CancellationToken cancellationToken)
         {
             if (course.Id == Guid.Empty)
                 throw new ArgumentException("Id is required", nameof(course.Id));
@@ -122,7 +99,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new CourseSummaryDto(entity.Id, entity.Title, entity.Description, entity.DurationInDays);
+            return ToModel(entity);
         }
     }
 }

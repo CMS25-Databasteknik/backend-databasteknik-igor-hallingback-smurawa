@@ -1,7 +1,6 @@
 using Backend.Application.Interfaces;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.Courses.Outputs;
-using Backend.Domain.Models.Course;
 using Backend.Domain.Modules.Courses.Models;
 
 namespace Backend.Application.Modules.Courses
@@ -58,19 +57,8 @@ namespace Backend.Application.Modules.Courses
                     };
                 }
 
-                var existingCourse = await _courseRepository.GetCourseByTitleAsync(course.Title, cancellationToken);
-                if (existingCourse != null)
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        StatusCode = 409,
-                        Result = null,
-                        Message = $"A course with the title '{course.Title}' already exists."
-                    };
-                }
-
                 var newCourse = new Course(
+                    id: Guid.NewGuid(),
                     course.Title,
                     course.Description,
                     course.DurationInDays
@@ -173,48 +161,7 @@ namespace Backend.Application.Modules.Courses
             }
         }
 
-        public async Task<CourseResult> GetCourseByTitleAsync(string title, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(title))
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        Message = "Course title cannot be empty or whitespace."
-                    };
-                }
-
-                var course = await _courseRepository.GetCourseByTitleAsync(title, cancellationToken);
-
-                if (course == null)
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        Message = $"Course with title '{title}' not found."
-                    };
-                }
-
-                return new CourseResult
-                {
-                    Success = true,
-                    Result = course,
-                    Message = "Course retrieved successfully."
-                };
-            }
-            catch (Exception ex)
-            {
-                return new CourseResult
-                {
-                    Success = false,
-                    Message = $"An error occurred while retrieving the course: {ex.Message}"
-                };
-            }
-        }
-
-        public async Task<CourseResult> UpdateCourseAsync(UpdateCourseDto course, CancellationToken cancellationToken = default)
+        public async Task<CourseResult> UpdateCourseAsync(UpdateCourseInput course, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -273,17 +220,14 @@ namespace Backend.Application.Modules.Courses
                     };
                 }
 
-                var courseWithSameTitle = await _courseRepository.GetCourseByTitleAsync(course.Title, cancellationToken);
-                if (courseWithSameTitle != null && courseWithSameTitle.Id != course.Id)
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        Message = $"Another course with the title '{course.Title}' already exists."
-                    };
-                }
+                var updatedCourse = new Course(
+                    course.Id,
+                    course.Title,
+                    course.Description,
+                    course.DurationInDays,
+                    existingCourse.CourseEvents);
 
-                var result = await _courseRepository.UpdateCourseAsync(course, cancellationToken);
+                var result = await _courseRepository.UpdateCourseAsync(updatedCourse, cancellationToken);
 
                 if (result == null)
                 {
