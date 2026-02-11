@@ -1,6 +1,6 @@
-using Backend.Domain.Modules.Courses.Models;
+using Backend.Domain.Modules.CourseEvents.Models;
 
-namespace Backend.Domain.Modules.Courses.Contracts
+namespace Backend.Domain.Modules.CourseEvents.Contracts
 {
     public interface ICourseEventsRepository
     {

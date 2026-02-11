@@ -1,4 +1,5 @@
 ﻿using Backend.Domain.Modules.Courses.Models;
+using Backend.Domain.Modules.CourseEvents.Models;
 
 namespace Backend.Application.Modules.Courses.Outputs;
 
