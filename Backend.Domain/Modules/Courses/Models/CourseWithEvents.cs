@@ -1,18 +1,20 @@
 ﻿namespace Backend.Domain.Modules.Courses.Models;
 
-public sealed class Course
+public sealed class CourseWithEvents
 {
     public Guid Id { get; }
     public string Title { get; }
     public string Description { get; }
     public int DurationInDays { get; }
 
-    public Course(
+    public IReadOnlyList<CourseEvent> CourseEvents { get; }
+
+    public CourseWithEvents(
         Guid id,
         string title,
         string description,
-        int durationInDays
-        )
+        int durationInDays,
+        IEnumerable<CourseEvent>? courseEvents = null)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("Course id cannot be empty.", nameof(id));
@@ -29,5 +31,6 @@ public sealed class Course
         Title = title.Trim();
         Description = description.Trim();
         DurationInDays = durationInDays;
+        CourseEvents = courseEvents?.ToList() ?? [];
     }
 }

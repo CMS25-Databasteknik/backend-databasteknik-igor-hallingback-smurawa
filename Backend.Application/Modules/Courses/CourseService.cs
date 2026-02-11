@@ -120,13 +120,13 @@ namespace Backend.Application.Modules.Courses
             }
         }
 
-        public async Task<CourseResult> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken = default)
+        public async Task<CourseWithEventsResult> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken = default)
         {
             try
             {
                 if (courseId == Guid.Empty)
                 {
-                    return new CourseResult
+                    return new CourseWithEventsResult
                     {
                         Success = false,
                         Message = "Course ID cannot be empty."
@@ -137,14 +137,14 @@ namespace Backend.Application.Modules.Courses
 
                 if (course == null)
                 {
-                    return new CourseResult
+                    return new CourseWithEventsResult
                     {
                         Success = false,
                         Message = $"Course with ID '{courseId}' not found."
                     };
                 }
 
-                return new CourseResult
+                return new CourseWithEventsResult
                 {
                     Success = true,
                     Result = course,
@@ -153,7 +153,7 @@ namespace Backend.Application.Modules.Courses
             }
             catch (Exception ex)
             {
-                return new CourseResult
+                return new CourseWithEventsResult
                 {
                     Success = false,
                     Message = $"An error occurred while retrieving the course: {ex.Message}"
@@ -224,8 +224,8 @@ namespace Backend.Application.Modules.Courses
                     course.Id,
                     course.Title,
                     course.Description,
-                    course.DurationInDays,
-                    existingCourse.CourseEvents);
+                    course.DurationInDays
+                    );
 
                 var result = await _courseRepository.UpdateCourseAsync(updatedCourse, cancellationToken);
 
