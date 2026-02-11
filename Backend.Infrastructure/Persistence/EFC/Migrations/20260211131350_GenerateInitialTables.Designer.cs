@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Infrastructure.Persistence.EFC.Migrations
 {
     [DbContext(typeof(CoursesOnlineDbContext))]
-    [Migration("20260210191326_GenerateInitialTables")]
+    [Migration("20260211131350_GenerateInitialTables")]
     partial class GenerateInitialTables
     {
         /// <inheritdoc />
