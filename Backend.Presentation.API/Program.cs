@@ -15,7 +15,7 @@ public partial class Program
         builder.Services.AddOpenApi();
         builder.Services.AddCors();
 
-        builder.Services.AddInfrastructureServices(builder.Configuration);
+        builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
         builder.Services.AddApplication(builder.Configuration, builder.Environment);
 
         var app = builder.Build();
