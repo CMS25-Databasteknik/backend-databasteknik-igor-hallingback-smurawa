@@ -15,12 +15,16 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
         public async Task<Course> CreateCourseAsync(Course course, CancellationToken cancellationToken)
         {
+            var date = DateTime.UtcNow;
             var entity = new CourseEntity
             {
                 Id = course.Id,
                 Title = course.Title,
                 Description = course.Description,
-                DurationInDays = course.DurationInDays
+                DurationInDays = course.DurationInDays,
+                CreatedAtUtc = date,
+                ModifiedAtUtc = date,
+                Concurrency = new byte[8]
             };
 
             _context.Courses.Add(entity);
@@ -83,10 +87,11 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             if (entity == null)
                 throw new KeyNotFoundException($"Course '{course.Id}' not found.");
 
+            var date = DateTime.UtcNow;
             entity.Title = course.Title;
             entity.Description = course.Description;
             entity.DurationInDays = course.DurationInDays;
-            entity.ModifiedAtUtc = DateTime.UtcNow;
+            entity.ModifiedAtUtc = date;
 
             await _context.SaveChangesAsync(cancellationToken);
 

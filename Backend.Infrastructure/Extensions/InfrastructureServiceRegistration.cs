@@ -3,6 +3,7 @@ using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Infrastructure.Persistence;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,9 +24,31 @@ public static class InfrastructureServiceRegistration
 
             if (env.IsDevelopment())
             {
-                var devDbbConfig = config.GetConnectionString("DevelopmentDatabase") ?? throw new InvalidOperationException("Connection string 'CoursesOnlineDatabase' not found.");
 
-                options.UseInMemoryDatabase(devDbbConfig);
+                var useInMemoryDb = config.GetValue<bool>("DatabaseOptions:UseInMemory");
+
+                if (useInMemoryDb)
+                {
+                    var devDbbConfig = config.GetConnectionString("DevelopmentDatabase") ?? throw new InvalidOperationException("Connection string 'CoursesOnlineDatabase' not found.");
+
+                    options.UseInMemoryDatabase(devDbbConfig);
+                }
+
+                else
+                {
+                    services.AddSingleton<SqliteConnection>(_ =>
+                    {
+                        var conn = new SqliteConnection("DataSource=:memory:;Cache=Shared");
+                        conn.Open();
+                        return conn;
+                    });
+
+                    services.AddDbContext<CoursesOnlineDbContext>((serviceProvider, options) =>
+                    {
+                        var conn = serviceProvider.GetRequiredService<SqliteConnection>();
+                        options.UseSqlite(conn);
+                    });
+                }
             }
             else
             {

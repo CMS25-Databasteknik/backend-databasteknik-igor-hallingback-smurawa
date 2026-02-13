@@ -2,13 +2,15 @@ using Backend.Application.Extensions;
 using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Infrastructure.Extensions;
+using Backend.Infrastructure.Persistence;
 using Backend.Presentation.API.Models.Course;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Presentation.API;
 
 public partial class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,25 @@ public partial class Program
         builder.Services.AddApplication(builder.Configuration, builder.Environment);
 
         var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            var useInMemoryDatabase = app.Configuration.GetValue<bool>("DatabaseOptions:UseInMemory");
+
+            if (!useInMemoryDatabase)
+            {
+
+                using var scope = app.Services.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+                await db.Database.EnsureCreatedAsync();
+            }
+        }
+        if (!app.Environment.IsDevelopment())
+        {
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            await db.Database.MigrateAsync();
+        }
 
         app.MapOpenApi();
         app.UseHttpsRedirection();
