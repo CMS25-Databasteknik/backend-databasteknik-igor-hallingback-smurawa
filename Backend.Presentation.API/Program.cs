@@ -2,6 +2,7 @@ using Backend.Application.Extensions;
 using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Infrastructure.Extensions;
+using Backend.Presentation.API.Models.Course;
 
 namespace Backend.Presentation.API;
 
@@ -31,22 +32,52 @@ public partial class Program
             var response = await courseService.GetAllCoursesAsync(cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response.Message);
+                return Results.BadRequest(response);
 
-            return Results.Ok(response.Result);
-        })
-        .WithName("GetAllCourses");
+            return Results.Ok(response);
+        }).WithName("GetAllCourses");
 
-        app.MapPost("/api/courses", async (CreateCourseInput createCourseInput, ICourseService courseService, CancellationToken cancellationToken) =>
+        app.MapGet("/api/courses/{id:guid}", async (Guid id, ICourseService courseService, CancellationToken cancellationToken) =>
         {
-            var response = await courseService.CreateCourseAsync(createCourseInput, cancellationToken);
+            var response = await courseService.GetCourseByIdAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.Problem(detail: response.Message, statusCode: response.StatusCode);
+                return Results.BadRequest(response);
 
-            return Results.Created($"/api/courses/{response.Result?.Id}", response.Result);
-        })
-        .WithName("CreateCourse");
+            return Results.Ok(response);
+        }).WithName("GetCourseById");
+
+        app.MapPost("/api/courses", async (CreateCourseRequest request, ICourseService courseService, CancellationToken cancellationToken) =>
+        {
+            var input = new CreateCourseInput(request.Title, request.Description, request.DurationInDays);
+            var response = await courseService.CreateCourseAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/api/courses/{response.Result?.Id}", response);
+        }).WithName("CreateCourse");
+
+        app.MapPut("/api/courses/{id:guid}", async (Guid id, UpdateCourseRequest request, ICourseService courseService, CancellationToken cancellationToken) =>
+        {
+            var input = new UpdateCourseInput(id, request.Title, request.Description, request.DurationInDays);
+            var response = await courseService.UpdateCourseAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("UpdateCourse");
+
+        app.MapDelete("/api/courses/{id:guid}", async (Guid id, ICourseService courseService, CancellationToken cancellationToken) =>
+        {
+            var response = await courseService.DeleteCourseAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("DeleteCourse");
 
         app.Run();
     }

@@ -1,5 +1,4 @@
 ﻿using Backend.Domain.Modules.Courses.Models;
-using Backend.Domain.Modules.CourseEvents.Models;
 
 namespace Backend.Application.Modules.Courses.Outputs;
 
@@ -17,8 +16,7 @@ public sealed class CourseResult : Result
 }
 public sealed class CourseWithEventsResult : Result
 {
-    public Course? Course { get; set; }
-    public IEnumerable<CourseEvent> Events { get; set; } = [];
+    public CourseWithEvents? Result { get; set; }
 }
 
 public sealed class CourseListResult : Result

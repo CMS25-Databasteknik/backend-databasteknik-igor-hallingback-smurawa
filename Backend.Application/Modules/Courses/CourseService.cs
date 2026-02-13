@@ -2,7 +2,6 @@ using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.Courses.Outputs;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
-using Backend.Domain.Modules.CourseEvents.Models;
 
 namespace Backend.Application.Modules.Courses
 {
@@ -107,6 +106,7 @@ namespace Backend.Application.Modules.Courses
                 return new CourseListResult
                 {
                     Success = true,
+                    StatusCode = 200,
                     Result = courses,
                     Message = $"Retrieved {courses.Count()} course(s) successfully."
                 };
@@ -116,6 +116,7 @@ namespace Backend.Application.Modules.Courses
                 return new CourseListResult
                 {
                     Success = false,
+                    StatusCode = 500,
                     Message = $"An error occurred while retrieving courses: {ex.Message}"
                 };
             }
@@ -130,6 +131,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseWithEventsResult
                     {
                         Success = false,
+                        StatusCode = 400,
                         Message = "Course ID cannot be empty."
                     };
                 }
@@ -141,6 +143,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseWithEventsResult
                     {
                         Success = false,
+                        StatusCode = 404,
                         Message = $"Course with ID '{courseId}' not found."
                     };
                 }
@@ -148,8 +151,8 @@ namespace Backend.Application.Modules.Courses
                 return new CourseWithEventsResult
                 {
                     Success = true,
-                    Course = result.Value.Course,
-                    Events = result.Value.Events,
+                    StatusCode = 200,
+                    Result = result,
                     Message = "Course retrieved successfully."
                 };
             }
@@ -158,6 +161,7 @@ namespace Backend.Application.Modules.Courses
                 return new CourseWithEventsResult
                 {
                     Success = false,
+                    StatusCode = 500,
                     Message = $"An error occurred while retrieving the course: {ex.Message}"
                 };
             }
@@ -172,6 +176,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 400,
                         Message = "Course cannot be null."
                     };
                 }
@@ -181,6 +186,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 400,
                         Message = "Course ID cannot be empty."
                     };
                 }
@@ -190,6 +196,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 400,
                         Message = "Course title cannot be empty or whitespace."
                     };
                 }
@@ -199,6 +206,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 400,
                         Message = "Course description cannot be empty or whitespace."
                     };
                 }
@@ -208,6 +216,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 400,
                         Message = "Course duration must be greater than zero."
                     };
                 }
@@ -218,6 +227,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 404,
                         Message = $"Course with ID '{course.Id}' not found."
                     };
                 }
@@ -236,6 +246,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseResult
                     {
                         Success = false,
+                        StatusCode = 500,
                         Message = "Failed to update course."
                     };
                 }
@@ -243,6 +254,7 @@ namespace Backend.Application.Modules.Courses
                 return new CourseResult
                 {
                     Success = true,
+                    StatusCode = 200,
                     Result = result,
                     Message = "Course updated successfully."
                 };
@@ -252,6 +264,7 @@ namespace Backend.Application.Modules.Courses
                 return new CourseResult
                 {
                     Success = false,
+                    StatusCode = 409,
                     Message = "The course was modified by another user. Please refresh and try again."
                 };
             }
@@ -260,6 +273,7 @@ namespace Backend.Application.Modules.Courses
                 return new CourseResult
                 {
                     Success = false,
+                    StatusCode = 500,
                     Message = $"An error occurred while updating the course: {ex.Message}"
                 };
             }
@@ -274,6 +288,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseDeleteResult
                     {
                         Success = false,
+                        StatusCode = 400,
                         Message = "Course ID cannot be empty.",
                         Result = false
                     };
@@ -285,6 +300,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseDeleteResult
                     {
                         Success = false,
+                        StatusCode = 404,
                         Message = $"Course with ID '{courseId}' not found.",
                         Result = false
                     };
@@ -297,6 +313,7 @@ namespace Backend.Application.Modules.Courses
                     return new CourseDeleteResult
                     {
                         Success = false,
+                        StatusCode = 500,
                         Message = "Failed to delete course.",
                         Result = false
                     };
@@ -305,6 +322,7 @@ namespace Backend.Application.Modules.Courses
                 return new CourseDeleteResult
                 {
                     Success = true,
+                    StatusCode = 200,
                     Message = "Course deleted successfully.",
                     Result = true
                 };
@@ -314,6 +332,7 @@ namespace Backend.Application.Modules.Courses
                 return new CourseDeleteResult
                 {
                     Success = false,
+                    StatusCode = 409,
                     Message = "Cannot delete course because it has associated course events. Please delete the course events first.",
                     Result = false
                 };
@@ -323,6 +342,7 @@ namespace Backend.Application.Modules.Courses
                 return new CourseDeleteResult
                 {
                     Success = false,
+                    StatusCode = 500,
                     Message = $"An error occurred while deleting the course: {ex.Message}",
                     Result = false
                 };
