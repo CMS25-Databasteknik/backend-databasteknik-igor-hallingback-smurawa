@@ -19,44 +19,44 @@ public static class InfrastructureServiceRegistration
         ArgumentNullException.ThrowIfNull(config);
         ArgumentNullException.ThrowIfNull(env);
 
-        services.AddDbContext<CoursesOnlineDbContext>(options =>
+
+        if (env.IsDevelopment())
         {
+            var useInMemoryDb = config.GetValue<bool>("DatabaseOptions:UseInMemory");
 
-            if (env.IsDevelopment())
+            if (useInMemoryDb)
             {
-
-                var useInMemoryDb = config.GetValue<bool>("DatabaseOptions:UseInMemory");
-
-                if (useInMemoryDb)
-                {
-                    var devDbbConfig = config.GetConnectionString("DevelopmentDatabase") ?? throw new InvalidOperationException("Connection string 'CoursesOnlineDatabase' not found.");
-
-                    options.UseInMemoryDatabase(devDbbConfig);
-                }
-
-                else
-                {
-                    services.AddSingleton<SqliteConnection>(_ =>
-                    {
-                        var conn = new SqliteConnection("DataSource=:memory:;Cache=Shared");
-                        conn.Open();
-                        return conn;
-                    });
-
-                    services.AddDbContext<CoursesOnlineDbContext>((serviceProvider, options) =>
-                    {
-                        var conn = serviceProvider.GetRequiredService<SqliteConnection>();
-                        options.UseSqlite(conn);
-                    });
-                }
+                services.AddDbContext<CoursesOnlineDbContext>(options => options.UseInMemoryDatabase("CoursesOnlineDatabase"));
             }
+
             else
             {
-                var prodDbConfig = config.GetConnectionString("CoursesOnlineDatabase") ?? throw new InvalidOperationException("Connection string 'CoursesOnlineDatabase' not found.");
+                services.AddSingleton<SqliteConnection>(_ =>
+                {
+                    var conn = new SqliteConnection("DataSource=:memory:;Cache=Shared");
+                    conn.Open();
+                    return conn;
+                });
 
-                options.UseSqlServer(prodDbConfig);
+                services.AddDbContext<CoursesOnlineDbContext>((serviceProvider, options) =>
+                {
+                    var conn = serviceProvider.GetRequiredService<SqliteConnection>();
+                    options.UseSqlite(conn);
+                });
             }
-        });
+        }
+
+        else
+        {
+            var prodDbConfig = config.GetConnectionString("CoursesOnlineDatabase") ?? throw new InvalidOperationException("Connection string 'CoursesOnlineDatabase' not found.");
+
+            services.AddDbContext<CoursesOnlineDbContext>(options =>
+            {
+                options.UseSqlServer(prodDbConfig);
+            });
+        }
+
+
 
         services.AddScoped<ICoursesRepository, CourseRepository>();
         services.AddScoped<ICourseEventsRepository, CourseEventRepository>();

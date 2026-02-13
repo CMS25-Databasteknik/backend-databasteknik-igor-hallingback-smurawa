@@ -15,16 +15,16 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
         public async Task<Course> CreateCourseAsync(Course course, CancellationToken cancellationToken)
         {
-            var date = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
             var entity = new CourseEntity
             {
                 Id = course.Id,
                 Title = course.Title,
                 Description = course.Description,
                 DurationInDays = course.DurationInDays,
-                CreatedAtUtc = date,
-                ModifiedAtUtc = date,
-                Concurrency = new byte[8]
+                Concurrency = new byte[8],
+                CreatedAtUtc = now,
+                ModifiedAtUtc = now
             };
 
             _context.Courses.Add(entity);

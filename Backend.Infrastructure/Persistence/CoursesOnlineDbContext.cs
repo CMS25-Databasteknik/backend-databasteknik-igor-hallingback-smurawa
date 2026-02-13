@@ -16,20 +16,35 @@ namespace Backend.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            var isSqlServer = Database.IsSqlServer();
+
             // ========================================
             // INDEPENDENT ENTITIES (No foreign keys)
             // ========================================
 
             modelBuilder.Entity<CourseEntity>(entity =>
             {
-                entity.ToTable("Courses", tb =>
-                    tb.HasCheckConstraint("CK_Courses_Title_NotEmpty", "LTRIM(RTRIM([Title])) <> ''"));
+                entity.ToTable("Courses");
+
+                if (isSqlServer)
+                {
+                    entity.ToTable(tb =>
+                        tb.HasCheckConstraint("CK_Courses_Title_NotEmpty", "LTRIM(RTRIM([Title])) <> ''"));
+                }
 
                 entity.HasKey(e => e.Id).HasName("PK_Courses_Id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd()
-                    .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Courses_Id");
+                if (isSqlServer)
+                {
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Courses_Id");
+                }
+                else
+                {
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd();
+                }
 
                 entity.Property(e => e.Title)
                     .HasMaxLength(100)
@@ -42,20 +57,41 @@ namespace Backend.Infrastructure.Persistence
                 entity.Property(e => e.DurationInDays)
                     .IsRequired();
 
-                entity.Property(e => e.Concurrency)
-                    .IsRowVersion()
-                    .IsConcurrencyToken()
-                    .IsRequired();
+                if (isSqlServer)
+                {
+                    entity.Property(e => e.Concurrency)
+                        .IsRowVersion()
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .IsRequired();
+                }
+                else
+                {
+                    entity.Property(e => e.Concurrency)
+                        .IsConcurrencyToken()
+                        .IsRequired();
+                }
 
-                entity.Property(e => e.CreatedAtUtc)
-                    .HasPrecision(0)
-                    .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Courses_CreatedAtUtc")
-                    .ValueGeneratedOnAdd();
+                if (isSqlServer)
+                {
+                    entity.Property(e => e.CreatedAtUtc)
+                        .HasPrecision(0)
+                        .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Courses_CreatedAtUtc")
+                        .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.ModifiedAtUtc)
-                    .HasPrecision(0)
-                    .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Courses_ModifiedAtUtc")
-                    .ValueGeneratedOnAddOrUpdate();
+                    entity.Property(e => e.ModifiedAtUtc)
+                        .HasPrecision(0)
+                        .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Courses_ModifiedAtUtc")
+                        .ValueGeneratedOnAddOrUpdate();
+                }
+                else
+                {
+                    entity.Property(e => e.CreatedAtUtc)
+                        .IsRequired();
+
+                    entity.Property(e => e.ModifiedAtUtc)
+                        .IsRequired();
+                }
 
                 entity.HasIndex(e => e.Title)
                     .HasDatabaseName("IX_Courses_Title");

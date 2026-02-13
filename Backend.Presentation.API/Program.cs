@@ -3,6 +3,7 @@ using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Persistence;
+using Backend.Infrastructure.Persistence.EFC.Seeders;
 using Backend.Presentation.API.Models.Course;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,7 @@ public partial class Program
                 using var scope = app.Services.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
                 await db.Database.EnsureCreatedAsync();
+                await SeedData.SeedDataAsync(db);
             }
         }
         if (!app.Environment.IsDevelopment())
