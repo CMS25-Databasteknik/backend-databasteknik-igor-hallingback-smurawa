@@ -1,34 +1,20 @@
-﻿using Backend.Domain.Modules.Courses.Models;
-using Backend.Domain.Modules.CourseEvents.Models;
+﻿using Backend.Application.Common;
+using Backend.Domain.Modules.Courses.Models;
 
 namespace Backend.Application.Modules.Courses.Outputs;
 
-public class Result
+public sealed class CourseResult : ResultCommon<Course>
 {
-    public bool Success { get; set; }
-    public int StatusCode { get; set; }
-    public string? Message { get; set; }
 }
 
-public sealed class CourseResult : Result
+public sealed class CourseWithEventsResult : ResultCommon<CourseWithEvents>
 {
-    public Course? Result { get; set; }
-
-}
-public sealed class CourseWithEventsResult : Result
-{
-    public Course? Course { get; set; }
-    public IEnumerable<CourseEvent> Events { get; set; } = [];
 }
 
-public sealed class CourseListResult : Result
+public sealed class CourseListResult : ResultCommon<IEnumerable<Course>>
 {
-    public IEnumerable<Course> Result { get; set; } = [];
-
 }
 
-public sealed class CourseDeleteResult : Result
+public sealed class CourseDeleteResult : ResultCommon<bool>
 {
-    public bool Result { get; set; }
-
 }

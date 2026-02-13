@@ -1,6 +1,6 @@
-﻿using Backend.Domain.Modules.Courses.Contracts;
+﻿using Backend.Domain.Modules.CourseEvents.Models;
+using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
-using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,7 +52,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             return [.. entities.Select(ToModel)];
         }
 
-        public async Task<(Course Course, IReadOnlyList<CourseEvent> Events)?> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken)
+        public async Task<CourseWithEvents?> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken)
         {
             var entity = await _context.Courses
                 .AsNoTracking()
@@ -73,7 +73,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                     ce.CourseEventTypeId))
                 .ToList();
 
-            return (course, events);
+            return new CourseWithEvents(course, events);
         }
 
         public async Task<Course?> UpdateCourseAsync(Course course, CancellationToken cancellationToken)
