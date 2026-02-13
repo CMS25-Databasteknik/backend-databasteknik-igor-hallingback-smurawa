@@ -24,27 +24,7 @@ namespace Backend.Infrastructure.Persistence
 
             modelBuilder.Entity<CourseEntity>(entity =>
             {
-                entity.ToTable("Courses");
-
-                if (isSqlServer)
-                {
-                    entity.ToTable(tb =>
-                        tb.HasCheckConstraint("CK_Courses_Title_NotEmpty", "LTRIM(RTRIM([Title])) <> ''"));
-                }
-
                 entity.HasKey(e => e.Id).HasName("PK_Courses_Id");
-
-                if (isSqlServer)
-                {
-                    entity.Property(e => e.Id)
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Courses_Id");
-                }
-                else
-                {
-                    entity.Property(e => e.Id)
-                        .ValueGeneratedOnAdd();
-                }
 
                 entity.Property(e => e.Title)
                     .HasMaxLength(100)
@@ -57,23 +37,30 @@ namespace Backend.Infrastructure.Persistence
                 entity.Property(e => e.DurationInDays)
                     .IsRequired();
 
+                entity.HasIndex(e => e.Title)
+                    .HasDatabaseName("IX_Courses_Title");
+
+                entity.HasMany(c => c.CourseEvents)
+                    .WithOne(ce => ce.Course)
+                    .HasForeignKey(ce => ce.CourseId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
                 if (isSqlServer)
                 {
+                    // SQL Server specific configuration
+                    entity.ToTable("Courses", tb =>
+                        tb.HasCheckConstraint("CK_Courses_Title_NotEmpty", "LTRIM(RTRIM([Title])) <> ''"));
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Courses_Id");
+
                     entity.Property(e => e.Concurrency)
                         .IsRowVersion()
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .IsRequired();
-                }
-                else
-                {
-                    entity.Property(e => e.Concurrency)
-                        .IsConcurrencyToken()
-                        .IsRequired();
-                }
 
-                if (isSqlServer)
-                {
                     entity.Property(e => e.CreatedAtUtc)
                         .HasPrecision(0)
                         .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Courses_CreatedAtUtc")
@@ -86,31 +73,27 @@ namespace Backend.Infrastructure.Persistence
                 }
                 else
                 {
+                    // SQLite/InMemory configuration
+                    entity.ToTable("Courses");
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd();
+
+                    entity.Property(e => e.Concurrency)
+                        .IsConcurrencyToken()
+                        .IsRequired();
+
                     entity.Property(e => e.CreatedAtUtc)
                         .IsRequired();
 
                     entity.Property(e => e.ModifiedAtUtc)
                         .IsRequired();
                 }
-
-                entity.HasIndex(e => e.Title)
-                    .HasDatabaseName("IX_Courses_Title");
-
-                entity.HasMany(c => c.CourseEvents)
-                    .WithOne(ce => ce.Course)
-                    .HasForeignKey(ce => ce.CourseId)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<CourseEventTypeEntity>(entity =>
             {
-                entity.ToTable("CourseEventTypes", tb =>
-                    tb.HasCheckConstraint("CK_CourseEventTypes_TypeName_NotEmpty", "LTRIM(RTRIM([TypeName])) <> ''"));
-
                 entity.HasKey(e => e.Id).HasName("PK_CourseEventTypes_Id");
-
-                entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.TypeName)
                     .HasMaxLength(20)
@@ -119,18 +102,29 @@ namespace Backend.Infrastructure.Persistence
                 entity.HasIndex(e => e.TypeName)
                     .IsUnique()
                     .HasDatabaseName("IX_CourseEventTypes_TypeName");
+
+                if (isSqlServer)
+                {
+                    // SQL Server specific configuration
+                    entity.ToTable("CourseEventTypes", tb =>
+                        tb.HasCheckConstraint("CK_CourseEventTypes_TypeName_NotEmpty", "LTRIM(RTRIM([TypeName])) <> ''"));
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd();
+                }
+                else
+                {
+                    // SQLite/InMemory configuration
+                    entity.ToTable("CourseEventTypes");
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd();
+                }
             });
 
             modelBuilder.Entity<InstructorEntity>(entity =>
             {
-                entity.ToTable("Instructors", tb =>
-                    tb.HasCheckConstraint("CK_Instructors_Name_NotEmpty", "LTRIM(RTRIM([Name])) <> ''"));
-
                 entity.HasKey(e => e.Id).HasName("PK_Instructors_Id");
-
-                entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd()
-                    .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Instructors_Id");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(50)
@@ -138,13 +132,29 @@ namespace Backend.Infrastructure.Persistence
 
                 entity.HasIndex(e => e.Name)
                     .HasDatabaseName("IX_Instructors_Name");
+
+                if (isSqlServer)
+                {
+                    // SQL Server specific configuration
+                    entity.ToTable("Instructors", tb =>
+                        tb.HasCheckConstraint("CK_Instructors_Name_NotEmpty", "LTRIM(RTRIM([Name])) <> ''"));
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Instructors_Id");
+                }
+                else
+                {
+                    // SQLite/InMemory configuration
+                    entity.ToTable("Instructors");
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd();
+                }
             });
 
             modelBuilder.Entity<LocationEntity>(entity =>
             {
-                entity.ToTable("Locations", tb =>
-                    tb.HasCheckConstraint("CK_Locations_PostalCode_NotEmpty", "LTRIM(RTRIM([PostalCode])) <> ''"));
-
                 entity.HasKey(e => e.Id).HasName("PK_Locations_Id");
 
                 entity.Property(e => e.Id)
@@ -165,18 +175,23 @@ namespace Backend.Infrastructure.Persistence
 
                 entity.HasIndex(e => e.PostalCode)
                     .HasDatabaseName("IX_Locations_PostalCode");
+
+                if (isSqlServer)
+                {
+                    // SQL Server specific configuration
+                    entity.ToTable("Locations", tb =>
+                        tb.HasCheckConstraint("CK_Locations_PostalCode_NotEmpty", "LTRIM(RTRIM([PostalCode])) <> ''"));
+                }
+                else
+                {
+                    // SQLite/InMemory configuration
+                    entity.ToTable("Locations");
+                }
             });
 
             modelBuilder.Entity<ParticipantEntity>(entity =>
             {
-                entity.ToTable("Participants", tb =>
-                    tb.HasCheckConstraint("CK_Participants_Email_NotEmpty", "LTRIM(RTRIM([Email])) <> ''"));
-
                 entity.HasKey(e => e.Id).HasName("PK_Participants_Id");
-
-                entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd()
-                    .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Participants_Id");
 
                 entity.Property(e => e.FirstName)
                     .HasMaxLength(50)
@@ -194,24 +209,53 @@ namespace Backend.Infrastructure.Persistence
                     .HasMaxLength(20)
                     .IsRequired();
 
-                entity.Property(e => e.Concurrency)
-                    .IsRowVersion()
-                    .IsConcurrencyToken()
-                    .IsRequired();
-
-                entity.Property(e => e.CreatedAtUtc)
-                    .HasPrecision(0)
-                    .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Participants_CreatedAtUtc")
-                    .ValueGeneratedOnAdd();
-
-                entity.Property(e => e.ModifiedAtUtc)
-                    .HasPrecision(0)
-                    .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Participants_ModifiedAtUtc")
-                    .ValueGeneratedOnAddOrUpdate();
-
                 entity.HasIndex(e => e.Email)
                     .IsUnique()
                     .HasDatabaseName("IX_Participants_Email");
+
+                if (isSqlServer)
+                {
+                    // SQL Server specific configuration
+                    entity.ToTable("Participants", tb =>
+                        tb.HasCheckConstraint("CK_Participants_Email_NotEmpty", "LTRIM(RTRIM([Email])) <> ''"));
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Participants_Id");
+
+                    entity.Property(e => e.Concurrency)
+                        .IsRowVersion()
+                        .IsConcurrencyToken()
+                        .IsRequired();
+
+                    entity.Property(e => e.CreatedAtUtc)
+                        .HasPrecision(0)
+                        .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Participants_CreatedAtUtc")
+                        .ValueGeneratedOnAdd();
+
+                    entity.Property(e => e.ModifiedAtUtc)
+                        .HasPrecision(0)
+                        .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Participants_ModifiedAtUtc")
+                        .ValueGeneratedOnAddOrUpdate();
+                }
+                else
+                {
+                    // SQLite/InMemory configuration
+                    entity.ToTable("Participants");
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd();
+
+                    entity.Property(e => e.Concurrency)
+                        .IsConcurrencyToken()
+                        .IsRequired();
+
+                    entity.Property(e => e.CreatedAtUtc)
+                        .IsRequired();
+
+                    entity.Property(e => e.ModifiedAtUtc)
+                        .IsRequired();
+                }
             });
 
             // ========================================
@@ -245,43 +289,17 @@ namespace Backend.Infrastructure.Persistence
 
             modelBuilder.Entity<CourseEventEntity>(entity =>
             {
-                entity.ToTable("CourseEvents", tb =>
-                {
-                    tb.HasCheckConstraint("CK_CourseEvents_Price", "[Price] >= 0");
-                    tb.HasCheckConstraint("CK_CourseEvents_Seats", "[Seats] > 0");
-                });
-
                 entity.HasKey(e => e.Id).HasName("PK_CourseEvents_Id");
-
-                entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd()
-                    .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_CourseEvents_Id");
 
                 entity.Property(e => e.EventDate)
                     .HasPrecision(0)
                     .IsRequired();
 
                 entity.Property(e => e.Price)
-                    .HasColumnType("money")
                     .IsRequired();
 
                 entity.Property(e => e.Seats)
                     .IsRequired();
-
-                entity.Property(e => e.Concurrency)
-                    .IsRowVersion()
-                    .IsConcurrencyToken()
-                    .IsRequired();
-
-                entity.Property(e => e.CreatedAtUtc)
-                    .HasPrecision(0)
-                    .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseEvents_CreatedAtUtc")
-                    .ValueGeneratedOnAdd();
-
-                entity.Property(e => e.ModifiedAtUtc)
-                    .HasPrecision(0)
-                    .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseEvents_ModifiedAtUtc")
-                    .ValueGeneratedOnAddOrUpdate();
 
                 entity.HasIndex(e => new { e.CourseId, e.EventDate })
                     .HasDatabaseName("IX_CourseEvents_CourseId_EventDate");
@@ -290,6 +308,56 @@ namespace Backend.Infrastructure.Persistence
                     .WithMany(cet => cet.CourseEvents)
                     .HasForeignKey(ce => ce.CourseEventTypeId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                if (isSqlServer)
+                {
+                    // SQL Server specific configuration
+                    entity.ToTable("CourseEvents", tb =>
+                    {
+                        tb.HasCheckConstraint("CK_CourseEvents_Price", "[Price] >= 0");
+                        tb.HasCheckConstraint("CK_CourseEvents_Seats", "[Seats] > 0");
+                    });
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_CourseEvents_Id");
+
+                    entity.Property(e => e.Price)
+                        .HasColumnType("money");
+
+                    entity.Property(e => e.Concurrency)
+                        .IsRowVersion()
+                        .IsConcurrencyToken()
+                        .IsRequired();
+
+                    entity.Property(e => e.CreatedAtUtc)
+                        .HasPrecision(0)
+                        .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseEvents_CreatedAtUtc")
+                        .ValueGeneratedOnAdd();
+
+                    entity.Property(e => e.ModifiedAtUtc)
+                        .HasPrecision(0)
+                        .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseEvents_ModifiedAtUtc")
+                        .ValueGeneratedOnAddOrUpdate();
+                }
+                else
+                {
+                    // SQLite/InMemory configuration
+                    entity.ToTable("CourseEvents");
+
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd();
+
+                    entity.Property(e => e.Concurrency)
+                        .IsConcurrencyToken()
+                        .IsRequired();
+
+                    entity.Property(e => e.CreatedAtUtc)
+                        .IsRequired();
+
+                    entity.Property(e => e.ModifiedAtUtc)
+                        .IsRequired();
+                }
             });
 
             modelBuilder.Entity<CourseRegistrationEntity>(entity =>
@@ -298,28 +366,9 @@ namespace Backend.Infrastructure.Persistence
 
                 entity.HasKey(e => e.Id).HasName("PK_CourseRegistrations_Id");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedOnAdd()
-                    .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_CourseRegistrations_Id");
-
-                entity.Property(e => e.RegistrationDate)
-                    .HasPrecision(0)
-                    .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseRegistrations_RegistrationDate")
-                    .ValueGeneratedOnAdd();
-
                 entity.Property(e => e.IsPaid)
                     .HasDefaultValue(false)
                     .IsRequired();
-
-                entity.Property(e => e.Concurrency)
-                    .IsRowVersion()
-                    .IsConcurrencyToken()
-                    .IsRequired();
-
-                entity.Property(e => e.ModifiedAtUtc)
-                    .HasPrecision(0)
-                    .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseRegistrations_ModifiedAtUtc")
-                    .ValueGeneratedOnAddOrUpdate();
 
                 entity.HasIndex(e => new { e.ParticipantId, e.CourseEventId })
                     .IsUnique()
@@ -334,6 +383,45 @@ namespace Backend.Infrastructure.Persistence
                     .WithMany(ce => ce.Registrations)
                     .HasForeignKey(cr => cr.CourseEventId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                if (isSqlServer)
+                {
+                    // SQL Server specific configuration
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_CourseRegistrations_Id");
+
+                    entity.Property(e => e.RegistrationDate)
+                        .HasPrecision(0)
+                        .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseRegistrations_RegistrationDate")
+                        .ValueGeneratedOnAdd();
+
+                    entity.Property(e => e.Concurrency)
+                        .IsRowVersion()
+                        .IsConcurrencyToken()
+                        .IsRequired();
+
+                    entity.Property(e => e.ModifiedAtUtc)
+                        .HasPrecision(0)
+                        .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseRegistrations_ModifiedAtUtc")
+                        .ValueGeneratedOnAddOrUpdate();
+                }
+                else
+                {
+                    // SQLite/InMemory configuration
+                    entity.Property(e => e.Id)
+                        .ValueGeneratedOnAdd();
+
+                    entity.Property(e => e.RegistrationDate)
+                        .IsRequired();
+
+                    entity.Property(e => e.Concurrency)
+                        .IsConcurrencyToken()
+                        .IsRequired();
+
+                    entity.Property(e => e.ModifiedAtUtc)
+                        .IsRequired();
+                }
             });
 
             // ========================================
