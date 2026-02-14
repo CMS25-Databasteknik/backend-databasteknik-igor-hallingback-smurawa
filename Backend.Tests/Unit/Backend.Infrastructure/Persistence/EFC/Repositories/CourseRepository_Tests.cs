@@ -5,7 +5,7 @@ using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Backend.Infrastructure.Tests.Persistence.EFC.Repositories;
+namespace Backend.Tests.Unit.Backend.Infrastructure.Persistence.EFC.Repositories;
 
 public class CourseRepository_Tests
 {
