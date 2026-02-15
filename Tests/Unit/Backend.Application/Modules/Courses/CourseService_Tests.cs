@@ -666,6 +666,9 @@ public class CourseService_Tests
         mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
+        mockRepo.HasCourseEventsAsync(courseId, Arg.Any<CancellationToken>())
+            .Returns(false);
+
         mockRepo.DeleteCourseAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(true);
 
@@ -738,8 +741,8 @@ public class CourseService_Tests
         mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
-        mockRepo.DeleteCourseAsync(courseId, Arg.Any<CancellationToken>())
-            .Returns(Task.FromException<bool>(new InvalidOperationException("Cannot delete course with associated course events")));
+        mockRepo.HasCourseEventsAsync(courseId, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var service = new CourseService(mockRepo);
 
@@ -750,7 +753,10 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(409, result.StatusCode);
         Assert.False(result.Result);
-        Assert.Contains("Cannot delete course because it has associated course events", result.Message);
+        Assert.Contains("Cannot delete course", result.Message);
+        Assert.Contains("has associated course events", result.Message);
+
+        await mockRepo.DidNotReceive().DeleteCourseAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -764,6 +770,9 @@ public class CourseService_Tests
 
         mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
+
+        mockRepo.HasCourseEventsAsync(courseId, Arg.Any<CancellationToken>())
+            .Returns(false);
 
         mockRepo.DeleteCourseAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<bool>(new Exception("Database error")));
@@ -792,6 +801,9 @@ public class CourseService_Tests
 
         mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
+
+        mockRepo.HasCourseEventsAsync(courseId, Arg.Any<CancellationToken>())
+            .Returns(false);
 
         mockRepo.DeleteCourseAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(false);

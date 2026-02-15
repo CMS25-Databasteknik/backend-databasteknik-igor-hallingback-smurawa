@@ -9,5 +9,6 @@ namespace Backend.Domain.Modules.Courses.Contracts
         Task<Course?> UpdateCourseAsync(Course course, CancellationToken cancellationToken);
         Task<IReadOnlyList<Course>> GetAllCoursesAsync(CancellationToken cancellationToken);
         Task<bool> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken);
+        Task<bool> HasCourseEventsAsync(Guid courseId, CancellationToken cancellationToken);
     }
 }

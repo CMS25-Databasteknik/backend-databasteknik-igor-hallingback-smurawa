@@ -9,4 +9,5 @@ public interface ICourseEventTypesRepository
     Task<IReadOnlyList<CourseEventType>> GetAllCourseEventTypesAsync(CancellationToken cancellationToken);
     Task<CourseEventType?> UpdateCourseEventTypeAsync(CourseEventType courseEventType, CancellationToken cancellationToken);
     Task<bool> DeleteCourseEventTypeAsync(int courseEventTypeId, CancellationToken cancellationToken);
+    Task<bool> IsInUseAsync(int courseEventTypeId, CancellationToken cancellationToken);
 }

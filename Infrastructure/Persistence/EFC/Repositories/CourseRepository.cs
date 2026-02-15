@@ -92,5 +92,12 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
             return ToModel(entity);
         }
+
+        public async Task<bool> HasCourseEventsAsync(Guid courseId, CancellationToken cancellationToken)
+        {
+            return await _context.CourseEvents
+                .AsNoTracking()
+                .AnyAsync(ce => ce.CourseId == courseId, cancellationToken);
+        }
     }
 }

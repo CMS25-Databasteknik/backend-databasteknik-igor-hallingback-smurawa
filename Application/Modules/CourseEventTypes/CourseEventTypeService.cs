@@ -245,6 +245,18 @@ public class CourseEventTypeService(ICourseEventTypesRepository courseEventTypeR
                 };
             }
 
+            var isInUse = await _courseEventTypeRepository.IsInUseAsync(courseEventTypeId, cancellationToken);
+            if (isInUse)
+            {
+                return new CourseEventTypeDeleteResult
+                {
+                    Success = false,
+                    StatusCode = 409,
+                    Message = $"Cannot delete course event type with ID '{courseEventTypeId}' because it is being used by one or more course events.",
+                    Result = false
+                };
+            }
+
             var result = await _courseEventTypeRepository.DeleteCourseEventTypeAsync(courseEventTypeId, cancellationToken);
 
             return new CourseEventTypeDeleteResult

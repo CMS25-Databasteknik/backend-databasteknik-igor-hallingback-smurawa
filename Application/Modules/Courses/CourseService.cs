@@ -306,6 +306,18 @@ namespace Backend.Application.Modules.Courses
                     };
                 }
 
+                var hasCourseEvents = await _courseRepository.HasCourseEventsAsync(courseId, cancellationToken);
+                if (hasCourseEvents)
+                {
+                    return new CourseDeleteResult
+                    {
+                        Success = false,
+                        StatusCode = 409,
+                        Message = $"Cannot delete course with ID '{courseId}' because it has associated course events. Please delete the course events first.",
+                        Result = false
+                    };
+                }
+
                 var result = await _courseRepository.DeleteCourseAsync(courseId, cancellationToken);
 
                 if (!result)

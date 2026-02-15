@@ -70,4 +70,11 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context) : ICourse
 
         return ToModel(entity);
     }
+
+    public async Task<bool> IsInUseAsync(int courseEventTypeId, CancellationToken cancellationToken)
+    {
+        return await _context.CourseEvents
+            .AsNoTracking()
+            .AnyAsync(ce => ce.CourseEventTypeId == courseEventTypeId, cancellationToken);
+    }
 }
