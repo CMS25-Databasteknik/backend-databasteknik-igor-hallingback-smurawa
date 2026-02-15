@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories
 {
-    public class CourseRepository(CoursesOnlineDbContext context) : ICoursesRepository
+    public class CourseRepository(CoursesOnlineDbContext context) : ICourseRepository
     {
         private readonly CoursesOnlineDbContext _context = context;
 
@@ -91,6 +91,13 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             await _context.SaveChangesAsync(cancellationToken);
 
             return ToModel(entity);
+        }
+
+        public async Task<bool> HasCourseEventsAsync(Guid courseId, CancellationToken cancellationToken)
+        {
+            return await _context.CourseEvents
+                .AsNoTracking()
+                .AnyAsync(ce => ce.CourseId == courseId, cancellationToken);
         }
     }
 }

@@ -5,9 +5,9 @@ using Backend.Domain.Modules.Courses.Models;
 
 namespace Backend.Application.Modules.Courses
 {
-    public class CourseService(ICoursesRepository courseRepository) : ICourseService
+    public class CourseService(ICourseRepository courseRepository) : ICourseService
     {
-        private readonly ICoursesRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
+        private readonly ICourseRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
 
         public async Task<CourseResult> CreateCourseAsync(CreateCourseInput course, CancellationToken cancellationToken = default)
         {
@@ -302,6 +302,18 @@ namespace Backend.Application.Modules.Courses
                         Success = false,
                         StatusCode = 404,
                         Message = $"Course with ID '{courseId}' not found.",
+                        Result = false
+                    };
+                }
+
+                var hasCourseEvents = await _courseRepository.HasCourseEventsAsync(courseId, cancellationToken);
+                if (hasCourseEvents)
+                {
+                    return new CourseDeleteResult
+                    {
+                        Success = false,
+                        StatusCode = 409,
+                        Message = $"Cannot delete course with ID '{courseId}' because it has associated course events. Please delete the course events first.",
                         Result = false
                     };
                 }
