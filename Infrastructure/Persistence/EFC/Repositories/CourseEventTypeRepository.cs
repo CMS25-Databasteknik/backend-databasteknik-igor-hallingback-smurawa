@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 
-public class CourseEventTypeRepository(CoursesOnlineDbContext context) : ICourseEventTypesRepository
+public class CourseEventTypeRepository(CoursesOnlineDbContext context) : ICourseEventTypeRepository
 {
     private readonly CoursesOnlineDbContext _context = context;
 

@@ -2,7 +2,7 @@ using Backend.Domain.Modules.CourseEvents.Models;
 
 namespace Backend.Domain.Modules.CourseEvents.Contracts
 {
-    public interface ICourseEventsRepository
+    public interface ICourseEventRepository
     {
         Task<CourseEvent> CreateCourseEventAsync(CourseEvent courseEvent, CancellationToken cancellationToken);
         Task<CourseEvent?> GetCourseEventByIdAsync(Guid courseEventId, CancellationToken cancellationToken);

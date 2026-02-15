@@ -14,7 +14,7 @@ public class CourseEventTypeService_Tests
     public async Task CreateCourseEventTypeAsync_Should_Return_Success_When_Valid_Input()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var expectedType = new CourseEventType(1, "Online");
 
         mockRepo.CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
@@ -42,7 +42,7 @@ public class CourseEventTypeService_Tests
     public async Task CreateCourseEventTypeAsync_Should_Return_BadRequest_When_Input_Is_Null()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
 
         // Act
@@ -61,7 +61,7 @@ public class CourseEventTypeService_Tests
     public async Task CreateCourseEventTypeAsync_Should_Return_BadRequest_When_TypeName_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
         var input = new CreateCourseEventTypeInput("");
 
@@ -81,7 +81,7 @@ public class CourseEventTypeService_Tests
     public async Task CreateCourseEventTypeAsync_Should_Return_BadRequest_When_TypeName_Is_Whitespace()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
         var input = new CreateCourseEventTypeInput("   ");
 
@@ -101,7 +101,7 @@ public class CourseEventTypeService_Tests
     public async Task CreateCourseEventTypeAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         mockRepo.CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<CourseEventType>(new Exception("Database error")));
 
@@ -127,7 +127,7 @@ public class CourseEventTypeService_Tests
     public async Task CreateCourseEventTypeAsync_Should_Create_Type_With_Various_Valid_Names(string typeName)
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var expectedType = new CourseEventType(1, typeName);
 
         mockRepo.CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
@@ -161,7 +161,7 @@ public class CourseEventTypeService_Tests
     public async Task GetAllCourseEventTypesAsync_Should_Return_All_Types_When_Types_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var types = new List<CourseEventType>
         {
             new CourseEventType(1, "Online"),
@@ -191,7 +191,7 @@ public class CourseEventTypeService_Tests
     public async Task GetAllCourseEventTypesAsync_Should_Return_Empty_List_When_No_Types_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         mockRepo.GetAllCourseEventTypesAsync(Arg.Any<CancellationToken>())
             .Returns(new List<CourseEventType>());
 
@@ -212,7 +212,7 @@ public class CourseEventTypeService_Tests
     public async Task GetAllCourseEventTypesAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         mockRepo.GetAllCourseEventTypesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException<IReadOnlyList<CourseEventType>>(new Exception("Database connection failed")));
 
@@ -236,7 +236,7 @@ public class CourseEventTypeService_Tests
     public async Task GetCourseEventTypeByIdAsync_Should_Return_Type_When_Type_Exists()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
         var courseEventType = new CourseEventType(typeId, "Online");
 
@@ -263,7 +263,7 @@ public class CourseEventTypeService_Tests
     public async Task GetCourseEventTypeByIdAsync_Should_Return_NotFound_When_Type_Does_Not_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
 
         mockRepo.GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>())
@@ -285,7 +285,7 @@ public class CourseEventTypeService_Tests
     public async Task GetCourseEventTypeByIdAsync_Should_Return_BadRequest_When_TypeId_Is_Zero()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
 
         // Act
@@ -304,7 +304,7 @@ public class CourseEventTypeService_Tests
     public async Task GetCourseEventTypeByIdAsync_Should_Return_BadRequest_When_TypeId_Is_Negative()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
 
         // Act
@@ -323,7 +323,7 @@ public class CourseEventTypeService_Tests
     public async Task GetCourseEventTypeByIdAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
 
         mockRepo.GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>())
@@ -350,7 +350,7 @@ public class CourseEventTypeService_Tests
     public async Task UpdateCourseEventTypeAsync_Should_Return_Success_When_Valid_Input()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
         var existingType = new CourseEventType(typeId, "Online");
         var updatedType = new CourseEventType(typeId, "Virtual");
@@ -384,7 +384,7 @@ public class CourseEventTypeService_Tests
     public async Task UpdateCourseEventTypeAsync_Should_Return_BadRequest_When_Input_Is_Null()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
 
         // Act
@@ -403,7 +403,7 @@ public class CourseEventTypeService_Tests
     public async Task UpdateCourseEventTypeAsync_Should_Return_BadRequest_When_TypeId_Is_Zero()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
         var input = new UpdateCourseEventTypeInput(0, "Online");
 
@@ -423,7 +423,7 @@ public class CourseEventTypeService_Tests
     public async Task UpdateCourseEventTypeAsync_Should_Return_BadRequest_When_TypeName_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
         var input = new UpdateCourseEventTypeInput(1, "");
 
@@ -441,7 +441,7 @@ public class CourseEventTypeService_Tests
     public async Task UpdateCourseEventTypeAsync_Should_Return_BadRequest_When_TypeName_Is_Whitespace()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
         var input = new UpdateCourseEventTypeInput(1, "   ");
 
@@ -459,7 +459,7 @@ public class CourseEventTypeService_Tests
     public async Task UpdateCourseEventTypeAsync_Should_Return_NotFound_When_Type_Does_Not_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
 
         mockRepo.GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>())
@@ -484,7 +484,7 @@ public class CourseEventTypeService_Tests
     public async Task UpdateCourseEventTypeAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
         var existingType = new CourseEventType(typeId, "Online");
 
@@ -516,7 +516,7 @@ public class CourseEventTypeService_Tests
     public async Task DeleteCourseEventTypeAsync_Should_Return_Success_When_Type_Is_Deleted()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
         var existingType = new CourseEventType(typeId, "Online");
 
@@ -547,7 +547,7 @@ public class CourseEventTypeService_Tests
     public async Task DeleteCourseEventTypeAsync_Should_Return_BadRequest_When_TypeId_Is_Zero()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
 
         // Act
@@ -566,7 +566,7 @@ public class CourseEventTypeService_Tests
     public async Task DeleteCourseEventTypeAsync_Should_Return_BadRequest_When_TypeId_Is_Negative()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var service = new CourseEventTypeService(mockRepo);
 
         // Act
@@ -585,7 +585,7 @@ public class CourseEventTypeService_Tests
     public async Task DeleteCourseEventTypeAsync_Should_Return_NotFound_When_Type_Does_Not_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
 
         mockRepo.GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>())
@@ -609,7 +609,7 @@ public class CourseEventTypeService_Tests
     public async Task DeleteCourseEventTypeAsync_Should_Return_Conflict_When_Type_Is_In_Use()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
         var existingType = new CourseEventType(typeId, "Online");
 
@@ -637,7 +637,7 @@ public class CourseEventTypeService_Tests
     public async Task DeleteCourseEventTypeAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventTypesRepository>();
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
         var existingType = new CourseEventType(typeId, "Online");
 
@@ -662,3 +662,4 @@ public class CourseEventTypeService_Tests
 
     #endregion
 }
+

@@ -14,7 +14,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_Success_When_Valid_Input()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var courseId = Guid.NewGuid();
         var eventDate = DateTime.UtcNow.AddDays(30);
         var expectedEvent = new CourseEvent(Guid.NewGuid(), courseId, eventDate, 999.99m, 25, 1);
@@ -48,7 +48,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_BadRequest_When_Input_Is_Null()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
 
         // Act
@@ -67,7 +67,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_BadRequest_When_CourseId_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
         var input = new CreateCourseEventInput(Guid.Empty, DateTime.UtcNow.AddDays(30), 999.99m, 25, 1);
 
@@ -87,7 +87,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_BadRequest_When_EventDate_Is_Default()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
         var input = new CreateCourseEventInput(Guid.NewGuid(), default, 999.99m, 25, 1);
 
@@ -107,7 +107,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_BadRequest_When_Price_Is_Negative()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
         var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(30), -100m, 25, 1);
 
@@ -127,7 +127,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_BadRequest_When_Seats_Is_Zero()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
         var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(30), 999.99m, 0, 1);
 
@@ -147,7 +147,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_BadRequest_When_Seats_Is_Negative()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
         var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(30), 999.99m, -10, 1);
 
@@ -167,7 +167,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_BadRequest_When_CourseEventTypeId_Is_Zero()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
         var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(30), 999.99m, 25, 0);
 
@@ -187,7 +187,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_BadRequest_When_CourseEventTypeId_Is_Negative()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
         var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(30), 999.99m, 25, -1);
 
@@ -207,7 +207,7 @@ public class CourseEventService_Tests
     public async Task CreateCourseEventAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         mockRepo.CreateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<CourseEvent>(new Exception("Database error")));
 
@@ -233,7 +233,7 @@ public class CourseEventService_Tests
         decimal price, int seats)
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var courseId = Guid.NewGuid();
         var eventDate = DateTime.UtcNow.AddDays(30);
         var expectedEvent = new CourseEvent(Guid.NewGuid(), courseId, eventDate, price, seats, 1);
@@ -270,7 +270,7 @@ public class CourseEventService_Tests
     public async Task GetAllCourseEventsAsync_Should_Return_All_Events_When_Events_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var courseId = Guid.NewGuid();
         var events = new List<CourseEvent>
         {
@@ -301,7 +301,7 @@ public class CourseEventService_Tests
     public async Task GetAllCourseEventsAsync_Should_Return_Empty_List_When_No_Events_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         mockRepo.GetAllCourseEventsAsync(Arg.Any<CancellationToken>())
             .Returns(new List<CourseEvent>());
 
@@ -322,7 +322,7 @@ public class CourseEventService_Tests
     public async Task GetAllCourseEventsAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         mockRepo.GetAllCourseEventsAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException<IReadOnlyList<CourseEvent>>(new Exception("Database connection failed")));
 
@@ -346,7 +346,7 @@ public class CourseEventService_Tests
     public async Task GetCourseEventByIdAsync_Should_Return_Event_When_Event_Exists()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
         var eventDate = DateTime.UtcNow.AddDays(30);
@@ -375,7 +375,7 @@ public class CourseEventService_Tests
     public async Task GetCourseEventByIdAsync_Should_Return_NotFound_When_Event_Does_Not_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
 
         mockRepo.GetCourseEventByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -397,7 +397,7 @@ public class CourseEventService_Tests
     public async Task GetCourseEventByIdAsync_Should_Return_BadRequest_When_EventId_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
 
         // Act
@@ -416,7 +416,7 @@ public class CourseEventService_Tests
     public async Task GetCourseEventByIdAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
 
         mockRepo.GetCourseEventByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -443,7 +443,7 @@ public class CourseEventService_Tests
     public async Task GetCourseEventsByCourseIdAsync_Should_Return_Events_When_Events_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var courseId = Guid.NewGuid();
         var events = new List<CourseEvent>
         {
@@ -473,7 +473,7 @@ public class CourseEventService_Tests
     public async Task GetCourseEventsByCourseIdAsync_Should_Return_Empty_List_When_No_Events_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var courseId = Guid.NewGuid();
 
         mockRepo.GetCourseEventsByCourseIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -496,7 +496,7 @@ public class CourseEventService_Tests
     public async Task GetCourseEventsByCourseIdAsync_Should_Return_BadRequest_When_CourseId_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
 
         // Act
@@ -514,7 +514,7 @@ public class CourseEventService_Tests
     public async Task GetCourseEventsByCourseIdAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var courseId = Guid.NewGuid();
 
         mockRepo.GetCourseEventsByCourseIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -540,7 +540,7 @@ public class CourseEventService_Tests
     public async Task UpdateCourseEventAsync_Should_Return_Success_When_Valid_Input()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
         var oldDate = DateTime.UtcNow.AddDays(30);
@@ -581,7 +581,7 @@ public class CourseEventService_Tests
     public async Task UpdateCourseEventAsync_Should_Return_BadRequest_When_Input_Is_Null()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
 
         // Act
@@ -600,7 +600,7 @@ public class CourseEventService_Tests
     public async Task UpdateCourseEventAsync_Should_Return_BadRequest_When_EventId_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
         var input = new UpdateCourseEventInput(Guid.Empty, Guid.NewGuid(), DateTime.UtcNow.AddDays(30), 999.99m, 25, 1);
 
@@ -620,7 +620,7 @@ public class CourseEventService_Tests
     public async Task UpdateCourseEventAsync_Should_Return_NotFound_When_Event_Does_Not_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
 
         mockRepo.GetCourseEventByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -645,7 +645,7 @@ public class CourseEventService_Tests
     public async Task UpdateCourseEventAsync_Should_Return_Conflict_When_Concurrency_Exception_Occurs()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
         var existingEvent = new CourseEvent(eventId, Guid.NewGuid(), DateTime.UtcNow.AddDays(30), 999.99m, 20, 1);
 
@@ -672,7 +672,7 @@ public class CourseEventService_Tests
     public async Task UpdateCourseEventAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
         var existingEvent = new CourseEvent(eventId, Guid.NewGuid(), DateTime.UtcNow.AddDays(30), 999.99m, 20, 1);
 
@@ -704,7 +704,7 @@ public class CourseEventService_Tests
     public async Task DeleteCourseEventAsync_Should_Return_Success_When_Event_Is_Deleted()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
         var existingEvent = new CourseEvent(eventId, Guid.NewGuid(), DateTime.UtcNow.AddDays(30), 999.99m, 25, 1);
 
@@ -732,7 +732,7 @@ public class CourseEventService_Tests
     public async Task DeleteCourseEventAsync_Should_Return_BadRequest_When_EventId_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var service = new CourseEventService(mockRepo);
 
         // Act
@@ -751,7 +751,7 @@ public class CourseEventService_Tests
     public async Task DeleteCourseEventAsync_Should_Return_NotFound_When_Event_Does_Not_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
 
         mockRepo.GetCourseEventByIdAsync(eventId, Arg.Any<CancellationToken>())
@@ -775,7 +775,7 @@ public class CourseEventService_Tests
     public async Task DeleteCourseEventAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICourseEventsRepository>();
+        var mockRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
         var existingEvent = new CourseEvent(eventId, Guid.NewGuid(), DateTime.UtcNow.AddDays(30), 999.99m, 25, 1);
 
@@ -800,3 +800,4 @@ public class CourseEventService_Tests
 
     #endregion
 }
+

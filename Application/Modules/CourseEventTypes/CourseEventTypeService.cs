@@ -5,9 +5,9 @@ using Backend.Domain.Modules.CourseEventTypes.Models;
 
 namespace Backend.Application.Modules.CourseEventTypes;
 
-public class CourseEventTypeService(ICourseEventTypesRepository courseEventTypeRepository) : ICourseEventTypeService
+public class CourseEventTypeService(ICourseEventTypeRepository courseEventTypeRepository) : ICourseEventTypeService
 {
-    private readonly ICourseEventTypesRepository _courseEventTypeRepository = courseEventTypeRepository ?? throw new ArgumentNullException(nameof(courseEventTypeRepository));
+    private readonly ICourseEventTypeRepository _courseEventTypeRepository = courseEventTypeRepository ?? throw new ArgumentNullException(nameof(courseEventTypeRepository));
 
     public async Task<CourseEventTypeResult> CreateCourseEventTypeAsync(CreateCourseEventTypeInput courseEventType, CancellationToken cancellationToken = default)
     {

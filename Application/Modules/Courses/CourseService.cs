@@ -5,9 +5,9 @@ using Backend.Domain.Modules.Courses.Models;
 
 namespace Backend.Application.Modules.Courses
 {
-    public class CourseService(ICoursesRepository courseRepository) : ICourseService
+    public class CourseService(ICourseRepository courseRepository) : ICourseService
     {
-        private readonly ICoursesRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
+        private readonly ICourseRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
 
         public async Task<CourseResult> CreateCourseAsync(CreateCourseInput course, CancellationToken cancellationToken = default)
         {

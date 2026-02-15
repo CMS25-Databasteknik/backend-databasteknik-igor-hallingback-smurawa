@@ -2,7 +2,7 @@
 
 namespace Backend.Domain.Modules.Courses.Contracts
 {
-    public interface ICoursesRepository
+    public interface ICourseRepository
     {
         Task<Course> CreateCourseAsync(Course course, CancellationToken cancellationToken);
         Task<CourseWithEvents?> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken);

@@ -1,4 +1,4 @@
-﻿using Backend.Application.Modules.Courses;
+using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.Courses.Contracts;
@@ -13,7 +13,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Return_Success_When_Valid_Input()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var expectedCourse = new Course(Guid.NewGuid(), "Test Course", "Test Description", 5);
 
         mockRepo.CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
@@ -43,7 +43,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Return_BadRequest_When_Input_Is_Null()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
 
         // Act
@@ -62,7 +62,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Return_BadRequest_When_Title_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new CreateCourseInput("", "Test Description", 5);
 
@@ -82,7 +82,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Return_BadRequest_When_Title_Is_Whitespace()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new CreateCourseInput("   ", "Test Description", 5);
 
@@ -102,7 +102,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Return_BadRequest_When_Description_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new CreateCourseInput("Test Course", "", 5);
 
@@ -122,7 +122,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Return_BadRequest_When_Description_Is_Whitespace()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new CreateCourseInput("Test Course", "   ", 5);
 
@@ -142,7 +142,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Return_BadRequest_When_DurationInDays_Is_Zero()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new CreateCourseInput("Test Course", "Test Description", 0);
 
@@ -162,7 +162,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Return_BadRequest_When_DurationInDays_Is_Negative()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new CreateCourseInput("Test Course", "Test Description", -5);
 
@@ -182,7 +182,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Course>(new Exception("Database error")));
 
@@ -208,7 +208,7 @@ public class CourseService_Tests
         string title, string description, int duration)
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var expectedCourse = new Course(Guid.NewGuid(), title, description, duration);
 
         mockRepo.CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
@@ -233,7 +233,7 @@ public class CourseService_Tests
     public async Task CreateCourseAsync_Should_Generate_Unique_Guid_For_Each_Course()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var capturedGuids = new List<Guid>();
 
         mockRepo.CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
@@ -272,7 +272,7 @@ public class CourseService_Tests
     public async Task GetAllCoursesAsync_Should_Return_All_Courses_When_Courses_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courses = new List<Course>
         {
             new Course(Guid.NewGuid(), "Course 1", "Description 1", 10),
@@ -302,7 +302,7 @@ public class CourseService_Tests
     public async Task GetAllCoursesAsync_Should_Return_Empty_List_When_No_Courses_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetAllCoursesAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Course>());
 
@@ -323,7 +323,7 @@ public class CourseService_Tests
     public async Task GetAllCoursesAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetAllCoursesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException<IReadOnlyList<Course>>(new Exception("Database connection failed")));
 
@@ -347,7 +347,7 @@ public class CourseService_Tests
     public async Task GetCourseByIdAsync_Should_Return_Course_When_Course_Exists()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var course = new Course(courseId, "Test Course", "Test Description", 10);
         var courseWithEvents = new CourseWithEvents(course, new List<CourseEvent>());
@@ -375,7 +375,7 @@ public class CourseService_Tests
     public async Task GetCourseByIdAsync_Should_Return_NotFound_When_Course_Does_Not_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
 
         mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -397,7 +397,7 @@ public class CourseService_Tests
     public async Task GetCourseByIdAsync_Should_Return_BadRequest_When_CourseId_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
 
         // Act
@@ -416,7 +416,7 @@ public class CourseService_Tests
     public async Task GetCourseByIdAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
 
         mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -443,7 +443,7 @@ public class CourseService_Tests
     public async Task UpdateCourseAsync_Should_Return_Success_When_Valid_Input()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
         var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
@@ -479,7 +479,7 @@ public class CourseService_Tests
     public async Task UpdateCourseAsync_Should_Return_BadRequest_When_Input_Is_Null()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
 
         // Act
@@ -498,7 +498,7 @@ public class CourseService_Tests
     public async Task UpdateCourseAsync_Should_Return_BadRequest_When_CourseId_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.Empty, "Test Title", "Test Description", 5);
 
@@ -518,7 +518,7 @@ public class CourseService_Tests
     public async Task UpdateCourseAsync_Should_Return_BadRequest_When_Title_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "", "Test Description", 5);
 
@@ -536,7 +536,7 @@ public class CourseService_Tests
     public async Task UpdateCourseAsync_Should_Return_BadRequest_When_Description_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "", 5);
 
@@ -554,7 +554,7 @@ public class CourseService_Tests
     public async Task UpdateCourseAsync_Should_Return_BadRequest_When_DurationInDays_Is_Zero()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "Test Description", 0);
 
@@ -572,7 +572,7 @@ public class CourseService_Tests
     public async Task UpdateCourseAsync_Should_Return_NotFound_When_Course_Does_Not_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
 
         mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -597,7 +597,7 @@ public class CourseService_Tests
     public async Task UpdateCourseAsync_Should_Return_Conflict_When_Concurrency_Exception_Occurs()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
         var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
@@ -625,7 +625,7 @@ public class CourseService_Tests
     public async Task UpdateCourseAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
         var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
@@ -658,7 +658,7 @@ public class CourseService_Tests
     public async Task DeleteCourseAsync_Should_Return_Success_When_Course_Is_Deleted()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
         var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
@@ -690,7 +690,7 @@ public class CourseService_Tests
     public async Task DeleteCourseAsync_Should_Return_BadRequest_When_CourseId_Is_Empty()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var service = new CourseService(mockRepo);
 
         // Act
@@ -709,7 +709,7 @@ public class CourseService_Tests
     public async Task DeleteCourseAsync_Should_Return_NotFound_When_Course_Does_Not_Exist()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
 
         mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -733,7 +733,7 @@ public class CourseService_Tests
     public async Task DeleteCourseAsync_Should_Return_Conflict_When_Course_Has_Associated_Events()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
         var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
@@ -763,7 +763,7 @@ public class CourseService_Tests
     public async Task DeleteCourseAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
         var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
@@ -794,7 +794,7 @@ public class CourseService_Tests
     public async Task DeleteCourseAsync_Should_Return_InternalServerError_When_Delete_Returns_False()
     {
         // Arrange
-        var mockRepo = Substitute.For<ICoursesRepository>();
+        var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
         var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
@@ -822,3 +822,4 @@ public class CourseService_Tests
 
     #endregion
 }
+

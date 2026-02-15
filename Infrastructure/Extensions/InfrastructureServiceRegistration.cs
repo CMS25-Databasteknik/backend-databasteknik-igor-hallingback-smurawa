@@ -20,8 +20,8 @@ public static class InfrastructureServiceRegistration
             options.UseSqlServer(dbConfig);
         });
 
-        services.AddScoped<ICoursesRepository, CourseRepository>();
-        services.AddScoped<ICourseEventsRepository, CourseEventRepository>();
-        services.AddScoped<ICourseEventTypesRepository, CourseEventTypeRepository>();
+        services.AddScoped<ICourseRepository, CourseRepository>();
+        services.AddScoped<ICourseEventRepository, CourseEventRepository>();
+        services.AddScoped<ICourseEventTypeRepository, CourseEventTypeRepository>();
     }
 }
