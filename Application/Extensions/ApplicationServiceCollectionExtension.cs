@@ -1,4 +1,6 @@
 ﻿using Backend.Application.Modules.Courses;
+using Backend.Application.Modules.CourseEvents;
+using Backend.Application.Modules.CourseEventTypes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +15,8 @@ public static class ApplicationServiceCollectionExtension
         ArgumentNullException.ThrowIfNull(environment);
 
         services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<ICourseEventService, CourseEventService>();
+        services.AddScoped<ICourseEventTypeService, CourseEventTypeService>();
 
         return services;
     }
