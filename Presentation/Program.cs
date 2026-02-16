@@ -9,6 +9,8 @@ using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.InPlaceLocations;
 using Backend.Application.Modules.InPlaceLocations.Inputs;
+using Backend.Application.Modules.Instructors;
+using Backend.Application.Modules.Instructors.Inputs;
 using Backend.Application.Modules.Locations;
 using Backend.Application.Modules.Locations.Inputs;
 using Backend.Application.Modules.Participants;
@@ -19,6 +21,7 @@ using Backend.Presentation.API.Models.CourseEvent;
 using Backend.Presentation.API.Models.CourseEventType;
 using Backend.Presentation.API.Models.CourseRegistration;
 using Backend.Presentation.API.Models.InPlaceLocation;
+using Backend.Presentation.API.Models.Instructor;
 using Backend.Presentation.API.Models.Location;
 using Backend.Presentation.API.Models.Participant;
 
@@ -448,6 +451,58 @@ public partial class Program
 
             return Results.Ok(response);
         }).WithName("DeleteInPlaceLocation");
+
+        app.MapGet("/api/instructors", async (IInstructorService instructorService, CancellationToken cancellationToken) =>
+        {
+            var response = await instructorService.GetAllInstructorsAsync(cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetAllInstructors");
+
+        app.MapGet("/api/instructors/{id:guid}", async (Guid id, IInstructorService instructorService, CancellationToken cancellationToken) =>
+        {
+            var response = await instructorService.GetInstructorByIdAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetInstructorById");
+
+        app.MapPost("/api/instructors", async (CreateInstructorRequest request, IInstructorService instructorService, CancellationToken cancellationToken) =>
+        {
+            var input = new CreateInstructorInput(request.Name);
+            var response = await instructorService.CreateInstructorAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/api/instructors/{response.Result?.Id}", response);
+        }).WithName("CreateInstructor");
+
+        app.MapPut("/api/instructors/{id:guid}", async (Guid id, UpdateInstructorRequest request, IInstructorService instructorService, CancellationToken cancellationToken) =>
+        {
+            var input = new UpdateInstructorInput(id, request.Name);
+            var response = await instructorService.UpdateInstructorAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("UpdateInstructor");
+
+        app.MapDelete("/api/instructors/{id:guid}", async (Guid id, IInstructorService instructorService, CancellationToken cancellationToken) =>
+        {
+            var response = await instructorService.DeleteInstructorAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("DeleteInstructor");
 
         app.Run();
     }
