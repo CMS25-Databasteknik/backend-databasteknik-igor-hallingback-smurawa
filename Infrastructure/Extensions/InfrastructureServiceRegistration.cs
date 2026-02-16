@@ -1,6 +1,8 @@
 ﻿using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEventTypes.Contracts;
+using Backend.Domain.Modules.CourseRegistrations.Contracts;
+using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Infrastructure.Persistence;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -23,5 +25,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ICourseEventRepository, CourseEventRepository>();
         services.AddScoped<ICourseEventTypeRepository, CourseEventTypeRepository>();
+        services.AddScoped<ICourseRegistrationRepository, CourseRegistrationRepository>();
+        services.AddScoped<IParticipantRepository, ParticipantRepository>();
     }
 }

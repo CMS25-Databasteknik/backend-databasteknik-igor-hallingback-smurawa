@@ -3,12 +3,18 @@ using Backend.Application.Modules.CourseEvents;
 using Backend.Application.Modules.CourseEvents.Inputs;
 using Backend.Application.Modules.CourseEventTypes;
 using Backend.Application.Modules.CourseEventTypes.Inputs;
+using Backend.Application.Modules.CourseRegistrations;
+using Backend.Application.Modules.CourseRegistrations.Inputs;
 using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
+using Backend.Application.Modules.Participants;
+using Backend.Application.Modules.Participants.Inputs;
 using Backend.Infrastructure.Extensions;
 using Backend.Presentation.API.Models.Course;
 using Backend.Presentation.API.Models.CourseEvent;
 using Backend.Presentation.API.Models.CourseEventType;
+using Backend.Presentation.API.Models.CourseRegistration;
+using Backend.Presentation.API.Models.Participant;
 
 namespace Backend.Presentation.API;
 
@@ -198,6 +204,130 @@ public partial class Program
 
             return Results.Ok(response);
         }).WithName("DeleteCourseEventType");
+
+        app.MapGet("/api/course-registrations", async (ICourseRegistrationService courseRegistrationService, CancellationToken cancellationToken) =>
+        {
+            var response = await courseRegistrationService.GetAllCourseRegistrationsAsync(cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetAllCourseRegistrations");
+
+        app.MapGet("/api/course-registrations/{id:guid}", async (Guid id, ICourseRegistrationService courseRegistrationService, CancellationToken cancellationToken) =>
+        {
+            var response = await courseRegistrationService.GetCourseRegistrationByIdAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetCourseRegistrationById");
+
+        app.MapGet("/api/participants/{participantId:guid}/registrations", async (Guid participantId, ICourseRegistrationService courseRegistrationService, CancellationToken cancellationToken) =>
+        {
+            var response = await courseRegistrationService.GetCourseRegistrationsByParticipantIdAsync(participantId, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetCourseRegistrationsByParticipantId");
+
+        app.MapGet("/api/course-events/{courseEventId:guid}/registrations", async (Guid courseEventId, ICourseRegistrationService courseRegistrationService, CancellationToken cancellationToken) =>
+        {
+            var response = await courseRegistrationService.GetCourseRegistrationsByCourseEventIdAsync(courseEventId, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetCourseRegistrationsByCourseEventId");
+
+        app.MapPost("/api/course-registrations", async (CreateCourseRegistrationRequest request, ICourseRegistrationService courseRegistrationService, CancellationToken cancellationToken) =>
+        {
+            var input = new CreateCourseRegistrationInput(request.ParticipantId, request.CourseEventId, request.IsPaid);
+            var response = await courseRegistrationService.CreateCourseRegistrationAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/api/course-registrations/{response.Result?.Id}", response);
+        }).WithName("CreateCourseRegistration");
+
+        app.MapPut("/api/course-registrations/{id:guid}", async (Guid id, UpdateCourseRegistrationRequest request, ICourseRegistrationService courseRegistrationService, CancellationToken cancellationToken) =>
+        {
+            var input = new UpdateCourseRegistrationInput(id, request.ParticipantId, request.CourseEventId, request.IsPaid);
+            var response = await courseRegistrationService.UpdateCourseRegistrationAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("UpdateCourseRegistration");
+
+        app.MapDelete("/api/course-registrations/{id:guid}", async (Guid id, ICourseRegistrationService courseRegistrationService, CancellationToken cancellationToken) =>
+        {
+            var response = await courseRegistrationService.DeleteCourseRegistrationAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("DeleteCourseRegistration");
+
+        app.MapGet("/api/participants", async (IParticipantService participantService, CancellationToken cancellationToken) =>
+        {
+            var response = await participantService.GetAllParticipantsAsync(cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetAllParticipants");
+
+        app.MapGet("/api/participants/{id:guid}", async (Guid id, IParticipantService participantService, CancellationToken cancellationToken) =>
+        {
+            var response = await participantService.GetParticipantByIdAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetParticipantById");
+
+        app.MapPost("/api/participants", async (CreateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken) =>
+        {
+            var input = new CreateParticipantInput(request.FirstName, request.LastName, request.Email, request.PhoneNumber);
+            var response = await participantService.CreateParticipantAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/api/participants/{response.Result?.Id}", response);
+        }).WithName("CreateParticipant");
+
+        app.MapPut("/api/participants/{id:guid}", async (Guid id, UpdateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken) =>
+        {
+            var input = new UpdateParticipantInput(id, request.FirstName, request.LastName, request.Email, request.PhoneNumber);
+            var response = await participantService.UpdateParticipantAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("UpdateParticipant");
+
+        app.MapDelete("/api/participants/{id:guid}", async (Guid id, IParticipantService participantService, CancellationToken cancellationToken) =>
+        {
+            var response = await participantService.DeleteParticipantAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("DeleteParticipant");
 
         app.Run();
     }
