@@ -7,6 +7,10 @@ using Backend.Application.Modules.CourseRegistrations;
 using Backend.Application.Modules.CourseRegistrations.Inputs;
 using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
+using Backend.Application.Modules.InPlaceLocations;
+using Backend.Application.Modules.InPlaceLocations.Inputs;
+using Backend.Application.Modules.Locations;
+using Backend.Application.Modules.Locations.Inputs;
 using Backend.Application.Modules.Participants;
 using Backend.Application.Modules.Participants.Inputs;
 using Backend.Infrastructure.Extensions;
@@ -14,6 +18,8 @@ using Backend.Presentation.API.Models.Course;
 using Backend.Presentation.API.Models.CourseEvent;
 using Backend.Presentation.API.Models.CourseEventType;
 using Backend.Presentation.API.Models.CourseRegistration;
+using Backend.Presentation.API.Models.InPlaceLocation;
+using Backend.Presentation.API.Models.Location;
 using Backend.Presentation.API.Models.Participant;
 
 namespace Backend.Presentation.API;
@@ -328,6 +334,120 @@ public partial class Program
 
             return Results.Ok(response);
         }).WithName("DeleteParticipant");
+
+        app.MapGet("/api/locations", async (ILocationService locationService, CancellationToken cancellationToken) =>
+        {
+            var response = await locationService.GetAllLocationsAsync(cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetAllLocations");
+
+        app.MapGet("/api/locations/{id:int}", async (int id, ILocationService locationService, CancellationToken cancellationToken) =>
+        {
+            var response = await locationService.GetLocationByIdAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetLocationById");
+
+        app.MapPost("/api/locations", async (CreateLocationRequest request, ILocationService locationService, CancellationToken cancellationToken) =>
+        {
+            var input = new CreateLocationInput(request.StreetName, request.PostalCode, request.City);
+            var response = await locationService.CreateLocationAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/api/locations/{response.Result?.Id}", response);
+        }).WithName("CreateLocation");
+
+        app.MapPut("/api/locations/{id:int}", async (int id, UpdateLocationRequest request, ILocationService locationService, CancellationToken cancellationToken) =>
+        {
+            var input = new UpdateLocationInput(id, request.StreetName, request.PostalCode, request.City);
+            var response = await locationService.UpdateLocationAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("UpdateLocation");
+
+        app.MapDelete("/api/locations/{id:int}", async (int id, ILocationService locationService, CancellationToken cancellationToken) =>
+        {
+            var response = await locationService.DeleteLocationAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("DeleteLocation");
+
+        app.MapGet("/api/in-place-locations", async (IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken) =>
+        {
+            var response = await inPlaceLocationService.GetAllInPlaceLocationsAsync(cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetAllInPlaceLocations");
+
+        app.MapGet("/api/in-place-locations/{id:int}", async (int id, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken) =>
+        {
+            var response = await inPlaceLocationService.GetInPlaceLocationByIdAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetInPlaceLocationById");
+
+        app.MapGet("/api/locations/{locationId:int}/in-place-locations", async (int locationId, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken) =>
+        {
+            var response = await inPlaceLocationService.GetInPlaceLocationsByLocationIdAsync(locationId, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("GetInPlaceLocationsByLocationId");
+
+        app.MapPost("/api/in-place-locations", async (CreateInPlaceLocationRequest request, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken) =>
+        {
+            var input = new CreateInPlaceLocationInput(request.LocationId, request.RoomNumber, request.Seats);
+            var response = await inPlaceLocationService.CreateInPlaceLocationAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Created($"/api/in-place-locations/{response.Result?.Id}", response);
+        }).WithName("CreateInPlaceLocation");
+
+        app.MapPut("/api/in-place-locations/{id:int}", async (int id, UpdateInPlaceLocationRequest request, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken) =>
+        {
+            var input = new UpdateInPlaceLocationInput(id, request.LocationId, request.RoomNumber, request.Seats);
+            var response = await inPlaceLocationService.UpdateInPlaceLocationAsync(input, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("UpdateInPlaceLocation");
+
+        app.MapDelete("/api/in-place-locations/{id:int}", async (int id, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken) =>
+        {
+            var response = await inPlaceLocationService.DeleteInPlaceLocationAsync(id, cancellationToken);
+
+            if (!response.Success)
+                return Results.BadRequest(response);
+
+            return Results.Ok(response);
+        }).WithName("DeleteInPlaceLocation");
 
         app.Run();
     }
