@@ -3,6 +3,7 @@ using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEventTypes.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.InPlaceLocations.Contracts;
+using Backend.Domain.Modules.Instructors.Contracts;
 using Backend.Domain.Modules.Locations.Contracts;
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Infrastructure.Persistence;
@@ -31,5 +32,6 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IParticipantRepository, ParticipantRepository>();
         services.AddScoped<ILocationRepository, LocationRepository>();
         services.AddScoped<IInPlaceLocationRepository, InPlaceLocationRepository>();
+        services.AddScoped<IInstructorRepository, InstructorRepository>();
     }
 }
