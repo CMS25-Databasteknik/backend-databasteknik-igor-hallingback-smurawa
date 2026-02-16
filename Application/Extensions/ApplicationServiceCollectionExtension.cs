@@ -2,6 +2,8 @@
 using Backend.Application.Modules.CourseEvents;
 using Backend.Application.Modules.CourseEventTypes;
 using Backend.Application.Modules.CourseRegistrations;
+using Backend.Application.Modules.InPlaceLocations;
+using Backend.Application.Modules.Locations;
 using Backend.Application.Modules.Participants;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,8 @@ public static class ApplicationServiceCollectionExtension
         services.AddScoped<ICourseEventTypeService, CourseEventTypeService>();
         services.AddScoped<ICourseRegistrationService, CourseRegistrationService>();
         services.AddScoped<IParticipantService, ParticipantService>();
+        services.AddScoped<ILocationService, LocationService>();
+        services.AddScoped<IInPlaceLocationService, InPlaceLocationService>();
 
         return services;
     }
