@@ -59,11 +59,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var newInstructor = new Instructor(
-                Guid.NewGuid(),
-                instructor.Name,
-                instructor.InstructorRoleId
-            );
+            var newInstructor = new Instructor(Guid.NewGuid(), instructor.Name, role);
 
             var result = await _instructorRepository.CreateInstructorAsync(newInstructor, cancellationToken);
 
@@ -253,11 +249,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var updatedInstructor = new Instructor(
-                instructor.Id,
-                instructor.Name,
-                instructor.InstructorRoleId
-            );
+            var updatedInstructor = new Instructor(instructor.Id, instructor.Name, role);
 
             var result = await _instructorRepository.UpdateInstructorAsync(updatedInstructor, cancellationToken);
 
