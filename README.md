@@ -201,7 +201,7 @@ Backend/
 - All projects target **.NET 10.0**
 - The architecture promotes **testability** and **maintainability**
 - **Dependency injection** is used throughout the application
-
+- The solution uses transactions handling in  courseEventRepository, courseRegistrationRepository and participantRepository to ensure data integrity during complex operations
 ## Architecture Benefits
 
 - **Separation of Concerns**: Each layer has a specific responsibility

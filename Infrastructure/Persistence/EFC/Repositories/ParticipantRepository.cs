@@ -31,15 +31,32 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
 
     public async Task<bool> DeleteParticipantAsync(Guid participantId, CancellationToken cancellationToken)
     {
-        var entity = await _context.Participants.SingleOrDefaultAsync(p => p.Id == participantId, cancellationToken);
+        using var tx = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-        if (entity == null)
-            throw new KeyNotFoundException($"Participant '{participantId}' not found.");
+        try
+        {
+            var exists = await _context.Participants
+                .AnyAsync(p => p.Id == participantId, cancellationToken);
 
-        _context.Participants.Remove(entity);
-        await _context.SaveChangesAsync(cancellationToken);
+            if (!exists)
+                throw new KeyNotFoundException($"Participant '{participantId}' not found.");
 
-        return true;
+            await _context.Database.ExecuteSqlAsync(
+                $"DELETE FROM CourseRegistrations WHERE ParticipantId = {participantId}",
+                cancellationToken);
+
+            await _context.Database.ExecuteSqlAsync(
+                $"DELETE FROM Participants WHERE Id = {participantId}",
+                cancellationToken);
+
+            await tx.CommitAsync(cancellationToken);
+            return true;
+        }
+        catch
+        {
+            await tx.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 
     public async Task<IReadOnlyList<Participant>> GetAllParticipantsAsync(CancellationToken cancellationToken)

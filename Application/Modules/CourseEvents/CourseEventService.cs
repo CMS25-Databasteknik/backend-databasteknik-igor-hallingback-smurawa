@@ -386,18 +386,7 @@ namespace Backend.Application.Modules.CourseEvents
                     };
                 }
 
-                var existingCourseEvent = await _courseEventRepository.GetCourseEventByIdAsync(courseEventId, cancellationToken);
-                if (existingCourseEvent == null)
-                {
-                    return new CourseEventDeleteResult
-                    {
-                        Success = false,
-                        StatusCode = 404,
-                        Message = $"Course event with ID '{courseEventId}' not found.",
-                        Result = false
-                    };
-                }
-
+                // Repository handles existence check within transaction
                 var result = await _courseEventRepository.DeleteCourseEventAsync(courseEventId, cancellationToken);
 
                 return new CourseEventDeleteResult
@@ -406,6 +395,16 @@ namespace Backend.Application.Modules.CourseEvents
                     StatusCode = 200,
                     Result = result,
                     Message = "Course event deleted successfully."
+                };
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new CourseEventDeleteResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = ex.Message,
+                    Result = false
                 };
             }
             catch (Exception ex)
