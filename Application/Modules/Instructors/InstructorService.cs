@@ -75,6 +75,16 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 Message = "Instructor created successfully."
             };
         }
+        catch (KeyNotFoundException ex)
+        {
+            return new InstructorResult
+            {
+                Success = false,
+                StatusCode = 404,
+                Result = null,
+                Message = ex.Message
+            };
+        }
         catch (Exception ex)
         {
             return new InstructorResult
@@ -155,6 +165,15 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 StatusCode = 200,
                 Result = result,
                 Message = "Instructor retrieved successfully."
+            };
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return new InstructorResult
+            {
+                Success = false,
+                StatusCode = 404,
+                Message = ex.Message
             };
         }
         catch (Exception ex)
@@ -329,6 +348,16 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 StatusCode = 200,
                 Result = result,
                 Message = "Instructor deleted successfully."
+            };
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return new InstructorDeleteResult
+            {
+                Success = false,
+                StatusCode = 404,
+                Message = ex.Message,
+                Result = false
             };
         }
         catch (Exception ex)

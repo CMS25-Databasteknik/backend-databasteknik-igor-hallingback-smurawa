@@ -4,7 +4,7 @@ public sealed class InstructorRole
 {
     public InstructorRole(int id, string roleName)
     {
-        if (id < 1)
+        if (id < 0)
             throw new ArgumentException("Id is required.", nameof(id));
 
         if (string.IsNullOrWhiteSpace(roleName))

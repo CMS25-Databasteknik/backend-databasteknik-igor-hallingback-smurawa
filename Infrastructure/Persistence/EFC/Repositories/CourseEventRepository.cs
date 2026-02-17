@@ -75,6 +75,13 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             }
         }
 
+        public async Task<bool> HasRegistrationsAsync(Guid courseEventId, CancellationToken cancellationToken)
+        {
+            return await _context.CourseRegistrations
+                .AsNoTracking()
+                .AnyAsync(cr => cr.CourseEventId == courseEventId, cancellationToken);
+        }
+
         public async Task<IReadOnlyList<CourseEvent>> GetAllCourseEventsAsync(CancellationToken cancellationToken)
         {
             var entities = await _context.CourseEvents

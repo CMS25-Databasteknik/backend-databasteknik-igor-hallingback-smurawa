@@ -15,6 +15,12 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
 
     public async Task<Instructor> CreateInstructorAsync(Instructor instructor, CancellationToken cancellationToken)
     {
+        var roleExists = await _context.InstructorRoles
+            .AsNoTracking()
+            .AnyAsync(r => r.Id == instructor.InstructorRoleId, cancellationToken);
+        if (!roleExists)
+            throw new KeyNotFoundException($"Instructor role '{instructor.InstructorRoleId}' not found.");
+
         var entity = new InstructorEntity
         {
             Id = instructor.Id,
@@ -62,6 +68,12 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
 
     public async Task<Instructor?> UpdateInstructorAsync(Instructor instructor, CancellationToken cancellationToken)
     {
+        var roleExists = await _context.InstructorRoles
+            .AsNoTracking()
+            .AnyAsync(r => r.Id == instructor.InstructorRoleId, cancellationToken);
+        if (!roleExists)
+            throw new KeyNotFoundException($"Instructor role '{instructor.InstructorRoleId}' not found.");
+
         var entity = await _context.Instructors.SingleOrDefaultAsync(i => i.Id == instructor.Id, cancellationToken);
 
         if (entity == null)
