@@ -22,7 +22,6 @@ public class InstructorRole_Tests
     }
 
     [Theory]
-    [InlineData(0)]
     [InlineData(-1)]
     public void Constructor_Should_Throw_When_Id_Invalid(int id)
     {
@@ -40,3 +39,4 @@ public class InstructorRole_Tests
         Assert.Equal("roleName", ex.ParamName);
     }
 }
+

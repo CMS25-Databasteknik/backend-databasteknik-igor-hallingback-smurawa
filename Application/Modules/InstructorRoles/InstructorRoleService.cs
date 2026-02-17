@@ -23,7 +23,7 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 return new InstructorRoleResult { Success = false, StatusCode = 400, Message = "Role name cannot be empty or whitespace." };
             }
 
-            var role = new InstructorRole(1, input.RoleName);
+            var role = new InstructorRole(0, input.RoleName);
             var created = await _repository.CreateInstructorRoleAsync(role, cancellationToken);
 
             return new InstructorRoleResult { Success = true, StatusCode = 201, Result = created, Message = "Instructor role created successfully." };
