@@ -74,6 +74,16 @@ namespace Backend.Application.Modules.Courses
                     Message = "Course created successfully."
                 };
             }
+            catch (ArgumentException ex)
+            {
+                return new CourseResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Result = null,
+                    Message = ex.Message
+                };
+            }
             catch (Exception ex)
             {
                 return new CourseResult
@@ -261,22 +271,31 @@ namespace Backend.Application.Modules.Courses
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("modified by another user"))
             {
-                return new CourseResult
-                {
-                    Success = false,
-                    StatusCode = 409,
-                    Message = "The course was modified by another user. Please refresh and try again."
-                };
-            }
-            catch (Exception ex)
+            return new CourseResult
             {
-                return new CourseResult
-                {
-                    Success = false,
-                    StatusCode = 500,
-                    Message = $"An error occurred while updating the course: {ex.Message}"
-                };
-            }
+                Success = false,
+                StatusCode = 409,
+                Message = "The course was modified by another user. Please refresh and try again."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new CourseResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
+            };
+        }
+        catch (Exception ex)
+        {
+            return new CourseResult
+            {
+                Success = false,
+                StatusCode = 500,
+                Message = $"An error occurred while updating the course: {ex.Message}"
+            };
+        }
         }
 
         public async Task<CourseDeleteResult> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken = default)

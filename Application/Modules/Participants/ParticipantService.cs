@@ -86,6 +86,16 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 Message = "Participant created successfully."
             };
         }
+        catch (ArgumentException ex)
+        {
+            return new ParticipantResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Result = null,
+                Message = ex.Message
+            };
+        }
         catch (Exception ex)
         {
             return new ParticipantResult

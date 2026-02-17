@@ -72,7 +72,7 @@ public class CourseEventTypeService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Type name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("Type name cannot be null or whitespace.", result.Message);
 
         await mockRepo.DidNotReceive().CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
     }
@@ -92,7 +92,7 @@ public class CourseEventTypeService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Type name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("Type name cannot be null or whitespace.", result.Message);
 
         await mockRepo.DidNotReceive().CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
     }
@@ -412,11 +412,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(404, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course event type ID must be greater than zero.", result.Message);
-
-        await mockRepo.DidNotReceive().GetCourseEventTypeByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+        Assert.Contains("Course event type with ID '0' not found", result.Message);
     }
 
     [Fact]
@@ -434,7 +432,7 @@ public class CourseEventTypeService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Type name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("Type name cannot be null or whitespace.", result.Message);
     }
 
     [Fact]
@@ -452,7 +450,7 @@ public class CourseEventTypeService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Type name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("Type name cannot be null or whitespace.", result.Message);
     }
 
     [Fact]

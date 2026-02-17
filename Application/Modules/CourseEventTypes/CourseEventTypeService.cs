@@ -24,17 +24,6 @@ public class CourseEventTypeService(ICourseEventTypeRepository courseEventTypeRe
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(courseEventType.TypeName))
-            {
-                return new CourseEventTypeResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Type name cannot be empty or whitespace."
-                };
-            }
-
             var newCourseEventType = new CourseEventType(1, courseEventType.TypeName);
 
             var result = await _courseEventTypeRepository.CreateCourseEventTypeAsync(newCourseEventType, cancellationToken);
@@ -45,6 +34,24 @@ public class CourseEventTypeService(ICourseEventTypeRepository courseEventTypeRe
                 StatusCode = 201,
                 Result = result,
                 Message = "Course event type created successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new CourseEventTypeResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new CourseEventTypeResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
             };
         }
         catch (Exception ex)
@@ -154,26 +161,6 @@ public class CourseEventTypeService(ICourseEventTypeRepository courseEventTypeRe
                 };
             }
 
-            if (courseEventType.Id <= 0)
-            {
-                return new CourseEventTypeResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Course event type ID must be greater than zero."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(courseEventType.TypeName))
-            {
-                return new CourseEventTypeResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Type name cannot be empty or whitespace."
-                };
-            }
-
             var existingCourseEventType = await _courseEventTypeRepository.GetCourseEventTypeByIdAsync(courseEventType.Id, cancellationToken);
             if (existingCourseEventType == null)
             {
@@ -205,6 +192,15 @@ public class CourseEventTypeService(ICourseEventTypeRepository courseEventTypeRe
                 StatusCode = 200,
                 Result = result,
                 Message = "Course event type updated successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new CourseEventTypeResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
             };
         }
         catch (Exception ex)

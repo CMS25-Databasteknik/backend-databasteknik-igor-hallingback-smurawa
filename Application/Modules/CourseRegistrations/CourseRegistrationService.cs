@@ -1,13 +1,20 @@
 using Backend.Application.Modules.CourseRegistrations.Inputs;
 using Backend.Application.Modules.CourseRegistrations.Outputs;
+using Backend.Domain.Modules.CourseEvents.Contracts;
+using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
 
 namespace Backend.Application.Modules.CourseRegistrations;
 
-public class CourseRegistrationService(ICourseRegistrationRepository courseRegistrationRepository) : ICourseRegistrationService
+public class CourseRegistrationService(
+    ICourseRegistrationRepository courseRegistrationRepository,
+    IParticipantRepository participantRepository,
+    ICourseEventRepository courseEventRepository) : ICourseRegistrationService
 {
     private readonly ICourseRegistrationRepository _courseRegistrationRepository = courseRegistrationRepository ?? throw new ArgumentNullException(nameof(courseRegistrationRepository));
+    private readonly IParticipantRepository _participantRepository = participantRepository ?? throw new ArgumentNullException(nameof(participantRepository));
+    private readonly ICourseEventRepository _courseEventRepository = courseEventRepository ?? throw new ArgumentNullException(nameof(courseEventRepository));
 
     public async Task<CourseRegistrationResult> CreateCourseRegistrationAsync(CreateCourseRegistrationInput courseRegistration, CancellationToken cancellationToken = default)
     {
@@ -24,28 +31,6 @@ public class CourseRegistrationService(ICourseRegistrationRepository courseRegis
                 };
             }
 
-            if (courseRegistration.ParticipantId == Guid.Empty)
-            {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Participant ID cannot be empty."
-                };
-            }
-
-            if (courseRegistration.CourseEventId == Guid.Empty)
-            {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Course event ID cannot be empty."
-                };
-            }
-
             var newCourseRegistration = new CourseRegistration(
                 Guid.NewGuid(),
                 courseRegistration.ParticipantId,
@@ -53,6 +38,30 @@ public class CourseRegistrationService(ICourseRegistrationRepository courseRegis
                 DateTime.UtcNow,
                 courseRegistration.IsPaid
             );
+
+            var participant = await _participantRepository.GetParticipantByIdAsync(newCourseRegistration.ParticipantId, cancellationToken);
+            if (participant is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Result = null,
+                    Message = $"Participant with ID '{newCourseRegistration.ParticipantId}' not found."
+                };
+            }
+
+            var courseEvent = await _courseEventRepository.GetCourseEventByIdAsync(newCourseRegistration.CourseEventId, cancellationToken);
+            if (courseEvent is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Result = null,
+                    Message = $"Course event with ID '{newCourseRegistration.CourseEventId}' not found."
+                };
+            }
 
             var result = await _courseRegistrationRepository.CreateCourseRegistrationAsync(newCourseRegistration, cancellationToken);
 
@@ -62,6 +71,16 @@ public class CourseRegistrationService(ICourseRegistrationRepository courseRegis
                 StatusCode = 201,
                 Result = result,
                 Message = "Course registration created successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new CourseRegistrationResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Result = null,
+                Message = ex.Message
             };
         }
         catch (Exception ex)
@@ -263,35 +282,13 @@ public class CourseRegistrationService(ICourseRegistrationRepository courseRegis
                 };
             }
 
-            if (courseRegistration.Id == Guid.Empty)
-            {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Course registration ID cannot be empty."
-                };
-            }
-
-            if (courseRegistration.ParticipantId == Guid.Empty)
-            {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Participant ID cannot be empty."
-                };
-            }
-
-            if (courseRegistration.CourseEventId == Guid.Empty)
-            {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Course event ID cannot be empty."
-                };
-            }
+            _ = new CourseRegistration(
+                courseRegistration.Id,
+                courseRegistration.ParticipantId,
+                courseRegistration.CourseEventId,
+                DateTime.UtcNow,
+                courseRegistration.IsPaid
+            );
 
             var existingCourseRegistration = await _courseRegistrationRepository.GetCourseRegistrationByIdAsync(courseRegistration.Id, cancellationToken);
             if (existingCourseRegistration == null)
@@ -311,6 +308,28 @@ public class CourseRegistrationService(ICourseRegistrationRepository courseRegis
                 existingCourseRegistration.RegistrationDate,
                 courseRegistration.IsPaid
             );
+
+            var participant = await _participantRepository.GetParticipantByIdAsync(updatedCourseRegistration.ParticipantId, cancellationToken);
+            if (participant is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Participant with ID '{updatedCourseRegistration.ParticipantId}' not found."
+                };
+            }
+
+            var courseEvent = await _courseEventRepository.GetCourseEventByIdAsync(updatedCourseRegistration.CourseEventId, cancellationToken);
+            if (courseEvent is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course event with ID '{updatedCourseRegistration.CourseEventId}' not found."
+                };
+            }
 
             var result = await _courseRegistrationRepository.UpdateCourseRegistrationAsync(updatedCourseRegistration, cancellationToken);
 
@@ -339,6 +358,15 @@ public class CourseRegistrationService(ICourseRegistrationRepository courseRegis
                 Success = false,
                 StatusCode = 409,
                 Message = "The course registration was modified by another user. Please refresh and try again."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new CourseRegistrationResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
             };
         }
         catch (Exception ex)

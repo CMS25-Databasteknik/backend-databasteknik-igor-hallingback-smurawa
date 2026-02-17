@@ -81,6 +81,16 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 Message = ex.Message
             };
         }
+        catch (ArgumentException ex)
+        {
+            return new InstructorResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Result = null,
+                Message = ex.Message
+            };
+        }
         catch (Exception ex)
         {
             return new InstructorResult
@@ -217,6 +227,16 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
+            if (instructor.InstructorRoleId < 1)
+            {
+                return new InstructorResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Instructor role ID must be greater than zero."
+                };
+            }
+
             var existingInstructor = await _instructorRepository.GetInstructorByIdAsync(instructor.Id, cancellationToken);
             if (existingInstructor == null)
             {
@@ -225,16 +245,6 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                     Success = false,
                     StatusCode = 404,
                     Message = $"Instructor with ID '{instructor.Id}' not found."
-                };
-            }
-
-            if (instructor.InstructorRoleId < 1)
-            {
-                return new InstructorResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Instructor role ID must be greater than zero."
                 };
             }
 
@@ -269,6 +279,15 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 StatusCode = 200,
                 Result = result,
                 Message = "Instructor updated successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new InstructorResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
             };
         }
         catch (Exception ex)
@@ -364,3 +383,4 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
         }
     }
 }
+

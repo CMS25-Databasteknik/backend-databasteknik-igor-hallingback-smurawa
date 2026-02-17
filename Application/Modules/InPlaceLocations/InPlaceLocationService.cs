@@ -74,6 +74,16 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 Message = "In-place location created successfully."
             };
         }
+        catch (ArgumentException ex)
+        {
+            return new InPlaceLocationResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Result = null,
+                Message = ex.Message
+            };
+        }
         catch (Exception ex)
         {
             return new InPlaceLocationResult
