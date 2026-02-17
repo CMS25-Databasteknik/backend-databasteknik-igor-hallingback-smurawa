@@ -1,6 +1,7 @@
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.Participants.Models;
 using Backend.Infrastructure.Persistence.Entities;
+using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
@@ -104,3 +105,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
             .AnyAsync(cr => cr.ParticipantId == participantId, cancellationToken);
     }
 }
+
+
+
+

@@ -1,6 +1,7 @@
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
 using Backend.Infrastructure.Persistence.Entities;
+using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
@@ -173,4 +174,8 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
         return ToModel(entity);
     }
 }
+
+
+
+
 

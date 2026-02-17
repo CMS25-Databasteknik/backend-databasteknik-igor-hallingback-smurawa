@@ -6,7 +6,7 @@ using Backend.Domain.Modules.InPlaceLocations.Contracts;
 using Backend.Domain.Modules.Instructors.Contracts;
 using Backend.Domain.Modules.Locations.Contracts;
 using Backend.Domain.Modules.Participants.Contracts;
-using Backend.Infrastructure.Persistence;
+using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Backend.Infrastructure.Persistence.EFC.Migrations
+namespace Infrastructure.Persistence.EFC.Migrations
 {
     /// <inheritdoc />
     public partial class GenerateInitialTables : Migration
