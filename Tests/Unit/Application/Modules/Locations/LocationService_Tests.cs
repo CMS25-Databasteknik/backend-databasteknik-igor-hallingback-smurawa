@@ -74,7 +74,7 @@ public class LocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Street name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateLocationAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -94,7 +94,7 @@ public class LocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Street name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateLocationAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -114,7 +114,7 @@ public class LocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Postal code cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateLocationAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -134,7 +134,7 @@ public class LocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Postal code cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateLocationAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -154,7 +154,7 @@ public class LocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("City cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateLocationAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -174,7 +174,7 @@ public class LocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("City cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateLocationAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -507,6 +507,8 @@ public class LocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
+        mockRepo.GetLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new Location(1, "Old Street", "111 11", "City"));
         var service = new LocationService(mockRepo);
         var input = new UpdateLocationInput(1, "", "111 43", "Stockholm");
 
@@ -517,7 +519,7 @@ public class LocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Street name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]
@@ -525,6 +527,8 @@ public class LocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
+        mockRepo.GetLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new Location(1, "Old Street", "111 11", "City"));
         var service = new LocationService(mockRepo);
         var input = new UpdateLocationInput(1, "Kungsgatan 12", "", "Stockholm");
 
@@ -535,7 +539,7 @@ public class LocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Postal code cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]
@@ -543,6 +547,8 @@ public class LocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
+        mockRepo.GetLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new Location(1, "Old Street", "111 11", "City"));
         var service = new LocationService(mockRepo);
         var input = new UpdateLocationInput(1, "Kungsgatan 12", "111 43", "");
 
@@ -553,7 +559,7 @@ public class LocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("City cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]

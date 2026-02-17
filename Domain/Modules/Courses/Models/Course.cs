@@ -17,12 +17,13 @@ public sealed class Course
             throw new ArgumentException("Course id cannot be empty.", nameof(id));
 
         if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Course title cannot be empty.", nameof(title));
+            throw new ArgumentException("Course title cannot be empty or whitespace.", nameof(title));
 
         if (string.IsNullOrWhiteSpace(description))
-            throw new ArgumentException("Course description cannot be empty.", nameof(description));
+            throw new ArgumentException("Course description cannot be empty or whitespace.", nameof(description));
 
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(durationInDays);
+        if (durationInDays <= 0)
+            throw new ArgumentOutOfRangeException(nameof(durationInDays), "Course duration must be greater than zero.");
 
         Id = id;
         Title = title.Trim();

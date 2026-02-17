@@ -14,21 +14,21 @@ public sealed class Participant
             throw new ArgumentException("ID cannot be empty.", nameof(id));
 
         if (string.IsNullOrWhiteSpace(firstName))
-            throw new ArgumentException("First name cannot be null or whitespace.", nameof(firstName));
+            throw new ArgumentException("First name cannot be empty or whitespace.", nameof(firstName));
 
         if (string.IsNullOrWhiteSpace(lastName))
-            throw new ArgumentException("Last name cannot be null or whitespace.", nameof(lastName));
+            throw new ArgumentException("Last name cannot be empty or whitespace.", nameof(lastName));
 
         if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email cannot be null or whitespace.", nameof(email));
+            throw new ArgumentException("Email cannot be empty or whitespace.", nameof(email));
 
         if (string.IsNullOrWhiteSpace(phoneNumber))
-            throw new ArgumentException("Phone number cannot be null or whitespace.", nameof(phoneNumber));
+            throw new ArgumentException("Phone number cannot be empty or whitespace.", nameof(phoneNumber));
 
         Id = id;
-        FirstName = firstName;
-        LastName = lastName;
-        Email = email;
-        PhoneNumber = phoneNumber;
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
+        Email = email.Trim();
+        PhoneNumber = phoneNumber.Trim();
     }
 }

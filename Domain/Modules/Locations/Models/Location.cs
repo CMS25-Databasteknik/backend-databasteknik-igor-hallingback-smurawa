@@ -13,17 +13,17 @@ public sealed class Location
             throw new ArgumentException("ID must be greater than or equal to zero.", nameof(id));
 
         if (string.IsNullOrWhiteSpace(streetName))
-            throw new ArgumentException("Street name cannot be null or whitespace.", nameof(streetName));
+            throw new ArgumentException("Street name cannot be empty or whitespace.", nameof(streetName));
 
         if (string.IsNullOrWhiteSpace(postalCode))
-            throw new ArgumentException("Postal code cannot be null or whitespace.", nameof(postalCode));
+            throw new ArgumentException("Postal code cannot be empty or whitespace.", nameof(postalCode));
 
         if (string.IsNullOrWhiteSpace(city))
-            throw new ArgumentException("City cannot be null or whitespace.", nameof(city));
+            throw new ArgumentException("City cannot be empty or whitespace.", nameof(city));
 
         Id = id;
-        StreetName = streetName;
-        PostalCode = postalCode;
-        City = city;
+        StreetName = streetName.Trim();
+        PostalCode = postalCode.Trim();
+        City = city.Trim();
     }
 }

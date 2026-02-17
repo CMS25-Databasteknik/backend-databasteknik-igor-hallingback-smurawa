@@ -13,12 +13,15 @@ public sealed class Instructor
             throw new ArgumentException("ID cannot be empty.", nameof(id));
 
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name cannot be null or whitespace.", nameof(name));
+            throw new ArgumentException("Name cannot be empty or whitespace.", nameof(name));
 
         Role = role ?? throw new ArgumentNullException(nameof(role));
 
+        if (role.Id <= 0)
+            throw new ArgumentException("Instructor role ID must be greater than zero.", nameof(role));
+
         Id = id;
-        Name = name;
+        Name = name.Trim();
         InstructorRoleId = role.Id;
     }
 }
