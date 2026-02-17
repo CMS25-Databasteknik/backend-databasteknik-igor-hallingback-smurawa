@@ -14,18 +14,92 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
 
     public async Task<CourseRegistration> CreateCourseRegistrationAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken)
     {
-        var entity = new CourseRegistrationEntity
+        using var tx = await _context.Database.BeginTransactionAsync(
+            System.Data.IsolationLevel.Serializable,
+            cancellationToken);
+
+        try
         {
-            Id = courseRegistration.Id,
-            ParticipantId = courseRegistration.ParticipantId,
-            CourseEventId = courseRegistration.CourseEventId,
-            IsPaid = courseRegistration.IsPaid
-        };
+            var availableSeats = await _context.Database
+                .SqlQuery<int>(
+                    $"""
+                    SELECT ce.Seats - COALESCE(COUNT(cr.Id), 0) AS Value
+                    FROM CourseEvents ce
+                    LEFT JOIN CourseRegistrations cr ON ce.Id = cr.CourseEventId
+                    WHERE ce.Id = {courseRegistration.CourseEventId}
+                    GROUP BY ce.Id, ce.Seats
+                    """)
+                .FirstOrDefaultAsync(cancellationToken);
 
-        _context.CourseRegistrations.Add(entity);
-        await _context.SaveChangesAsync(cancellationToken);
+            if (availableSeats <= 0)
+                throw new InvalidOperationException($"No available seats for course event '{courseRegistration.CourseEventId}'.");
 
-        return ToModel(entity);
+            var entity = new CourseRegistrationEntity
+            {
+                Id = courseRegistration.Id,
+                ParticipantId = courseRegistration.ParticipantId,
+                CourseEventId = courseRegistration.CourseEventId,
+                IsPaid = courseRegistration.IsPaid
+            };
+
+            _context.CourseRegistrations.Add(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+            await tx.CommitAsync(cancellationToken);
+
+            return ToModel(entity);
+        }
+        catch
+        {
+            await tx.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+    public async Task<CourseRegistration?> CreateRegistrationWithSeatCheckAsync(
+        CourseRegistration courseRegistration,
+        CancellationToken cancellationToken)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync(
+            System.Data.IsolationLevel.Serializable,
+            cancellationToken);
+
+        try
+        {
+            var availableSeats = await _context.Database
+                .SqlQuery<int>(
+                    $"""
+                    SELECT ce.Seats - COALESCE(COUNT(cr.Id), 0) AS Value
+                    FROM CourseEvents ce
+                    LEFT JOIN CourseRegistrations cr ON ce.Id = cr.CourseEventId
+                    WHERE ce.Id = {courseRegistration.CourseEventId}
+                    GROUP BY ce.Id, ce.Seats
+                    """)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (availableSeats <= 0)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return null;
+            }
+
+            var entity = new CourseRegistrationEntity
+            {
+                Id = courseRegistration.Id,
+                ParticipantId = courseRegistration.ParticipantId,
+                CourseEventId = courseRegistration.CourseEventId,
+                IsPaid = courseRegistration.IsPaid
+            };
+
+            _context.CourseRegistrations.Add(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            return ToModel(entity);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 
     public async Task<bool> DeleteCourseRegistrationAsync(Guid courseRegistrationId, CancellationToken cancellationToken)
@@ -99,3 +173,4 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
         return ToModel(entity);
     }
 }
+

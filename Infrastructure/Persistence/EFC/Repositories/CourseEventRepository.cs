@@ -38,15 +38,40 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
         public async Task<bool> DeleteCourseEventAsync(Guid courseEventId, CancellationToken cancellationToken)
         {
-            var entity = await _context.CourseEvents.SingleOrDefaultAsync(ce => ce.Id == courseEventId, cancellationToken);
+            using var tx = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-            if (entity == null)
-                throw new KeyNotFoundException($"Course event '{courseEventId}' not found.");
+            try
+            {
+                var exists = await _context.CourseEvents
+                    .AnyAsync(ce => ce.Id == courseEventId, cancellationToken);
 
-            _context.CourseEvents.Remove(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+                if (!exists)
+                    throw new KeyNotFoundException($"Course event '{courseEventId}' not found.");
 
-            return true;
+                await _context.Database.ExecuteSqlAsync(
+                    $"DELETE FROM CourseRegistrations WHERE CourseEventId = {courseEventId}",
+                    cancellationToken);
+
+                await _context.Database.ExecuteSqlAsync(
+                    $"DELETE FROM CourseEventInstructors WHERE CourseEventId = {courseEventId}",
+                    cancellationToken);
+
+                await _context.Database.ExecuteSqlAsync(
+                    $"DELETE FROM InPlaceEventLocations WHERE CourseEventId = {courseEventId}",
+                    cancellationToken);
+
+                await _context.Database.ExecuteSqlAsync(
+                    $"DELETE FROM CourseEvents WHERE Id = {courseEventId}",
+                    cancellationToken);
+
+                await tx.CommitAsync(cancellationToken);
+                return true;
+            }
+            catch
+            {
+                await tx.RollbackAsync(cancellationToken);
+                throw;
+            }
         }
 
         public async Task<IReadOnlyList<CourseEvent>> GetAllCourseEventsAsync(CancellationToken cancellationToken)
