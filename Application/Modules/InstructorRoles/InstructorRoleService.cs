@@ -18,15 +18,14 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 return new InstructorRoleResult { Success = false, StatusCode = 400, Message = "Role cannot be null." };
             }
 
-            if (string.IsNullOrWhiteSpace(input.RoleName))
-            {
-                return new InstructorRoleResult { Success = false, StatusCode = 400, Message = "Role name cannot be empty or whitespace." };
-            }
-
             var role = new InstructorRole(0, input.RoleName);
             var created = await _repository.CreateInstructorRoleAsync(role, cancellationToken);
 
             return new InstructorRoleResult { Success = true, StatusCode = 201, Result = created, Message = "Instructor role created successfully." };
+        }
+        catch (ArgumentException ex)
+        {
+            return new InstructorRoleResult { Success = false, StatusCode = 400, Message = ex.Message };
         }
         catch (Exception ex)
         {
@@ -84,11 +83,6 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 return new InstructorRoleResult { Success = false, StatusCode = 400, Message = "Id must be greater than zero." };
             }
 
-            if (string.IsNullOrWhiteSpace(input.RoleName))
-            {
-                return new InstructorRoleResult { Success = false, StatusCode = 400, Message = "Role name cannot be empty or whitespace." };
-            }
-
             var updated = await _repository.UpdateInstructorRoleAsync(new InstructorRole(input.Id, input.RoleName), cancellationToken);
             if (updated == null)
             {
@@ -96,6 +90,10 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
             }
 
             return new InstructorRoleResult { Success = true, StatusCode = 200, Result = updated, Message = "Instructor role updated successfully." };
+        }
+        catch (ArgumentException ex)
+        {
+            return new InstructorRoleResult { Success = false, StatusCode = 400, Message = ex.Message };
         }
         catch (Exception ex)
         {

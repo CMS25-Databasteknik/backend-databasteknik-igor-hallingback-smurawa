@@ -59,7 +59,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("firstName", exception.ParamName);
-        Assert.Contains("First name cannot be null or whitespace", exception.Message);
+        Assert.Contains("First name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("firstName", exception.ParamName);
-        Assert.Contains("First name cannot be null or whitespace", exception.Message);
+        Assert.Contains("First name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("firstName", exception.ParamName);
-        Assert.Contains("First name cannot be null or whitespace", exception.Message);
+        Assert.Contains("First name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("lastName", exception.ParamName);
-        Assert.Contains("Last name cannot be null or whitespace", exception.Message);
+        Assert.Contains("Last name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("lastName", exception.ParamName);
-        Assert.Contains("Last name cannot be null or whitespace", exception.Message);
+        Assert.Contains("Last name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("lastName", exception.ParamName);
-        Assert.Contains("Last name cannot be null or whitespace", exception.Message);
+        Assert.Contains("Last name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("email", exception.ParamName);
-        Assert.Contains("Email cannot be null or whitespace", exception.Message);
+        Assert.Contains("Email cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -185,7 +185,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("email", exception.ParamName);
-        Assert.Contains("Email cannot be null or whitespace", exception.Message);
+        Assert.Contains("Email cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -203,7 +203,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("email", exception.ParamName);
-        Assert.Contains("Email cannot be null or whitespace", exception.Message);
+        Assert.Contains("Email cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("phoneNumber", exception.ParamName);
-        Assert.Contains("Phone number cannot be null or whitespace", exception.Message);
+        Assert.Contains("Phone number cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -239,7 +239,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("phoneNumber", exception.ParamName);
-        Assert.Contains("Phone number cannot be null or whitespace", exception.Message);
+        Assert.Contains("Phone number cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -257,7 +257,7 @@ public class Participant_Tests
             new Participant(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("phoneNumber", exception.ParamName);
-        Assert.Contains("Phone number cannot be null or whitespace", exception.Message);
+        Assert.Contains("Phone number cannot be empty or whitespace", exception.Message);
     }
 
     [Theory]

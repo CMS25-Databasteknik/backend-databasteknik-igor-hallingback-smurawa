@@ -8,7 +8,7 @@ public sealed class InstructorRole
             throw new ArgumentException("Id is required.", nameof(id));
 
         if (string.IsNullOrWhiteSpace(roleName))
-            throw new ArgumentException("RoleName is required.", nameof(roleName));
+            throw new ArgumentException("Role name cannot be empty or whitespace.", nameof(roleName));
 
         Id = id;
         RoleName = roleName.Trim();

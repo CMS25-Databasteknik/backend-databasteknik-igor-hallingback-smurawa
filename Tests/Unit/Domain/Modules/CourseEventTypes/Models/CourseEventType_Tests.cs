@@ -56,7 +56,7 @@ public class CourseEventType_Tests
             new CourseEventType(id, typeName));
 
         Assert.Equal("typeName", exception.ParamName);
-        Assert.Contains("Type name cannot be null or whitespace", exception.Message);
+        Assert.Contains("Type name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class CourseEventType_Tests
             new CourseEventType(id, typeName));
 
         Assert.Equal("typeName", exception.ParamName);
-        Assert.Contains("Type name cannot be null or whitespace", exception.Message);
+        Assert.Contains("Type name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class CourseEventType_Tests
             new CourseEventType(id, typeName));
 
         Assert.Equal("typeName", exception.ParamName);
-        Assert.Contains("Type name cannot be null or whitespace", exception.Message);
+        Assert.Contains("Type name cannot be empty or whitespace", exception.Message);
     }
 
     [Theory]

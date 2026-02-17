@@ -10,9 +10,9 @@ public sealed class CourseEventType
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
 
         if (string.IsNullOrWhiteSpace(typeName))
-            throw new ArgumentException("Type name cannot be null or whitespace.", nameof(typeName));
+            throw new ArgumentException("Type name cannot be empty or whitespace.", nameof(typeName));
 
         Id = id;
-        TypeName = typeName;
+        TypeName = typeName.Trim();
     }
 }

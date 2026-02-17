@@ -24,39 +24,6 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(location.StreetName))
-            {
-                return new LocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Street name cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(location.PostalCode))
-            {
-                return new LocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Postal code cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(location.City))
-            {
-                return new LocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "City cannot be empty or whitespace."
-                };
-            }
-
             var newLocation = new Location(
                 0,
                 location.StreetName,
@@ -72,6 +39,16 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 StatusCode = 201,
                 Result = result,
                 Message = "Location created successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new LocationResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Result = null,
+                Message = ex.Message
             };
         }
         catch (Exception ex)
@@ -191,36 +168,6 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(location.StreetName))
-            {
-                return new LocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Street name cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(location.PostalCode))
-            {
-                return new LocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Postal code cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(location.City))
-            {
-                return new LocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "City cannot be empty or whitespace."
-                };
-            }
-
             var existingLocation = await _locationRepository.GetLocationByIdAsync(location.Id, cancellationToken);
             if (existingLocation == null)
             {
@@ -257,6 +204,15 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 StatusCode = 200,
                 Result = result,
                 Message = "Location updated successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new LocationResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
             };
         }
         catch (Exception ex)

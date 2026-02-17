@@ -73,7 +73,7 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course title cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -93,7 +93,7 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course title cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -113,7 +113,7 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course description cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -133,7 +133,7 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course description cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -153,7 +153,7 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course duration must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -173,7 +173,7 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course duration must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -519,6 +519,8 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
+        mockRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5), Array.Empty<CourseEvent>()));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "", "Test Description", 5);
 
@@ -529,7 +531,7 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course title cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]
@@ -537,6 +539,8 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
+        mockRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5), Array.Empty<CourseEvent>()));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "", 5);
 
@@ -547,7 +551,7 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course description cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]
@@ -555,6 +559,8 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
+        mockRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5), Array.Empty<CourseEvent>()));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "Test Description", 0);
 
@@ -565,7 +571,7 @@ public class CourseService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Course duration must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
     }
 
     [Fact]

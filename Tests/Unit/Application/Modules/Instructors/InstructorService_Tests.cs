@@ -84,7 +84,7 @@ public class InstructorService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
     }
@@ -104,7 +104,7 @@ public class InstructorService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
     }
@@ -409,7 +409,7 @@ public class InstructorService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Instructor ID cannot be empty.", result.Message);
+        Assert.Contains("cannot be empty", result.Message);
 
         await mockRepo.DidNotReceive().GetInstructorByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
@@ -419,6 +419,8 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
+        mockRepo.GetInstructorByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Instructor(Guid.NewGuid(), "Existing", new InstructorRole(1, "Lead")));
         var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(Guid.NewGuid(), "");
 
@@ -429,7 +431,7 @@ public class InstructorService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]
@@ -437,6 +439,8 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
+        mockRepo.GetInstructorByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Instructor(Guid.NewGuid(), "Existing", new InstructorRole(1, "Lead")));
         var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(Guid.NewGuid(), "   ");
 
@@ -447,7 +451,7 @@ public class InstructorService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]

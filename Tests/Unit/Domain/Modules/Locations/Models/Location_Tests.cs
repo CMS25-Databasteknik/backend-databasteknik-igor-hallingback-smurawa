@@ -71,7 +71,7 @@ public class Location_Tests
             new Location(id, streetName, postalCode, city));
 
         Assert.Equal("streetName", exception.ParamName);
-        Assert.Contains("Street name cannot be null or whitespace", exception.Message);
+        Assert.Contains("Street name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class Location_Tests
             new Location(id, streetName, postalCode, city));
 
         Assert.Equal("streetName", exception.ParamName);
-        Assert.Contains("Street name cannot be null or whitespace", exception.Message);
+        Assert.Contains("Street name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class Location_Tests
             new Location(id, streetName, postalCode, city));
 
         Assert.Equal("streetName", exception.ParamName);
-        Assert.Contains("Street name cannot be null or whitespace", exception.Message);
+        Assert.Contains("Street name cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class Location_Tests
             new Location(id, streetName, postalCode, city));
 
         Assert.Equal("postalCode", exception.ParamName);
-        Assert.Contains("Postal code cannot be null or whitespace", exception.Message);
+        Assert.Contains("Postal code cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class Location_Tests
             new Location(id, streetName, postalCode, city));
 
         Assert.Equal("postalCode", exception.ParamName);
-        Assert.Contains("Postal code cannot be null or whitespace", exception.Message);
+        Assert.Contains("Postal code cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class Location_Tests
             new Location(id, streetName, postalCode, city));
 
         Assert.Equal("postalCode", exception.ParamName);
-        Assert.Contains("Postal code cannot be null or whitespace", exception.Message);
+        Assert.Contains("Postal code cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class Location_Tests
             new Location(id, streetName, postalCode, city));
 
         Assert.Equal("city", exception.ParamName);
-        Assert.Contains("City cannot be null or whitespace", exception.Message);
+        Assert.Contains("City cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public class Location_Tests
             new Location(id, streetName, postalCode, city));
 
         Assert.Equal("city", exception.ParamName);
-        Assert.Contains("City cannot be null or whitespace", exception.Message);
+        Assert.Contains("City cannot be empty or whitespace", exception.Message);
     }
 
     [Fact]
@@ -207,7 +207,7 @@ public class Location_Tests
             new Location(id, streetName, postalCode, city));
 
         Assert.Equal("city", exception.ParamName);
-        Assert.Contains("City cannot be null or whitespace", exception.Message);
+        Assert.Contains("City cannot be empty or whitespace", exception.Message);
     }
 
     [Theory]

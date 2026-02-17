@@ -24,39 +24,6 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            if (inPlaceLocation.LocationId <= 0)
-            {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Location ID must be greater than zero."
-                };
-            }
-
-            if (inPlaceLocation.RoomNumber <= 0)
-            {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Room number must be greater than zero."
-                };
-            }
-
-            if (inPlaceLocation.Seats <= 0)
-            {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Seats must be greater than zero."
-                };
-            }
-
             var newInPlaceLocation = new InPlaceLocation(
                 0,
                 inPlaceLocation.LocationId,
@@ -72,6 +39,16 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 StatusCode = 201,
                 Result = result,
                 Message = "In-place location created successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new InPlaceLocationResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Result = null,
+                Message = ex.Message
             };
         }
         catch (Exception ex)
@@ -237,36 +214,6 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            if (inPlaceLocation.LocationId <= 0)
-            {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Location ID must be greater than zero."
-                };
-            }
-
-            if (inPlaceLocation.RoomNumber <= 0)
-            {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Room number must be greater than zero."
-                };
-            }
-
-            if (inPlaceLocation.Seats <= 0)
-            {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Seats must be greater than zero."
-                };
-            }
-
             var existingInPlaceLocation = await _inPlaceLocationRepository.GetInPlaceLocationByIdAsync(inPlaceLocation.Id, cancellationToken);
             if (existingInPlaceLocation == null)
             {
@@ -303,6 +250,15 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 StatusCode = 200,
                 Result = result,
                 Message = "In-place location updated successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new InPlaceLocationResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
             };
         }
         catch (Exception ex)

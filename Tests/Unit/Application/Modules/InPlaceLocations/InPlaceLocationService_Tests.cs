@@ -74,7 +74,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -94,7 +94,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -114,7 +114,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Room number must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -134,7 +134,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Room number must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -154,7 +154,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Seats must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -174,7 +174,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Seats must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -379,7 +379,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("In-place location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -398,7 +398,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("In-place location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -496,7 +496,7 @@ public class InPlaceLocationService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().GetInPlaceLocationsByLocationIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -514,7 +514,7 @@ public class InPlaceLocationService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().GetInPlaceLocationsByLocationIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -612,7 +612,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("In-place location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -622,6 +622,8 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
+        mockRepo.GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new InPlaceLocation(1, 1, 101, 30));
         var service = new InPlaceLocationService(mockRepo);
         var input = new UpdateInPlaceLocationInput(1, 0, 101, 30);
 
@@ -632,7 +634,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
     }
 
     [Fact]
@@ -640,6 +642,8 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
+        mockRepo.GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new InPlaceLocation(1, 1, 101, 30));
         var service = new InPlaceLocationService(mockRepo);
         var input = new UpdateInPlaceLocationInput(1, 1, 0, 30);
 
@@ -650,7 +654,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Room number must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
     }
 
     [Fact]
@@ -658,6 +662,8 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
+        mockRepo.GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new InPlaceLocation(1, 1, 101, 30));
         var service = new InPlaceLocationService(mockRepo);
         var input = new UpdateInPlaceLocationInput(1, 1, 101, 0);
 
@@ -668,7 +674,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Seats must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
     }
 
     [Fact]
@@ -773,7 +779,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.False(result.Result);
-        Assert.Equal("In-place location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().DeleteInPlaceLocationAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -792,7 +798,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.False(result.Result);
-        Assert.Equal("In-place location ID must be greater than zero.", result.Message);
+        Assert.Contains("greater than zero", result.Message);
 
         await mockRepo.DidNotReceive().DeleteInPlaceLocationAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }

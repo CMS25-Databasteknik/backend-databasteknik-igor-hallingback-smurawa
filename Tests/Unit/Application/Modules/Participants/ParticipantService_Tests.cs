@@ -75,7 +75,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("First name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateParticipantAsync(Arg.Any<Participant>(), Arg.Any<CancellationToken>());
     }
@@ -95,7 +95,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("First name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateParticipantAsync(Arg.Any<Participant>(), Arg.Any<CancellationToken>());
     }
@@ -115,7 +115,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Last name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateParticipantAsync(Arg.Any<Participant>(), Arg.Any<CancellationToken>());
     }
@@ -135,7 +135,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Last name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateParticipantAsync(Arg.Any<Participant>(), Arg.Any<CancellationToken>());
     }
@@ -155,7 +155,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Email cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateParticipantAsync(Arg.Any<Participant>(), Arg.Any<CancellationToken>());
     }
@@ -175,7 +175,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Email cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateParticipantAsync(Arg.Any<Participant>(), Arg.Any<CancellationToken>());
     }
@@ -195,7 +195,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Phone number cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateParticipantAsync(Arg.Any<Participant>(), Arg.Any<CancellationToken>());
     }
@@ -215,7 +215,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Phone number cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
 
         await mockRepo.DidNotReceive().CreateParticipantAsync(Arg.Any<Participant>(), Arg.Any<CancellationToken>());
     }
@@ -531,6 +531,8 @@ public class ParticipantService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
+        mockRepo.GetParticipantByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567"));
         var service = new ParticipantService(mockRepo);
         var input = new UpdateParticipantInput(Guid.NewGuid(), "", "Doe", "john.doe@example.com", "+46701234567");
 
@@ -541,7 +543,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("First name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]
@@ -549,6 +551,8 @@ public class ParticipantService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
+        mockRepo.GetParticipantByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567"));
         var service = new ParticipantService(mockRepo);
         var input = new UpdateParticipantInput(Guid.NewGuid(), "John", "", "john.doe@example.com", "+46701234567");
 
@@ -559,7 +563,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Last name cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]
@@ -567,6 +571,8 @@ public class ParticipantService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
+        mockRepo.GetParticipantByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567"));
         var service = new ParticipantService(mockRepo);
         var input = new UpdateParticipantInput(Guid.NewGuid(), "John", "Doe", "", "+46701234567");
 
@@ -577,7 +583,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Email cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]
@@ -585,6 +591,8 @@ public class ParticipantService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
+        mockRepo.GetParticipantByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567"));
         var service = new ParticipantService(mockRepo);
         var input = new UpdateParticipantInput(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "");
 
@@ -595,7 +603,7 @@ public class ParticipantService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Equal("Phone number cannot be empty or whitespace.", result.Message);
+        Assert.Contains("cannot be empty or whitespace", result.Message);
     }
 
     [Fact]

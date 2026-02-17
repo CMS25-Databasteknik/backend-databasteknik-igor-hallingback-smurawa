@@ -24,39 +24,6 @@ namespace Backend.Application.Modules.Courses
                     };
                 }
 
-                if (string.IsNullOrWhiteSpace(course.Title))
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Result = null,
-                        Message = "Course title cannot be empty or whitespace."
-                    };
-                }
-
-                if (string.IsNullOrWhiteSpace(course.Description))
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Result = null,
-                        Message = "Course description cannot be empty or whitespace."
-                    };
-                }
-
-                if (course.DurationInDays <= 0)
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Result = null,
-                        Message = "Course duration must be greater than zero."
-                    };
-                }
-
                 var newCourse = new Course(
                     id: Guid.NewGuid(),
                     course.Title,
@@ -72,6 +39,16 @@ namespace Backend.Application.Modules.Courses
                     StatusCode = 201,
                     Result = newCourse,
                     Message = "Course created successfully."
+                };
+            }
+            catch (ArgumentException ex)
+            {
+                return new CourseResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Result = null,
+                    Message = ex.Message
                 };
             }
             catch (Exception ex)
@@ -180,7 +157,7 @@ namespace Backend.Application.Modules.Courses
                         Message = "Course cannot be null."
                     };
                 }
-
+                
                 if (course.Id == Guid.Empty)
                 {
                     return new CourseResult
@@ -188,36 +165,6 @@ namespace Backend.Application.Modules.Courses
                         Success = false,
                         StatusCode = 400,
                         Message = "Course ID cannot be empty."
-                    };
-                }
-
-                if (string.IsNullOrWhiteSpace(course.Title))
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Message = "Course title cannot be empty or whitespace."
-                    };
-                }
-
-                if (string.IsNullOrWhiteSpace(course.Description))
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Message = "Course description cannot be empty or whitespace."
-                    };
-                }
-
-                if (course.DurationInDays <= 0)
-                {
-                    return new CourseResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Message = "Course duration must be greater than zero."
                     };
                 }
 
@@ -261,22 +208,31 @@ namespace Backend.Application.Modules.Courses
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("modified by another user"))
             {
-                return new CourseResult
-                {
-                    Success = false,
-                    StatusCode = 409,
-                    Message = "The course was modified by another user. Please refresh and try again."
-                };
-            }
-            catch (Exception ex)
+            return new CourseResult
             {
-                return new CourseResult
-                {
-                    Success = false,
-                    StatusCode = 500,
-                    Message = $"An error occurred while updating the course: {ex.Message}"
-                };
-            }
+                Success = false,
+                StatusCode = 409,
+                Message = "The course was modified by another user. Please refresh and try again."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new CourseResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
+            };
+        }
+        catch (Exception ex)
+        {
+            return new CourseResult
+            {
+                Success = false,
+                StatusCode = 500,
+                Message = $"An error occurred while updating the course: {ex.Message}"
+            };
+        }
         }
 
         public async Task<CourseDeleteResult> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken = default)

@@ -24,50 +24,6 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(participant.FirstName))
-            {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "First name cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(participant.LastName))
-            {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Last name cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(participant.Email))
-            {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Email cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(participant.PhoneNumber))
-            {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Phone number cannot be empty or whitespace."
-                };
-            }
-
             var newParticipant = new Participant(
                 Guid.NewGuid(),
                 participant.FirstName,
@@ -84,6 +40,16 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 StatusCode = 201,
                 Result = result,
                 Message = "Participant created successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new ParticipantResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Result = null,
+                Message = ex.Message
             };
         }
         catch (Exception ex)
@@ -203,46 +169,6 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(participant.FirstName))
-            {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "First name cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(participant.LastName))
-            {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Last name cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(participant.Email))
-            {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Email cannot be empty or whitespace."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(participant.PhoneNumber))
-            {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Phone number cannot be empty or whitespace."
-                };
-            }
-
             var existingParticipant = await _participantRepository.GetParticipantByIdAsync(participant.Id, cancellationToken);
             if (existingParticipant == null)
             {
@@ -289,6 +215,15 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 Success = false,
                 StatusCode = 409,
                 Message = "The participant was modified by another user. Please refresh and try again."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new ParticipantResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
             };
         }
         catch (Exception ex)

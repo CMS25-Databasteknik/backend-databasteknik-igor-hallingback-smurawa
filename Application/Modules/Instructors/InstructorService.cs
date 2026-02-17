@@ -25,28 +25,6 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            if (string.IsNullOrWhiteSpace(instructor.Name))
-            {
-                return new InstructorResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Name cannot be empty or whitespace."
-                };
-            }
-
-            if (instructor.InstructorRoleId < 1)
-            {
-                return new InstructorResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Result = null,
-                    Message = "Instructor role ID must be greater than zero."
-                };
-            }
-
             var role = await _instructorRoleRepository.GetInstructorRoleByIdAsync(instructor.InstructorRoleId, cancellationToken);
             if (role == null)
             {
@@ -77,6 +55,16 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             {
                 Success = false,
                 StatusCode = 404,
+                Result = null,
+                Message = ex.Message
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new InstructorResult
+            {
+                Success = false,
+                StatusCode = 400,
                 Result = null,
                 Message = ex.Message
             };
@@ -197,47 +185,6 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            if (instructor.Id == Guid.Empty)
-            {
-                return new InstructorResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Instructor ID cannot be empty."
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(instructor.Name))
-            {
-                return new InstructorResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Name cannot be empty or whitespace."
-                };
-            }
-
-            var existingInstructor = await _instructorRepository.GetInstructorByIdAsync(instructor.Id, cancellationToken);
-            if (existingInstructor == null)
-            {
-                return new InstructorResult
-                {
-                    Success = false,
-                    StatusCode = 404,
-                    Message = $"Instructor with ID '{instructor.Id}' not found."
-                };
-            }
-
-            if (instructor.InstructorRoleId < 1)
-            {
-                return new InstructorResult
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Instructor role ID must be greater than zero."
-                };
-            }
-
             var role = await _instructorRoleRepository.GetInstructorRoleByIdAsync(instructor.InstructorRoleId, cancellationToken);
             if (role == null)
             {
@@ -250,6 +197,17 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             }
 
             var updatedInstructor = new Instructor(instructor.Id, instructor.Name, role);
+
+            var existingInstructor = await _instructorRepository.GetInstructorByIdAsync(instructor.Id, cancellationToken);
+            if (existingInstructor == null)
+            {
+                return new InstructorResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Instructor with ID '{instructor.Id}' not found."
+                };
+            }
 
             var result = await _instructorRepository.UpdateInstructorAsync(updatedInstructor, cancellationToken);
 
@@ -269,6 +227,15 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 StatusCode = 200,
                 Result = result,
                 Message = "Instructor updated successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new InstructorResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
             };
         }
         catch (Exception ex)
@@ -364,3 +331,4 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
         }
     }
 }
+
