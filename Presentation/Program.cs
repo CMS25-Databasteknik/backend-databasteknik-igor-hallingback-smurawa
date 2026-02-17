@@ -11,6 +11,8 @@ using Backend.Application.Modules.InPlaceLocations;
 using Backend.Application.Modules.InPlaceLocations.Inputs;
 using Backend.Application.Modules.Instructors;
 using Backend.Application.Modules.Instructors.Inputs;
+using Backend.Application.Modules.InstructorRoles;
+using Backend.Application.Modules.InstructorRoles.Inputs;
 using Backend.Application.Modules.Locations;
 using Backend.Application.Modules.Locations.Inputs;
 using Backend.Application.Modules.Participants;
@@ -22,6 +24,7 @@ using Backend.Presentation.API.Models.CourseEventType;
 using Backend.Presentation.API.Models.CourseRegistration;
 using Backend.Presentation.API.Models.InPlaceLocation;
 using Backend.Presentation.API.Models.Instructor;
+using Backend.Presentation.API.Models.InstructorRole;
 using Backend.Presentation.API.Models.Location;
 using Backend.Presentation.API.Models.Participant;
 
@@ -474,7 +477,7 @@ public partial class Program
 
         app.MapPost("/api/instructors", async (CreateInstructorRequest request, IInstructorService instructorService, CancellationToken cancellationToken) =>
         {
-            var input = new CreateInstructorInput(request.Name);
+            var input = new CreateInstructorInput(request.Name, request.InstructorRoleId);
             var response = await instructorService.CreateInstructorAsync(input, cancellationToken);
 
             if (!response.Success)
@@ -485,7 +488,7 @@ public partial class Program
 
         app.MapPut("/api/instructors/{id:guid}", async (Guid id, UpdateInstructorRequest request, IInstructorService instructorService, CancellationToken cancellationToken) =>
         {
-            var input = new UpdateInstructorInput(id, request.Name);
+            var input = new UpdateInstructorInput(id, request.Name, request.InstructorRoleId);
             var response = await instructorService.UpdateInstructorAsync(input, cancellationToken);
 
             if (!response.Success)
@@ -503,6 +506,46 @@ public partial class Program
 
             return Results.Ok(response);
         }).WithName("DeleteInstructor");
+
+        app.MapGet("/api/instructor-roles", async (IInstructorRoleService roleService, CancellationToken cancellationToken) =>
+        {
+            var response = await roleService.GetAllInstructorRolesAsync(cancellationToken);
+            return Results.Ok(response);
+        }).WithName("GetAllInstructorRoles");
+
+        app.MapGet("/api/instructor-roles/{id:int}", async (int id, IInstructorRoleService roleService, CancellationToken cancellationToken) =>
+        {
+            var response = await roleService.GetInstructorRoleByIdAsync(id, cancellationToken);
+            if (!response.Success)
+                return Results.BadRequest(response);
+            return Results.Ok(response);
+        }).WithName("GetInstructorRoleById");
+
+        app.MapPost("/api/instructor-roles", async (CreateInstructorRoleRequest request, IInstructorRoleService roleService, CancellationToken cancellationToken) =>
+        {
+            var input = new CreateInstructorRoleInput(request.RoleName);
+            var response = await roleService.CreateInstructorRoleAsync(input, cancellationToken);
+            if (!response.Success)
+                return Results.BadRequest(response);
+            return Results.Created($"/api/instructor-roles/{response.Result?.Id}", response);
+        }).WithName("CreateInstructorRole");
+
+        app.MapPut("/api/instructor-roles/{id:int}", async (int id, UpdateInstructorRoleRequest request, IInstructorRoleService roleService, CancellationToken cancellationToken) =>
+        {
+            var input = new UpdateInstructorRoleInput(id, request.RoleName);
+            var response = await roleService.UpdateInstructorRoleAsync(input, cancellationToken);
+            if (!response.Success)
+                return Results.BadRequest(response);
+            return Results.Ok(response);
+        }).WithName("UpdateInstructorRole");
+
+        app.MapDelete("/api/instructor-roles/{id:int}", async (int id, IInstructorRoleService roleService, CancellationToken cancellationToken) =>
+        {
+            var response = await roleService.DeleteInstructorRoleAsync(id, cancellationToken);
+            if (!response.Success)
+                return Results.BadRequest(response);
+            return Results.Ok(response);
+        }).WithName("DeleteInstructorRole");
 
         app.Run();
     }

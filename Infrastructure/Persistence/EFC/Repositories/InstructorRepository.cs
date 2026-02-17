@@ -11,14 +11,15 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
     private readonly CoursesOnlineDbContext _context = context;
 
     private static Instructor ToModel(InstructorEntity entity)
-        => new(entity.Id, entity.Name);
+        => new(entity.Id, entity.Name, entity.InstructorRoleId);
 
     public async Task<Instructor> CreateInstructorAsync(Instructor instructor, CancellationToken cancellationToken)
     {
         var entity = new InstructorEntity
         {
             Id = instructor.Id,
-            Name = instructor.Name
+            Name = instructor.Name,
+            InstructorRoleId = instructor.InstructorRoleId
         };
 
         _context.Instructors.Add(entity);

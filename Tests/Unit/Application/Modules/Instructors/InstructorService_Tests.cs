@@ -8,6 +8,14 @@ namespace Backend.Tests.Unit.Application.Modules.Instructors;
 
 public class InstructorService_Tests
 {
+    private static IInstructorRoleRepository CreateRoleRepo()
+    {
+        var repo = Substitute.For<IInstructorRoleRepository>();
+        repo.GetInstructorRoleByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(ci => new InstructorRole(ci.Arg<int>(), $"Role-{ci.Arg<int>()}"));
+        return repo;
+    }
+
     #region CreateInstructorAsync Tests
 
     [Fact]
@@ -15,12 +23,16 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
+        var mockRoleRepo = Substitute.For<IInstructorRoleRepository>();
+        mockRoleRepo.GetInstructorRoleByIdAsync(1, Arg.Any<CancellationToken>())
+            .Returns(new InstructorRole(1, "Lead"));
+
         var expectedInstructor = new Instructor(Guid.NewGuid(), "Dr. John Doe");
 
         mockRepo.CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(expectedInstructor);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, mockRoleRepo);
         var input = new CreateInstructorInput("Dr. John Doe");
 
         // Act
@@ -43,7 +55,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.CreateInstructorAsync(null!, CancellationToken.None);
@@ -62,7 +74,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new CreateInstructorInput("");
 
         // Act
@@ -82,7 +94,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new CreateInstructorInput("   ");
 
         // Act
@@ -105,7 +117,7 @@ public class InstructorService_Tests
         mockRepo.CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Instructor>(new Exception("Database error")));
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new CreateInstructorInput("Dr. John Doe");
 
         // Act
@@ -133,7 +145,7 @@ public class InstructorService_Tests
         mockRepo.CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(expectedInstructor);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new CreateInstructorInput(name);
 
         // Act
@@ -150,7 +162,10 @@ public class InstructorService_Tests
     public void InstructorService_Constructor_Should_Throw_When_Repository_Is_Null()
     {
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => new InstructorService(null!));
+        var roleRepo = CreateRoleRepo();
+        Assert.Throws<ArgumentNullException>(() => new InstructorService(null!, roleRepo));
+        var instructorRepo = Substitute.For<IInstructorRepository>();
+        Assert.Throws<ArgumentNullException>(() => new InstructorService(instructorRepo, null!));
     }
 
     #endregion
@@ -172,7 +187,7 @@ public class InstructorService_Tests
         mockRepo.GetAllInstructorsAsync(Arg.Any<CancellationToken>())
             .Returns(instructors);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.GetAllInstructorsAsync(CancellationToken.None);
@@ -195,7 +210,7 @@ public class InstructorService_Tests
         mockRepo.GetAllInstructorsAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Instructor>());
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.GetAllInstructorsAsync(CancellationToken.None);
@@ -216,7 +231,7 @@ public class InstructorService_Tests
         mockRepo.GetAllInstructorsAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException<IReadOnlyList<Instructor>>(new Exception("Database connection failed")));
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.GetAllInstructorsAsync(CancellationToken.None);
@@ -243,7 +258,7 @@ public class InstructorService_Tests
         mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(instructor);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.GetInstructorByIdAsync(instructorId, CancellationToken.None);
@@ -269,7 +284,7 @@ public class InstructorService_Tests
         mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns((Instructor)null!);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.GetInstructorByIdAsync(instructorId, CancellationToken.None);
@@ -286,7 +301,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.GetInstructorByIdAsync(Guid.Empty, CancellationToken.None);
@@ -310,7 +325,7 @@ public class InstructorService_Tests
         mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Instructor?>(new Exception("Database error")));
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.GetInstructorByIdAsync(instructorId, CancellationToken.None);
@@ -342,7 +357,7 @@ public class InstructorService_Tests
         mockRepo.UpdateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(updatedInstructor);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(instructorId, "Prof. John Doe");
 
         // Act
@@ -365,7 +380,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.UpdateInstructorAsync(null!, CancellationToken.None);
@@ -384,7 +399,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(Guid.Empty, "Dr. John Doe");
 
         // Act
@@ -404,7 +419,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(Guid.NewGuid(), "");
 
         // Act
@@ -422,7 +437,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(Guid.NewGuid(), "   ");
 
         // Act
@@ -445,7 +460,7 @@ public class InstructorService_Tests
         mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns((Instructor)null!);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(instructorId, "Dr. John Doe");
 
         // Act
@@ -474,7 +489,7 @@ public class InstructorService_Tests
         mockRepo.UpdateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Instructor?>(new Exception("Database error")));
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(instructorId, "Prof. John Doe");
 
         // Act
@@ -509,7 +524,7 @@ public class InstructorService_Tests
         mockRepo.DeleteInstructorAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.DeleteInstructorAsync(instructorId, CancellationToken.None);
@@ -528,7 +543,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.DeleteInstructorAsync(Guid.Empty, CancellationToken.None);
@@ -552,7 +567,7 @@ public class InstructorService_Tests
         mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns((Instructor)null!);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.DeleteInstructorAsync(instructorId, CancellationToken.None);
@@ -580,7 +595,7 @@ public class InstructorService_Tests
         mockRepo.HasCourseEventsAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.DeleteInstructorAsync(instructorId, CancellationToken.None);
@@ -612,7 +627,7 @@ public class InstructorService_Tests
         mockRepo.DeleteInstructorAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<bool>(new Exception("Database error")));
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.DeleteInstructorAsync(instructorId, CancellationToken.None);
@@ -642,7 +657,7 @@ public class InstructorService_Tests
         mockRepo.DeleteInstructorAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        var service = new InstructorService(mockRepo);
+        var service = new InstructorService(mockRepo, CreateRoleRepo());
 
         // Act
         var result = await service.DeleteInstructorAsync(instructorId, CancellationToken.None);

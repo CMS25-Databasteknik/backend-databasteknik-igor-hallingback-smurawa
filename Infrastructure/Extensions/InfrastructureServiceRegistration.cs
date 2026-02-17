@@ -33,5 +33,6 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ILocationRepository, LocationRepository>();
         services.AddScoped<IInPlaceLocationRepository, InPlaceLocationRepository>();
         services.AddScoped<IInstructorRepository, InstructorRepository>();
+        services.AddScoped<IInstructorRoleRepository, InstructorRoleRepository>();
     }
 }
