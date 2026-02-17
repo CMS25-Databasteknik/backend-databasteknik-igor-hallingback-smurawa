@@ -1,6 +1,7 @@
 using Backend.Domain.Modules.InPlaceLocations.Contracts;
 using Backend.Domain.Modules.InPlaceLocations.Models;
 using Backend.Infrastructure.Persistence.Entities;
+using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
@@ -96,3 +97,7 @@ public class InPlaceLocationRepository(CoursesOnlineDbContext context) : IInPlac
             .AnyAsync(cancellationToken);
     }
 }
+
+
+
+

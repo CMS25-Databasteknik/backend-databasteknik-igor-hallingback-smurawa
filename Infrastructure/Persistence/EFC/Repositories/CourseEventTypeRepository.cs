@@ -1,6 +1,7 @@
 using Backend.Domain.Modules.CourseEventTypes.Contracts;
 using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Infrastructure.Persistence.Entities;
+using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
@@ -78,3 +79,7 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context) : ICourse
             .AnyAsync(ce => ce.CourseEventTypeId == courseEventTypeId, cancellationToken);
     }
 }
+
+
+
+
