@@ -5,8 +5,9 @@ public sealed class Instructor
     public Guid Id { get; }
     public string Name { get; }
     public int InstructorRoleId { get; }
+    public InstructorRole Role { get; }
 
-    public Instructor(Guid id, string name, int instructorRoleId = 1)
+    public Instructor(Guid id, string name, InstructorRole role)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("ID cannot be empty.", nameof(id));
@@ -14,11 +15,10 @@ public sealed class Instructor
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Name cannot be null or whitespace.", nameof(name));
 
-        if (instructorRoleId < 1)
-            throw new ArgumentException("Instructor role is required.", nameof(instructorRoleId));
+        Role = role ?? throw new ArgumentNullException(nameof(role));
 
         Id = id;
         Name = name;
-        InstructorRoleId = instructorRoleId;
+        InstructorRoleId = role.Id;
     }
 }
