@@ -317,15 +317,49 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            // Repository handles cascade delete of registrations in transaction
+            var existingParticipant = await _participantRepository.GetParticipantByIdAsync(participantId, cancellationToken);
+            if (existingParticipant == null)
+            {
+                return new ParticipantDeleteResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Participant with ID '{participantId}' not found.",
+                    Result = false
+                };
+            }
+
+            var hasRegistrations = await _participantRepository.HasRegistrationsAsync(participantId, cancellationToken);
+            if (hasRegistrations)
+            {
+                return new ParticipantDeleteResult
+                {
+                    Success = false,
+                    StatusCode = 409,
+                    Message = "Cannot delete participant because they have course registrations.",
+                    Result = false
+                };
+            }
+
             var result = await _participantRepository.DeleteParticipantAsync(participantId, cancellationToken);
+
+            if (!result)
+            {
+                return new ParticipantDeleteResult
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to delete participant.",
+                    Result = false
+                };
+            }
 
             return new ParticipantDeleteResult
             {
                 Success = true,
                 StatusCode = 200,
                 Result = result,
-                Message = "Participant and all associated registrations deleted successfully."
+                Message = "Participant deleted successfully."
             };
         }
         catch (KeyNotFoundException ex)

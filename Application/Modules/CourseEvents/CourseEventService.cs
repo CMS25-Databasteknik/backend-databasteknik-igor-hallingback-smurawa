@@ -382,17 +382,39 @@ namespace Backend.Application.Modules.CourseEvents
                         Success = false,
                         StatusCode = 400,
                         Message = "Course event ID cannot be empty.",
-                        Result = false
-                    };
-                }
+                    Result = false
+                };
+            }
 
-                // Repository handles existence check within transaction
-                var result = await _courseEventRepository.DeleteCourseEventAsync(courseEventId, cancellationToken);
-
+            var existingEvent = await _courseEventRepository.GetCourseEventByIdAsync(courseEventId, cancellationToken);
+            if (existingEvent == null)
+            {
                 return new CourseEventDeleteResult
                 {
-                    Success = true,
-                    StatusCode = 200,
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course event with ID '{courseEventId}' not found.",
+                    Result = false
+                };
+            }
+
+            var result = await _courseEventRepository.DeleteCourseEventAsync(courseEventId, cancellationToken);
+
+            if (!result)
+            {
+                return new CourseEventDeleteResult
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to delete course event.",
+                    Result = false
+                };
+            }
+
+            return new CourseEventDeleteResult
+            {
+                Success = true,
+                StatusCode = 200,
                     Result = result,
                     Message = "Course event deleted successfully."
                 };
