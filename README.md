@@ -209,3 +209,5 @@ Backend/
 - **Maintainability**: Changes in one layer don't affect others
 - **Flexibility**: Easy to swap out implementations (e.g., database providers)
 - **Scalability**: Clean boundaries make it easier to scale individual components
+
+- **Instructor roles**: Instructors now reference InstructorRole (Lead/Assistant/Guest). Roles are seeded via migrations (AddInstructorRoles, SeedInstructorRoles) and exposed through API endpoints under /api/instructor-roles.

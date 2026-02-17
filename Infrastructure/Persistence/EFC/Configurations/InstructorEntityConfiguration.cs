@@ -23,6 +23,14 @@ public sealed class InstructorEntityConfiguration : IEntityTypeConfiguration<Ins
             .HasMaxLength(50)
             .IsRequired();
 
+        e.Property(x => x.InstructorRoleId)
+            .IsRequired();
+
+        e.HasOne(x => x.InstructorRole)
+            .WithMany(r => r.Instructors)
+            .HasForeignKey(x => x.InstructorRoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         e.HasIndex(x => x.Name)
             .HasDatabaseName("IX_Instructors_Name");
     }

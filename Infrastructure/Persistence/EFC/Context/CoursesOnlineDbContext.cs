@@ -9,6 +9,7 @@ public sealed class CoursesOnlineDbContext(DbContextOptions<CoursesOnlineDbConte
     public DbSet<CourseEventEntity> CourseEvents => Set<CourseEventEntity>();
     public DbSet<CourseEventTypeEntity> CourseEventTypes => Set<CourseEventTypeEntity>();
     public DbSet<InstructorEntity> Instructors => Set<InstructorEntity>();
+    public DbSet<InstructorRoleEntity> InstructorRoles => Set<InstructorRoleEntity>();
     public DbSet<LocationEntity> Locations => Set<LocationEntity>();
     public DbSet<ParticipantEntity> Participants => Set<ParticipantEntity>();
     public DbSet<InPlaceLocationEntity> InPlaceLocations => Set<InPlaceLocationEntity>();

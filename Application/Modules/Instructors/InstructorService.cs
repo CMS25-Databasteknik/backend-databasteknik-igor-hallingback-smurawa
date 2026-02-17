@@ -5,9 +5,10 @@ using Backend.Domain.Modules.Instructors.Models;
 
 namespace Backend.Application.Modules.Instructors;
 
-public class InstructorService(IInstructorRepository instructorRepository) : IInstructorService
+public class InstructorService(IInstructorRepository instructorRepository, IInstructorRoleRepository instructorRoleRepository) : IInstructorService
 {
     private readonly IInstructorRepository _instructorRepository = instructorRepository ?? throw new ArgumentNullException(nameof(instructorRepository));
+    private readonly IInstructorRoleRepository _instructorRoleRepository = instructorRoleRepository ?? throw new ArgumentNullException(nameof(instructorRoleRepository));
 
     public async Task<InstructorResult> CreateInstructorAsync(CreateInstructorInput instructor, CancellationToken cancellationToken = default)
     {
@@ -35,9 +36,33 @@ public class InstructorService(IInstructorRepository instructorRepository) : IIn
                 };
             }
 
+            if (instructor.InstructorRoleId < 1)
+            {
+                return new InstructorResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Result = null,
+                    Message = "Instructor role ID must be greater than zero."
+                };
+            }
+
+            var role = await _instructorRoleRepository.GetInstructorRoleByIdAsync(instructor.InstructorRoleId, cancellationToken);
+            if (role == null)
+            {
+                return new InstructorResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Result = null,
+                    Message = $"Instructor role with ID '{instructor.InstructorRoleId}' not found."
+                };
+            }
+
             var newInstructor = new Instructor(
                 Guid.NewGuid(),
-                instructor.Name
+                instructor.Name,
+                instructor.InstructorRoleId
             );
 
             var result = await _instructorRepository.CreateInstructorAsync(newInstructor, cancellationToken);
@@ -188,9 +213,31 @@ public class InstructorService(IInstructorRepository instructorRepository) : IIn
                 };
             }
 
+            if (instructor.InstructorRoleId < 1)
+            {
+                return new InstructorResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Instructor role ID must be greater than zero."
+                };
+            }
+
+            var role = await _instructorRoleRepository.GetInstructorRoleByIdAsync(instructor.InstructorRoleId, cancellationToken);
+            if (role == null)
+            {
+                return new InstructorResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Instructor role with ID '{instructor.InstructorRoleId}' not found."
+                };
+            }
+
             var updatedInstructor = new Instructor(
                 instructor.Id,
-                instructor.Name
+                instructor.Name,
+                instructor.InstructorRoleId
             );
 
             var result = await _instructorRepository.UpdateInstructorAsync(updatedInstructor, cancellationToken);

@@ -4,6 +4,7 @@ using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.EFC.Migrations
 {
     [DbContext(typeof(CoursesOnlineDbContext))]
-    partial class CoursesOnlineDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260217133957_AddInstructorRoles")]
+    partial class AddInstructorRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
