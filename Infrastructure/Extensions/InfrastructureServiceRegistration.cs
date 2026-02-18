@@ -28,6 +28,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ICourseEventRepository, CourseEventRepository>();
         services.AddScoped<ICourseEventTypeRepository, CourseEventTypeRepository>();
+        services.AddScoped<ICourseRegistrationStatusRepository, CourseRegistrationStatusRepository>();
         services.AddScoped<ICourseRegistrationRepository, CourseRegistrationRepository>();
         services.AddScoped<IParticipantRepository, ParticipantRepository>();
         services.AddScoped<ILocationRepository, LocationRepository>();
