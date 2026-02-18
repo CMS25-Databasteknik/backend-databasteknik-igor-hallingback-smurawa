@@ -1,4 +1,4 @@
-using Backend.Domain.Modules.CourseRegistrations.Models;
+using Backend.Domain.Modules.PaymentMethod.Models;
 
 namespace Backend.Tests.Unit.Domain.Modules.CourseRegistrations.Models;
 
@@ -20,3 +20,4 @@ public class PaymentMethod_Tests
         Assert.False(Enum.IsDefined(typeof(PaymentMethod), (PaymentMethod)999));
     }
 }
+

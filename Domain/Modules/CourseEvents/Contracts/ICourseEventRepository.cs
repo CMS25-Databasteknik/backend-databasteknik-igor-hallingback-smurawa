@@ -13,3 +13,4 @@ namespace Backend.Domain.Modules.CourseEvents.Contracts
         Task<bool> HasRegistrationsAsync(Guid courseEventId, CancellationToken cancellationToken);
     }
 }
+

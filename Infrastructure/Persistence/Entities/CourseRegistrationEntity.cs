@@ -1,5 +1,3 @@
-using Backend.Domain.Modules.CourseRegistrations.Models;
-
 namespace Backend.Infrastructure.Persistence.Entities
 {
     public class CourseRegistrationEntity
@@ -18,3 +16,4 @@ namespace Backend.Infrastructure.Persistence.Entities
         public PaymentMethodEntity PaymentMethod { get; set; } = null!;
     }
 }
+

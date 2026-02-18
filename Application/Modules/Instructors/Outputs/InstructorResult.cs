@@ -14,3 +14,4 @@ public sealed class InstructorListResult : ResultCommon<IEnumerable<Instructor>>
 public sealed class InstructorDeleteResult : ResultCommon<bool>
 {
 }
+

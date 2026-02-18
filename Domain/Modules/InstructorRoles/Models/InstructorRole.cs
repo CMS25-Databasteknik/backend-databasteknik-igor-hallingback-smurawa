@@ -1,4 +1,4 @@
-namespace Backend.Domain.Modules.Instructors.Models;
+namespace Backend.Domain.Modules.InstructorRoles.Models;
 
 public sealed class InstructorRole
 {

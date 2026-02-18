@@ -1,4 +1,5 @@
-using Backend.Domain.Modules.CourseRegistrations.Models;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
+using Backend.Domain.Modules.PaymentMethod.Models;
 
 namespace Backend.Application.Modules.CourseRegistrations.Inputs;
 
@@ -8,3 +9,4 @@ public sealed record CreateCourseRegistrationInput(
     CourseRegistrationStatus Status,
     PaymentMethod PaymentMethod
 );
+

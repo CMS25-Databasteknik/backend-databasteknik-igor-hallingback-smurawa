@@ -1,4 +1,4 @@
-using Backend.Domain.Modules.CourseEvents.Models;
+using Backend.Domain.Modules.VenueTypes.Models;
 
 namespace Backend.Application.Modules.CourseEvents.Inputs;
 

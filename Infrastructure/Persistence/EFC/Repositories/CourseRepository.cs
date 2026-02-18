@@ -1,8 +1,10 @@
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
-using Backend.Infrastructure.Persistence.Entities;
+using Backend.Domain.Modules.CourseWithEvents.Models;
+using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories

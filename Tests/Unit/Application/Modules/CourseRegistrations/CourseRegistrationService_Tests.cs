@@ -2,10 +2,13 @@ using Backend.Application.Modules.CourseRegistrations;
 using Backend.Application.Modules.CourseRegistrations.Inputs;
 using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
-using Backend.Domain.Modules.Participants.Contracts;
-using Backend.Domain.Modules.Participants.Models;
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
+using Backend.Domain.Modules.Participants.Contracts;
+using Backend.Domain.Modules.Participants.Models;
+using Backend.Domain.Modules.PaymentMethod.Models;
+using Backend.Domain.Modules.VenueTypes.Models;
 using NSubstitute;
 
 namespace Backend.Tests.Unit.Application.Modules.CourseRegistrations;
@@ -880,6 +883,10 @@ public class CourseRegistrationService_Tests
 
     #endregion
 }
+
+
+
+
 
 
 

@@ -3,6 +3,7 @@ using Backend.Application.Modules.Courses.Inputs;
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
+using Backend.Domain.Modules.CourseWithEvents.Models;
 using NSubstitute;
 
 namespace Backend.Tests.Unit.Application.Modules.Courses;
@@ -828,5 +829,7 @@ public class CourseService_Tests
 
     #endregion
 }
+
+
 
 

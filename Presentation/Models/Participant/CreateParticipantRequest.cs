@@ -1,4 +1,4 @@
-using Backend.Domain.Modules.Participants.Models;
+using Backend.Domain.Modules.ParticipantContactTypes.Models;
 
 namespace Backend.Presentation.API.Models.Participant;
 
@@ -9,3 +9,4 @@ public sealed record CreateParticipantRequest(
     string PhoneNumber,
     ParticipantContactType ContactType
 );
+

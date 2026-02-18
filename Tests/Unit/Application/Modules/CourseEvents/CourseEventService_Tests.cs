@@ -1,11 +1,13 @@
 using Backend.Application.Modules.CourseEvents;
 using Backend.Application.Modules.CourseEvents.Inputs;
-using Backend.Domain.Modules.CourseEventTypes.Contracts;
-using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
+using Backend.Domain.Modules.CourseEventTypes.Contracts;
+using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
+using Backend.Domain.Modules.CourseWithEvents.Models;
+using Backend.Domain.Modules.VenueTypes.Models;
 using NSubstitute;
 
 namespace Backend.Tests.Unit.Application.Modules.CourseEvents;
@@ -314,6 +316,8 @@ public class CourseEventService_Tests
 
     #endregion
 }
+
+
 
 
 

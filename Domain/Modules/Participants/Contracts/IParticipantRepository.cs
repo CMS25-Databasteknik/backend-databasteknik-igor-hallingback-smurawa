@@ -11,3 +11,4 @@ public interface IParticipantRepository
     Task<bool> DeleteParticipantAsync(Guid participantId, CancellationToken cancellationToken);
     Task<bool> HasRegistrationsAsync(Guid participantId, CancellationToken cancellationToken);
 }
+

@@ -1,4 +1,4 @@
-using Backend.Domain.Modules.CourseEvents.Models;
+using Backend.Domain.Modules.VenueTypes.Models;
 
 namespace Backend.Presentation.API.Models.CourseEvent;
 
@@ -11,3 +11,4 @@ public sealed record UpdateCourseEventRequest
     int CourseEventTypeId,
     VenueType VenueType
 );
+

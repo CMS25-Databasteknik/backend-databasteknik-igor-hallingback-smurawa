@@ -1,7 +1,7 @@
 using Backend.Application.Modules.InstructorRoles.Inputs;
 using Backend.Application.Modules.InstructorRoles.Outputs;
-using Backend.Domain.Modules.Instructors.Contracts;
-using Backend.Domain.Modules.Instructors.Models;
+using Backend.Domain.Modules.InstructorRoles.Contracts;
+using Backend.Domain.Modules.InstructorRoles.Models;
 
 namespace Backend.Application.Modules.InstructorRoles;
 

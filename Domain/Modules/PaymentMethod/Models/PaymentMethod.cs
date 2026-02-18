@@ -1,4 +1,4 @@
-namespace Backend.Domain.Modules.CourseRegistrations.Models;
+namespace Backend.Domain.Modules.PaymentMethod.Models;
 
 public enum PaymentMethod
 {

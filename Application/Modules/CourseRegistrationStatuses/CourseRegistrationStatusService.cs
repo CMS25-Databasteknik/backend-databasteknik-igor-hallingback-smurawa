@@ -1,7 +1,7 @@
 using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
 using Backend.Application.Modules.CourseRegistrationStatuses.Outputs;
-using Backend.Domain.Modules.CourseRegistrations.Contracts;
-using Backend.Domain.Modules.CourseRegistrations.Models;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Contracts;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 
 namespace Backend.Application.Modules.CourseRegistrationStatuses;
 

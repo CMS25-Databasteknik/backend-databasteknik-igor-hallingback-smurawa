@@ -1,7 +1,7 @@
 using Backend.Application.Modules.InstructorRoles;
 using Backend.Application.Modules.InstructorRoles.Inputs;
-using Backend.Domain.Modules.Instructors.Contracts;
-using Backend.Domain.Modules.Instructors.Models;
+using Backend.Domain.Modules.InstructorRoles.Contracts;
+using Backend.Domain.Modules.InstructorRoles.Models;
 using NSubstitute;
 
 namespace Backend.Tests.Unit.Application.Modules.InstructorRoles;
@@ -98,3 +98,5 @@ public class InstructorRoleService_Tests
         Assert.Equal(404, result.StatusCode);
     }
 }
+
+

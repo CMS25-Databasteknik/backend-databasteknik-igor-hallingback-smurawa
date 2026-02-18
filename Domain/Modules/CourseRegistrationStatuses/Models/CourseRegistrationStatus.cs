@@ -1,4 +1,4 @@
-namespace Backend.Domain.Modules.CourseRegistrations.Models;
+namespace Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 
 public sealed class CourseRegistrationStatus
 {
@@ -25,5 +25,5 @@ public sealed class CourseRegistrationStatus
 
         Id = id;
         Name = name.Trim();
-    }    
+    }
 }

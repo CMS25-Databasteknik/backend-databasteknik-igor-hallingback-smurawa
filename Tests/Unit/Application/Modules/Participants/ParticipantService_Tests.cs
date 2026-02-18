@@ -1,5 +1,6 @@
 using Backend.Application.Modules.Participants;
 using Backend.Application.Modules.Participants.Inputs;
+using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.Participants.Models;
 using NSubstitute;
@@ -854,4 +855,5 @@ public class ParticipantService_Tests
 
     #endregion
 }
+
 

@@ -1,6 +1,7 @@
 using Backend.Domain.Modules.CourseEvents.Models;
+using Backend.Domain.Modules.Courses.Models;
 
-namespace Backend.Domain.Modules.Courses.Models;
+namespace Backend.Domain.Modules.CourseWithEvents.Models;
 
 public sealed class CourseWithEvents
 {
@@ -16,3 +17,5 @@ public sealed class CourseWithEvents
             throw new ArgumentException("Events collection cannot contain null items.", nameof(events));
     }
 }
+
+

@@ -1,4 +1,5 @@
 using Backend.Domain.Modules.Participants.Models;
+using Backend.Domain.Modules.ParticipantContactTypes.Models;
 
 namespace Backend.Tests.Unit.Domain.Modules.Participants.Models;
 
@@ -442,4 +443,5 @@ public class Participant_Tests
         Assert.Equal(phoneNumber, participant.PhoneNumber);
     }
 }
+
 

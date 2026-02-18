@@ -1,3 +1,5 @@
+using Backend.Domain.Modules.ParticipantContactTypes.Models;
+
 namespace Backend.Domain.Modules.Participants.Models;
 
 public sealed class Participant

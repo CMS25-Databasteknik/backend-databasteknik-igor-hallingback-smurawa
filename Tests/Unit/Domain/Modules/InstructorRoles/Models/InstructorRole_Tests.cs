@@ -1,4 +1,4 @@
-using Backend.Domain.Modules.Instructors.Models;
+using Backend.Domain.Modules.InstructorRoles.Models;
 
 namespace Backend.Tests.Unit.Domain.Modules.InstructorRoles.Models;
 
@@ -48,4 +48,5 @@ public class InstructorRole_Tests
         Assert.Equal("roleName", ex.ParamName);
     }
 }
+
 

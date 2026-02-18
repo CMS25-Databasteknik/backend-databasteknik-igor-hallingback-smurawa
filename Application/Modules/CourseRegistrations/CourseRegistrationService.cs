@@ -1,9 +1,9 @@
 using Backend.Application.Modules.CourseRegistrations.Inputs;
 using Backend.Application.Modules.CourseRegistrations.Outputs;
 using Backend.Domain.Modules.CourseEvents.Contracts;
-using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
+using Backend.Domain.Modules.Participants.Contracts;
 
 namespace Backend.Application.Modules.CourseRegistrations;
 
@@ -443,3 +443,5 @@ public class CourseRegistrationService(
         }
     }
 }
+
+
