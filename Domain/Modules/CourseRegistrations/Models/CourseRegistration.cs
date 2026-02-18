@@ -29,8 +29,7 @@ public sealed class CourseRegistration
         if (registrationDate == default)
             throw new ArgumentException("Registration date must be specified.", nameof(registrationDate));
 
-        if (!Enum.IsDefined(typeof(CourseRegistrationStatus), status))
-            throw new ArgumentException("Registration status is invalid.", nameof(status));
+        ArgumentNullException.ThrowIfNull(status);
 
         if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethod))
             throw new ArgumentException("Payment method is invalid.", nameof(paymentMethod));

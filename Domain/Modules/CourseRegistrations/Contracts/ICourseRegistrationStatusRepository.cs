@@ -1,4 +1,4 @@
-using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
+using Backend.Domain.Modules.CourseRegistrations.Models;
 
 namespace Backend.Domain.Modules.CourseRegistrations.Contracts;
 

@@ -1,7 +1,7 @@
 using Backend.Application.Modules.CourseRegistrations.Inputs;
 using Backend.Application.Modules.CourseRegistrations.Outputs;
-using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
+using Backend.Domain.Modules.CourseRegistrations.Models;
 
 namespace Backend.Application.Modules.CourseRegistrations;
 
@@ -85,7 +85,8 @@ public sealed class CourseRegistrationStatusService(ICourseRegistrationStatusRep
     {
         try
         {
-            CourseRegistrationStatus.ValidateId(id);
+            if (id < 0)
+                throw new ArgumentException("Id must be zero or positive.", nameof(id));
 
             var status = await _repository.GetCourseRegistrationStatusByIdAsync(id, cancellationToken);
             if (status == null)
@@ -196,7 +197,8 @@ public sealed class CourseRegistrationStatusService(ICourseRegistrationStatusRep
     {
         try
         {
-            CourseRegistrationStatus.ValidateId(id);
+            if (id < 0)
+                throw new ArgumentException("Id must be zero or positive.", nameof(id));
 
             var existing = await _repository.GetCourseRegistrationStatusByIdAsync(id, cancellationToken);
             if (existing == null)

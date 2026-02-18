@@ -153,9 +153,14 @@ public class CourseRegistrationService_Tests
         Assert.Contains("Database error", result.Message);
     }
 
+    public static IEnumerable<object[]> CreateRegistrationStatusAndPaymentData =>
+    [
+        [CourseRegistrationStatus.Paid, PaymentMethod.Invoice],
+        [CourseRegistrationStatus.Pending, PaymentMethod.Card]
+    ];
+
     [Theory]
-    [InlineData(CourseRegistrationStatus.Paid, PaymentMethod.Invoice)]
-    [InlineData(CourseRegistrationStatus.Pending, PaymentMethod.Card)]
+    [MemberData(nameof(CreateRegistrationStatusAndPaymentData))]
     public async Task CreateCourseRegistrationAsync_Should_Create_Registration_With_Various_Statuses(CourseRegistrationStatus status, PaymentMethod payment)
     {
         // Arrange

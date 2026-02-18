@@ -10,8 +10,25 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
 {
     private readonly CoursesOnlineDbContext _context = context;
 
+    private static CourseRegistrationStatus ToStatusModel(CourseRegistrationEntity entity)
+    {
+        var statusName = entity.CourseRegistrationStatus?.Name;
+
+        if (!string.IsNullOrWhiteSpace(statusName))
+            return new CourseRegistrationStatus(entity.CourseRegistrationStatusId, statusName);
+
+        return entity.CourseRegistrationStatusId switch
+        {
+            0 => CourseRegistrationStatus.Pending,
+            1 => CourseRegistrationStatus.Paid,
+            2 => CourseRegistrationStatus.Cancelled,
+            3 => CourseRegistrationStatus.Refunded,
+            _ => new CourseRegistrationStatus(entity.CourseRegistrationStatusId, $"Status {entity.CourseRegistrationStatusId}")
+        };
+    }
+
     private static CourseRegistration ToModel(CourseRegistrationEntity entity)
-        => new(entity.Id, entity.ParticipantId, entity.CourseEventId, entity.RegistrationDate, (CourseRegistrationStatus)entity.CourseRegistrationStatusId, (PaymentMethod)entity.PaymentMethodId);
+        => new(entity.Id, entity.ParticipantId, entity.CourseEventId, entity.RegistrationDate, ToStatusModel(entity), (PaymentMethod)entity.PaymentMethodId);
 
     public async Task<CourseRegistration> CreateCourseRegistrationAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken)
     {
@@ -40,7 +57,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
                 Id = courseRegistration.Id,
                 ParticipantId = courseRegistration.ParticipantId,
                 CourseEventId = courseRegistration.CourseEventId,
-                CourseRegistrationStatusId = (int)courseRegistration.Status,
+                CourseRegistrationStatusId = courseRegistration.Status.Id,
                 PaymentMethodId = (int)courseRegistration.PaymentMethod
             };
 
@@ -88,7 +105,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
                 Id = courseRegistration.Id,
                 ParticipantId = courseRegistration.ParticipantId,
                 CourseEventId = courseRegistration.CourseEventId,
-                CourseRegistrationStatusId = (int)courseRegistration.Status,
+                CourseRegistrationStatusId = courseRegistration.Status.Id,
                 PaymentMethodId = (int)courseRegistration.PaymentMethod
             };
 
@@ -122,6 +139,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
+            .Include(cr => cr.CourseRegistrationStatus)
             .OrderByDescending(cr => cr.RegistrationDate)
             .ToListAsync(cancellationToken);
 
@@ -132,6 +150,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
     {
         var entity = await _context.CourseRegistrations
             .AsNoTracking()
+            .Include(cr => cr.CourseRegistrationStatus)
             .SingleOrDefaultAsync(cr => cr.Id == courseRegistrationId, cancellationToken);
 
         return entity == null ? null : ToModel(entity);
@@ -141,6 +160,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
+            .Include(cr => cr.CourseRegistrationStatus)
             .Where(cr => cr.ParticipantId == participantId)
             .OrderByDescending(cr => cr.RegistrationDate)
             .ToListAsync(cancellationToken);
@@ -152,6 +172,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
+            .Include(cr => cr.CourseRegistrationStatus)
             .Where(cr => cr.CourseEventId == courseEventId)
             .OrderByDescending(cr => cr.RegistrationDate)
             .ToListAsync(cancellationToken);
@@ -168,7 +189,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
 
         entity.ParticipantId = courseRegistration.ParticipantId;
         entity.CourseEventId = courseRegistration.CourseEventId;
-        entity.CourseRegistrationStatusId = (int)courseRegistration.Status;
+        entity.CourseRegistrationStatusId = courseRegistration.Status.Id;
         entity.PaymentMethodId = (int)courseRegistration.PaymentMethod;
         entity.ModifiedAtUtc = DateTime.UtcNow;
 
