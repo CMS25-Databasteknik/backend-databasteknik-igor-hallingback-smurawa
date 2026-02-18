@@ -24,6 +24,7 @@ public static class ApplicationServiceCollectionExtension
         services.AddScoped<ICourseEventService, CourseEventService>();
         services.AddScoped<ICourseEventTypeService, CourseEventTypeService>();
         services.AddScoped<ICourseRegistrationService, CourseRegistrationService>();
+        services.AddScoped<ICourseRegistrationStatusService, CourseRegistrationStatusService>();
         services.AddScoped<IParticipantService, ParticipantService>();
         services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<IInPlaceLocationService, InPlaceLocationService>();
