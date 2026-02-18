@@ -126,7 +126,7 @@ namespace Infrastructure.Persistence.EFC.Migrations
             ");
 
             migrationBuilder.Sql(@"
-                INSERT INTO CourseRegistrations (Id, ParticipantId, CourseEventId, RegistrationDate, IsPaid)
+                INSERT INTO CourseRegistrations (Id, ParticipantId, CourseEventId, RegistrationDate, CourseRegistrationStatusId)
                 VALUES 
                 (NEWID(), 'b1111111-1111-1111-1111-111111111111', 'c1111111-1111-1111-1111-111111111111', DATEADD(DAY, -5, GETUTCDATE()), 1),
                 (NEWID(), 'b2222222-2222-2222-2222-222222222222', 'c1111111-1111-1111-1111-111111111111', DATEADD(DAY, -4, GETUTCDATE()), 1),

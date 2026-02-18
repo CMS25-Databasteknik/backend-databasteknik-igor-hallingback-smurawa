@@ -21,8 +21,8 @@ public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfigura
             .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseRegistrations_RegistrationDate")
             .ValueGeneratedOnAdd();
 
-        e.Property(x => x.IsPaid)
-            .HasDefaultValue(false)
+        e.Property(x => x.CourseRegistrationStatusId)
+            .HasDefaultValue(0)
             .IsRequired();
 
         e.Property(x => x.Concurrency)
@@ -47,6 +47,11 @@ public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfigura
         e.HasOne(cr => cr.CourseEvent)
             .WithMany(ce => ce.Registrations)
             .HasForeignKey(cr => cr.CourseEventId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        e.HasOne(cr => cr.CourseRegistrationStatus)
+            .WithMany()
+            .HasForeignKey(cr => cr.CourseRegistrationStatusId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

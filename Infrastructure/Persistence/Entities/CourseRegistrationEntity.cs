@@ -1,3 +1,5 @@
+using Backend.Domain.Modules.CourseRegistrations.Models;
+
 namespace Backend.Infrastructure.Persistence.Entities
 {
     public class CourseRegistrationEntity
@@ -6,10 +8,11 @@ namespace Backend.Infrastructure.Persistence.Entities
         public Guid ParticipantId { get; set; }
         public Guid CourseEventId { get; set; }
         public DateTime RegistrationDate { get; set; }
-        public bool IsPaid { get; set; }
+        public int CourseRegistrationStatusId { get; set; }
         public byte[] Concurrency { get; set; } = null!;
         public DateTime ModifiedAtUtc { get; set; }
         public ParticipantEntity Participant { get; set; } = null!;
         public CourseEventEntity CourseEvent { get; set; } = null!;
+        public CourseRegistrationStatusEntity CourseRegistrationStatus { get; set; } = null!;
     }
 }

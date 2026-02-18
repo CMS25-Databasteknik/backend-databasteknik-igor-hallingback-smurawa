@@ -1,7 +1,7 @@
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
-using Backend.Infrastructure.Persistence.Entities;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
@@ -11,7 +11,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
     private readonly CoursesOnlineDbContext _context = context;
 
     private static CourseRegistration ToModel(CourseRegistrationEntity entity)
-        => new(entity.Id, entity.ParticipantId, entity.CourseEventId, entity.RegistrationDate, entity.IsPaid);
+        => new(entity.Id, entity.ParticipantId, entity.CourseEventId, entity.RegistrationDate, (CourseRegistrationStatus)entity.CourseRegistrationStatusId);
 
     public async Task<CourseRegistration> CreateCourseRegistrationAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken)
     {
@@ -40,7 +40,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
                 Id = courseRegistration.Id,
                 ParticipantId = courseRegistration.ParticipantId,
                 CourseEventId = courseRegistration.CourseEventId,
-                IsPaid = courseRegistration.IsPaid
+                CourseRegistrationStatusId = (int)courseRegistration.Status
             };
 
             _context.CourseRegistrations.Add(entity);
@@ -87,7 +87,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
                 Id = courseRegistration.Id,
                 ParticipantId = courseRegistration.ParticipantId,
                 CourseEventId = courseRegistration.CourseEventId,
-                IsPaid = courseRegistration.IsPaid
+                CourseRegistrationStatusId = (int)courseRegistration.Status
             };
 
             _context.CourseRegistrations.Add(entity);
@@ -166,7 +166,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
 
         entity.ParticipantId = courseRegistration.ParticipantId;
         entity.CourseEventId = courseRegistration.CourseEventId;
-        entity.IsPaid = courseRegistration.IsPaid;
+        entity.CourseRegistrationStatusId = (int)courseRegistration.Status;
         entity.ModifiedAtUtc = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);

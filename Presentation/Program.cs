@@ -9,10 +9,10 @@ using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.InPlaceLocations;
 using Backend.Application.Modules.InPlaceLocations.Inputs;
-using Backend.Application.Modules.Instructors;
-using Backend.Application.Modules.Instructors.Inputs;
 using Backend.Application.Modules.InstructorRoles;
 using Backend.Application.Modules.InstructorRoles.Inputs;
+using Backend.Application.Modules.Instructors;
+using Backend.Application.Modules.Instructors.Inputs;
 using Backend.Application.Modules.Locations;
 using Backend.Application.Modules.Locations.Inputs;
 using Backend.Application.Modules.Participants;
@@ -259,7 +259,7 @@ public partial class Program
 
         app.MapPost("/api/course-registrations", async (CreateCourseRegistrationRequest request, ICourseRegistrationService courseRegistrationService, CancellationToken cancellationToken) =>
         {
-            var input = new CreateCourseRegistrationInput(request.ParticipantId, request.CourseEventId, request.IsPaid);
+            var input = new CreateCourseRegistrationInput(request.ParticipantId, request.CourseEventId, request.Status);
             var response = await courseRegistrationService.CreateCourseRegistrationAsync(input, cancellationToken);
 
             if (!response.Success)
@@ -270,7 +270,7 @@ public partial class Program
 
         app.MapPut("/api/course-registrations/{id:guid}", async (Guid id, UpdateCourseRegistrationRequest request, ICourseRegistrationService courseRegistrationService, CancellationToken cancellationToken) =>
         {
-            var input = new UpdateCourseRegistrationInput(id, request.ParticipantId, request.CourseEventId, request.IsPaid);
+            var input = new UpdateCourseRegistrationInput(id, request.ParticipantId, request.CourseEventId, request.Status);
             var response = await courseRegistrationService.UpdateCourseRegistrationAsync(input, cancellationToken);
 
             if (!response.Success)
