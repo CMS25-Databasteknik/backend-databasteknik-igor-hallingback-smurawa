@@ -22,6 +22,11 @@ public sealed class CourseEventTypeEntityConfiguration : IEntityTypeConfiguratio
             .HasMaxLength(20)
             .IsRequired();
 
+        e.Property(x => x.Concurrency)
+            .IsRowVersion()
+            .IsConcurrencyToken()
+            .IsRequired();
+
         e.HasIndex(x => x.TypeName)
             .IsUnique()
             .HasDatabaseName("IX_CourseEventTypes_TypeName");

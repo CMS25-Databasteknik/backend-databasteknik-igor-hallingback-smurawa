@@ -4,6 +4,7 @@ namespace Backend.Infrastructure.Persistence.Entities
     {
         public int Id { get; set; }
         public string TypeName { get; set; } = null!;
+        public byte[] Concurrency { get; set; } = null!;
         public virtual ICollection<CourseEventEntity> CourseEvents { get; set; } = [];
     }
 }

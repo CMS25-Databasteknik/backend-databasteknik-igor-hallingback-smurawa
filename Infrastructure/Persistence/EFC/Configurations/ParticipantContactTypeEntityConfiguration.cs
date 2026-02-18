@@ -19,6 +19,11 @@ public sealed class ParticipantContactTypeEntityConfiguration : IEntityTypeConfi
             .HasMaxLength(50)
             .IsRequired();
 
+        e.Property(x => x.Concurrency)
+            .IsRowVersion()
+            .IsConcurrencyToken()
+            .IsRequired();
+
         e.HasIndex(x => x.Name)
             .IsUnique()
             .HasDatabaseName("IX_ParticipantContactTypes_Name");

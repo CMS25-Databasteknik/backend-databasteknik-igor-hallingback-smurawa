@@ -26,6 +26,11 @@ public sealed class InstructorEntityConfiguration : IEntityTypeConfiguration<Ins
         e.Property(x => x.InstructorRoleId)
             .IsRequired();
 
+        e.Property(x => x.Concurrency)
+            .IsRowVersion()
+            .IsConcurrencyToken()
+            .IsRequired();
+
         e.HasOne(x => x.InstructorRole)
             .WithMany(r => r.Instructors)
             .HasForeignKey(x => x.InstructorRoleId)

@@ -31,6 +31,11 @@ public sealed class LocationEntityConfiguration : IEntityTypeConfiguration<Locat
             .HasMaxLength(50)
             .IsRequired();
 
+        e.Property(x => x.Concurrency)
+            .IsRowVersion()
+            .IsConcurrencyToken()
+            .IsRequired();
+
         e.HasIndex(x => x.PostalCode)
             .HasDatabaseName("IX_Locations_PostalCode");
     }
