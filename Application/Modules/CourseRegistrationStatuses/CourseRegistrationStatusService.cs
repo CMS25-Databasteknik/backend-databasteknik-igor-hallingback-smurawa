@@ -1,9 +1,9 @@
-using Backend.Application.Modules.CourseRegistrations.Inputs;
-using Backend.Application.Modules.CourseRegistrations.Outputs;
+using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
+using Backend.Application.Modules.CourseRegistrationStatuses.Outputs;
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
 
-namespace Backend.Application.Modules.CourseRegistrations;
+namespace Backend.Application.Modules.CourseRegistrationStatuses;
 
 public class CourseRegistrationStatusService(ICourseRegistrationStatusRepository repository) : ICourseRegistrationStatusService
 {

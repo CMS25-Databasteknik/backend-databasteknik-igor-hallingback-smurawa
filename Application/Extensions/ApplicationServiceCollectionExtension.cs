@@ -2,6 +2,7 @@
 using Backend.Application.Modules.CourseEvents;
 using Backend.Application.Modules.CourseEventTypes;
 using Backend.Application.Modules.CourseRegistrations;
+using Backend.Application.Modules.CourseRegistrationStatuses;
 using Backend.Application.Modules.InPlaceLocations;
 using Backend.Application.Modules.Instructors;
 using Backend.Application.Modules.InstructorRoles;

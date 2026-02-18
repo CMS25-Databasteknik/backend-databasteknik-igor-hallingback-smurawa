@@ -5,6 +5,8 @@ using Backend.Application.Modules.CourseEventTypes;
 using Backend.Application.Modules.CourseEventTypes.Inputs;
 using Backend.Application.Modules.CourseRegistrations;
 using Backend.Application.Modules.CourseRegistrations.Inputs;
+using Backend.Application.Modules.CourseRegistrationStatuses;
+using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
 using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.InPlaceLocations;

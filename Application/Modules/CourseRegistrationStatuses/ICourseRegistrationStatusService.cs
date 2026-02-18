@@ -1,7 +1,7 @@
-using Backend.Application.Modules.CourseRegistrations.Inputs;
-using Backend.Application.Modules.CourseRegistrations.Outputs;
+using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
+using Backend.Application.Modules.CourseRegistrationStatuses.Outputs;
 
-namespace Backend.Application.Modules.CourseRegistrations;
+namespace Backend.Application.Modules.CourseRegistrationStatuses;
 
 public interface ICourseRegistrationStatusService
 {

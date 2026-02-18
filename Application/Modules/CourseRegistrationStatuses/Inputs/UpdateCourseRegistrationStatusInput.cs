@@ -1,3 +1,3 @@
-namespace Backend.Application.Modules.CourseRegistrations.Inputs;
+namespace Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
 
 public sealed record UpdateCourseRegistrationStatusInput(int Id, string Name);

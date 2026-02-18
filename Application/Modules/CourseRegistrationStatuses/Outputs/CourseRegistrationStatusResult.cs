@@ -1,7 +1,7 @@
 using Backend.Application.Common;
 using Backend.Domain.Modules.CourseRegistrations.Models;
 
-namespace Backend.Application.Modules.CourseRegistrations.Outputs;
+namespace Backend.Application.Modules.CourseRegistrationStatuses.Outputs;
 
 public sealed class CourseRegistrationStatusResult : ResultCommon<CourseRegistrationStatus>
 {
