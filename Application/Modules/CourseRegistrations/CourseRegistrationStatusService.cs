@@ -5,7 +5,7 @@ using Backend.Domain.Modules.CourseRegistrations.Models;
 
 namespace Backend.Application.Modules.CourseRegistrations;
 
-public sealed class CourseRegistrationStatusService(ICourseRegistrationStatusRepository repository) : ICourseRegistrationStatusService
+public class CourseRegistrationStatusService(ICourseRegistrationStatusRepository repository) : ICourseRegistrationStatusService
 {
     private readonly ICourseRegistrationStatusRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
@@ -23,7 +23,7 @@ public sealed class CourseRegistrationStatusService(ICourseRegistrationStatusRep
                 };
             }
 
-            var newStatus = new CourseRegistrationStatus(0, input.Name);
+            var newStatus = new CourseRegistrationStatus(input.Name);
             var result = await _repository.CreateCourseRegistrationStatusAsync(newStatus, cancellationToken);
 
             return new CourseRegistrationStatusResult

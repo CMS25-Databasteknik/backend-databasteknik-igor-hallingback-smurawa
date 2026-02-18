@@ -21,15 +21,18 @@ public class CourseEventType_Tests
     }
 
     [Fact]
-    public void Constructor_Should_Throw_ArgumentOutOfRangeException_When_Id_Is_Zero()
+    public void Constructor_Should_Allow_Zero_Id_For_New_Entity()
     {
         // Arrange
         var id = 0;
         var typeName = "Online";
 
-        // Act & Assert
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new CourseEventType(id, typeName));
+        // Act
+        var courseEventType = new CourseEventType(id, typeName);
+
+        // Assert
+        Assert.Equal(0, courseEventType.Id);
+        Assert.Equal(typeName, courseEventType.TypeName);
     }
 
     [Fact]

@@ -2,6 +2,11 @@ namespace Backend.Domain.Modules.Instructors.Models;
 
 public sealed class InstructorRole
 {
+    public InstructorRole(string roleName)
+        : this(0, roleName)
+    {
+    }
+
     public InstructorRole(int id, string roleName)
     {
         if (id < 0)

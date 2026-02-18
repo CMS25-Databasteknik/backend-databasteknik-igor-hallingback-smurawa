@@ -30,8 +30,9 @@ public sealed class CourseRegistrationStatusRepository(
     {
         var nextId = await _context.CourseRegistrationStatuses
             .AsNoTracking()
-            .Select(s => (int?)s.Id)
-            .MaxAsync(cancellationToken) ?? -1;
+            .Select(s => s.Id)
+            .DefaultIfEmpty(-1)
+            .MaxAsync(cancellationToken);
 
         var entity = new CourseRegistrationStatusEntity
         {

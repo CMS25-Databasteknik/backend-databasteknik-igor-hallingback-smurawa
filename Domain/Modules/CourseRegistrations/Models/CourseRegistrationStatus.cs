@@ -10,6 +10,11 @@ public sealed class CourseRegistrationStatus
     public static CourseRegistrationStatus Cancelled { get; } = new(2, "Cancelled");
     public static CourseRegistrationStatus Refunded { get; } = new(3, "Refunded");
 
+    public CourseRegistrationStatus(string name)
+        : this(0, name)
+    {
+    }
+
     public CourseRegistrationStatus(int id, string name)
     {
         if (id < 0)
