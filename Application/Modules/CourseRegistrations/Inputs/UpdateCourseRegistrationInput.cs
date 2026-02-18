@@ -6,5 +6,6 @@ public sealed record UpdateCourseRegistrationInput(
     Guid Id,
     Guid ParticipantId,
     Guid CourseEventId,
-    CourseRegistrationStatus Status
+    CourseRegistrationStatus Status,
+    PaymentMethod PaymentMethod
 );

@@ -7,13 +7,15 @@ public sealed class CourseRegistration
     public Guid CourseEventId { get; }
     public DateTime RegistrationDate { get; }
     public CourseRegistrationStatus Status { get; }
+    public PaymentMethod PaymentMethod { get; }
 
     public CourseRegistration(
         Guid id,
         Guid participantId,
         Guid courseEventId,
         DateTime registrationDate,
-        CourseRegistrationStatus status)
+        CourseRegistrationStatus status,
+        PaymentMethod paymentMethod)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("ID cannot be empty.", nameof(id));
@@ -30,10 +32,14 @@ public sealed class CourseRegistration
         if (!Enum.IsDefined(typeof(CourseRegistrationStatus), status))
             throw new ArgumentException("Registration status is invalid.", nameof(status));
 
+        if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethod))
+            throw new ArgumentException("Payment method is invalid.", nameof(paymentMethod));
+
         Id = id;
         ParticipantId = participantId;
         CourseEventId = courseEventId;
         RegistrationDate = registrationDate;
         Status = status;
+        PaymentMethod = paymentMethod;
     }
 }

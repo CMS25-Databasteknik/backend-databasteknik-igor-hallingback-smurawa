@@ -11,7 +11,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
     private readonly CoursesOnlineDbContext _context = context;
 
     private static CourseRegistration ToModel(CourseRegistrationEntity entity)
-        => new(entity.Id, entity.ParticipantId, entity.CourseEventId, entity.RegistrationDate, (CourseRegistrationStatus)entity.CourseRegistrationStatusId);
+        => new(entity.Id, entity.ParticipantId, entity.CourseEventId, entity.RegistrationDate, (CourseRegistrationStatus)entity.CourseRegistrationStatusId, (PaymentMethod)entity.PaymentMethodId);
 
     public async Task<CourseRegistration> CreateCourseRegistrationAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken)
     {
@@ -40,7 +40,8 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
                 Id = courseRegistration.Id,
                 ParticipantId = courseRegistration.ParticipantId,
                 CourseEventId = courseRegistration.CourseEventId,
-                CourseRegistrationStatusId = (int)courseRegistration.Status
+                CourseRegistrationStatusId = (int)courseRegistration.Status,
+                PaymentMethodId = (int)courseRegistration.PaymentMethod
             };
 
             _context.CourseRegistrations.Add(entity);
@@ -87,7 +88,8 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
                 Id = courseRegistration.Id,
                 ParticipantId = courseRegistration.ParticipantId,
                 CourseEventId = courseRegistration.CourseEventId,
-                CourseRegistrationStatusId = (int)courseRegistration.Status
+                CourseRegistrationStatusId = (int)courseRegistration.Status,
+                PaymentMethodId = (int)courseRegistration.PaymentMethod
             };
 
             _context.CourseRegistrations.Add(entity);
@@ -167,6 +169,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
         entity.ParticipantId = courseRegistration.ParticipantId;
         entity.CourseEventId = courseRegistration.CourseEventId;
         entity.CourseRegistrationStatusId = (int)courseRegistration.Status;
+        entity.PaymentMethodId = (int)courseRegistration.PaymentMethod;
         entity.ModifiedAtUtc = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);

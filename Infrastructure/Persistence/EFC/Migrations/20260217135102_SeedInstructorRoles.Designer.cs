@@ -179,6 +179,11 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<int>("PaymentMethodId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<DateTime>("ModifiedAtUtc")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasPrecision(0)
@@ -200,6 +205,8 @@ namespace Infrastructure.Persistence.EFC.Migrations
                     b.HasIndex("CourseEventId");
 
                     b.HasIndex("CourseRegistrationStatusId");
+
+                    b.HasIndex("PaymentMethodId");
 
                     b.HasIndex("ParticipantId", "CourseEventId")
                         .IsUnique()
@@ -247,6 +254,43 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         {
                             Id = 3,
                             Name = "Refunded"
+                        });
+                });
+
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.PaymentMethodEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id")
+                        .HasName("PK_PaymentMethods_Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_PaymentMethods_Name");
+
+                    b.ToTable("PaymentMethods", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Card"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Invoice"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Cash"
                         });
                 });
 
@@ -489,6 +533,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.PaymentMethodEntity", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Backend.Infrastructure.Persistence.Entities.ParticipantEntity", "Participant")
                         .WithMany("CourseRegistrations")
                         .HasForeignKey("ParticipantId")
@@ -498,6 +548,8 @@ namespace Infrastructure.Persistence.EFC.Migrations
                     b.Navigation("CourseEvent");
 
                     b.Navigation("CourseRegistrationStatus");
+
+                    b.Navigation("PaymentMethod");
 
                     b.Navigation("Participant");
                 });

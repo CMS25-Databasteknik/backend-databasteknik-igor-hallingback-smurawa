@@ -25,6 +25,10 @@ public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfigura
             .HasDefaultValue(0)
             .IsRequired();
 
+        e.Property(x => x.PaymentMethodId)
+            .HasDefaultValue(1)
+            .IsRequired();
+
         e.Property(x => x.Concurrency)
             .IsRowVersion()
             .IsConcurrencyToken()
@@ -52,6 +56,11 @@ public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfigura
         e.HasOne(cr => cr.CourseRegistrationStatus)
             .WithMany()
             .HasForeignKey(cr => cr.CourseRegistrationStatusId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        e.HasOne(cr => cr.PaymentMethod)
+            .WithMany()
+            .HasForeignKey(cr => cr.PaymentMethodId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
