@@ -14,6 +14,7 @@ public sealed class CoursesOnlineDbContext(DbContextOptions<CoursesOnlineDbConte
     public DbSet<ParticipantEntity> Participants => Set<ParticipantEntity>();
     public DbSet<InPlaceLocationEntity> InPlaceLocations => Set<InPlaceLocationEntity>();
     public DbSet<CourseRegistrationEntity> CourseRegistrations => Set<CourseRegistrationEntity>();
+    public DbSet<CourseRegistrationStatusEntity> CourseRegistrationStatuses => Set<CourseRegistrationStatusEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -174,10 +174,10 @@ namespace Infrastructure.Persistence.EFC.Migrations
                     b.Property<Guid>("CourseEventId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsPaid")
+                    b.Property<int>("CourseRegistrationStatusId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<DateTime>("ModifiedAtUtc")
                         .ValueGeneratedOnAddOrUpdate()
@@ -199,11 +199,55 @@ namespace Infrastructure.Persistence.EFC.Migrations
 
                     b.HasIndex("CourseEventId");
 
+                    b.HasIndex("CourseRegistrationStatusId");
+
                     b.HasIndex("ParticipantId", "CourseEventId")
                         .IsUnique()
                         .HasDatabaseName("IX_CourseRegistrations_ParticipantId_CourseEventId");
 
                     b.ToTable("CourseRegistrations", (string)null);
+                });
+
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseRegistrationStatusEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id")
+                        .HasName("PK_CourseRegistrationStatuses_Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CourseRegistrationStatuses_Name");
+
+                    b.ToTable("CourseRegistrationStatuses", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "Pending"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "Paid"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Cancelled"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Refunded"
+                        });
                 });
 
             modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.InPlaceLocationEntity", b =>
@@ -439,6 +483,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.CourseRegistrationStatusEntity", "CourseRegistrationStatus")
+                        .WithMany()
+                        .HasForeignKey("CourseRegistrationStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Backend.Infrastructure.Persistence.Entities.ParticipantEntity", "Participant")
                         .WithMany("CourseRegistrations")
                         .HasForeignKey("ParticipantId")
@@ -446,6 +496,8 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .IsRequired();
 
                     b.Navigation("CourseEvent");
+
+                    b.Navigation("CourseRegistrationStatus");
 
                     b.Navigation("Participant");
                 });

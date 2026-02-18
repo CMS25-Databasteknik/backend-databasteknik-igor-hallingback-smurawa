@@ -36,7 +36,7 @@ public class CourseRegistrationService(
                 courseRegistration.ParticipantId,
                 courseRegistration.CourseEventId,
                 DateTime.UtcNow,
-                courseRegistration.IsPaid
+                courseRegistration.Status
             );
 
             var participant = await _participantRepository.GetParticipantByIdAsync(newCourseRegistration.ParticipantId, cancellationToken);
@@ -287,7 +287,7 @@ public class CourseRegistrationService(
                 courseRegistration.ParticipantId,
                 courseRegistration.CourseEventId,
                 DateTime.UtcNow,
-                courseRegistration.IsPaid
+                courseRegistration.Status
             );
 
             var existingCourseRegistration = await _courseRegistrationRepository.GetCourseRegistrationByIdAsync(courseRegistration.Id, cancellationToken);
@@ -306,7 +306,7 @@ public class CourseRegistrationService(
                 courseRegistration.ParticipantId,
                 courseRegistration.CourseEventId,
                 existingCourseRegistration.RegistrationDate,
-                courseRegistration.IsPaid
+                courseRegistration.Status
             );
 
             var participant = await _participantRepository.GetParticipantByIdAsync(updatedCourseRegistration.ParticipantId, cancellationToken);

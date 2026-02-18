@@ -12,6 +12,18 @@ namespace Infrastructure.Persistence.EFC.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "CourseRegistrationStatuses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseRegistrationStatuses_Id", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CourseEventTypes",
                 columns: table => new
                 {
@@ -189,7 +201,7 @@ namespace Infrastructure.Persistence.EFC.Migrations
                     CourseEventId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2(0)", precision: 0, nullable: false, defaultValueSql: "(SYSUTCDATETIME())")
                         .Annotation("Relational:DefaultConstraintName", "DF_CourseRegistrations_RegistrationDate"),
-                    IsPaid = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CourseRegistrationStatusId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     ModifiedAtUtc = table.Column<DateTime>(type: "datetime2(0)", precision: 0, nullable: false, defaultValueSql: "(SYSUTCDATETIME())")
                         .Annotation("Relational:DefaultConstraintName", "DF_CourseRegistrations_ModifiedAtUtc")
@@ -207,6 +219,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         name: "FK_CourseRegistrations_Participants_ParticipantId",
                         column: x => x.ParticipantId,
                         principalTable: "Participants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CourseRegistrations_CourseRegistrationStatuses_CourseRegistrationStatusId",
+                        column: x => x.CourseRegistrationStatusId,
+                        principalTable: "CourseRegistrationStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -260,6 +278,28 @@ namespace Infrastructure.Persistence.EFC.Migrations
                 name: "IX_CourseRegistrations_CourseEventId",
                 table: "CourseRegistrations",
                 column: "CourseEventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseRegistrations_CourseRegistrationStatusId",
+                table: "CourseRegistrations",
+                column: "CourseRegistrationStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseRegistrationStatuses_Name",
+                table: "CourseRegistrationStatuses",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.InsertData(
+                table: "CourseRegistrationStatuses",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 0, "Pending" },
+                    { 1, "Paid" },
+                    { 2, "Cancelled" },
+                    { 3, "Refunded" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseRegistrations_ParticipantId_CourseEventId",
