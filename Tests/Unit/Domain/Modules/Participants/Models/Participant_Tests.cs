@@ -24,6 +24,21 @@ public class Participant_Tests
         Assert.Equal(lastName, participant.LastName);
         Assert.Equal(email, participant.Email);
         Assert.Equal(phoneNumber, participant.PhoneNumber);
+        Assert.Equal(ParticipantContactType.Primary, participant.ContactType);
+    }
+
+    [Fact]
+    public void Constructor_Should_Throw_ArgumentException_When_ContactType_Invalid()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() =>
+            new Participant(id, "John", "Doe", "john.doe@example.com", "+46701234567", (ParticipantContactType)999));
+
+        Assert.Equal("contactType", exception.ParamName);
+        Assert.Contains("contact type is invalid", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

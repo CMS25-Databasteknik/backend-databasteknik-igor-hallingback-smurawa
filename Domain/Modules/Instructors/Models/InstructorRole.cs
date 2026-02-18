@@ -5,7 +5,7 @@ public sealed class InstructorRole
     public InstructorRole(int id, string roleName)
     {
         if (id < 0)
-            throw new ArgumentException("Id is required.", nameof(id));
+            throw new ArgumentException("Id must be greater than or equal to zero.", nameof(id));
 
         if (string.IsNullOrWhiteSpace(roleName))
             throw new ArgumentException("Role name cannot be empty or whitespace.", nameof(roleName));

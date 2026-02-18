@@ -53,6 +53,18 @@ public class CourseRegistration_Tests
         Assert.Contains("Registration status is invalid", ex.Message);
     }
 
+    [Fact]
+    public void Constructor_Should_Throw_When_PaymentMethod_Is_Invalid()
+    {
+        var invalidPayment = (PaymentMethod)(-1);
+
+        var ex = Assert.Throws<ArgumentException>(() =>
+            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, invalidPayment));
+
+        Assert.Equal("paymentMethod", ex.ParamName);
+        Assert.Contains("Payment method is invalid", ex.Message);
+    }
+
     [Theory]
     [InlineData(CourseRegistrationStatus.Pending, PaymentMethod.Card)]
     [InlineData(CourseRegistrationStatus.Paid, PaymentMethod.Invoice)]
