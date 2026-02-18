@@ -1,3 +1,5 @@
+using Backend.Domain.Modules.CourseEvents.Models;
+
 namespace Backend.Presentation.API.Models.CourseEvent;
 
 public sealed record CreateCourseEventRequest
@@ -6,5 +8,6 @@ public sealed record CreateCourseEventRequest
     DateTime EventDate,
     decimal Price,
     int Seats,
-    int CourseEventTypeId
+    int CourseEventTypeId,
+    VenueType VenueType
 );

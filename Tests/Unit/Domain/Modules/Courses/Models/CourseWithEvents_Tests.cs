@@ -72,8 +72,8 @@ public class CourseWithEvents_Tests
         var course = new Course(courseId, "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>
         {
-            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1),
-            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 1500m, 25, 1)
+            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, VenueType.InPerson),
+            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 1500m, 25, 1, VenueType.InPerson)
         };
 
         // Act
@@ -92,7 +92,7 @@ public class CourseWithEvents_Tests
         var course = new Course(courseId, "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>
         {
-            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1)
+            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, VenueType.InPerson)
         };
 
         // Act
@@ -149,7 +149,7 @@ public class CourseWithEvents_Tests
 
         for (int i = 0; i < 100; i++)
         {
-            events.Add(new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(i), 1000m + i, 20, 1));
+            events.Add(new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(i), 1000m + i, 20, 1, VenueType.InPerson));
         }
 
         // Act
@@ -175,4 +175,9 @@ public class CourseWithEvents_Tests
         Assert.Same(courseWithEvents1.Course, courseWithEvents2.Course);
     }
 }
+
+
+
+
+
 
