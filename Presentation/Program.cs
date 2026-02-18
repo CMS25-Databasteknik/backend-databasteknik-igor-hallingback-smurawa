@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Extensions;
 using Backend.Application.Modules.CourseEvents;
 using Backend.Application.Modules.CourseEvents.Inputs;
@@ -56,12 +57,27 @@ public partial class Program
             .AllowAnyHeader()
             .AllowAnyMethod());
 
+        static IResult MapError(ResultBase response)
+        {
+            return response.StatusCode switch
+            {
+                400 => Results.BadRequest(response),
+                401 => Results.Unauthorized(),
+                403 => Results.Forbid(),
+                404 => Results.NotFound(response),
+                409 => Results.Conflict(response),
+                422 => Results.UnprocessableEntity(response),
+                500 => Results.InternalServerError(response),
+                _ => Results.Json(response, statusCode: response.StatusCode is >= 400 and <= 599 ? response.StatusCode : 500)
+            };
+        }
+
         app.MapGet("/api/courses", async (ICourseService courseService, CancellationToken cancellationToken) =>
         {
             var response = await courseService.GetAllCoursesAsync(cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetAllCourses");
@@ -71,7 +87,7 @@ public partial class Program
             var response = await courseService.GetCourseByIdAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetCourseById");
@@ -82,7 +98,7 @@ public partial class Program
             var response = await courseService.CreateCourseAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Created($"/api/courses/{response.Result?.Id}", response);
         }).WithName("CreateCourse");
@@ -93,7 +109,7 @@ public partial class Program
             var response = await courseService.UpdateCourseAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("UpdateCourse");
@@ -103,7 +119,7 @@ public partial class Program
             var response = await courseService.DeleteCourseAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("DeleteCourse");
@@ -113,7 +129,7 @@ public partial class Program
             var response = await courseEventService.GetAllCourseEventsAsync(cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetAllCourseEvents");
@@ -123,7 +139,7 @@ public partial class Program
             var response = await courseEventService.GetCourseEventByIdAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetCourseEventById");
@@ -133,7 +149,7 @@ public partial class Program
             var response = await courseEventService.GetCourseEventsByCourseIdAsync(courseId, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetCourseEventsByCourseId");
@@ -144,7 +160,7 @@ public partial class Program
             var response = await courseEventService.CreateCourseEventAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Created($"/api/course-events/{response.Result?.Id}", response);
         }).WithName("CreateCourseEvent");
@@ -155,7 +171,7 @@ public partial class Program
             var response = await courseEventService.UpdateCourseEventAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("UpdateCourseEvent");
@@ -165,7 +181,7 @@ public partial class Program
             var response = await courseEventService.DeleteCourseEventAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("DeleteCourseEvent");
@@ -175,7 +191,7 @@ public partial class Program
             var response = await courseEventTypeService.GetAllCourseEventTypesAsync(cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetAllCourseEventTypes");
@@ -185,7 +201,7 @@ public partial class Program
             var response = await courseEventTypeService.GetCourseEventTypeByIdAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetCourseEventTypeById");
@@ -196,7 +212,7 @@ public partial class Program
             var response = await courseEventTypeService.CreateCourseEventTypeAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Created($"/api/course-event-types/{response.Result?.Id}", response);
         }).WithName("CreateCourseEventType");
@@ -207,7 +223,7 @@ public partial class Program
             var response = await courseEventTypeService.UpdateCourseEventTypeAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("UpdateCourseEventType");
@@ -217,7 +233,7 @@ public partial class Program
             var response = await courseEventTypeService.DeleteCourseEventTypeAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("DeleteCourseEventType");
@@ -227,7 +243,7 @@ public partial class Program
             var response = await courseRegistrationService.GetAllCourseRegistrationsAsync(cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetAllCourseRegistrations");
@@ -237,7 +253,7 @@ public partial class Program
             var response = await courseRegistrationService.GetCourseRegistrationByIdAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetCourseRegistrationById");
@@ -247,7 +263,7 @@ public partial class Program
             var response = await courseRegistrationService.GetCourseRegistrationsByParticipantIdAsync(participantId, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetCourseRegistrationsByParticipantId");
@@ -257,7 +273,7 @@ public partial class Program
             var response = await courseRegistrationService.GetCourseRegistrationsByCourseEventIdAsync(courseEventId, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetCourseRegistrationsByCourseEventId");
@@ -268,7 +284,7 @@ public partial class Program
             var response = await courseRegistrationService.CreateCourseRegistrationAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Created($"/api/course-registrations/{response.Result?.Id}", response);
         }).WithName("CreateCourseRegistration");
@@ -279,7 +295,7 @@ public partial class Program
             var response = await courseRegistrationService.UpdateCourseRegistrationAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("UpdateCourseRegistration");
@@ -289,7 +305,7 @@ public partial class Program
             var response = await courseRegistrationService.DeleteCourseRegistrationAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("DeleteCourseRegistration");
@@ -299,7 +315,7 @@ public partial class Program
             var response = await participantService.GetAllParticipantsAsync(cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetAllParticipants");
@@ -309,7 +325,7 @@ public partial class Program
             var response = await participantService.GetParticipantByIdAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetParticipantById");
@@ -320,7 +336,7 @@ public partial class Program
             var response = await participantService.CreateParticipantAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Created($"/api/participants/{response.Result?.Id}", response);
         }).WithName("CreateParticipant");
@@ -331,7 +347,7 @@ public partial class Program
             var response = await participantService.UpdateParticipantAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("UpdateParticipant");
@@ -341,7 +357,7 @@ public partial class Program
             var response = await participantService.DeleteParticipantAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("DeleteParticipant");
@@ -351,7 +367,7 @@ public partial class Program
             var response = await locationService.GetAllLocationsAsync(cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetAllLocations");
@@ -361,7 +377,7 @@ public partial class Program
             var response = await locationService.GetLocationByIdAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetLocationById");
@@ -372,7 +388,7 @@ public partial class Program
             var response = await locationService.CreateLocationAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Created($"/api/locations/{response.Result?.Id}", response);
         }).WithName("CreateLocation");
@@ -383,7 +399,7 @@ public partial class Program
             var response = await locationService.UpdateLocationAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("UpdateLocation");
@@ -393,7 +409,7 @@ public partial class Program
             var response = await locationService.DeleteLocationAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("DeleteLocation");
@@ -403,7 +419,7 @@ public partial class Program
             var response = await inPlaceLocationService.GetAllInPlaceLocationsAsync(cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetAllInPlaceLocations");
@@ -413,7 +429,7 @@ public partial class Program
             var response = await inPlaceLocationService.GetInPlaceLocationByIdAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetInPlaceLocationById");
@@ -423,7 +439,7 @@ public partial class Program
             var response = await inPlaceLocationService.GetInPlaceLocationsByLocationIdAsync(locationId, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetInPlaceLocationsByLocationId");
@@ -434,7 +450,7 @@ public partial class Program
             var response = await inPlaceLocationService.CreateInPlaceLocationAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Created($"/api/in-place-locations/{response.Result?.Id}", response);
         }).WithName("CreateInPlaceLocation");
@@ -445,7 +461,7 @@ public partial class Program
             var response = await inPlaceLocationService.UpdateInPlaceLocationAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("UpdateInPlaceLocation");
@@ -455,7 +471,7 @@ public partial class Program
             var response = await inPlaceLocationService.DeleteInPlaceLocationAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("DeleteInPlaceLocation");
@@ -465,7 +481,7 @@ public partial class Program
             var response = await instructorService.GetAllInstructorsAsync(cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetAllInstructors");
@@ -475,7 +491,7 @@ public partial class Program
             var response = await instructorService.GetInstructorByIdAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("GetInstructorById");
@@ -486,7 +502,7 @@ public partial class Program
             var response = await instructorService.CreateInstructorAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Created($"/api/instructors/{response.Result?.Id}", response);
         }).WithName("CreateInstructor");
@@ -497,7 +513,7 @@ public partial class Program
             var response = await instructorService.UpdateInstructorAsync(input, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("UpdateInstructor");
@@ -507,7 +523,7 @@ public partial class Program
             var response = await instructorService.DeleteInstructorAsync(id, cancellationToken);
 
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
 
             return Results.Ok(response);
         }).WithName("DeleteInstructor");
@@ -522,7 +538,7 @@ public partial class Program
         {
             var response = await roleService.GetInstructorRoleByIdAsync(id, cancellationToken);
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
             return Results.Ok(response);
         }).WithName("GetInstructorRoleById");
 
@@ -531,7 +547,7 @@ public partial class Program
             var input = new CreateInstructorRoleInput(request.RoleName);
             var response = await roleService.CreateInstructorRoleAsync(input, cancellationToken);
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
             return Results.Created($"/api/instructor-roles/{response.Result?.Id}", response);
         }).WithName("CreateInstructorRole");
 
@@ -540,7 +556,7 @@ public partial class Program
             var input = new UpdateInstructorRoleInput(id, request.RoleName);
             var response = await roleService.UpdateInstructorRoleAsync(input, cancellationToken);
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
             return Results.Ok(response);
         }).WithName("UpdateInstructorRole");
 
@@ -548,7 +564,7 @@ public partial class Program
         {
             var response = await roleService.DeleteInstructorRoleAsync(id, cancellationToken);
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
             return Results.Ok(response);
         }).WithName("DeleteInstructorRole");
 
@@ -556,7 +572,7 @@ public partial class Program
         {
             var response = await statusService.GetAllCourseRegistrationStatusesAsync(cancellationToken);
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
             return Results.Ok(response);
         }).WithName("GetCourseRegistrationStatuses");
 
@@ -564,7 +580,7 @@ public partial class Program
         {
             var response = await statusService.GetCourseRegistrationStatusByIdAsync(id, cancellationToken);
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
             return Results.Ok(response);
         }).WithName("GetCourseRegistrationStatusById");
 
@@ -572,7 +588,7 @@ public partial class Program
         {
             var response = await statusService.CreateCourseRegistrationStatusAsync(input, cancellationToken);
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
             return Results.Created($"/api/course-registration-statuses/{response.Result?.Id}", response);
         }).WithName("CreateCourseRegistrationStatus");
 
@@ -581,7 +597,7 @@ public partial class Program
             var updateInput = new UpdateCourseRegistrationStatusInput(id, input.Name);
             var response = await statusService.UpdateCourseRegistrationStatusAsync(updateInput, cancellationToken);
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
             return Results.Ok(response);
         }).WithName("UpdateCourseRegistrationStatus");
 
@@ -589,10 +605,11 @@ public partial class Program
         {
             var response = await statusService.DeleteCourseRegistrationStatusAsync(id, cancellationToken);
             if (!response.Success)
-                return Results.BadRequest(response);
+                return MapError(response);
             return Results.Ok(response);
         }).WithName("DeleteCourseRegistrationStatus");
 
         app.Run();
     }
 }
+
