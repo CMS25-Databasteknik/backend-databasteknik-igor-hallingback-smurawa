@@ -202,6 +202,10 @@ Backend/
 - The architecture promotes **testability** and **maintainability**
 - **Dependency injection** is used throughout the application
 - The solution uses transactions handling in  courseEventRepository, courseRegistrationRepository and participantRepository to ensure data integrity during complex operations
+- In-memory caching is enabled in `Presentation/Program.cs` via `AddMemoryCache()`.
+- Repositories using `IMemoryCache`:
+  - `Infrastructure/Persistence/EFC/Repositories/CourseEventTypeRepository.cs`
+  - `Infrastructure/Persistence/EFC/Repositories/CourseRegistrationStatusRepository.cs`
 ## Architecture Benefits
 
 - **Separation of Concerns**: Each layer has a specific responsibility

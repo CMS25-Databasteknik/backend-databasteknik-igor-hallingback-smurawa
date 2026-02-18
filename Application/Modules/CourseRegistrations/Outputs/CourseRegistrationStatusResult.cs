@@ -1,5 +1,5 @@
 using Backend.Application.Common;
-using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
+using Backend.Domain.Modules.CourseRegistrations.Models;
 
 namespace Backend.Application.Modules.CourseRegistrations.Outputs;
 

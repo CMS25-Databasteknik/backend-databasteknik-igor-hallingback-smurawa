@@ -42,15 +42,11 @@ public class CourseRegistration_Tests
     }
 
     [Fact]
-    public void Constructor_Should_Throw_When_Status_Is_Invalid()
+    public void Constructor_Should_Throw_When_Status_Is_Null()
     {
-        var invalidStatus = (CourseRegistrationStatus)42;
-
-        var ex = Assert.Throws<ArgumentException>(() =>
-            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, invalidStatus, PaymentMethod.Cash));
-
+        var ex = Assert.Throws<ArgumentNullException>(() =>
+            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, null!, PaymentMethod.Cash));
         Assert.Equal("status", ex.ParamName);
-        Assert.Contains("Registration status is invalid", ex.Message);
     }
 
     [Fact]
@@ -65,11 +61,16 @@ public class CourseRegistration_Tests
         Assert.Contains("Payment method is invalid", ex.Message);
     }
 
+    public static IEnumerable<object[]> ValidStatusAndPaymentData =>
+    [
+        [CourseRegistrationStatus.Pending, PaymentMethod.Card],
+        [CourseRegistrationStatus.Paid, PaymentMethod.Invoice],
+        [CourseRegistrationStatus.Cancelled, PaymentMethod.Cash],
+        [CourseRegistrationStatus.Refunded, PaymentMethod.Card]
+    ];
+
     [Theory]
-    [InlineData(CourseRegistrationStatus.Pending, PaymentMethod.Card)]
-    [InlineData(CourseRegistrationStatus.Paid, PaymentMethod.Invoice)]
-    [InlineData(CourseRegistrationStatus.Cancelled, PaymentMethod.Cash)]
-    [InlineData(CourseRegistrationStatus.Refunded, PaymentMethod.Card)]
+    [MemberData(nameof(ValidStatusAndPaymentData))]
     public void Constructor_Should_Accept_All_Statuses(CourseRegistrationStatus status, PaymentMethod payment)
     {
         var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, status, payment);

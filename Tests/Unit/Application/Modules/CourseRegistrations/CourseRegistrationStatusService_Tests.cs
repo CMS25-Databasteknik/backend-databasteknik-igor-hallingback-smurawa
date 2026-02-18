@@ -1,8 +1,8 @@
 using Backend.Application.Modules.CourseRegistrations;
 using Backend.Application.Modules.CourseRegistrations.Inputs;
 using Backend.Application.Modules.CourseRegistrations.Outputs;
-using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
+using Backend.Domain.Modules.CourseRegistrations.Models;
 using NSubstitute;
 
 namespace Backend.Tests.Unit.Application.Modules.CourseRegistrations;
