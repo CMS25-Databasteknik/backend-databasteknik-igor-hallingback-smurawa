@@ -11,5 +11,8 @@ public sealed class CourseWithEvents
     {
         Course = course ?? throw new ArgumentNullException(nameof(course));
         Events = events ?? throw new ArgumentNullException(nameof(events));
+
+        if (Events.Any(e => e is null))
+            throw new ArgumentException("Events collection cannot contain null items.", nameof(events));
     }
 }

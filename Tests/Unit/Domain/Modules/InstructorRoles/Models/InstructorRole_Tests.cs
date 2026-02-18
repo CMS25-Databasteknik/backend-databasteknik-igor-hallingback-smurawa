@@ -21,6 +21,15 @@ public class InstructorRole_Tests
         Assert.Equal("Assistant", role.RoleName);
     }
 
+    [Fact]
+    public void Constructor_Should_Accept_Id_Zero_For_New_Role()
+    {
+        var role = new InstructorRole(0, "Lead");
+
+        Assert.Equal(0, role.Id);
+        Assert.Equal("Lead", role.RoleName);
+    }
+
     [Theory]
     [InlineData(-1)]
     public void Constructor_Should_Throw_When_Id_Invalid(int id)

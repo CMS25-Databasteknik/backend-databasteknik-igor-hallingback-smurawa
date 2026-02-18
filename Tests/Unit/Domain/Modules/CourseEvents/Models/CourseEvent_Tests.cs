@@ -26,6 +26,30 @@ public class CourseEvent_Tests
         Assert.Equal(price, courseEvent.Price);
         Assert.Equal(seats, courseEvent.Seats);
         Assert.Equal(courseEventTypeId, courseEvent.CourseEventTypeId);
+        Assert.Equal(VenueType.InPerson, courseEvent.VenueType);
+    }
+
+    [Theory]
+    [InlineData(VenueType.InPerson)]
+    [InlineData(VenueType.Online)]
+    [InlineData(VenueType.Hybrid)]
+    public void Constructor_Should_Accept_All_Valid_VenueTypes(VenueType venueType)
+    {
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1, venueType);
+
+        Assert.Equal(venueType, courseEvent.VenueType);
+    }
+
+    [Fact]
+    public void Constructor_Should_Throw_When_VenueType_Invalid()
+    {
+        var invalidVenue = (VenueType)999;
+
+        var ex = Assert.Throws<ArgumentException>(() =>
+            new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1, invalidVenue));
+
+        Assert.Equal("venueType", ex.ParamName);
+        Assert.Contains("invalid", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

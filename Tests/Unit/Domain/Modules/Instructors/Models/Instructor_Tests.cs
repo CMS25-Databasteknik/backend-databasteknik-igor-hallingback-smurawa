@@ -41,5 +41,25 @@ public class Instructor_Tests
     {
         Assert.Throws<ArgumentNullException>(() => new Instructor(Guid.NewGuid(), "Jane", null!));
     }
+
+    [Fact]
+    public void Constructor_Should_Throw_When_Role_Id_Is_Zero()
+    {
+        var role = new InstructorRole(0, "Lead");
+
+        var ex = Assert.Throws<ArgumentException>(() => new Instructor(Guid.NewGuid(), "Jane", role));
+        Assert.Equal("role", ex.ParamName);
+    }
+
+    [Fact]
+    public void Constructor_Should_Trim_Name()
+    {
+        var id = Guid.NewGuid();
+        var role = new InstructorRole(1, "Lead");
+
+        var instructor = new Instructor(id, "  Jane  ", role);
+
+        Assert.Equal("Jane", instructor.Name);
+    }
 }
 
