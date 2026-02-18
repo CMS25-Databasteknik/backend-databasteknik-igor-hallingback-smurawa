@@ -19,6 +19,11 @@ public sealed class CourseRegistrationStatusEntityConfiguration : IEntityTypeCon
             .HasMaxLength(50)
             .IsRequired();
 
+        e.Property(x => x.Concurrency)
+            .IsRowVersion()
+            .IsConcurrencyToken()
+            .IsRequired();
+
         e.HasIndex(x => x.Name)
             .IsUnique()
             .HasDatabaseName("IX_CourseRegistrationStatuses_Name");

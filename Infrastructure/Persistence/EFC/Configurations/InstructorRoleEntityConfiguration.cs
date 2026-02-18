@@ -22,6 +22,11 @@ public sealed class InstructorRoleEntityConfiguration : IEntityTypeConfiguration
             .HasMaxLength(50)
             .IsRequired();
 
+        e.Property(x => x.Concurrency)
+            .IsRowVersion()
+            .IsConcurrencyToken()
+            .IsRequired();
+
         e.HasIndex(x => x.RoleName)
             .IsUnique()
             .HasDatabaseName("IX_InstructorRoles_RoleName");
