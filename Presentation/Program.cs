@@ -39,8 +39,11 @@ public partial class Program
         builder.Services.AddOpenApi();
         builder.Services.AddCors();
 
+        builder.Services.AddMemoryCache();
+
         builder.Services.AddInfrastructureServices(builder.Configuration);
         builder.Services.AddApplication(builder.Configuration, builder.Environment);
+
 
         var app = builder.Build();
 
@@ -546,6 +549,47 @@ public partial class Program
                 return Results.BadRequest(response);
             return Results.Ok(response);
         }).WithName("DeleteInstructorRole");
+
+        app.MapGet("/api/course-registration-statuses", async (ICourseRegistrationStatusService statusService, CancellationToken cancellationToken) =>
+        {
+            var response = await statusService.GetAllCourseRegistrationStatusesAsync(cancellationToken);
+            if (!response.Success)
+                return Results.BadRequest(response);
+            return Results.Ok(response);
+        }).WithName("GetCourseRegistrationStatuses");
+
+        app.MapGet("/api/course-registration-statuses/{id:int}", async (int id, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken) =>
+        {
+            var response = await statusService.GetCourseRegistrationStatusByIdAsync(id, cancellationToken);
+            if (!response.Success)
+                return Results.BadRequest(response);
+            return Results.Ok(response);
+        }).WithName("GetCourseRegistrationStatusById");
+
+        app.MapPost("/api/course-registration-statuses", async (CreateCourseRegistrationStatusInput input, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken) =>
+        {
+            var response = await statusService.CreateCourseRegistrationStatusAsync(input, cancellationToken);
+            if (!response.Success)
+                return Results.BadRequest(response);
+            return Results.Created($"/api/course-registration-statuses/{response.Result?.Id}", response);
+        }).WithName("CreateCourseRegistrationStatus");
+
+        app.MapPut("/api/course-registration-statuses/{id:int}", async (int id, UpdateCourseRegistrationStatusInput input, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken) =>
+        {
+            var updateInput = new UpdateCourseRegistrationStatusInput(id, input.Name);
+            var response = await statusService.UpdateCourseRegistrationStatusAsync(updateInput, cancellationToken);
+            if (!response.Success)
+                return Results.BadRequest(response);
+            return Results.Ok(response);
+        }).WithName("UpdateCourseRegistrationStatus");
+
+        app.MapDelete("/api/course-registration-statuses/{id:int}", async (int id, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken) =>
+        {
+            var response = await statusService.DeleteCourseRegistrationStatusAsync(id, cancellationToken);
+            if (!response.Success)
+                return Results.BadRequest(response);
+            return Results.Ok(response);
+        }).WithName("DeleteCourseRegistrationStatus");
 
         app.Run();
     }
