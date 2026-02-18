@@ -16,6 +16,7 @@ public sealed class CoursesOnlineDbContext(DbContextOptions<CoursesOnlineDbConte
     public DbSet<CourseRegistrationEntity> CourseRegistrations => Set<CourseRegistrationEntity>();
     public DbSet<CourseRegistrationStatusEntity> CourseRegistrationStatuses => Set<CourseRegistrationStatusEntity>();
     public DbSet<PaymentMethodEntity> PaymentMethods => Set<PaymentMethodEntity>();
+    public DbSet<ParticipantContactTypeEntity> ParticipantContactTypes => Set<ParticipantContactTypeEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

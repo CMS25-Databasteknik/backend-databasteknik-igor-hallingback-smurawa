@@ -7,8 +7,9 @@ public sealed class Participant
     public string LastName { get; }
     public string Email { get; }
     public string PhoneNumber { get; }
+    public ParticipantContactType ContactType { get; }
 
-    public Participant(Guid id, string firstName, string lastName, string email, string phoneNumber)
+    public Participant(Guid id, string firstName, string lastName, string email, string phoneNumber, ParticipantContactType contactType = ParticipantContactType.Primary)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("ID cannot be empty.", nameof(id));
@@ -25,10 +26,14 @@ public sealed class Participant
         if (string.IsNullOrWhiteSpace(phoneNumber))
             throw new ArgumentException("Phone number cannot be empty or whitespace.", nameof(phoneNumber));
 
+        if (!Enum.IsDefined(typeof(ParticipantContactType), contactType))
+            throw new ArgumentException("Participant contact type is invalid.", nameof(contactType));
+
         Id = id;
         FirstName = firstName.Trim();
         LastName = lastName.Trim();
         Email = email.Trim();
         PhoneNumber = phoneNumber.Trim();
+        ContactType = contactType;
     }
 }

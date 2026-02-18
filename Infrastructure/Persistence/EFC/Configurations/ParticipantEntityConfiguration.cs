@@ -35,6 +35,10 @@ public sealed class ParticipantEntityConfiguration : IEntityTypeConfiguration<Pa
             .HasMaxLength(20)
             .IsRequired();
 
+        e.Property(x => x.ContactTypeId)
+            .HasDefaultValue(1)
+            .IsRequired();
+
         e.Property(x => x.Concurrency)
             .IsRowVersion()
             .IsConcurrencyToken()
@@ -49,6 +53,11 @@ public sealed class ParticipantEntityConfiguration : IEntityTypeConfiguration<Pa
             .HasPrecision(0)
             .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Participants_ModifiedAtUtc")
             .ValueGeneratedOnAddOrUpdate();
+
+        e.HasOne(p => p.ContactType)
+            .WithMany()
+            .HasForeignKey(p => p.ContactTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         e.HasIndex(x => x.Email)
             .IsUnique()

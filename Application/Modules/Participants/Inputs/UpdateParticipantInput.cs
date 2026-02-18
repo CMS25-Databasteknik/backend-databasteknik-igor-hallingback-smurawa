@@ -1,3 +1,5 @@
+using Backend.Domain.Modules.Participants.Models;
+
 namespace Backend.Application.Modules.Participants.Inputs;
 
 public sealed record UpdateParticipantInput(
@@ -5,5 +7,6 @@ public sealed record UpdateParticipantInput(
     string FirstName,
     string LastName,
     string Email,
-    string PhoneNumber
+    string PhoneNumber,
+    ParticipantContactType ContactType
 );
