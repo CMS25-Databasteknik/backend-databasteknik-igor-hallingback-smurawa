@@ -17,7 +17,8 @@ public class CourseRegistration_Tests
             participantId,
             courseEventId,
             registrationDate,
-            CourseRegistrationStatus.Pending);
+            CourseRegistrationStatus.Pending,
+            PaymentMethod.Card);
 
         Assert.NotNull(courseRegistration);
         Assert.Equal(id, courseRegistration.Id);
@@ -34,7 +35,7 @@ public class CourseRegistration_Tests
         var courseEventId = Guid.NewGuid();
 
         var ex = Assert.Throws<ArgumentException>(() =>
-            new CourseRegistration(Guid.Empty, participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Paid));
+            new CourseRegistration(Guid.Empty, participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Paid, PaymentMethod.Invoice));
 
         Assert.Equal("id", ex.ParamName);
         Assert.Contains("ID cannot be empty", ex.Message);
@@ -46,28 +47,29 @@ public class CourseRegistration_Tests
         var invalidStatus = (CourseRegistrationStatus)42;
 
         var ex = Assert.Throws<ArgumentException>(() =>
-            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, invalidStatus));
+            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, invalidStatus, PaymentMethod.Cash));
 
         Assert.Equal("status", ex.ParamName);
         Assert.Contains("Registration status is invalid", ex.Message);
     }
 
     [Theory]
-    [InlineData(CourseRegistrationStatus.Pending)]
-    [InlineData(CourseRegistrationStatus.Paid)]
-    [InlineData(CourseRegistrationStatus.Cancelled)]
-    [InlineData(CourseRegistrationStatus.Refunded)]
-    public void Constructor_Should_Accept_All_Statuses(CourseRegistrationStatus status)
+    [InlineData(CourseRegistrationStatus.Pending, PaymentMethod.Card)]
+    [InlineData(CourseRegistrationStatus.Paid, PaymentMethod.Invoice)]
+    [InlineData(CourseRegistrationStatus.Cancelled, PaymentMethod.Cash)]
+    [InlineData(CourseRegistrationStatus.Refunded, PaymentMethod.Card)]
+    public void Constructor_Should_Accept_All_Statuses(CourseRegistrationStatus status, PaymentMethod payment)
     {
-        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, status);
+        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, status, payment);
 
         Assert.Equal(status, registration.Status);
+        Assert.Equal(payment, registration.PaymentMethod);
     }
 
     [Fact]
     public void Properties_Should_Be_ReadOnly()
     {
-        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid);
+        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, PaymentMethod.Card);
 
         Assert.Equal(registration.Id, registration.Id);
         Assert.Equal(registration.ParticipantId, registration.ParticipantId);
@@ -81,7 +83,7 @@ public class CourseRegistration_Tests
     {
         var date = DateTime.UtcNow.AddDays(-10);
 
-        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), date, CourseRegistrationStatus.Paid);
+        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), date, CourseRegistrationStatus.Paid, PaymentMethod.Cash);
 
         Assert.Equal(date, registration.RegistrationDate);
     }

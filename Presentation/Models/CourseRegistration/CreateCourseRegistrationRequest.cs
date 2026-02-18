@@ -5,5 +5,6 @@ namespace Backend.Presentation.API.Models.CourseRegistration;
 public sealed record CreateCourseRegistrationRequest(
     Guid ParticipantId,
     Guid CourseEventId,
-    CourseRegistrationStatus Status
+    CourseRegistrationStatus Status,
+    PaymentMethod PaymentMethod
 );

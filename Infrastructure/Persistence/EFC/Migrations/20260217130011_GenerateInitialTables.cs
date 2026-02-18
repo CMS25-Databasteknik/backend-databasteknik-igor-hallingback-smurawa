@@ -192,6 +192,18 @@ namespace Infrastructure.Persistence.EFC.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PaymentMethods",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentMethods_Id", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CourseRegistrations",
                 columns: table => new
                 {
@@ -202,6 +214,7 @@ namespace Infrastructure.Persistence.EFC.Migrations
                     RegistrationDate = table.Column<DateTime>(type: "datetime2(0)", precision: 0, nullable: false, defaultValueSql: "(SYSUTCDATETIME())")
                         .Annotation("Relational:DefaultConstraintName", "DF_CourseRegistrations_RegistrationDate"),
                     CourseRegistrationStatusId = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    PaymentMethodId = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     ModifiedAtUtc = table.Column<DateTime>(type: "datetime2(0)", precision: 0, nullable: false, defaultValueSql: "(SYSUTCDATETIME())")
                         .Annotation("Relational:DefaultConstraintName", "DF_CourseRegistrations_ModifiedAtUtc")
@@ -225,6 +238,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         name: "FK_CourseRegistrations_CourseRegistrationStatuses_CourseRegistrationStatusId",
                         column: x => x.CourseRegistrationStatusId,
                         principalTable: "CourseRegistrationStatuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CourseRegistrations_PaymentMethods_PaymentMethodId",
+                        column: x => x.PaymentMethodId,
+                        principalTable: "PaymentMethods",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -283,6 +302,27 @@ namespace Infrastructure.Persistence.EFC.Migrations
                 name: "IX_CourseRegistrations_CourseRegistrationStatusId",
                 table: "CourseRegistrations",
                 column: "CourseRegistrationStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseRegistrations_PaymentMethodId",
+                table: "CourseRegistrations",
+                column: "PaymentMethodId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentMethods_Name",
+                table: "PaymentMethods",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.InsertData(
+                table: "PaymentMethods",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Card" },
+                    { 2, "Invoice" },
+                    { 3, "Cash" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseRegistrationStatuses_Name",
