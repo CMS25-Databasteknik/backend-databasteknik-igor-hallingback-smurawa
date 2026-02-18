@@ -31,6 +31,10 @@ public sealed class CourseEventEntityConfiguration : IEntityTypeConfiguration<Co
         e.Property(x => x.Seats)
             .IsRequired();
 
+        e.Property(x => x.VenueTypeId)
+            .HasDefaultValue(1)
+            .IsRequired();
+
         e.Property(x => x.Concurrency)
             .IsRowVersion()
             .IsConcurrencyToken()
@@ -52,6 +56,11 @@ public sealed class CourseEventEntityConfiguration : IEntityTypeConfiguration<Co
         e.HasOne(ce => ce.CourseEventType)
             .WithMany(cet => cet.CourseEvents)
             .HasForeignKey(ce => ce.CourseEventTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        e.HasOne(ce => ce.VenueType)
+            .WithMany()
+            .HasForeignKey(ce => ce.VenueTypeId)
             .OnDelete(DeleteBehavior.Restrict);
 
         e.HasMany(ce => ce.Instructors)

@@ -10,14 +10,15 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
     {
         private readonly CoursesOnlineDbContext _context = context;
 
-        private static CourseEvent ToModel(CourseEventEntity entity)
-            => new(
-                entity.Id,
-                entity.CourseId,
-                entity.EventDate,
-                entity.Price,
-                entity.Seats,
-                entity.CourseEventTypeId);
+    private static CourseEvent ToModel(CourseEventEntity entity)
+        => new(
+            entity.Id,
+            entity.CourseId,
+            entity.EventDate,
+            entity.Price,
+            entity.Seats,
+            entity.CourseEventTypeId,
+            (VenueType)entity.VenueTypeId);
 
         public async Task<CourseEvent> CreateCourseEventAsync(CourseEvent courseEvent, CancellationToken cancellationToken)
         {
@@ -28,7 +29,8 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 EventDate = courseEvent.EventDate,
                 Price = courseEvent.Price,
                 Seats = courseEvent.Seats,
-                CourseEventTypeId = courseEvent.CourseEventTypeId
+                CourseEventTypeId = courseEvent.CourseEventTypeId,
+                VenueTypeId = (int)courseEvent.VenueType
             };
 
             _context.CourseEvents.Add(entity);
@@ -124,6 +126,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             entity.Price = courseEvent.Price;
             entity.Seats = courseEvent.Seats;
             entity.CourseEventTypeId = courseEvent.CourseEventTypeId;
+            entity.VenueTypeId = (int)courseEvent.VenueType;
             entity.ModifiedAtUtc = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);

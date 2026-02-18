@@ -1,3 +1,5 @@
+using Backend.Domain.Modules.CourseEvents.Models;
+
 namespace Backend.Application.Modules.CourseEvents.Inputs;
 
 public sealed record UpdateCourseEventInput(
@@ -6,5 +8,6 @@ public sealed record UpdateCourseEventInput(
     DateTime EventDate,
     decimal Price,
     int Seats,
-    int CourseEventTypeId
+    int CourseEventTypeId,
+    VenueType VenueType
 );

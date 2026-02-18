@@ -16,7 +16,7 @@ public class CourseEvent_Tests
         var courseEventTypeId = 1;
 
         // Act
-        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId);
+        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson);
 
         // Assert
         Assert.NotNull(courseEvent);
@@ -41,7 +41,7 @@ public class CourseEvent_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId));
+            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson));
 
         Assert.Equal("id", exception.ParamName);
         Assert.Contains("cannot be empty", exception.Message);
@@ -60,7 +60,7 @@ public class CourseEvent_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId));
+            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson));
 
         Assert.Equal("courseId", exception.ParamName);
         Assert.Contains("cannot be empty", exception.Message);
@@ -79,7 +79,7 @@ public class CourseEvent_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId));
+            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson));
 
         Assert.Equal("eventDate", exception.ParamName);
         Assert.Contains("Event date must be specified", exception.Message);
@@ -98,7 +98,7 @@ public class CourseEvent_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId));
+            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson));
 
         Assert.Equal("price", exception.ParamName);
         Assert.Contains("Price cannot be negative", exception.Message);
@@ -116,7 +116,7 @@ public class CourseEvent_Tests
         var courseEventTypeId = 1;
 
         // Act
-        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId);
+        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson);
 
         // Assert
         Assert.Equal(0m, courseEvent.Price);
@@ -135,7 +135,7 @@ public class CourseEvent_Tests
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId));
+            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson));
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public class CourseEvent_Tests
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId));
+            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson));
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class CourseEvent_Tests
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId));
+            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson));
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class CourseEvent_Tests
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId));
+            new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson));
     }
 
     [Theory]
@@ -201,7 +201,7 @@ public class CourseEvent_Tests
         var courseEventTypeId = 1;
 
         // Act
-        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId);
+        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson);
 
         // Assert
         Assert.Equal(price, courseEvent.Price);
@@ -222,7 +222,7 @@ public class CourseEvent_Tests
         var courseEventTypeId = 1;
 
         // Act
-        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId);
+        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson);
 
         // Assert
         Assert.Equal(seats, courseEvent.Seats);
@@ -240,7 +240,7 @@ public class CourseEvent_Tests
         var courseEventTypeId = 1;
 
         // Act
-        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId);
+        var courseEvent = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson);
 
         // Assert
         Assert.Equal(id, courseEvent.Id);
@@ -262,8 +262,8 @@ public class CourseEvent_Tests
         var seats = 30;
         var courseEventTypeId = 1;
 
-        var courseEvent1 = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId);
-        var courseEvent2 = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId);
+        var courseEvent1 = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson);
+        var courseEvent2 = new CourseEvent(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.InPerson);
 
         // Assert
         Assert.Equal(courseEvent1.Id, courseEvent2.Id);
@@ -278,7 +278,7 @@ public class CourseEvent_Tests
     public void Id_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1, VenueType.InPerson);
 
         // Assert
         var initialId = courseEvent.Id;
@@ -289,7 +289,7 @@ public class CourseEvent_Tests
     public void CourseId_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1, VenueType.InPerson);
 
         // Assert
         var initialCourseId = courseEvent.CourseId;
@@ -301,7 +301,7 @@ public class CourseEvent_Tests
     {
         // Arrange
         var eventDate = DateTime.UtcNow;
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), eventDate, 1000m, 30, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), eventDate, 1000m, 30, 1, VenueType.InPerson);
 
         // Assert
         var initialEventDate = courseEvent.EventDate;
@@ -312,7 +312,7 @@ public class CourseEvent_Tests
     public void Price_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1, VenueType.InPerson);
 
         // Assert
         var initialPrice = courseEvent.Price;
@@ -323,7 +323,7 @@ public class CourseEvent_Tests
     public void Seats_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1, VenueType.InPerson);
 
         // Assert
         var initialSeats = courseEvent.Seats;
@@ -334,7 +334,7 @@ public class CourseEvent_Tests
     public void CourseEventTypeId_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 30, 1, VenueType.InPerson);
 
         // Assert
         var initialCourseEventTypeId = courseEvent.CourseEventTypeId;
@@ -346,7 +346,7 @@ public class CourseEvent_Tests
     {
         // Arrange
         var eventDate = DateTime.UtcNow.AddDays(30);
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), eventDate, 1000m, 30, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), eventDate, 1000m, 30, 1, VenueType.InPerson);
 
         // Assert
         Assert.Equal(eventDate, courseEvent.EventDate);
@@ -357,7 +357,7 @@ public class CourseEvent_Tests
     {
         // Arrange
         var eventDate = DateTime.UtcNow.AddDays(-30);
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), eventDate, 1000m, 30, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), eventDate, 1000m, 30, 1, VenueType.InPerson);
 
         // Assert
         Assert.Equal(eventDate, courseEvent.EventDate);
@@ -368,8 +368,8 @@ public class CourseEvent_Tests
     {
         // Arrange
         var courseId = Guid.NewGuid();
-        var event1 = new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 30, 1);
-        var event2 = new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 1500m, 25, 1);
+        var event1 = new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 30, 1, VenueType.InPerson);
+        var event2 = new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 1500m, 25, 1, VenueType.InPerson);
 
         // Assert
         Assert.Equal(courseId, event1.CourseId);
@@ -382,7 +382,7 @@ public class CourseEvent_Tests
     {
         // Arrange
         var seats = 1000;
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, seats, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, seats, 1, VenueType.InPerson);
 
         // Assert
         Assert.Equal(seats, courseEvent.Seats);
@@ -393,10 +393,15 @@ public class CourseEvent_Tests
     {
         // Arrange
         var price = 999999.99m;
-        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, price, 30, 1);
+        var courseEvent = new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, price, 30, 1, VenueType.InPerson);
 
         // Assert
         Assert.Equal(price, courseEvent.Price);
     }
 }
+
+
+
+
+
 

@@ -135,7 +135,7 @@ public partial class Program
 
         app.MapPost("/api/course-events", async (CreateCourseEventRequest request, ICourseEventService courseEventService, CancellationToken cancellationToken) =>
         {
-            var input = new CreateCourseEventInput(request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId);
+            var input = new CreateCourseEventInput(request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId, request.VenueType);
             var response = await courseEventService.CreateCourseEventAsync(input, cancellationToken);
 
             if (!response.Success)
@@ -146,7 +146,7 @@ public partial class Program
 
         app.MapPut("/api/course-events/{id:guid}", async (Guid id, UpdateCourseEventRequest request, ICourseEventService courseEventService, CancellationToken cancellationToken) =>
         {
-            var input = new UpdateCourseEventInput(id, request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId);
+            var input = new UpdateCourseEventInput(id, request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId, request.VenueType);
             var response = await courseEventService.UpdateCourseEventAsync(input, cancellationToken);
 
             if (!response.Success)

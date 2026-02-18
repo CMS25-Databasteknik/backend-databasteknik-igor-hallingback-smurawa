@@ -71,7 +71,8 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                     ce.EventDate,
                     ce.Price,
                     ce.Seats,
-                    ce.CourseEventTypeId))
+                    ce.CourseEventTypeId,
+                    (VenueType)ce.VenueTypeId))
                 .ToList();
 
             return new CourseWithEvents(course, events);

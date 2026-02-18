@@ -61,7 +61,8 @@ namespace Backend.Application.Modules.CourseEvents
                     courseEvent.EventDate,
                     courseEvent.Price,
                     courseEvent.Seats,
-                    courseEvent.CourseEventTypeId
+                    courseEvent.CourseEventTypeId,
+                    courseEvent.VenueType
                 );
 
                 var result = await _courseEventRepository.CreateCourseEventAsync(newCourseEvent, cancellationToken);
@@ -279,14 +280,15 @@ namespace Backend.Application.Modules.CourseEvents
                     };
                 }
 
-                var updatedCourseEvent = new CourseEvent(
-                    courseEvent.Id,
-                    courseEvent.CourseId,
-                    courseEvent.EventDate,
-                    courseEvent.Price,
-                    courseEvent.Seats,
-                    courseEvent.CourseEventTypeId
-                );
+            var updatedCourseEvent = new CourseEvent(
+                courseEvent.Id,
+                courseEvent.CourseId,
+                courseEvent.EventDate,
+                courseEvent.Price,
+                courseEvent.Seats,
+                courseEvent.CourseEventTypeId,
+                courseEvent.VenueType
+            );
 
                 var result = await _courseEventRepository.UpdateCourseEventAsync(updatedCourseEvent, cancellationToken);
 

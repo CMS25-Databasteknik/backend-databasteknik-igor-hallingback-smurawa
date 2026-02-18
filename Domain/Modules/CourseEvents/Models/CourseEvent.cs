@@ -8,6 +8,7 @@ public sealed class CourseEvent
     public decimal Price { get; }
     public int Seats { get; }
     public int CourseEventTypeId { get; }
+    public VenueType VenueType { get; }
 
     public CourseEvent(
         Guid id,
@@ -15,7 +16,8 @@ public sealed class CourseEvent
         DateTime eventDate,
         decimal price,
         int seats,
-        int courseEventTypeId)
+        int courseEventTypeId,
+        VenueType venueType)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("CourseEvent id cannot be empty.", nameof(id));
@@ -32,6 +34,8 @@ public sealed class CourseEvent
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(seats);
 
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(courseEventTypeId);
+        if (!Enum.IsDefined(typeof(VenueType), venueType))
+            throw new ArgumentException("Venue type is invalid.", nameof(venueType));
 
         Id = id;
         CourseId = courseId;
@@ -39,5 +43,6 @@ public sealed class CourseEvent
         Price = price;
         Seats = seats;
         CourseEventTypeId = courseEventTypeId;
+        VenueType = venueType;
     }
 }
