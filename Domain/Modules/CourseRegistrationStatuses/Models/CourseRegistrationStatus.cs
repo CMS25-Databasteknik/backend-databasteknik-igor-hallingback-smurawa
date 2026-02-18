@@ -1,4 +1,4 @@
-namespace Backend.Domain.Modules.CourseRegistrations.Models;
+namespace Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 
 public sealed class CourseRegistrationStatus
 {
@@ -10,6 +10,11 @@ public sealed class CourseRegistrationStatus
     public static CourseRegistrationStatus Cancelled { get; } = new(2, "Cancelled");
     public static CourseRegistrationStatus Refunded { get; } = new(3, "Refunded");
 
+    public CourseRegistrationStatus(string name)
+        : this(0, name)
+    {
+    }
+
     public CourseRegistrationStatus(int id, string name)
     {
         if (id < 0)
@@ -20,5 +25,5 @@ public sealed class CourseRegistrationStatus
 
         Id = id;
         Name = name.Trim();
-    }    
+    }
 }

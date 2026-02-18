@@ -11,3 +11,4 @@ public interface IInstructorRepository
     Task<bool> DeleteInstructorAsync(Guid instructorId, CancellationToken cancellationToken);
     Task<bool> HasCourseEventsAsync(Guid instructorId, CancellationToken cancellationToken);
 }
+

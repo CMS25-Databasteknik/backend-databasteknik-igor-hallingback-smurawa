@@ -1,7 +1,8 @@
 using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
-using Backend.Infrastructure.Persistence.Entities;
+using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories
@@ -10,15 +11,15 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
     {
         private readonly CoursesOnlineDbContext _context = context;
 
-    private static CourseEvent ToModel(CourseEventEntity entity)
-        => new(
-            entity.Id,
-            entity.CourseId,
-            entity.EventDate,
-            entity.Price,
-            entity.Seats,
-            entity.CourseEventTypeId,
-            (VenueType)entity.VenueTypeId);
+        private static CourseEvent ToModel(CourseEventEntity entity)
+            => new(
+                entity.Id,
+                entity.CourseId,
+                entity.EventDate,
+                entity.Price,
+                entity.Seats,
+                entity.CourseEventTypeId,
+                (VenueType)entity.VenueTypeId);
 
         public async Task<CourseEvent> CreateCourseEventAsync(CourseEvent courseEvent, CancellationToken cancellationToken)
         {

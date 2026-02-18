@@ -2,78 +2,74 @@ using Backend.Application.Modules.CourseEvents.Inputs;
 using Backend.Application.Modules.CourseEvents.Outputs;
 using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
-using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.CourseEventTypes.Contracts;
+using Backend.Domain.Modules.Courses.Contracts;
 
-namespace Backend.Application.Modules.CourseEvents
+namespace Backend.Application.Modules.CourseEvents;
+
+public class CourseEventService(
+    ICourseEventRepository courseEventRepository,
+    ICourseRepository courseRepository,
+    ICourseEventTypeRepository courseEventTypeRepository) : ICourseEventService
 {
-    public class CourseEventService(
-        ICourseEventRepository courseEventRepository,
-        ICourseRepository courseRepository,
-        ICourseEventTypeRepository courseEventTypeRepository) : ICourseEventService
+    private readonly ICourseEventRepository _courseEventRepository = courseEventRepository ?? throw new ArgumentNullException(nameof(courseEventRepository));
+    private readonly ICourseRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
+    private readonly ICourseEventTypeRepository _courseEventTypeRepository = courseEventTypeRepository ?? throw new ArgumentNullException(nameof(courseEventTypeRepository));
+
+    public async Task<CourseEventResult> CreateCourseEventAsync(CreateCourseEventInput courseEvent, CancellationToken cancellationToken = default)
     {
-        private readonly ICourseEventRepository _courseEventRepository = courseEventRepository ?? throw new ArgumentNullException(nameof(courseEventRepository));
-        private readonly ICourseRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
-        private readonly ICourseEventTypeRepository _courseEventTypeRepository = courseEventTypeRepository ?? throw new ArgumentNullException(nameof(courseEventTypeRepository));
-
-        public async Task<CourseEventResult> CreateCourseEventAsync(CreateCourseEventInput courseEvent, CancellationToken cancellationToken = default)
+        try
         {
-            try
+            if (courseEvent == null)
             {
-                if (courseEvent == null)
-                {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Result = null,
-                        Message = "Course event cannot be null."
-                    };
-                }
-
-                var courseExists = await _courseRepository.GetCourseByIdAsync(courseEvent.CourseId, cancellationToken);
-                if (courseExists is null)
-                {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 404,
-                        Result = null,
-                        Message = $"Course with ID '{courseEvent.CourseId}' not found."
-                    };
-                }
-
-                var eventTypeExists = await _courseEventTypeRepository.GetCourseEventTypeByIdAsync(courseEvent.CourseEventTypeId, cancellationToken);
-                if (eventTypeExists is null)
-                {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 404,
-                        Result = null,
-                        Message = $"Course event type with ID '{courseEvent.CourseEventTypeId}' not found."
-                    };
-                }
-
-                var newCourseEvent = new CourseEvent(
-                    id: Guid.NewGuid(),
-                    courseEvent.CourseId,
-                    courseEvent.EventDate,
-                    courseEvent.Price,
-                    courseEvent.Seats,
-                    courseEvent.CourseEventTypeId,
-                    courseEvent.VenueType
-                );
-
-                var result = await _courseEventRepository.CreateCourseEventAsync(newCourseEvent, cancellationToken);
-
                 return new CourseEventResult
                 {
-                    Success = true,
-                    StatusCode = 201,
-                    Result = result,
-                    Message = "Course event created successfully."
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Course event cannot be null."
                 };
+            }
+
+            var newCourseEvent = new CourseEvent(
+                Guid.NewGuid(),
+                courseEvent.CourseId,
+                courseEvent.EventDate,
+                courseEvent.Price,
+                courseEvent.Seats,
+                courseEvent.CourseEventTypeId,
+                courseEvent.VenueType);
+
+            var existingCourse = await _courseRepository.GetCourseByIdAsync(newCourseEvent.CourseId, cancellationToken);
+            if (existingCourse == null)
+            {
+                return new CourseEventResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course with ID '{newCourseEvent.CourseId}' not found."
+                };
+            }
+
+            var existingCourseEventType = await _courseEventTypeRepository.GetCourseEventTypeByIdAsync(newCourseEvent.CourseEventTypeId, cancellationToken);
+            if (existingCourseEventType == null)
+            {
+                return new CourseEventResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course event type with ID '{newCourseEvent.CourseEventTypeId}' not found."
+                };
+            }
+
+            var result = await _courseEventRepository.CreateCourseEventAsync(newCourseEvent, cancellationToken);
+
+            return new CourseEventResult
+            {
+                Success = true,
+                StatusCode = 201,
+                Result = result,
+                Message = "Course event created successfully."
+            };
         }
         catch (ArgumentException ex)
         {
@@ -81,7 +77,6 @@ namespace Backend.Application.Modules.CourseEvents
             {
                 Success = false,
                 StatusCode = 400,
-                Result = null,
                 Message = ex.Message
             };
         }
@@ -91,89 +86,69 @@ namespace Backend.Application.Modules.CourseEvents
             {
                 Success = false,
                 StatusCode = 500,
-                Result = null,
                 Message = $"An error occurred while creating the course event: {ex.Message}"
             };
         }
     }
 
-        public async Task<CourseEventListResult> GetAllCourseEventsAsync(CancellationToken cancellationToken = default)
+    public async Task<CourseEventListResult> GetAllCourseEventsAsync(CancellationToken cancellationToken = default)
+    {
+        try
         {
-            try
-            {
-                var courseEvents = await _courseEventRepository.GetAllCourseEventsAsync(cancellationToken);
+            var result = await _courseEventRepository.GetAllCourseEventsAsync(cancellationToken);
 
-                if (!courseEvents.Any())
-                {
-                    return new CourseEventListResult
-                    {
-                        Success = true,
-                        Result = courseEvents,
-                        StatusCode = 200,
-                        Message = "No course events found."
-                    };
-                }
-
-                return new CourseEventListResult
-                {
-                    Success = true,
-                    StatusCode = 200,
-                    Result = courseEvents,
-                    Message = $"Retrieved {courseEvents.Count} course event(s) successfully."
-                };
-            }
-            catch (Exception ex)
+            return new CourseEventListResult
             {
-                return new CourseEventListResult
-                {
-                    Success = false,
-                    StatusCode = 500,
-                    Message = $"An error occurred while retrieving course events: {ex.Message}"
-                };
-            }
+                Success = true,
+                StatusCode = 200,
+                Result = result,
+                Message = result.Any()
+                    ? $"Retrieved {result.Count} course event(s) successfully."
+                    : "No course events found."
+            };
         }
-
-        public async Task<CourseEventResult> GetCourseEventByIdAsync(Guid courseEventId, CancellationToken cancellationToken = default)
+        catch (Exception ex)
         {
-            try
-            {
-                if (courseEventId == Guid.Empty)
-                {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Message = "Course event ID cannot be empty."
-                    };
-                }
-
-                var result = await _courseEventRepository.GetCourseEventByIdAsync(courseEventId, cancellationToken);
-
-                if (result == null)
-                {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 404,
-                        Message = $"Course event with ID '{courseEventId}' not found."
-                    };
-                }
-
-                return new CourseEventResult
-                {
-                    Success = true,
-                    StatusCode = 200,
-                    Result = result,
-                    Message = "Course event retrieved successfully."
-                };
-        }
-        catch (ArgumentException ex)
-        {
-            return new CourseEventResult
+            return new CourseEventListResult
             {
                 Success = false,
-                StatusCode = 400,
-                Message = ex.Message
+                StatusCode = 500,
+                Message = $"An error occurred while retrieving course events: {ex.Message}"
+            };
+        }
+    }
+
+    public async Task<CourseEventResult> GetCourseEventByIdAsync(Guid courseEventId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (courseEventId == Guid.Empty)
+            {
+                return new CourseEventResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Course event ID cannot be empty."
+                };
+            }
+
+            var result = await _courseEventRepository.GetCourseEventByIdAsync(courseEventId, cancellationToken);
+            if (result == null)
+            {
+                return new CourseEventResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course event with ID '{courseEventId}' not found."
+                };
+            }
+
+            return new CourseEventResult
+            {
+                Success = true,
+                StatusCode = 200,
+                Result = result,
+                Message = "Course event retrieved successfully."
             };
         }
         catch (Exception ex)
@@ -181,104 +156,95 @@ namespace Backend.Application.Modules.CourseEvents
             return new CourseEventResult
             {
                 Success = false,
-                    StatusCode = 500,
-                    Message = $"An error occurred while retrieving the course event: {ex.Message}"
-                };
-            }
+                StatusCode = 500,
+                Message = $"An error occurred while retrieving the course event: {ex.Message}"
+            };
         }
+    }
 
-        public async Task<CourseEventListResult> GetCourseEventsByCourseIdAsync(Guid courseId, CancellationToken cancellationToken = default)
+    public async Task<CourseEventListResult> GetCourseEventsByCourseIdAsync(Guid courseId, CancellationToken cancellationToken = default)
+    {
+        try
         {
-            try
-            {
-                if (courseId == Guid.Empty)
-                {
-                    return new CourseEventListResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Message = "Course ID cannot be empty."
-                    };
-                }
-
-                var courseEvents = await _courseEventRepository.GetCourseEventsByCourseIdAsync(courseId, cancellationToken);
-
-                if (!courseEvents.Any())
-                {
-                    return new CourseEventListResult
-                    {
-                        Success = true,
-                        Result = courseEvents,
-                        StatusCode = 200,
-                        Message = "No course events found for this course."
-                    };
-                }
-
-                return new CourseEventListResult
-                {
-                    Success = true,
-                    StatusCode = 200,
-                    Result = courseEvents,
-                    Message = $"Retrieved {courseEvents.Count} course event(s) for the course successfully."
-                };
-            }
-            catch (Exception ex)
+            if (courseId == Guid.Empty)
             {
                 return new CourseEventListResult
                 {
                     Success = false,
-                    StatusCode = 500,
-                    Message = $"An error occurred while retrieving course events: {ex.Message}"
+                    StatusCode = 400,
+                    Message = "Course ID cannot be empty."
                 };
             }
-        }
 
-        public async Task<CourseEventResult> UpdateCourseEventAsync(UpdateCourseEventInput courseEvent, CancellationToken cancellationToken = default)
-        {
-            try
+            var result = await _courseEventRepository.GetCourseEventsByCourseIdAsync(courseId, cancellationToken);
+
+            return new CourseEventListResult
             {
-                if (courseEvent == null)
-                {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Message = "Course event cannot be null."
-                    };
-                }
+                Success = true,
+                StatusCode = 200,
+                Result = result,
+                Message = result.Any()
+                    ? $"Retrieved {result.Count} course event(s) successfully."
+                    : "No course events found for this course."
+            };
+        }
+        catch (Exception ex)
+        {
+            return new CourseEventListResult
+            {
+                Success = false,
+                StatusCode = 500,
+                Message = $"An error occurred while retrieving course events by course ID: {ex.Message}"
+            };
+        }
+    }
 
-                var existingCourseEvent = await _courseEventRepository.GetCourseEventByIdAsync(courseEvent.Id, cancellationToken);
-                if (existingCourseEvent == null)
+    public async Task<CourseEventResult> UpdateCourseEventAsync(UpdateCourseEventInput courseEvent, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (courseEvent == null)
+            {
+                return new CourseEventResult
                 {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 404,
-                        Message = $"Course event with ID '{courseEvent.Id}' not found."
-                    };
-                }
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Course event cannot be null."
+                };
+            }
 
-                var courseExists = await _courseRepository.GetCourseByIdAsync(courseEvent.CourseId, cancellationToken);
-                if (courseExists is null)
+            var existingCourseEvent = await _courseEventRepository.GetCourseEventByIdAsync(courseEvent.Id, cancellationToken);
+            if (existingCourseEvent == null)
+            {
+                return new CourseEventResult
                 {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 404,
-                        Message = $"Course with ID '{courseEvent.CourseId}' not found."
-                    };
-                }
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course event with ID '{courseEvent.Id}' not found."
+                };
+            }
 
-                var eventTypeExists = await _courseEventTypeRepository.GetCourseEventTypeByIdAsync(courseEvent.CourseEventTypeId, cancellationToken);
-                if (eventTypeExists is null)
+            var existingCourse = await _courseRepository.GetCourseByIdAsync(courseEvent.CourseId, cancellationToken);
+            if (existingCourse == null)
+            {
+                return new CourseEventResult
                 {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 404,
-                        Message = $"Course event type with ID '{courseEvent.CourseEventTypeId}' not found."
-                    };
-                }
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course with ID '{courseEvent.CourseId}' not found."
+                };
+            }
+
+            var existingCourseEventType = await _courseEventTypeRepository.GetCourseEventTypeByIdAsync(courseEvent.CourseEventTypeId, cancellationToken);
+            if (existingCourseEventType == null)
+            {
+                return new CourseEventResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course event type with ID '{courseEvent.CourseEventTypeId}' not found."
+                };
+            }
 
             var updatedCourseEvent = new CourseEvent(
                 courseEvent.Id,
@@ -287,36 +253,34 @@ namespace Backend.Application.Modules.CourseEvents
                 courseEvent.Price,
                 courseEvent.Seats,
                 courseEvent.CourseEventTypeId,
-                courseEvent.VenueType
-            );
+                courseEvent.VenueType);
 
-                var result = await _courseEventRepository.UpdateCourseEventAsync(updatedCourseEvent, cancellationToken);
-
-                if (result == null)
-                {
-                    return new CourseEventResult
-                    {
-                        Success = false,
-                        StatusCode = 500,
-                        Message = "Failed to update course event."
-                    };
-                }
-
+            var result = await _courseEventRepository.UpdateCourseEventAsync(updatedCourseEvent, cancellationToken);
+            if (result == null)
+            {
                 return new CourseEventResult
                 {
-                    Success = true,
-                    StatusCode = 200,
-                    Result = result,
-                    Message = "Course event updated successfully."
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to update course event."
                 };
+            }
+
+            return new CourseEventResult
+            {
+                Success = true,
+                StatusCode = 200,
+                Result = result,
+                Message = "Course event updated successfully."
+            };
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("modified by another user"))
+        catch (KeyNotFoundException ex)
         {
             return new CourseEventResult
             {
                 Success = false,
-                StatusCode = 409,
-                Message = "The course event was modified by another user. Please refresh and try again."
+                StatusCode = 404,
+                Message = ex.Message
             };
         }
         catch (ArgumentException ex)
@@ -333,36 +297,36 @@ namespace Backend.Application.Modules.CourseEvents
             return new CourseEventResult
             {
                 Success = false,
-                    StatusCode = 500,
-                    Message = $"An error occurred while updating the course event: {ex.Message}"
-                };
-            }
+                StatusCode = 500,
+                Message = $"An error occurred while updating the course event: {ex.Message}"
+            };
         }
+    }
 
-        public async Task<CourseEventDeleteResult> DeleteCourseEventAsync(Guid courseEventId, CancellationToken cancellationToken = default)
+    public async Task<CourseEventDeleteResult> DeleteCourseEventAsync(Guid courseEventId, CancellationToken cancellationToken = default)
+    {
+        try
         {
-            try
+            if (courseEventId == Guid.Empty)
             {
-                if (courseEventId == Guid.Empty)
+                return new CourseEventDeleteResult
                 {
-                    return new CourseEventDeleteResult
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Message = "Course event ID cannot be empty.",
-                    Result = false
+                    Success = false,
+                    StatusCode = 400,
+                    Result = false,
+                    Message = "Course event ID cannot be empty."
                 };
             }
 
-            var existingEvent = await _courseEventRepository.GetCourseEventByIdAsync(courseEventId, cancellationToken);
-            if (existingEvent == null)
+            var existingCourseEvent = await _courseEventRepository.GetCourseEventByIdAsync(courseEventId, cancellationToken);
+            if (existingCourseEvent == null)
             {
                 return new CourseEventDeleteResult
                 {
                     Success = false,
                     StatusCode = 404,
-                    Message = $"Course event with ID '{courseEventId}' not found.",
-                    Result = false
+                    Result = false,
+                    Message = $"Course event with ID '{courseEventId}' not found."
                 };
             }
 
@@ -373,52 +337,40 @@ namespace Backend.Application.Modules.CourseEvents
                 {
                     Success = false,
                     StatusCode = 409,
-                    Message = $"Cannot delete course event with ID '{courseEventId}' because it has registrations.",
-                    Result = false
+                    Result = false,
+                    Message = $"Cannot delete course event with ID '{courseEventId}' because it has registrations."
                 };
             }
 
             var result = await _courseEventRepository.DeleteCourseEventAsync(courseEventId, cancellationToken);
-
-            if (!result)
-            {
-                return new CourseEventDeleteResult
-                {
-                    Success = false,
-                    StatusCode = 500,
-                    Message = "Failed to delete course event.",
-                    Result = false
-                };
-            }
-
             return new CourseEventDeleteResult
             {
                 Success = true,
                 StatusCode = 200,
-                    Result = result,
-                    Message = "Course event deleted successfully."
-                };
-            }
-            catch (KeyNotFoundException ex)
+                Result = result,
+                Message = "Course event deleted successfully."
+            };
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return new CourseEventDeleteResult
             {
-                return new CourseEventDeleteResult
-                {
-                    Success = false,
-                    StatusCode = 404,
-                    Message = ex.Message,
-                    Result = false
-                };
-            }
-            catch (Exception ex)
+                Success = false,
+                StatusCode = 404,
+                Result = false,
+                Message = ex.Message
+            };
+        }
+        catch (Exception ex)
+        {
+            return new CourseEventDeleteResult
             {
-                return new CourseEventDeleteResult
-                {
-                    Success = false,
-                    StatusCode = 500,
-                    Message = $"An error occurred while deleting the course event: {ex.Message}",
-                    Result = false
-                };
-            }
+                Success = false,
+                StatusCode = 500,
+                Result = false,
+                Message = $"An error occurred while deleting the course event: {ex.Message}"
+            };
         }
     }
 }
+

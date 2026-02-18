@@ -14,3 +14,4 @@ public sealed class ParticipantListResult : ResultCommon<IEnumerable<Participant
 public sealed class ParticipantDeleteResult : ResultCommon<bool>
 {
 }
+

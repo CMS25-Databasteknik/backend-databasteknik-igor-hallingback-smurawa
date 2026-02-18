@@ -1,4 +1,4 @@
-namespace Backend.Domain.Modules.Participants.Models;
+namespace Backend.Domain.Modules.ParticipantContactTypes.Models;
 
 public enum ParticipantContactType
 {

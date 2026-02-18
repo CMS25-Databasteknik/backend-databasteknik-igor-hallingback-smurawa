@@ -1,7 +1,7 @@
-using Backend.Domain.Modules.Instructors.Contracts;
-using Backend.Domain.Modules.Instructors.Models;
-using Backend.Infrastructure.Persistence.Entities;
+using Backend.Domain.Modules.InstructorRoles.Contracts;
+using Backend.Domain.Modules.InstructorRoles.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;

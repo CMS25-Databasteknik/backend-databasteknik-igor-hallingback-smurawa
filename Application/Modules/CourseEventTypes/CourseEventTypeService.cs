@@ -24,7 +24,7 @@ public class CourseEventTypeService(ICourseEventTypeRepository courseEventTypeRe
                 };
             }
 
-            var newCourseEventType = new CourseEventType(1, courseEventType.TypeName);
+            var newCourseEventType = new CourseEventType(courseEventType.TypeName);
 
             var result = await _courseEventTypeRepository.CreateCourseEventTypeAsync(newCourseEventType, cancellationToken);
 

@@ -5,9 +5,14 @@ public sealed class CourseEventType
     public int Id { get; }
     public string TypeName { get; }
 
+    public CourseEventType(string typeName)
+        : this(0, typeName)
+    {
+    }
+
     public CourseEventType(int id, string typeName)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+        ArgumentOutOfRangeException.ThrowIfNegative(id);
 
         if (string.IsNullOrWhiteSpace(typeName))
             throw new ArgumentException("Type name cannot be empty or whitespace.", nameof(typeName));

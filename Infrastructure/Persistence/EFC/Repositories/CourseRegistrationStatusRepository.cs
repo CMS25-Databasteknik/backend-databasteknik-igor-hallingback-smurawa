@@ -1,5 +1,5 @@
-using Backend.Domain.Modules.CourseRegistrations.Contracts;
-using Backend.Domain.Modules.CourseRegistrations.Models;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Contracts;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -30,8 +30,9 @@ public sealed class CourseRegistrationStatusRepository(
     {
         var nextId = await _context.CourseRegistrationStatuses
             .AsNoTracking()
-            .Select(s => (int?)s.Id)
-            .MaxAsync(cancellationToken) ?? -1;
+            .Select(s => s.Id)
+            .DefaultIfEmpty(-1)
+            .MaxAsync(cancellationToken);
 
         var entity = new CourseRegistrationStatusEntity
         {

@@ -1,8 +1,8 @@
-using Backend.Application.Modules.CourseRegistrations;
-using Backend.Application.Modules.CourseRegistrations.Inputs;
-using Backend.Application.Modules.CourseRegistrations.Outputs;
-using Backend.Domain.Modules.CourseRegistrations.Contracts;
-using Backend.Domain.Modules.CourseRegistrations.Models;
+using Backend.Application.Modules.CourseRegistrationStatuses;
+using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
+using Backend.Application.Modules.CourseRegistrationStatuses.Outputs;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Contracts;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using NSubstitute;
 
 namespace Backend.Tests.Unit.Application.Modules.CourseRegistrations;
@@ -211,3 +211,5 @@ public class CourseRegistrationStatusService_Tests
         Assert.Equal("Paid Updated", result.Result.Name);
     }
 }
+
+

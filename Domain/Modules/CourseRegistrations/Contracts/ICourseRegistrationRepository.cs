@@ -12,3 +12,4 @@ public interface ICourseRegistrationRepository
     Task<CourseRegistration?> UpdateCourseRegistrationAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken);
     Task<bool> DeleteCourseRegistrationAsync(Guid courseRegistrationId, CancellationToken cancellationToken);
 }
+

@@ -1,3 +1,6 @@
+using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
+using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
+
 namespace Backend.Domain.Modules.CourseRegistrations.Models;
 
 public sealed class CourseRegistration
@@ -7,7 +10,7 @@ public sealed class CourseRegistration
     public Guid CourseEventId { get; }
     public DateTime RegistrationDate { get; }
     public CourseRegistrationStatus Status { get; }
-    public PaymentMethod PaymentMethod { get; }
+    public PaymentMethodModel PaymentMethod { get; }
 
     public CourseRegistration(
         Guid id,
@@ -15,7 +18,7 @@ public sealed class CourseRegistration
         Guid courseEventId,
         DateTime registrationDate,
         CourseRegistrationStatus status,
-        PaymentMethod paymentMethod)
+        PaymentMethodModel paymentMethod)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("ID cannot be empty.", nameof(id));
@@ -31,7 +34,7 @@ public sealed class CourseRegistration
 
         ArgumentNullException.ThrowIfNull(status);
 
-        if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethod))
+        if (!Enum.IsDefined(typeof(PaymentMethodModel), paymentMethod))
             throw new ArgumentException("Payment method is invalid.", nameof(paymentMethod));
 
         Id = id;

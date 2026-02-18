@@ -1,3 +1,5 @@
+using Backend.Domain.Modules.InstructorRoles.Models;
+
 namespace Backend.Domain.Modules.Instructors.Models;
 
 public sealed class Instructor

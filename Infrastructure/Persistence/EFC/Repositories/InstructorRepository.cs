@@ -1,7 +1,8 @@
+using Backend.Domain.Modules.InstructorRoles.Models;
 using Backend.Domain.Modules.Instructors.Contracts;
 using Backend.Domain.Modules.Instructors.Models;
-using Backend.Infrastructure.Persistence.Entities;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
@@ -103,6 +104,7 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
             .AnyAsync(cancellationToken);
     }
 }
+
 
 
 

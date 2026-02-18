@@ -1,6 +1,6 @@
-using Backend.Domain.Modules.Instructors.Models;
+using Backend.Domain.Modules.InstructorRoles.Models;
 
-namespace Backend.Domain.Modules.Instructors.Contracts;
+namespace Backend.Domain.Modules.InstructorRoles.Contracts;
 
 public interface IInstructorRoleRepository
 {

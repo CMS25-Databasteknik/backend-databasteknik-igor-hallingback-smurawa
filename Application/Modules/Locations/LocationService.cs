@@ -113,9 +113,9 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            var result = await _locationRepository.GetLocationByIdAsync(locationId, cancellationToken);
+            var existingLocation = await _locationRepository.GetLocationByIdAsync(locationId, cancellationToken);
 
-            if (result == null)
+            if (existingLocation == null)
             {
                 return new LocationResult
                 {
@@ -129,7 +129,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = existingLocation,
                 Message = "Location retrieved successfully."
             };
         }

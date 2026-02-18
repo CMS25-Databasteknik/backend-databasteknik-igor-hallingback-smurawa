@@ -1,4 +1,4 @@
-using Backend.Domain.Modules.Participants.Models;
+using Backend.Domain.Modules.ParticipantContactTypes.Models;
 
 namespace Backend.Application.Modules.Participants.Inputs;
 

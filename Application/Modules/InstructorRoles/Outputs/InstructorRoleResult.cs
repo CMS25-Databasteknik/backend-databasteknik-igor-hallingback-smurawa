@@ -1,5 +1,5 @@
 using Backend.Application.Common;
-using Backend.Domain.Modules.Instructors.Models;
+using Backend.Domain.Modules.InstructorRoles.Models;
 
 namespace Backend.Application.Modules.InstructorRoles.Outputs;
 

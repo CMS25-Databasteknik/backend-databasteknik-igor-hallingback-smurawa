@@ -14,3 +14,4 @@ public sealed class CourseEventListResult : ResultCommon<IEnumerable<CourseEvent
 public sealed class CourseEventDeleteResult : ResultCommon<bool>
 {
 }
+

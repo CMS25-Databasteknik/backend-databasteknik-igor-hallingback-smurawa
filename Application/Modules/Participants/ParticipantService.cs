@@ -115,9 +115,9 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            var result = await _participantRepository.GetParticipantByIdAsync(participantId, cancellationToken);
+            var existingParticipant = await _participantRepository.GetParticipantByIdAsync(participantId, cancellationToken);
 
-            if (result == null)
+            if (existingParticipant == null)
             {
                 return new ParticipantResult
                 {
@@ -131,7 +131,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = existingParticipant,
                 Message = "Participant retrieved successfully."
             };
         }
@@ -321,3 +321,4 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
         }
     }
 }
+

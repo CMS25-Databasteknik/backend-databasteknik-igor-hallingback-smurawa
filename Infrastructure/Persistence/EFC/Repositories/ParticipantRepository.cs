@@ -1,7 +1,8 @@
+using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.Participants.Models;
-using Backend.Infrastructure.Persistence.Entities;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;

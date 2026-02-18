@@ -1,6 +1,6 @@
-using Backend.Domain.Modules.CourseRegistrations.Models;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 
-namespace Backend.Domain.Modules.CourseRegistrations.Contracts;
+namespace Backend.Domain.Modules.CourseRegistrationStatuses.Contracts;
 
 public interface ICourseRegistrationStatusRepository
 {

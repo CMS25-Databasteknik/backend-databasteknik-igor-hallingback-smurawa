@@ -1,4 +1,4 @@
-namespace Backend.Domain.Modules.CourseEvents.Models;
+namespace Backend.Domain.Modules.VenueTypes.Models;
 
 public enum VenueType
 {

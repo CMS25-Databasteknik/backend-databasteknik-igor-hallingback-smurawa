@@ -1,4 +1,4 @@
-using Backend.Domain.Modules.CourseEvents.Models;
+using Backend.Domain.Modules.VenueTypes.Models;
 
 namespace Backend.Tests.Unit.Domain.Modules.CourseEvents.Models;
 
@@ -19,3 +19,4 @@ public class VenueType_Tests
         Assert.False(Enum.IsDefined(typeof(VenueType), (VenueType)999));
     }
 }
+
