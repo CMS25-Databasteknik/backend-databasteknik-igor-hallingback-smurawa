@@ -29,7 +29,8 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 participant.FirstName,
                 participant.LastName,
                 participant.Email,
-                participant.PhoneNumber
+                participant.PhoneNumber,
+                participant.ContactType
             );
 
             var result = await _participantRepository.CreateParticipantAsync(newParticipant, cancellationToken);
@@ -185,7 +186,8 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 participant.FirstName,
                 participant.LastName,
                 participant.Email,
-                participant.PhoneNumber
+                participant.PhoneNumber,
+                participant.ContactType
             );
 
             var result = await _participantRepository.UpdateParticipantAsync(updatedParticipant, cancellationToken);

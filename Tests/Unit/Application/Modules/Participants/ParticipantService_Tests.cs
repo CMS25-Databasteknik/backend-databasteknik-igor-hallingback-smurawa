@@ -21,7 +21,7 @@ public class ParticipantService_Tests
             .Returns(expectedParticipant);
 
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("John", "Doe", "john.doe@example.com", "+46701234567");
+        var input = new CreateParticipantInput("John", "Doe", "john.doe@example.com", "+46701234567", ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -66,7 +66,7 @@ public class ParticipantService_Tests
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("", "Doe", "john.doe@example.com", "+46701234567");
+        var input = new CreateParticipantInput(string.Empty, "Doe", "john.doe@example.com", "1234567890", ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -86,7 +86,7 @@ public class ParticipantService_Tests
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("   ", "Doe", "john.doe@example.com", "+46701234567");
+        var input = new CreateParticipantInput("   ", "Doe", "john.doe@example.com", "1234567890", ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -106,7 +106,7 @@ public class ParticipantService_Tests
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("John", "", "john.doe@example.com", "+46701234567");
+        var input = new CreateParticipantInput("John", string.Empty, "john.doe@example.com", "1234567890", ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -126,7 +126,7 @@ public class ParticipantService_Tests
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("John", "   ", "john.doe@example.com", "+46701234567");
+        var input = new CreateParticipantInput("John", "   ", "john.doe@example.com", "1234567890", ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -146,7 +146,7 @@ public class ParticipantService_Tests
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("John", "Doe", "", "+46701234567");
+        var input = new CreateParticipantInput("John", "Doe", string.Empty, "1234567890", ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -166,7 +166,7 @@ public class ParticipantService_Tests
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("John", "Doe", "   ", "+46701234567");
+        var input = new CreateParticipantInput("John", "Doe", "   ", "1234567890", ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -186,7 +186,7 @@ public class ParticipantService_Tests
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("John", "Doe", "john.doe@example.com", "");
+        var input = new CreateParticipantInput("John", "Doe", "john.doe@example.com", string.Empty, ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -206,7 +206,7 @@ public class ParticipantService_Tests
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("John", "Doe", "john.doe@example.com", "   ");
+        var input = new CreateParticipantInput("John", "Doe", "john.doe@example.com", "   ", ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -229,7 +229,7 @@ public class ParticipantService_Tests
             .Returns(Task.FromException<Participant>(new Exception("Database error")));
 
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput("John", "Doe", "john.doe@example.com", "+46701234567");
+        var input = new CreateParticipantInput("John", "Doe", "john.doe@example.com", "1234567890", ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -257,7 +257,7 @@ public class ParticipantService_Tests
             .Returns(expectedParticipant);
 
         var service = new ParticipantService(mockRepo);
-        var input = new CreateParticipantInput(firstName, lastName, email, phoneNumber);
+        var input = new CreateParticipantInput(firstName, lastName, email, phoneNumber, ParticipantContactType.Primary);
 
         // Act
         var result = await service.CreateParticipantAsync(input, CancellationToken.None);
@@ -469,7 +469,7 @@ public class ParticipantService_Tests
             .Returns(updatedParticipant);
 
         var service = new ParticipantService(mockRepo);
-        var input = new UpdateParticipantInput(participantId, "John", "Smith", "john.smith@example.com", "+46709876543");
+        var input = new UpdateParticipantInput(participantId, "John", "Smith", "john.smith@example.com", "+46709876543", ParticipantContactType.Primary);
 
         // Act
         var result = await service.UpdateParticipantAsync(input, CancellationToken.None);
@@ -512,7 +512,7 @@ public class ParticipantService_Tests
         // Arrange
         var mockRepo = Substitute.For<IParticipantRepository>();
         var service = new ParticipantService(mockRepo);
-        var input = new UpdateParticipantInput(Guid.Empty, "John", "Doe", "john.doe@example.com", "+46701234567");
+        var input = new UpdateParticipantInput(Guid.Empty, "John", "Doe", "john.doe@example.com", "+46701234567", ParticipantContactType.Primary);
 
         // Act
         var result = await service.UpdateParticipantAsync(input, CancellationToken.None);
@@ -534,7 +534,7 @@ public class ParticipantService_Tests
         mockRepo.GetParticipantByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567"));
         var service = new ParticipantService(mockRepo);
-        var input = new UpdateParticipantInput(Guid.NewGuid(), "", "Doe", "john.doe@example.com", "+46701234567");
+        var input = new UpdateParticipantInput(Guid.NewGuid(), "", "Doe", "john.doe@example.com", "+46701234567", ParticipantContactType.Primary);
 
         // Act
         var result = await service.UpdateParticipantAsync(input, CancellationToken.None);
@@ -554,7 +554,7 @@ public class ParticipantService_Tests
         mockRepo.GetParticipantByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567"));
         var service = new ParticipantService(mockRepo);
-        var input = new UpdateParticipantInput(Guid.NewGuid(), "John", "", "john.doe@example.com", "+46701234567");
+        var input = new UpdateParticipantInput(Guid.NewGuid(), "John", "", "john.doe@example.com", "+46701234567", ParticipantContactType.Primary);
 
         // Act
         var result = await service.UpdateParticipantAsync(input, CancellationToken.None);
@@ -574,7 +574,7 @@ public class ParticipantService_Tests
         mockRepo.GetParticipantByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567"));
         var service = new ParticipantService(mockRepo);
-        var input = new UpdateParticipantInput(Guid.NewGuid(), "John", "Doe", "", "+46701234567");
+        var input = new UpdateParticipantInput(Guid.NewGuid(), "John", "Doe", "", "+46701234567", ParticipantContactType.Primary);
 
         // Act
         var result = await service.UpdateParticipantAsync(input, CancellationToken.None);
@@ -594,7 +594,7 @@ public class ParticipantService_Tests
         mockRepo.GetParticipantByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567"));
         var service = new ParticipantService(mockRepo);
-        var input = new UpdateParticipantInput(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "");
+        var input = new UpdateParticipantInput(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "", ParticipantContactType.Primary);
 
         // Act
         var result = await service.UpdateParticipantAsync(input, CancellationToken.None);
@@ -617,7 +617,7 @@ public class ParticipantService_Tests
             .Returns((Participant)null!);
 
         var service = new ParticipantService(mockRepo);
-        var input = new UpdateParticipantInput(participantId, "John", "Doe", "john.doe@example.com", "+46701234567");
+        var input = new UpdateParticipantInput(participantId, "John", "Doe", "john.doe@example.com", "+46701234567", ParticipantContactType.Primary);
 
         // Act
         var result = await service.UpdateParticipantAsync(input, CancellationToken.None);
@@ -646,7 +646,7 @@ public class ParticipantService_Tests
             .Returns(Task.FromException<Participant?>(new InvalidOperationException("Participant was modified by another user")));
 
         var service = new ParticipantService(mockRepo);
-        var input = new UpdateParticipantInput(participantId, "John", "Smith", "john.smith@example.com", "+46709876543");
+        var input = new UpdateParticipantInput(participantId, "John", "Smith", "john.smith@example.com", "+46709876543", ParticipantContactType.Primary);
 
         // Act
         var result = await service.UpdateParticipantAsync(input, CancellationToken.None);
@@ -673,7 +673,7 @@ public class ParticipantService_Tests
             .Returns(Task.FromException<Participant?>(new Exception("Database error")));
 
         var service = new ParticipantService(mockRepo);
-        var input = new UpdateParticipantInput(participantId, "John", "Smith", "john.smith@example.com", "+46709876543");
+        var input = new UpdateParticipantInput(participantId, "John", "Smith", "john.smith@example.com", "+46709876543", ParticipantContactType.Primary);
 
         // Act
         var result = await service.UpdateParticipantAsync(input, CancellationToken.None);

@@ -311,7 +311,7 @@ public partial class Program
 
         app.MapPost("/api/participants", async (CreateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken) =>
         {
-            var input = new CreateParticipantInput(request.FirstName, request.LastName, request.Email, request.PhoneNumber);
+            var input = new CreateParticipantInput(request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.ContactType);
             var response = await participantService.CreateParticipantAsync(input, cancellationToken);
 
             if (!response.Success)
@@ -322,7 +322,7 @@ public partial class Program
 
         app.MapPut("/api/participants/{id:guid}", async (Guid id, UpdateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken) =>
         {
-            var input = new UpdateParticipantInput(id, request.FirstName, request.LastName, request.Email, request.PhoneNumber);
+            var input = new UpdateParticipantInput(id, request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.ContactType);
             var response = await participantService.UpdateParticipantAsync(input, cancellationToken);
 
             if (!response.Success)

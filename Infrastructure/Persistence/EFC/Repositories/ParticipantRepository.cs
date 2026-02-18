@@ -11,7 +11,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
     private readonly CoursesOnlineDbContext _context = context;
 
     private static Participant ToModel(ParticipantEntity entity)
-        => new(entity.Id, entity.FirstName, entity.LastName, entity.Email, entity.PhoneNumber);
+        => new(entity.Id, entity.FirstName, entity.LastName, entity.Email, entity.PhoneNumber, (ParticipantContactType)entity.ContactTypeId);
 
     public async Task<Participant> CreateParticipantAsync(Participant participant, CancellationToken cancellationToken)
     {
@@ -21,7 +21,8 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
             FirstName = participant.FirstName,
             LastName = participant.LastName,
             Email = participant.Email,
-            PhoneNumber = participant.PhoneNumber
+            PhoneNumber = participant.PhoneNumber,
+            ContactTypeId = (int)participant.ContactType
         };
 
         _context.Participants.Add(entity);
@@ -91,6 +92,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
         entity.LastName = participant.LastName;
         entity.Email = participant.Email;
         entity.PhoneNumber = participant.PhoneNumber;
+        entity.ContactTypeId = (int)participant.ContactType;
         entity.ModifiedAtUtc = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
