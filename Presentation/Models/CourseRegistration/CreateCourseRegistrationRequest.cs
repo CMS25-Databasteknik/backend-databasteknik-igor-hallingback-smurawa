@@ -1,4 +1,3 @@
-using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.PaymentMethod.Models;
 
 namespace Backend.Presentation.API.Models.CourseRegistration;
@@ -6,7 +5,7 @@ namespace Backend.Presentation.API.Models.CourseRegistration;
 public sealed record CreateCourseRegistrationRequest(
     Guid ParticipantId,
     Guid CourseEventId,
-    CourseRegistrationStatus Status,
+    int StatusId,
     PaymentMethod PaymentMethod
 );
 

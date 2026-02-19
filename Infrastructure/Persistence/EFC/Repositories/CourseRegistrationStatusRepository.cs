@@ -28,15 +28,13 @@ public sealed class CourseRegistrationStatusRepository(
 
     public async Task<CourseRegistrationStatus> CreateCourseRegistrationStatusAsync(CourseRegistrationStatus status, CancellationToken cancellationToken)
     {
-        var nextId = await _context.CourseRegistrationStatuses
+        var currentMaxId = await _context.CourseRegistrationStatuses
             .AsNoTracking()
-            .Select(s => s.Id)
-            .DefaultIfEmpty(-1)
-            .MaxAsync(cancellationToken);
+            .MaxAsync(s => (int?)s.Id, cancellationToken);
 
         var entity = new CourseRegistrationStatusEntity
         {
-            Id = nextId + 1,
+            Id = (currentMaxId ?? -1) + 1,
             Name = status.Name
         };
 
