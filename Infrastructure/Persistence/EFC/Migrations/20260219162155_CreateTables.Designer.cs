@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.EFC.Migrations
 {
     [DbContext(typeof(CoursesOnlineDbContext))]
-    [Migration("20260218085622_AddVenuePaymentContactLookups")]
-    partial class AddVenuePaymentContactLookups
+    [Migration("20260219162155_CreateTables")]
+    partial class CreateTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -116,10 +116,17 @@ namespace Infrastructure.Persistence.EFC.Migrations
                     b.Property<int>("Seats")
                         .HasColumnType("int");
 
+                    b.Property<int>("VenueTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.HasKey("Id")
                         .HasName("PK_CourseEvents_Id");
 
                     b.HasIndex("CourseEventTypeId");
+
+                    b.HasIndex("VenueTypeId");
 
                     b.HasIndex("CourseId", "EventDate")
                         .HasDatabaseName("IX_CourseEvents_CourseId_EventDate");
@@ -139,6 +146,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Concurrency")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("TypeName")
                         .IsRequired()
@@ -220,6 +233,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
+                    b.Property<byte[]>("Concurrency")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -265,6 +284,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<byte[]>("Concurrency")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
@@ -290,6 +315,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Instructors_Id");
+
+                    b.Property<byte[]>("Concurrency")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<int>("InstructorRoleId")
                         .HasColumnType("int");
@@ -320,6 +351,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Concurrency")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("RoleName")
                         .IsRequired()
@@ -352,6 +389,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<byte[]>("Concurrency")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasMaxLength(6)
@@ -379,6 +422,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
+
+                    b.Property<byte[]>("Concurrency")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -482,6 +531,12 @@ namespace Infrastructure.Persistence.EFC.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
+                    b.Property<byte[]>("Concurrency")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -511,6 +566,49 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         {
                             Id = 3,
                             Name = "Cash"
+                        });
+                });
+
+            modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.VenueTypeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("Concurrency")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id")
+                        .HasName("PK_VenueTypes_Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_VenueTypes_Name");
+
+                    b.ToTable("VenueTypes", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "InPerson"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Online"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Hybrid"
                         });
                 });
 
@@ -558,9 +656,17 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Backend.Infrastructure.Persistence.Entities.VenueTypeEntity", "VenueType")
+                        .WithMany()
+                        .HasForeignKey("VenueTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Course");
 
                     b.Navigation("CourseEventType");
+
+                    b.Navigation("VenueType");
                 });
 
             modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.CourseRegistrationEntity", b =>

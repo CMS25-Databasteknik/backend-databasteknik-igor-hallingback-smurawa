@@ -38,7 +38,8 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
         _context.Instructors.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return ToModel(entity);
+        var role = new InstructorRole(roleExists.Id, roleExists.RoleName);
+        return new Instructor(entity.Id, entity.Name, role);
     }
 
     public async Task<bool> DeleteInstructorAsync(Guid instructorId, CancellationToken cancellationToken)
@@ -89,10 +90,12 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
             throw new KeyNotFoundException($"Instructor '{instructor.Id}' not found.");
 
         entity.Name = instructor.Name;
+        entity.InstructorRoleId = instructor.InstructorRoleId;
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return ToModel(entity);
+        var role = new InstructorRole(roleEntity.Id, roleEntity.RoleName);
+        return new Instructor(entity.Id, entity.Name, role);
     }
 
     public async Task<bool> HasCourseEventsAsync(Guid instructorId, CancellationToken cancellationToken)

@@ -220,6 +220,16 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 Result = true
             };
         }
+        catch (Exception ex) when (ex.GetType().Name == "DbUpdateException")
+        {
+            return new InstructorRoleDeleteResult
+            {
+                Success = false,
+                StatusCode = 409,
+                Message = $"Cannot delete instructor role with ID '{id}' because it is in use.",
+                Result = false
+            };
+        }
         catch (Exception ex)
         {
             return new InstructorRoleDeleteResult
