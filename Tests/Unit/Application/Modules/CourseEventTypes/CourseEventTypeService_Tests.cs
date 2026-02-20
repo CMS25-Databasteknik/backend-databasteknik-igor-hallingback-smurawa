@@ -136,6 +136,25 @@ public class CourseEventTypeService_Tests
         Assert.Contains("Database error", result.Message);
     }
 
+    [Fact]
+    public async Task CreateCourseEventTypeAsync_Should_Return_BadRequest_When_TypeName_Already_Exists()
+    {
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
+        mockRepo.GetCourseEventTypeByTypeNameAsync("Online", Arg.Any<CancellationToken>())
+            .Returns(new CourseEventType(1, "Online"));
+
+        var service = CreateService(mockRepo, out var mockCache);
+
+        var result = await service.CreateCourseEventTypeAsync(new CreateCourseEventTypeInput("Online"), CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(400, result.StatusCode);
+        Assert.Equal("A typename with the same name already exists.", result.Message);
+        await mockRepo.DidNotReceive().CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
+        mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
+        mockCache.DidNotReceive().SetEntity(Arg.Any<CourseEventType>());
+    }
+
     [Theory]
     [InlineData("Online")]
     [InlineData("In-Person")]
@@ -308,6 +327,23 @@ public class CourseEventTypeService_Tests
         Assert.Equal(404, result.StatusCode);
         Assert.Equal($"Course event type with name '{typeName}' not found.", result.Message);
         await mockRepo.Received(1).GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetCourseEventTypeByTypeNameAsync_Should_Return_InternalServerError_When_Repository_Throws_Exception()
+    {
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
+        mockRepo.GetCourseEventTypeByTypeNameAsync("Online", Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<CourseEventType?>(new Exception("Database error")));
+
+        var service = CreateService(mockRepo, out _);
+
+        var result = await service.GetCourseEventTypeByTypeNameAsync("Online", CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(500, result.StatusCode);
+        Assert.Contains("An error occurred while retrieving the course event type", result.Message);
+        Assert.Contains("Database error", result.Message);
     }
 
     #endregion

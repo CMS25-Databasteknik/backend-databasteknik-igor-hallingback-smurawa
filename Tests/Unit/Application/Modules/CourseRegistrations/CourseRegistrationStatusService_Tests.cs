@@ -166,6 +166,21 @@ public class CourseRegistrationStatusService_Tests
     }
 
     [Fact]
+    public async Task GetByName_Should_Return_500_When_Repository_Throws()
+    {
+        var service = CreateService(out var repo, out _);
+        repo.GetCourseRegistrationStatusByNameAsync("Paid", Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<CourseRegistrationStatus?>(new Exception("db failure")));
+
+        var result = await service.GetCourseRegistrationStatusByNameAsync("Paid");
+
+        Assert.False(result.Success);
+        Assert.Equal(500, result.StatusCode);
+        Assert.Contains("An error occurred while retrieving the course registration status", result.Message);
+        Assert.Contains("db failure", result.Message);
+    }
+
+    [Fact]
     public async Task Delete_Should_Return_400_For_Negative_Id()
     {
         var service = CreateService(out _, out _);
@@ -220,6 +235,24 @@ public class CourseRegistrationStatusService_Tests
     }
 
     [Fact]
+    public async Task Delete_Should_Return_500_When_Repository_Throws()
+    {
+        var service = CreateService(out var repo, out var cache);
+        repo.GetCourseRegistrationStatusByIdAsync(1, Arg.Any<CancellationToken>())
+            .Returns(new CourseRegistrationStatus(1, "Paid"));
+        repo.IsInUseAsync(1, Arg.Any<CancellationToken>()).Returns(false);
+        repo.DeleteCourseRegistrationStatusAsync(1, Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<bool>(new Exception("db failure")));
+
+        var result = await service.DeleteCourseRegistrationStatusAsync(1);
+
+        Assert.False(result.Success);
+        Assert.Equal(500, result.StatusCode);
+        Assert.False(result.Result);
+        cache.DidNotReceive().SetEntity(Arg.Any<CourseRegistrationStatus>());
+    }
+
+    [Fact]
     public async Task Create_Should_Return_400_When_Name_Empty()
     {
         var service = CreateService(out _, out _);
@@ -247,6 +280,23 @@ public class CourseRegistrationStatusService_Tests
         Assert.Equal(4, result.Result.Id);
         cache.Received(1).ResetEntity(Arg.Is<CourseRegistrationStatus>(s => s.Id == 4));
         cache.Received(1).SetEntity(Arg.Is<CourseRegistrationStatus>(s => s.Id == 4));
+    }
+
+    [Fact]
+    public async Task Create_Should_Return_400_When_Name_Already_Exists()
+    {
+        var service = CreateService(out var repo, out var cache);
+        repo.GetCourseRegistrationStatusByNameAsync("Paid", Arg.Any<CancellationToken>())
+            .Returns(new CourseRegistrationStatus(1, "Paid"));
+
+        var result = await service.CreateCourseRegistrationStatusAsync(new CreateCourseRegistrationStatusInput("Paid"));
+
+        Assert.False(result.Success);
+        Assert.Equal(400, result.StatusCode);
+        Assert.Equal("A status with the same name already exists.", result.Message);
+        await repo.DidNotReceive().CreateCourseRegistrationStatusAsync(Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>());
+        cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
+        cache.DidNotReceive().SetEntity(Arg.Any<CourseRegistrationStatus>());
     }
 
     [Fact]
@@ -289,6 +339,39 @@ public class CourseRegistrationStatusService_Tests
         Assert.Equal("Paid Updated", result.Result.Name);
         cache.Received(1).ResetEntity(Arg.Is<CourseRegistrationStatus>(s => s.Id == 1));
         cache.Received(1).SetEntity(Arg.Is<CourseRegistrationStatus>(s => s.Id == 1 && s.Name == "Paid Updated"));
+    }
+
+    [Fact]
+    public async Task Update_Should_Return_404_When_Status_NotFound()
+    {
+        var service = CreateService(out var repo, out var cache);
+        repo.GetCourseRegistrationStatusByIdAsync(99, Arg.Any<CancellationToken>())
+            .Returns((CourseRegistrationStatus?)null);
+
+        var result = await service.UpdateCourseRegistrationStatusAsync(new UpdateCourseRegistrationStatusInput(99, "Paid"));
+
+        Assert.False(result.Success);
+        Assert.Equal(404, result.StatusCode);
+        cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
+        cache.DidNotReceive().SetEntity(Arg.Any<CourseRegistrationStatus>());
+    }
+
+    [Fact]
+    public async Task Update_Should_Return_500_When_Repository_Throws()
+    {
+        var service = CreateService(out var repo, out var cache);
+        repo.GetCourseRegistrationStatusByIdAsync(1, Arg.Any<CancellationToken>())
+            .Returns(new CourseRegistrationStatus(1, "Paid"));
+        repo.UpdateCourseRegistrationStatusAsync(Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<CourseRegistrationStatus?>(new Exception("db failure")));
+
+        var result = await service.UpdateCourseRegistrationStatusAsync(new UpdateCourseRegistrationStatusInput(1, "Paid Updated"));
+
+        Assert.False(result.Success);
+        Assert.Equal(500, result.StatusCode);
+        Assert.Contains("An error occurred while updating the course registration status", result.Message);
+        Assert.Contains("db failure", result.Message);
+        cache.DidNotReceive().SetEntity(Arg.Any<CourseRegistrationStatus>());
     }
 
     [Fact]
