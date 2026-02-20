@@ -25,6 +25,17 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 };
             }
 
+            var existingCourseRegistrationStatus = await _repository.GetCourseRegistrationStatusByNameAsync(input.Name, cancellationToken);
+
+            if (existingCourseRegistrationStatus is not null)
+                return new CourseRegistrationStatusResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Result = null,
+                    Message = "A status with the same name already exists."
+                };
+
             var newStatus = new CourseRegistrationStatus(input.Name);
             var result = await _repository.CreateCourseRegistrationStatusAsync(newStatus, cancellationToken);
             _cache.ResetEntity(result);
@@ -136,6 +147,53 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
         }
     }
 
+    public async Task<CourseRegistrationStatusResult> GetCourseRegistrationStatusByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name is required.", nameof(name));
+
+            var status = await _repository.GetCourseRegistrationStatusByNameAsync(name, cancellationToken);
+
+            if (status == null)
+            {
+                return new CourseRegistrationStatusResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course registration status with name '{name}' not found."
+                };
+            }
+
+            return new CourseRegistrationStatusResult
+            {
+                Success = true,
+                StatusCode = 200,
+                Result = status,
+                Message = "Course registration status retrieved successfully."
+            };
+        }
+        catch (ArgumentException ex)
+        {
+            return new CourseRegistrationStatusResult
+            {
+                Success = false,
+                StatusCode = 400,
+                Message = ex.Message
+            };
+        }
+        catch (Exception ex)
+        {
+            return new CourseRegistrationStatusResult
+            {
+                Success = false,
+                StatusCode = 500,
+                Message = $"An error occurred while retrieving the course registration status: {ex.Message}"
+            };
+        }
+    }
+
     public async Task<CourseRegistrationStatusResult> UpdateCourseRegistrationStatusAsync(UpdateCourseRegistrationStatusInput input, CancellationToken cancellationToken = default)
     {
         try
@@ -161,10 +219,10 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 };
             }
 
-            var updatedStatus = new CourseRegistrationStatus(input.Id, input.Name);
-            var result = await _repository.UpdateCourseRegistrationStatusAsync(updatedStatus, cancellationToken);
+            var newStatus = new CourseRegistrationStatus(input.Id, input.Name);
+            var updatedStatus = await _repository.UpdateCourseRegistrationStatusAsync(newStatus, cancellationToken);
 
-            if (result == null)
+            if (updatedStatus == null)
             {
                 return new CourseRegistrationStatusResult
                 {
@@ -174,14 +232,14 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 };
             }
 
-            _cache.ResetEntity(result);
-            _cache.SetEntity(result);
+            _cache.ResetEntity(existingStatus);
+            _cache.SetEntity(updatedStatus);
 
             return new CourseRegistrationStatusResult
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = updatedStatus,
                 Message = "Course registration status updated successfully."
             };
         }
@@ -212,11 +270,9 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             if (id < 0)
                 throw new ArgumentException("Id must be zero or positive.", nameof(id));
 
-            var existing = await _cache.GetByIdAsync(
-                id,
-                token => _repository.GetCourseRegistrationStatusByIdAsync(id, token),
-                cancellationToken);
-            if (existing == null)
+            var existingStatus = await _repository.GetCourseRegistrationStatusByIdAsync(id, cancellationToken);
+
+            if (existingStatus == null)
             {
                 return new CourseRegistrationStatusDeleteResult
                 {
@@ -227,8 +283,9 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 };
             }
 
-            var inUse = await _repository.IsInUseAsync(id, cancellationToken);
-            if (inUse)
+            var isStatusInUse = await _repository.IsInUseAsync(id, cancellationToken);
+
+            if (isStatusInUse)
             {
                 return new CourseRegistrationStatusDeleteResult
                 {
@@ -240,7 +297,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             }
 
             var deleted = await _repository.DeleteCourseRegistrationStatusAsync(id, cancellationToken);
-            _cache.ResetEntity(existing);
+            _cache.ResetEntity(existingStatus);
 
             return new CourseRegistrationStatusDeleteResult
             {

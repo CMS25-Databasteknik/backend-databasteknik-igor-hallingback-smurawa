@@ -54,6 +54,15 @@ public sealed class CourseRegistrationStatusRepository(
         return entity == null ? null : ToModel(entity);
     }
 
+    public async Task<CourseRegistrationStatus?> GetCourseRegistrationStatusByNameAsync(string name, CancellationToken cancellationToken)
+    {
+        var entity = await _context.CourseRegistrationStatuses
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Name == name, cancellationToken);
+
+        return entity == null ? null : ToModel(entity);
+    }
+
     public async Task<CourseRegistrationStatus?> UpdateCourseRegistrationStatusAsync(CourseRegistrationStatus status, CancellationToken cancellationToken)
     {
         var entity = await _context.CourseRegistrationStatuses

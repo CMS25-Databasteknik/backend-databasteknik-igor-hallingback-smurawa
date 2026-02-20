@@ -123,6 +123,49 @@ public class CourseRegistrationStatusService_Tests
     }
 
     [Fact]
+    public async Task GetByName_Should_Return_400_When_Name_Empty()
+    {
+        var service = CreateService(out _, out _);
+
+        var result = await service.GetCourseRegistrationStatusByNameAsync(" ");
+
+        Assert.False(result.Success);
+        Assert.Equal(400, result.StatusCode);
+        Assert.Contains("Name is required", result.Message);
+    }
+
+    [Fact]
+    public async Task GetByName_Should_Return_404_When_NotFound()
+    {
+        var service = CreateService(out var repo, out var cache);
+        repo.GetCourseRegistrationStatusByNameAsync("Unknown", Arg.Any<CancellationToken>())
+            .Returns((CourseRegistrationStatus?)null);
+
+        var result = await service.GetCourseRegistrationStatusByNameAsync("Unknown");
+
+        Assert.False(result.Success);
+        Assert.Equal(404, result.StatusCode);
+        await repo.Received(1).GetCourseRegistrationStatusByNameAsync("Unknown", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetByName_Should_Return_Status_When_Found()
+    {
+        var service = CreateService(out var repo, out var cache);
+        repo.GetCourseRegistrationStatusByNameAsync("Paid", Arg.Any<CancellationToken>())
+            .Returns(new CourseRegistrationStatus(1, "Paid"));
+
+        var result = await service.GetCourseRegistrationStatusByNameAsync("Paid");
+
+        Assert.True(result.Success);
+        Assert.Equal(200, result.StatusCode);
+        Assert.NotNull(result.Result);
+        Assert.Equal(1, result.Result.Id);
+        Assert.Equal("Paid", result.Result.Name);
+        await repo.Received(1).GetCourseRegistrationStatusByNameAsync("Paid", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Delete_Should_Return_400_For_Negative_Id()
     {
         var service = CreateService(out _, out _);
@@ -258,6 +301,7 @@ public class CourseRegistrationStatusService_Tests
         Assert.Throws<ArgumentNullException>(() => new CourseRegistrationStatusService(cache, null!));
     }
 }
+
 
 
 

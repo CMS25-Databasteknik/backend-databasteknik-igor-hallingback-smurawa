@@ -252,6 +252,66 @@ public class CourseEventTypeService_Tests
 
     #endregion
 
+    #region GetCourseEventTypeByTypeNameAsync Tests
+
+    [Fact]
+    public async Task GetCourseEventTypeByTypeNameAsync_Should_Return_Type_When_Type_Exists()
+    {
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
+        var typeName = "Online";
+        var courseEventType = new CourseEventType(1, typeName);
+
+        mockRepo.GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>())
+            .Returns(courseEventType);
+
+        var service = CreateService(mockRepo, out var mockCache);
+
+        var result = await service.GetCourseEventTypeByTypeNameAsync(typeName, CancellationToken.None);
+
+        Assert.True(result.Success);
+        Assert.Equal(200, result.StatusCode);
+        Assert.NotNull(result.Result);
+        Assert.Equal(typeName, result.Result.TypeName);
+        Assert.Equal("Course event type retrieved successfully.", result.Message);
+
+        await mockRepo.Received(1).GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetCourseEventTypeByTypeNameAsync_Should_Return_BadRequest_When_TypeName_Is_Empty()
+    {
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
+        var service = CreateService(mockRepo, out var mockCache);
+
+        var result = await service.GetCourseEventTypeByTypeNameAsync(" ", CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(400, result.StatusCode);
+        Assert.Equal("Course event type name is required.", result.Message);
+
+        await mockRepo.DidNotReceive().GetCourseEventTypeByTypeNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetCourseEventTypeByTypeNameAsync_Should_Return_NotFound_When_Type_Does_Not_Exist()
+    {
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
+        var typeName = "Unknown";
+        mockRepo.GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>())
+            .Returns((CourseEventType?)null);
+
+        var service = CreateService(mockRepo, out var mockCache);
+
+        var result = await service.GetCourseEventTypeByTypeNameAsync(typeName, CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(404, result.StatusCode);
+        Assert.Equal($"Course event type with name '{typeName}' not found.", result.Message);
+        await mockRepo.Received(1).GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>());
+    }
+
+    #endregion
+
     #region GetCourseEventTypeByIdAsync Tests
 
     [Fact]
@@ -696,6 +756,7 @@ public class CourseEventTypeService_Tests
 
     #endregion
 }
+
 
 
 

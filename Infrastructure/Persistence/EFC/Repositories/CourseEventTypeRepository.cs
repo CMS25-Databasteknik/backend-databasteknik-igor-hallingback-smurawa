@@ -58,6 +58,15 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context) : ICourse
         return entity == null ? null : ToModel(entity);
     }
 
+    public async Task<CourseEventType?> GetCourseEventTypeByTypeNameAsync(string typeName, CancellationToken cancellationToken)
+    {
+        var entity = await _context.CourseEventTypes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(cet => cet.TypeName == typeName, cancellationToken);
+
+        return entity == null ? null : ToModel(entity);
+    }
+
     public async Task<CourseEventType?> UpdateCourseEventTypeAsync(CourseEventType courseEventType, CancellationToken cancellationToken)
     {
         var entity = await _context.CourseEventTypes.SingleOrDefaultAsync(cet => cet.Id == courseEventType.Id, cancellationToken);
