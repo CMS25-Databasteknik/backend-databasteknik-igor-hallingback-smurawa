@@ -1,7 +1,6 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -9,10 +8,7 @@ public sealed class CourseEntityConfiguration : IEntityTypeConfiguration<CourseE
 {
     public void Configure(EntityTypeBuilder<CourseEntity> e)
     {
-        var isDevelopment = string.Equals(
-            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
-            Environments.Development,
-            StringComparison.OrdinalIgnoreCase);
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("Courses", t =>
         {
@@ -24,7 +20,7 @@ public sealed class CourseEntityConfiguration : IEntityTypeConfiguration<CourseE
         var idProperty = e.Property(x => x.Id)
             .ValueGeneratedOnAdd();
 
-        if (!isDevelopment)
+        if (!isSqliteTestMode)
         {
             idProperty.HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Courses_Id");
         }
@@ -40,7 +36,7 @@ public sealed class CourseEntityConfiguration : IEntityTypeConfiguration<CourseE
         e.Property(x => x.DurationInDays)
             .IsRequired();
 
-        if (isDevelopment)
+        if (isSqliteTestMode)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()
@@ -62,7 +58,7 @@ public sealed class CourseEntityConfiguration : IEntityTypeConfiguration<CourseE
             .HasPrecision(0)
             .ValueGeneratedOnAddOrUpdate();
 
-        if (isDevelopment)
+        if (isSqliteTestMode)
         {
             createdAtProperty.HasDefaultValueSql("(CURRENT_TIMESTAMP)");
             modifiedAtProperty.HasDefaultValueSql("(CURRENT_TIMESTAMP)");

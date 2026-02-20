@@ -1,7 +1,6 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -9,16 +8,13 @@ public sealed class InstructorRoleEntityConfiguration : IEntityTypeConfiguration
 {
     public void Configure(EntityTypeBuilder<InstructorRoleEntity> e)
     {
-        var isDevelopment = string.Equals(
-            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
-            Environments.Development,
-            StringComparison.OrdinalIgnoreCase);
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("InstructorRoles", t =>
         {
             t.HasCheckConstraint(
                 "CK_InstructorRoles_RoleName_NotEmpty",
-                isDevelopment
+                isSqliteTestMode
                     ? "LTRIM(RTRIM([RoleName])) <> ''"
                     : "LEN([RoleName]) > 0");
         });
@@ -32,7 +28,7 @@ public sealed class InstructorRoleEntityConfiguration : IEntityTypeConfiguration
             .HasMaxLength(50)
             .IsRequired();
 
-        if (isDevelopment)
+        if (isSqliteTestMode)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

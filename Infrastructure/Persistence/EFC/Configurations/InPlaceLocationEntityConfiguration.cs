@@ -1,7 +1,6 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -9,10 +8,7 @@ public sealed class InPlaceLocationEntityConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<InPlaceLocationEntity> e)
     {
-        var isDevelopment = string.Equals(
-            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
-            Environments.Development,
-            StringComparison.OrdinalIgnoreCase);
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("InPlaceLocations");
 
@@ -27,7 +23,7 @@ public sealed class InPlaceLocationEntityConfiguration : IEntityTypeConfiguratio
         e.Property(x => x.Seats)
             .IsRequired();
 
-        if (isDevelopment)
+        if (isSqliteTestMode)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

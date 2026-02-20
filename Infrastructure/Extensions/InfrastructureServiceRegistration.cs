@@ -14,17 +14,19 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Extensions;
 
 public static class InfrastructureServiceRegistration
 {
-    public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration config, IHostEnvironment env)
+    public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration config)
     {
+        var useSqliteForTests = string.Equals(
+            Environment.GetEnvironmentVariable("DB_PROVIDER"),
+            "Sqlite",
+            StringComparison.OrdinalIgnoreCase);
 
-
-        if (env.IsDevelopment())
+        if (useSqliteForTests)
         {
             services.AddSingleton(_ =>
             {
@@ -39,14 +41,16 @@ public static class InfrastructureServiceRegistration
                 options.UseSqlite(connection);
             });
         }
-
-        services.AddDbContext<CoursesOnlineDbContext>(options =>
+        else
         {
-            var dbConfig = config.GetConnectionString("CoursesOnlineDatabase")
-                ?? throw new InvalidOperationException("Connection string 'CoursesOnlineDatabase' not found.");
+            services.AddDbContext<CoursesOnlineDbContext>(options =>
+            {
+                var dbConfig = config.GetConnectionString("CoursesOnlineDatabase")
+                    ?? throw new InvalidOperationException("Connection string 'CoursesOnlineDatabase' not found.");
 
-            options.UseSqlServer(dbConfig);
-        });
+                options.UseSqlServer(dbConfig);
+            });
+        }
 
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ICourseEventRepository, CourseEventRepository>();

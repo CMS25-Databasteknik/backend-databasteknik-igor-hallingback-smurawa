@@ -1,7 +1,6 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -9,10 +8,7 @@ public sealed class CourseEventTypeEntityConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<CourseEventTypeEntity> e)
     {
-        var isDevelopment = string.Equals(
-            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
-            Environments.Development,
-            StringComparison.OrdinalIgnoreCase);
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("CourseEventTypes", t =>
         {
@@ -28,7 +24,7 @@ public sealed class CourseEventTypeEntityConfiguration : IEntityTypeConfiguratio
             .HasMaxLength(20)
             .IsRequired();
 
-        if (isDevelopment)
+        if (isSqliteTestMode)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

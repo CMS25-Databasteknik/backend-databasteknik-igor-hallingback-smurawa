@@ -17,16 +17,21 @@ public partial class Program
 
         builder.Services.AddMemoryCache();
 
-        builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
+        builder.Services.AddInfrastructureServices(builder.Configuration);
         builder.Services.AddApplication(builder.Configuration, builder.Environment);
 
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
+        var isSqliteTestMode = string.Equals(
+            Environment.GetEnvironmentVariable("DB_PROVIDER"),
+            "Sqlite",
+            StringComparison.OrdinalIgnoreCase);
+
+        if (isSqliteTestMode)
         {
             using var scope = app.Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
-            await db.Database.MigrateAsync();
+            await db.Database.EnsureCreatedAsync();
         }
 
         app.MapOpenApi();

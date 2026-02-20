@@ -12,7 +12,7 @@ public sealed class SqliteInMemoryFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+        Environment.SetEnvironmentVariable("DB_PROVIDER", "Sqlite");
 
         _conn = new SqliteConnection("DataSource=:memory:;Cache=Shared");
         await _conn.OpenAsync();
@@ -33,7 +33,7 @@ public sealed class SqliteInMemoryFixture : IAsyncLifetime
             await _conn.DisposeAsync();
         }
 
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
+        Environment.SetEnvironmentVariable("DB_PROVIDER", null);
 
     }
 
