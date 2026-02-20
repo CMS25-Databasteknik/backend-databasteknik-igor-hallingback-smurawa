@@ -11,6 +11,51 @@ namespace Infrastructure.Persistence.EFC.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql("""
+                IF NOT EXISTS (SELECT 1 FROM PaymentMethods WHERE Id = 1)
+                BEGIN
+                    INSERT INTO PaymentMethods (Id, Name)
+                    VALUES
+                    (1, 'Card'),
+                    (2, 'Invoice'),
+                    (3, 'Cash');
+                END
+                """);
+
+            migrationBuilder.Sql("""
+                IF NOT EXISTS (SELECT 1 FROM ParticipantContactTypes WHERE Id = 1)
+                BEGIN
+                    INSERT INTO ParticipantContactTypes (Id, Name)
+                    VALUES
+                    (1, 'Primary'),
+                    (2, 'Billing'),
+                    (3, 'Emergency');
+                END
+                """);
+
+            migrationBuilder.Sql("""
+                IF NOT EXISTS (SELECT 1 FROM VenueTypes WHERE Id = 1)
+                BEGIN
+                    INSERT INTO VenueTypes (Id, Name)
+                    VALUES
+                    (1, 'InPerson'),
+                    (2, 'Online'),
+                    (3, 'Hybrid');
+                END
+                """);
+
+            migrationBuilder.Sql("""
+                IF NOT EXISTS (SELECT 1 FROM CourseRegistrationStatuses WHERE Id = 0)
+                BEGIN
+                    INSERT INTO CourseRegistrationStatuses (Id, Name)
+                    VALUES
+                    (0, 'Pending'),
+                    (1, 'Paid'),
+                    (2, 'Cancelled'),
+                    (3, 'Refunded');
+                END
+                """);
+
+            migrationBuilder.Sql("""
                 IF NOT EXISTS (SELECT 1 FROM InstructorRoles WHERE RoleName = 'Lead')
                     INSERT INTO InstructorRoles (RoleName) VALUES ('Lead');
                 IF NOT EXISTS (SELECT 1 FROM InstructorRoles WHERE RoleName = 'Assistant')
@@ -218,6 +263,10 @@ namespace Infrastructure.Persistence.EFC.Migrations
                 );
                 DELETE FROM CourseEventTypes WHERE Id IN (1,2,3,4,5);
                 DELETE FROM InstructorRoles WHERE RoleName IN ('Lead','Assistant','Guest');
+                DELETE FROM CourseRegistrationStatuses WHERE Id IN (0,1,2,3);
+                DELETE FROM VenueTypes WHERE Id IN (1,2,3);
+                DELETE FROM ParticipantContactTypes WHERE Id IN (1,2,3);
+                DELETE FROM PaymentMethods WHERE Id IN (1,2,3);
                 """);
         }
     }

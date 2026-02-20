@@ -39,10 +39,5 @@ public sealed class PaymentMethodEntityConfiguration : IEntityTypeConfiguration<
             .IsUnique()
             .HasDatabaseName("IX_PaymentMethods_Name");
 
-        e.HasData(
-            new PaymentMethodEntity { Id = 1, Name = "Card", Concurrency = [0] },
-            new PaymentMethodEntity { Id = 2, Name = "Invoice", Concurrency = [0] },
-            new PaymentMethodEntity { Id = 3, Name = "Cash", Concurrency = [0] }
-        );
     }
 }

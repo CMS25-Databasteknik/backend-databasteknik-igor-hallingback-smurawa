@@ -1,4 +1,4 @@
-﻿using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +24,7 @@ public sealed class SqliteInMemoryFixture : IAsyncLifetime
 
         await using var db = new CoursesOnlineDbContext(Options);
         await db.Database.EnsureCreatedAsync();
+        await SeedLookupDataAsync(db);
     }
 
     public async Task DisposeAsync()
@@ -38,6 +39,38 @@ public sealed class SqliteInMemoryFixture : IAsyncLifetime
     }
 
     public CoursesOnlineDbContext CreateDbContext() => new(Options);
+
+    private static async Task SeedLookupDataAsync(CoursesOnlineDbContext db)
+    {
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT OR IGNORE INTO PaymentMethods (Id, Name) VALUES
+            (1, 'Card'),
+            (2, 'Invoice'),
+            (3, 'Cash');
+            """);
+
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT OR IGNORE INTO ParticipantContactTypes (Id, Name) VALUES
+            (1, 'Primary'),
+            (2, 'Billing'),
+            (3, 'Emergency');
+            """);
+
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT OR IGNORE INTO VenueTypes (Id, Name) VALUES
+            (1, 'InPerson'),
+            (2, 'Online'),
+            (3, 'Hybrid');
+            """);
+
+        await db.Database.ExecuteSqlRawAsync("""
+            INSERT OR IGNORE INTO CourseRegistrationStatuses (Id, Name) VALUES
+            (0, 'Pending'),
+            (1, 'Paid'),
+            (2, 'Cancelled'),
+            (3, 'Refunded');
+            """);
+    }
 }
 
 [CollectionDefinition(Name)]
