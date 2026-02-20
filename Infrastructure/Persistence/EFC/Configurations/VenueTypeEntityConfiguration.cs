@@ -29,9 +29,9 @@ public sealed class VenueTypeEntityConfiguration : IEntityTypeConfiguration<Venu
             .HasDatabaseName("IX_VenueTypes_Name");
 
         e.HasData(
-            new VenueTypeEntity { Id = 1, Name = "InPerson" },
-            new VenueTypeEntity { Id = 2, Name = "Online" },
-            new VenueTypeEntity { Id = 3, Name = "Hybrid" }
+            new VenueTypeEntity { Id = 1, Name = "InPerson", Concurrency = [0] },
+            new VenueTypeEntity { Id = 2, Name = "Online", Concurrency = [0] },
+            new VenueTypeEntity { Id = 3, Name = "Hybrid", Concurrency = [0] }
         );
     }
 }

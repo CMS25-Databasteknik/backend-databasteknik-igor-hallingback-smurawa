@@ -29,9 +29,9 @@ public sealed class ParticipantContactTypeEntityConfiguration : IEntityTypeConfi
             .HasDatabaseName("IX_ParticipantContactTypes_Name");
 
         e.HasData(
-            new ParticipantContactTypeEntity { Id = 1, Name = "Primary" },
-            new ParticipantContactTypeEntity { Id = 2, Name = "Billing" },
-            new ParticipantContactTypeEntity { Id = 3, Name = "Emergency" }
+            new ParticipantContactTypeEntity { Id = 1, Name = "Primary", Concurrency = [0] },
+            new ParticipantContactTypeEntity { Id = 2, Name = "Billing", Concurrency = [0] },
+            new ParticipantContactTypeEntity { Id = 3, Name = "Emergency", Concurrency = [0] }
         );
     }
 }

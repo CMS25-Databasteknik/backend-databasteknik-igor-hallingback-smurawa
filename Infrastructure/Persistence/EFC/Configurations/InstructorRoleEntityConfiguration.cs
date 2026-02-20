@@ -1,6 +1,7 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -8,9 +9,18 @@ public sealed class InstructorRoleEntityConfiguration : IEntityTypeConfiguration
 {
     public void Configure(EntityTypeBuilder<InstructorRoleEntity> e)
     {
+        var isDevelopment = string.Equals(
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            Environments.Development,
+            StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("InstructorRoles", t =>
         {
-            t.HasCheckConstraint("CK_InstructorRoles_RoleName_NotEmpty", "LEN([RoleName]) > 0");
+            t.HasCheckConstraint(
+                "CK_InstructorRoles_RoleName_NotEmpty",
+                isDevelopment
+                    ? "LTRIM(RTRIM([RoleName])) <> ''"
+                    : "LEN([RoleName]) > 0");
         });
 
         e.HasKey(x => x.Id).HasName("PK_InstructorRoles_Id");
