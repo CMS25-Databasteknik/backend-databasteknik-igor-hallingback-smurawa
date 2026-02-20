@@ -10,16 +10,36 @@ using Backend.Domain.Modules.Locations.Contracts;
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Extensions;
 
 public static class InfrastructureServiceRegistration
 {
-    public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration config)
+    public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration config, IHostEnvironment env)
     {
+
+
+        if (env.IsDevelopment())
+        {
+            services.AddSingleton(_ =>
+            {
+                var conn = new SqliteConnection("DataSource=:memory:;Cache=Shared");
+                conn.Open();
+                return conn;
+            });
+
+            services.AddDbContext<CoursesOnlineDbContext>((sp, options) =>
+            {
+                var connection = sp.GetRequiredService<SqliteConnection>();
+                options.UseSqlite(connection);
+            });
+        }
+
         services.AddDbContext<CoursesOnlineDbContext>(options =>
         {
             var dbConfig = config.GetConnectionString("CoursesOnlineDatabase")
