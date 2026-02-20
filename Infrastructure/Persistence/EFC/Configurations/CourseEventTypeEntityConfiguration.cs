@@ -1,6 +1,7 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -8,6 +9,11 @@ public sealed class CourseEventTypeEntityConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<CourseEventTypeEntity> e)
     {
+        var isDevelopment = string.Equals(
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            Environments.Development,
+            StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("CourseEventTypes", t =>
         {
             t.HasCheckConstraint("CK_CourseEventTypes_TypeName_NotEmpty", "LTRIM(RTRIM([TypeName])) <> ''");
@@ -22,10 +28,19 @@ public sealed class CourseEventTypeEntityConfiguration : IEntityTypeConfiguratio
             .HasMaxLength(20)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isDevelopment)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasIndex(x => x.TypeName)
             .IsUnique()

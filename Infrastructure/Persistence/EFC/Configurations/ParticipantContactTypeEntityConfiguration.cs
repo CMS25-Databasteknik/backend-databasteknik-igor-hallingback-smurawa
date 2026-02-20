@@ -1,6 +1,7 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -8,6 +9,11 @@ public sealed class ParticipantContactTypeEntityConfiguration : IEntityTypeConfi
 {
     public void Configure(EntityTypeBuilder<ParticipantContactTypeEntity> e)
     {
+        var isDevelopment = string.Equals(
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            Environments.Development,
+            StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("ParticipantContactTypes");
 
         e.HasKey(x => x.Id).HasName("PK_ParticipantContactTypes_Id");
@@ -19,10 +25,19 @@ public sealed class ParticipantContactTypeEntityConfiguration : IEntityTypeConfi
             .HasMaxLength(50)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isDevelopment)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasIndex(x => x.Name)
             .IsUnique()

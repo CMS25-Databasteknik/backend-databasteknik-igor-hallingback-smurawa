@@ -1,6 +1,7 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -8,6 +9,11 @@ public sealed class InPlaceLocationEntityConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<InPlaceLocationEntity> e)
     {
+        var isDevelopment = string.Equals(
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            Environments.Development,
+            StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("InPlaceLocations");
 
         e.HasKey(x => x.Id).HasName("PK_InPlaceLocations_Id");
@@ -21,10 +27,19 @@ public sealed class InPlaceLocationEntityConfiguration : IEntityTypeConfiguratio
         e.Property(x => x.Seats)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isDevelopment)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasOne(ipl => ipl.Location)
             .WithMany(l => l.InPlaceLocations)

@@ -1,6 +1,7 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -8,6 +9,11 @@ public sealed class LocationEntityConfiguration : IEntityTypeConfiguration<Locat
 {
     public void Configure(EntityTypeBuilder<LocationEntity> e)
     {
+        var isDevelopment = string.Equals(
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            Environments.Development,
+            StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("Locations", t =>
         {
             t.HasCheckConstraint("CK_Locations_PostalCode_NotEmpty", "LTRIM(RTRIM([PostalCode])) <> ''");
@@ -31,10 +37,19 @@ public sealed class LocationEntityConfiguration : IEntityTypeConfiguration<Locat
             .HasMaxLength(50)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isDevelopment)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasIndex(x => x.PostalCode)
             .HasDatabaseName("IX_Locations_PostalCode");

@@ -17,27 +17,13 @@ public sealed class SqliteInMemoryFixture : IAsyncLifetime
         _conn = new SqliteConnection("DataSource=:memory:;Cache=Shared");
         await _conn.OpenAsync();
 
-        await using (var cmd = _conn.CreateCommand())
-        {
-            cmd.CommandText =
-                """
-                CREATE TABLE IF NOT EXISTS Courses (
-                    Id TEXT NOT NULL PRIMARY KEY,
-                    Title TEXT NOT NULL,
-                    Description TEXT NOT NULL,
-                    DurationInDays INTEGER NOT NULL,
-                    Concurrency BLOB NULL,
-                    CreatedAtUtc TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
-                    ModifiedAtUtc TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
-                );
-                """;
-            await cmd.ExecuteNonQueryAsync();
-        }
-
         Options = new DbContextOptionsBuilder<CoursesOnlineDbContext>()
             .UseSqlite(_conn)
             .EnableSensitiveDataLogging()
             .Options;
+
+        await using var db = new CoursesOnlineDbContext(Options);
+        await db.Database.EnsureCreatedAsync();
     }
 
     public async Task DisposeAsync()

@@ -1,6 +1,7 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -8,6 +9,11 @@ public sealed class CourseEventEntityConfiguration : IEntityTypeConfiguration<Co
 {
     public void Configure(EntityTypeBuilder<CourseEventEntity> e)
     {
+        var isDevelopment = string.Equals(
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            Environments.Development,
+            StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("CourseEvents", t =>
         {
             t.HasCheckConstraint("CK_CourseEvents_Price", "[Price] >= 0");
@@ -35,20 +41,39 @@ public sealed class CourseEventEntityConfiguration : IEntityTypeConfiguration<Co
             .HasDefaultValue(1)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isDevelopment)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
 
-        e.Property(x => x.CreatedAtUtc)
-            .HasPrecision(0)
-            .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseEvents_CreatedAtUtc")
-            .ValueGeneratedOnAdd();
+            e.Property(x => x.CreatedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAdd();
 
-        e.Property(x => x.ModifiedAtUtc)
-            .HasPrecision(0)
-            .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseEvents_ModifiedAtUtc")
-            .ValueGeneratedOnAddOrUpdate();
+            e.Property(x => x.ModifiedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAddOrUpdate();
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+
+            e.Property(x => x.CreatedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseEvents_CreatedAtUtc")
+                .ValueGeneratedOnAdd();
+
+            e.Property(x => x.ModifiedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseEvents_ModifiedAtUtc")
+                .ValueGeneratedOnAddOrUpdate();
+        }
 
         e.HasIndex(x => new { x.CourseId, x.EventDate })
             .HasDatabaseName("IX_CourseEvents_CourseId_EventDate");

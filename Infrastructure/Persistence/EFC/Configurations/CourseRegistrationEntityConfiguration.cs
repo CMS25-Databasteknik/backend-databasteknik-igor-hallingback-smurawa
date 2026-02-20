@@ -1,6 +1,7 @@
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
@@ -8,6 +9,11 @@ public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfigura
 {
     public void Configure(EntityTypeBuilder<CourseRegistrationEntity> e)
     {
+        var isDevelopment = string.Equals(
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            Environments.Development,
+            StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("CourseRegistrations");
 
         e.HasKey(x => x.Id).HasName("PK_CourseRegistrations_Id");
@@ -16,10 +22,20 @@ public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfigura
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_CourseRegistrations_Id");
 
-        e.Property(x => x.RegistrationDate)
-            .HasPrecision(0)
-            .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseRegistrations_RegistrationDate")
-            .ValueGeneratedOnAdd();
+        if (isDevelopment)
+        {
+            e.Property(x => x.RegistrationDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAdd();
+        }
+        else
+        {
+            e.Property(x => x.RegistrationDate)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseRegistrations_RegistrationDate")
+                .ValueGeneratedOnAdd();
+        }
 
         e.Property(x => x.CourseRegistrationStatusId)
             .HasDefaultValue(0)
@@ -29,15 +45,29 @@ public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfigura
             .HasDefaultValue(1)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isDevelopment)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
 
-        e.Property(x => x.ModifiedAtUtc)
-            .HasPrecision(0)
-            .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseRegistrations_ModifiedAtUtc")
-            .ValueGeneratedOnAddOrUpdate();
+            e.Property(x => x.ModifiedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAddOrUpdate();
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+
+            e.Property(x => x.ModifiedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_CourseRegistrations_ModifiedAtUtc")
+                .ValueGeneratedOnAddOrUpdate();
+        }
 
         e.HasIndex(x => new { x.ParticipantId, x.CourseEventId })
             .IsUnique()
