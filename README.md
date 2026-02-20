@@ -1,62 +1,50 @@
 # Backend - Course Management System
 
-A .NET 10.0 backend solution for managing online courses, course events, instructors, participants, and registrations. Built using Clean Architecture principles.
+A .NET 10 backend solution for managing courses, course events, instructors, participants, locations, and registrations.
 
 ## Architecture
 
-The solution follows Clean Architecture with clear separation of concerns across four main layers:
+The solution follows Clean Architecture and is split into these layers:
 
 ### Projects
 
 #### **Domain** (`Domain.csproj`)
 
-The core layer containing enterprise business logic and entities.
+Core business models and business rules.
 
 - **Target Framework**: .NET 10.0
-- **Dependencies**: None (independent of other layers)
-- **Modules**:
-  - Courses
-  - CourseEvents
-  - CourseEventTypes
-  - CourseRegistrations
-  - Instructors
-  - Participants
-  - Locations
-  - InPlaceLocations
+- **Dependencies**: None
 
 #### **Application** (`Application.csproj`)
 
-Contains application business logic, use cases, and service interfaces.
+Application services, use cases, and caching logic.
 
 - **Target Framework**: .NET 10.0
 - **Dependencies**:
   - Domain project
   - Microsoft.Extensions.Configuration (10.0.2)
   - Microsoft.Extensions.DependencyInjection (10.0.2)
-  - Microsoft.Extensions.Hosting (10.0.2)
-- **Structure**: Organized by feature modules mirroring the Domain layer
-- **Patterns**: Service pattern with dependency injection
+- Microsoft.Extensions.Hosting (10.0.2)
 
 #### **Infrastructure** (`Infrastructure.csproj`)
 
-Handles data persistence and external concerns.
+Database access and EF Core implementation.
 
 - **Target Framework**: .NET 10.0
 - **Dependencies**:
   - Application project
   - Microsoft.EntityFrameworkCore (10.0.2)
   - Microsoft.EntityFrameworkCore.SqlServer (10.0.2)
+  - Microsoft.EntityFrameworkCore.Sqlite (10.0.2)
   - Microsoft.EntityFrameworkCore.Tools (10.0.2)
-- **Database**: SQL Server with Entity Framework Core
-- **DbContext**: `CoursesOnlineDbContext`
-- **Includes**: EF Core migrations and repository implementations
+- **Main runtime DB**: SQL Server
+- **Test DB**: SQLite in-memory (integration tests)
 
 #### **Presentation** (`Presentation.csproj`)
 
-Web API layer exposing HTTP endpoints.
+Minimal API layer exposing HTTP endpoints.
 
 - **Target Framework**: .NET 10.0
-- **Type**: ASP.NET Core Web API
 - **Dependencies**:
   - Application project
   - Infrastructure project
@@ -83,16 +71,28 @@ Unit and integration tests.
 
 ## Features
 
-The system provides complete CRUD operations for the following modules:
+The system has CRUD support for these central modules:
 
-- **Courses**: Manage course catalog with title, description, and duration
-- **Course Events**: Schedule specific instances of courses
-- **Course Event Types**: Define types of course events (e.g., online, in-person)
-- **Course Registrations**: Handle participant enrollment in course events
-- **Instructors**: Manage instructor information
-- **Participants**: Manage participant/student information
-- **Locations**: Manage general location data
-- **In-Place Locations**: Manage physical venue locations for in-person events
+- Courses
+- Course events
+- Course event types
+- Course registrations and statuses
+- Instructors and instructor roles
+- Participants
+- Locations and in-place locations
+
+### CRUD by resource
+
+- **Courses**: Create, Read (all/by id), Update, Delete
+- **Course Events**: Create, Read (all/by id/by course), Update, Delete
+- **Course Event Types**: Create, Read (all/by id), Update, Delete
+- **Course Registrations**: Create, Read (all/by id/by participant/by event), Update, Delete
+- **Course Registration Statuses**: Create, Read (all/by id), Update, Delete
+- **Instructors**: Create, Read (all/by id), Update, Delete
+- **Instructor Roles**: Create, Read (all/by id), Update, Delete
+- **Participants**: Create, Read (all/by id), Update, Delete
+- **Locations**: Create, Read (all/by id), Update, Delete
+- **In-Place Locations**: Create, Read (all/by id/by location), Update, Delete
 
 ## API Endpoints
 
@@ -108,8 +108,8 @@ Similar patterns exist for other modules (course events, instructors, participan
 
 ## Database
 
-- **Database**: SQL Server
-- **Database Name**: CoursesOnline
+- **Runtime database**: SQL Server
+- **Database name**: CoursesOnline
 - **ORM**: Entity Framework Core 10.0.2
 - **Connection**: Configured in `appsettings.json`
 - **Migrations**: Located in `Infrastructure/Persistence/EFC/Migrations/`
@@ -168,9 +168,48 @@ Similar patterns exist for other modules (course events, instructors, participan
 
 ### Running Tests
 
+Run all tests:
+
 ```bash
 dotnet test
 ```
+
+Run only integration tests:
+
+```bash
+dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.Integration"
+```
+
+Run only unit tests:
+
+```bash
+dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.Unit"
+```
+
+## Testing Setup
+
+The project has two kinds of tests:
+
+1. **Unit tests**
+
+- Test small pieces of logic (usually services/domain behavior).
+- Use mocks (NSubstitute) instead of a real database.
+- Fast and focused.
+
+2. **Integration tests**
+
+- Test real repository behavior against a real EF Core database context.
+- Use **SQLite in-memory** so tests are fast and isolated.
+- Data is created directly in a temporary in-memory database during test execution.
+
+### How SQLite test mode works
+
+- Integration tests use `Tests/Integration/SqliteInMemoryFixture.cs`.
+- The fixture sets `DB_PROVIDER=Sqlite`.
+- Infrastructure registration detects this and uses SQLite in-memory instead of SQL Server.
+- EF configurations also check this flag and use SQLite-compatible settings.
+
+In normal app runtime, `DB_PROVIDER` is not set, so SQL Server is used.
 
 ## Technology Stack
 
@@ -201,17 +240,5 @@ Backend/
 - All projects target **.NET 10.0**
 - The architecture promotes **testability** and **maintainability**
 - **Dependency injection** is used throughout the application
-- The solution uses transactions handling in  courseEventRepository, courseRegistrationRepository and participantRepository to ensure data integrity during complex operations
-- In-memory caching is enabled in `Presentation/Program.cs` via `AddMemoryCache()`.
-- Repositories using `IMemoryCache`:
-  - `Infrastructure/Persistence/EFC/Repositories/CourseEventTypeRepository.cs`
-  - `Infrastructure/Persistence/EFC/Repositories/CourseRegistrationStatusRepository.cs`
-## Architecture Benefits
-
-- **Separation of Concerns**: Each layer has a specific responsibility
-- **Testability**: Business logic is independent of infrastructure
-- **Maintainability**: Changes in one layer don't affect others
-- **Flexibility**: Easy to swap out implementations (e.g., database providers)
-- **Scalability**: Clean boundaries make it easier to scale individual components
-
-- **Instructor roles**: Instructors now reference InstructorRole (Lead/Assistant/Guest). Roles are seeded via migrations (AddInstructorRoles, SeedInstructorRoles) and exposed through API endpoints under /api/instructor-roles.
+- Transaction handling is used in repositories that need atomic multi-step operations.
+- Caching is implemented in the **Application** layer (services/caches), not in repositories.
