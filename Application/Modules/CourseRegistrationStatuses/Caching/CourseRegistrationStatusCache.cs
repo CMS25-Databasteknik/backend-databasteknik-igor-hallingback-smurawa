@@ -11,6 +11,6 @@ public sealed class CourseRegistrationStatusCache(IMemoryCache cache) : CacheEnt
     public Task<CourseRegistrationStatus?> GetByIdAsync(int id, Func<CancellationToken, Task<CourseRegistrationStatus?>> factory, CancellationToken ct)
         => GetOrCreateByIdAsync(id, factory, ct);
 
-    public Task<IReadOnlyList<CourseRegistrationStatus>?> GetAllAsync(Func<CancellationToken, Task<IReadOnlyList<CourseRegistrationStatus>>> factory, CancellationToken ct)
+    public Task<IReadOnlyList<CourseRegistrationStatus>> GetAllAsync(Func<CancellationToken, Task<IReadOnlyList<CourseRegistrationStatus>>> factory, CancellationToken ct)
         => GetOrCreateAllAsync(factory, ct);
 }

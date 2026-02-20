@@ -7,7 +7,7 @@ public sealed class CourseEventTypeResult : ResultCommon<CourseEventType>
 {
 }
 
-public sealed class CourseEventTypeListResult : ResultCommon<IEnumerable<CourseEventType>>
+public sealed class CourseEventTypeListResult : ResultCommon<IReadOnlyList<CourseEventType>>
 {
 }
 

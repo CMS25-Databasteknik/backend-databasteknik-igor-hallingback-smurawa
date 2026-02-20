@@ -80,13 +80,17 @@ public abstract class CacheEntityBase<TEntity, TId>(IMemoryCache cache) : ICache
             ct);
     }
 
-    public Task<IReadOnlyList<TEntity>?> GetOrCreateAllAsync(Func<CancellationToken, Task<IReadOnlyList<TEntity>>> factory, CancellationToken ct)
-        => cache.GetOrCreateAsync(
+    public async Task<IReadOnlyList<TEntity>> GetOrCreateAllAsync(Func<CancellationToken, Task<IReadOnlyList<TEntity>>> factory, CancellationToken ct)
+    {
+        var result = await cache.GetOrCreateAsync(
             AllKey,
             async (entry, token) =>
             {
                 entry.SetOptions(ListOptions);
                 return await factory(token);
             },
-            ct) ?? Task.FromResult<IReadOnlyList<TEntity>?>([]);
+            ct);
+
+        return result ?? [];
+    }
 }

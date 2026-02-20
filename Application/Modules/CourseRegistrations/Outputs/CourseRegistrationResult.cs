@@ -7,7 +7,7 @@ public sealed class CourseRegistrationResult : ResultCommon<CourseRegistration>
 {
 }
 
-public sealed class CourseRegistrationListResult : ResultCommon<IEnumerable<CourseRegistration>>
+public sealed class CourseRegistrationListResult : ResultCommon<IReadOnlyList<CourseRegistration>>
 {
 }
 

@@ -78,7 +78,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
         {
             var courseEventTypes = await _cache.GetAllAsync(
                 token => _courseEventTypeRepository.GetAllCourseEventTypesAsync(token),
-                cancellationToken) ?? [];
+                cancellationToken);
 
             if (!courseEventTypes.Any())
             {

@@ -75,7 +75,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
         {
             var result = await _cache.GetAllAsync(
                 token => _repository.GetAllCourseRegistrationStatusesAsync(token),
-                cancellationToken) ?? [];
+                cancellationToken);
 
             return new CourseRegistrationStatusListResult
             {

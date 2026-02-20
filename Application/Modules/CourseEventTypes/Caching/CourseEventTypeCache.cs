@@ -11,6 +11,6 @@ public sealed class CourseEventTypeCache(IMemoryCache cache) : CacheEntityBase<C
     public Task<CourseEventType?> GetByIdAsync(int id, Func<CancellationToken, Task<CourseEventType?>> factory, CancellationToken ct)
         => GetOrCreateByIdAsync(id, factory, ct);
 
-    public Task<IReadOnlyList<CourseEventType>?> GetAllAsync(Func<CancellationToken, Task<IReadOnlyList<CourseEventType>>> factory, CancellationToken ct)
+    public Task<IReadOnlyList<CourseEventType>> GetAllAsync(Func<CancellationToken, Task<IReadOnlyList<CourseEventType>>> factory, CancellationToken ct)
         => GetOrCreateAllAsync(factory, ct);
 }
