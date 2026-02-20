@@ -249,28 +249,6 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .HasDatabaseName("IX_CourseRegistrationStatuses_Name");
 
                     b.ToTable("CourseRegistrationStatuses", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 0,
-                            Name = "Pending"
-                        },
-                        new
-                        {
-                            Id = 1,
-                            Name = "Paid"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Cancelled"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Refunded"
-                        });
                 });
 
             modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.InPlaceLocationEntity", b =>
@@ -439,23 +417,6 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .HasDatabaseName("IX_ParticipantContactTypes_Name");
 
                     b.ToTable("ParticipantContactTypes", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Primary"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Billing"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Emergency"
-                        });
                 });
 
             modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.ParticipantEntity", b =>
@@ -547,23 +508,6 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .HasDatabaseName("IX_PaymentMethods_Name");
 
                     b.ToTable("PaymentMethods", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Card"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Invoice"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Cash"
-                        });
                 });
 
             modelBuilder.Entity("Backend.Infrastructure.Persistence.Entities.VenueTypeEntity", b =>
@@ -590,23 +534,6 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         .HasDatabaseName("IX_VenueTypes_Name");
 
                     b.ToTable("VenueTypes", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "InPerson"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Online"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Hybrid"
-                        });
                 });
 
             modelBuilder.Entity("CourseEventInstructors", b =>

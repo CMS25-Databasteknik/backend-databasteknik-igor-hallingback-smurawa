@@ -39,11 +39,5 @@ public sealed class CourseRegistrationStatusEntityConfiguration : IEntityTypeCon
             .IsUnique()
             .HasDatabaseName("IX_CourseRegistrationStatuses_Name");
 
-        e.HasData(
-            new CourseRegistrationStatusEntity { Id = 0, Name = "Pending", Concurrency = [0] },
-            new CourseRegistrationStatusEntity { Id = 1, Name = "Paid", Concurrency = [0] },
-            new CourseRegistrationStatusEntity { Id = 2, Name = "Cancelled", Concurrency = [0] },
-            new CourseRegistrationStatusEntity { Id = 3, Name = "Refunded", Concurrency = [0] }
-        );
     }
 }
