@@ -8,6 +8,8 @@ public sealed class ParticipantContactTypeEntityConfiguration : IEntityTypeConfi
 {
     public void Configure(EntityTypeBuilder<ParticipantContactTypeEntity> e)
     {
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("ParticipantContactTypes");
 
         e.HasKey(x => x.Id).HasName("PK_ParticipantContactTypes_Id");
@@ -19,19 +21,28 @@ public sealed class ParticipantContactTypeEntityConfiguration : IEntityTypeConfi
             .HasMaxLength(50)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isSqliteTestMode)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasIndex(x => x.Name)
             .IsUnique()
             .HasDatabaseName("IX_ParticipantContactTypes_Name");
 
         e.HasData(
-            new ParticipantContactTypeEntity { Id = 1, Name = "Primary" },
-            new ParticipantContactTypeEntity { Id = 2, Name = "Billing" },
-            new ParticipantContactTypeEntity { Id = 3, Name = "Emergency" }
+            new ParticipantContactTypeEntity { Id = 1, Name = "Primary", Concurrency = [0] },
+            new ParticipantContactTypeEntity { Id = 2, Name = "Billing", Concurrency = [0] },
+            new ParticipantContactTypeEntity { Id = 3, Name = "Emergency", Concurrency = [0] }
         );
     }
 }

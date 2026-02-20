@@ -8,6 +8,8 @@ public sealed class LocationEntityConfiguration : IEntityTypeConfiguration<Locat
 {
     public void Configure(EntityTypeBuilder<LocationEntity> e)
     {
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("Locations", t =>
         {
             t.HasCheckConstraint("CK_Locations_PostalCode_NotEmpty", "LTRIM(RTRIM([PostalCode])) <> ''");
@@ -31,10 +33,19 @@ public sealed class LocationEntityConfiguration : IEntityTypeConfiguration<Locat
             .HasMaxLength(50)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isSqliteTestMode)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasIndex(x => x.PostalCode)
             .HasDatabaseName("IX_Locations_PostalCode");

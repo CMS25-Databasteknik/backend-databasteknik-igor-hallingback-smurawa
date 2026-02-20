@@ -8,6 +8,8 @@ public sealed class PaymentMethodEntityConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<PaymentMethodEntity> e)
     {
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("PaymentMethods");
 
         e.HasKey(x => x.Id).HasName("PK_PaymentMethods_Id");
@@ -19,19 +21,28 @@ public sealed class PaymentMethodEntityConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(50)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isSqliteTestMode)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasIndex(x => x.Name)
             .IsUnique()
             .HasDatabaseName("IX_PaymentMethods_Name");
 
         e.HasData(
-            new PaymentMethodEntity { Id = 1, Name = "Card" },
-            new PaymentMethodEntity { Id = 2, Name = "Invoice" },
-            new PaymentMethodEntity { Id = 3, Name = "Cash" }
+            new PaymentMethodEntity { Id = 1, Name = "Card", Concurrency = [0] },
+            new PaymentMethodEntity { Id = 2, Name = "Invoice", Concurrency = [0] },
+            new PaymentMethodEntity { Id = 3, Name = "Cash", Concurrency = [0] }
         );
     }
 }

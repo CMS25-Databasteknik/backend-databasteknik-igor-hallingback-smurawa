@@ -10,6 +10,7 @@ using Backend.Domain.Modules.Locations.Contracts;
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,13 +21,36 @@ public static class InfrastructureServiceRegistration
 {
     public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration config)
     {
-        services.AddDbContext<CoursesOnlineDbContext>(options =>
-        {
-            var dbConfig = config.GetConnectionString("CoursesOnlineDatabase")
-                ?? throw new InvalidOperationException("Connection string 'CoursesOnlineDatabase' not found.");
+        var useSqliteForTests = string.Equals(
+            Environment.GetEnvironmentVariable("DB_PROVIDER"),
+            "Sqlite",
+            StringComparison.OrdinalIgnoreCase);
 
-            options.UseSqlServer(dbConfig);
-        });
+        if (useSqliteForTests)
+        {
+            services.AddSingleton(_ =>
+            {
+                var conn = new SqliteConnection("DataSource=:memory:;Cache=Shared");
+                conn.Open();
+                return conn;
+            });
+
+            services.AddDbContext<CoursesOnlineDbContext>((sp, options) =>
+            {
+                var connection = sp.GetRequiredService<SqliteConnection>();
+                options.UseSqlite(connection);
+            });
+        }
+        else
+        {
+            services.AddDbContext<CoursesOnlineDbContext>(options =>
+            {
+                var dbConfig = config.GetConnectionString("CoursesOnlineDatabase")
+                    ?? throw new InvalidOperationException("Connection string 'CoursesOnlineDatabase' not found.");
+
+                options.UseSqlServer(dbConfig);
+            });
+        }
 
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ICourseEventRepository, CourseEventRepository>();

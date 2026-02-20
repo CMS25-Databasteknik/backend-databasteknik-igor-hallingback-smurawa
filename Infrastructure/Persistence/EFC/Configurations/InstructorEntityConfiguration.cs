@@ -8,6 +8,8 @@ public sealed class InstructorEntityConfiguration : IEntityTypeConfiguration<Ins
 {
     public void Configure(EntityTypeBuilder<InstructorEntity> e)
     {
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("Instructors", t =>
         {
             t.HasCheckConstraint("CK_Instructors_Name_NotEmpty", "LTRIM(RTRIM([Name])) <> ''");
@@ -26,10 +28,19 @@ public sealed class InstructorEntityConfiguration : IEntityTypeConfiguration<Ins
         e.Property(x => x.InstructorRoleId)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isSqliteTestMode)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasOne(x => x.InstructorRole)
             .WithMany(r => r.Instructors)

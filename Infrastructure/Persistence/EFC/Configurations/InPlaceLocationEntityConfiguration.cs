@@ -8,6 +8,8 @@ public sealed class InPlaceLocationEntityConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<InPlaceLocationEntity> e)
     {
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("InPlaceLocations");
 
         e.HasKey(x => x.Id).HasName("PK_InPlaceLocations_Id");
@@ -21,10 +23,19 @@ public sealed class InPlaceLocationEntityConfiguration : IEntityTypeConfiguratio
         e.Property(x => x.Seats)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isSqliteTestMode)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasOne(ipl => ipl.Location)
             .WithMany(l => l.InPlaceLocations)

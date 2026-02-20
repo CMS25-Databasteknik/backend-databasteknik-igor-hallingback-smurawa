@@ -8,6 +8,8 @@ public sealed class ParticipantEntityConfiguration : IEntityTypeConfiguration<Pa
 {
     public void Configure(EntityTypeBuilder<ParticipantEntity> e)
     {
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("Participants", t =>
         {
             t.HasCheckConstraint("CK_Participants_Email_NotEmpty", "LTRIM(RTRIM([Email])) <> ''");
@@ -39,20 +41,39 @@ public sealed class ParticipantEntityConfiguration : IEntityTypeConfiguration<Pa
             .HasDefaultValue(1)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isSqliteTestMode)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
 
-        e.Property(x => x.CreatedAtUtc)
-            .HasPrecision(0)
-            .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Participants_CreatedAtUtc")
-            .ValueGeneratedOnAdd();
+            e.Property(x => x.CreatedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAdd();
 
-        e.Property(x => x.ModifiedAtUtc)
-            .HasPrecision(0)
-            .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Participants_ModifiedAtUtc")
-            .ValueGeneratedOnAddOrUpdate();
+            e.Property(x => x.ModifiedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnAddOrUpdate();
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+
+            e.Property(x => x.CreatedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Participants_CreatedAtUtc")
+                .ValueGeneratedOnAdd();
+
+            e.Property(x => x.ModifiedAtUtc)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Participants_ModifiedAtUtc")
+                .ValueGeneratedOnAddOrUpdate();
+        }
 
         e.HasOne(p => p.ContactType)
             .WithMany()

@@ -8,9 +8,15 @@ public sealed class InstructorRoleEntityConfiguration : IEntityTypeConfiguration
 {
     public void Configure(EntityTypeBuilder<InstructorRoleEntity> e)
     {
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("InstructorRoles", t =>
         {
-            t.HasCheckConstraint("CK_InstructorRoles_RoleName_NotEmpty", "LEN([RoleName]) > 0");
+            t.HasCheckConstraint(
+                "CK_InstructorRoles_RoleName_NotEmpty",
+                isSqliteTestMode
+                    ? "LTRIM(RTRIM([RoleName])) <> ''"
+                    : "LEN([RoleName]) > 0");
         });
 
         e.HasKey(x => x.Id).HasName("PK_InstructorRoles_Id");
@@ -22,10 +28,19 @@ public sealed class InstructorRoleEntityConfiguration : IEntityTypeConfiguration
             .HasMaxLength(50)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isSqliteTestMode)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasIndex(x => x.RoleName)
             .IsUnique()

@@ -8,6 +8,8 @@ public sealed class CourseEntityConfiguration : IEntityTypeConfiguration<CourseE
 {
     public void Configure(EntityTypeBuilder<CourseEntity> e)
     {
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("Courses", t =>
         {
             t.HasCheckConstraint("CK_Courses_Title_NotEmpty", "LTRIM(RTRIM([Title])) <> ''");
@@ -15,9 +17,13 @@ public sealed class CourseEntityConfiguration : IEntityTypeConfiguration<CourseE
 
         e.HasKey(x => x.Id).HasName("PK_Courses_Id");
 
-        e.Property(x => x.Id)
-            .ValueGeneratedOnAdd()
-            .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Courses_Id");
+        var idProperty = e.Property(x => x.Id)
+            .ValueGeneratedOnAdd();
+
+        if (!isSqliteTestMode)
+        {
+            idProperty.HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_Courses_Id");
+        }
 
         e.Property(x => x.Title)
             .HasMaxLength(100)
@@ -30,20 +36,38 @@ public sealed class CourseEntityConfiguration : IEntityTypeConfiguration<CourseE
         e.Property(x => x.DurationInDays)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isSqliteTestMode)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
-        e.Property(x => x.CreatedAtUtc)
+        var createdAtProperty = e.Property(x => x.CreatedAtUtc)
             .HasPrecision(0)
-            .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Courses_CreatedAtUtc")
             .ValueGeneratedOnAdd();
 
-        e.Property(x => x.ModifiedAtUtc)
+        var modifiedAtProperty = e.Property(x => x.ModifiedAtUtc)
             .HasPrecision(0)
-            .HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Courses_ModifiedAtUtc")
             .ValueGeneratedOnAddOrUpdate();
+
+        if (isSqliteTestMode)
+        {
+            createdAtProperty.HasDefaultValueSql("(CURRENT_TIMESTAMP)");
+            modifiedAtProperty.HasDefaultValueSql("(CURRENT_TIMESTAMP)");
+        }
+        else
+        {
+            createdAtProperty.HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Courses_CreatedAtUtc");
+            modifiedAtProperty.HasDefaultValueSql("(SYSUTCDATETIME())", "DF_Courses_ModifiedAtUtc");
+        }
 
         e.HasIndex(x => x.Title)
             .HasDatabaseName("IX_Courses_Title");

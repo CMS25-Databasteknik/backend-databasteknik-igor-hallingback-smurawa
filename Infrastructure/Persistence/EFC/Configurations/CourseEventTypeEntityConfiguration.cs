@@ -8,6 +8,8 @@ public sealed class CourseEventTypeEntityConfiguration : IEntityTypeConfiguratio
 {
     public void Configure(EntityTypeBuilder<CourseEventTypeEntity> e)
     {
+        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         e.ToTable("CourseEventTypes", t =>
         {
             t.HasCheckConstraint("CK_CourseEventTypes_TypeName_NotEmpty", "LTRIM(RTRIM([TypeName])) <> ''");
@@ -22,10 +24,19 @@ public sealed class CourseEventTypeEntityConfiguration : IEntityTypeConfiguratio
             .HasMaxLength(20)
             .IsRequired();
 
-        e.Property(x => x.Concurrency)
-            .IsRowVersion()
-            .IsConcurrencyToken()
-            .IsRequired();
+        if (isSqliteTestMode)
+        {
+            e.Property(x => x.Concurrency)
+                .IsConcurrencyToken()
+                .IsRequired(false);
+        }
+        else
+        {
+            e.Property(x => x.Concurrency)
+                .IsRowVersion()
+                .IsConcurrencyToken()
+                .IsRequired();
+        }
 
         e.HasIndex(x => x.TypeName)
             .IsUnique()
