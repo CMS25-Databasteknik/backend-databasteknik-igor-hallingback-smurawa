@@ -1,4 +1,5 @@
 using Backend.Application.Modules.CourseEventTypes;
+using Backend.Application.Modules.CourseEventTypes.Caching;
 using Backend.Application.Modules.CourseEventTypes.Inputs;
 using Backend.Domain.Modules.CourseEventTypes.Contracts;
 using Backend.Domain.Modules.CourseEventTypes.Models;
@@ -8,6 +9,18 @@ namespace Backend.Tests.Unit.Application.Modules.CourseEventTypes;
 
 public class CourseEventTypeService_Tests
 {
+    private static CourseEventTypeService CreateService(ICourseEventTypeRepository repo, out ICourseEventTypeCache cache)
+    {
+        cache = Substitute.For<ICourseEventTypeCache>();
+
+        cache.GetAllAsync(Arg.Any<Func<CancellationToken, Task<IReadOnlyList<CourseEventType>>>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<CourseEventType>>>>()(ci.Arg<CancellationToken>()));
+
+        cache.GetByIdAsync(Arg.Any<int>(), Arg.Any<Func<CancellationToken, Task<CourseEventType?>>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.Arg<Func<CancellationToken, Task<CourseEventType?>>>()(ci.Arg<CancellationToken>()));
+
+        return new CourseEventTypeService(cache, repo);
+    }
     #region CreateCourseEventTypeAsync Tests
 
     [Fact]
@@ -20,7 +33,7 @@ public class CourseEventTypeService_Tests
         mockRepo.CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
             .Returns(expectedType);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new CreateCourseEventTypeInput("Online");
 
         // Act
@@ -36,6 +49,8 @@ public class CourseEventTypeService_Tests
         await mockRepo.Received(1).CreateCourseEventTypeAsync(
             Arg.Is<CourseEventType>(t => t.TypeName == "Online"),
             Arg.Any<CancellationToken>());
+        mockCache.Received(1).ResetEntity(expectedType);
+        mockCache.Received(1).SetEntity(expectedType);
     }
 
     [Fact]
@@ -43,7 +58,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.CreateCourseEventTypeAsync(null!, CancellationToken.None);
@@ -55,6 +70,8 @@ public class CourseEventTypeService_Tests
         Assert.Equal("Course event type cannot be null.", result.Message);
 
         await mockRepo.DidNotReceive().CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
+        mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
+        mockCache.DidNotReceive().SetEntity(Arg.Any<CourseEventType>());
     }
 
     [Fact]
@@ -62,7 +79,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new CreateCourseEventTypeInput("");
 
         // Act
@@ -82,7 +99,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new CreateCourseEventTypeInput("   ");
 
         // Act
@@ -105,7 +122,7 @@ public class CourseEventTypeService_Tests
         mockRepo.CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<CourseEventType>(new Exception("Database error")));
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new CreateCourseEventTypeInput("Online");
 
         // Act
@@ -133,7 +150,7 @@ public class CourseEventTypeService_Tests
         mockRepo.CreateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
             .Returns(expectedType);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new CreateCourseEventTypeInput(typeName);
 
         // Act
@@ -150,7 +167,9 @@ public class CourseEventTypeService_Tests
     public void CourseEventTypeService_Constructor_Should_Throw_When_Repository_Is_Null()
     {
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => new CourseEventTypeService(null!));
+        var cache = Substitute.For<ICourseEventTypeCache>();
+        Assert.Throws<ArgumentNullException>(() => new CourseEventTypeService(cache, null!));
+        Assert.Throws<ArgumentNullException>(() => new CourseEventTypeService(null!, Substitute.For<ICourseEventTypeRepository>()));
     }
 
     #endregion
@@ -172,7 +191,7 @@ public class CourseEventTypeService_Tests
         mockRepo.GetAllCourseEventTypesAsync(Arg.Any<CancellationToken>())
             .Returns(types);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.GetAllCourseEventTypesAsync(CancellationToken.None);
@@ -185,6 +204,9 @@ public class CourseEventTypeService_Tests
         Assert.Equal("Retrieved 3 course event type(s) successfully.", result.Message);
 
         await mockRepo.Received(1).GetAllCourseEventTypesAsync(Arg.Any<CancellationToken>());
+        await mockCache.Received(1).GetAllAsync(
+            Arg.Any<Func<CancellationToken, Task<IReadOnlyList<CourseEventType>>>>(),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -195,7 +217,7 @@ public class CourseEventTypeService_Tests
         mockRepo.GetAllCourseEventTypesAsync(Arg.Any<CancellationToken>())
             .Returns(new List<CourseEventType>());
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.GetAllCourseEventTypesAsync(CancellationToken.None);
@@ -216,7 +238,7 @@ public class CourseEventTypeService_Tests
         mockRepo.GetAllCourseEventTypesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException<IReadOnlyList<CourseEventType>>(new Exception("Database connection failed")));
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.GetAllCourseEventTypesAsync(CancellationToken.None);
@@ -243,7 +265,7 @@ public class CourseEventTypeService_Tests
         mockRepo.GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(courseEventType);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.GetCourseEventTypeByIdAsync(typeId, CancellationToken.None);
@@ -257,6 +279,10 @@ public class CourseEventTypeService_Tests
         Assert.Equal("Course event type retrieved successfully.", result.Message);
 
         await mockRepo.Received(1).GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>());
+        await mockCache.Received(1).GetByIdAsync(
+            typeId,
+            Arg.Any<Func<CancellationToken, Task<CourseEventType?>>>(),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -269,7 +295,7 @@ public class CourseEventTypeService_Tests
         mockRepo.GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns((CourseEventType)null!);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.GetCourseEventTypeByIdAsync(typeId, CancellationToken.None);
@@ -286,7 +312,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.GetCourseEventTypeByIdAsync(0, CancellationToken.None);
@@ -305,7 +331,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.GetCourseEventTypeByIdAsync(-1, CancellationToken.None);
@@ -329,7 +355,7 @@ public class CourseEventTypeService_Tests
         mockRepo.GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<CourseEventType?>(new Exception("Database error")));
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.GetCourseEventTypeByIdAsync(typeId, CancellationToken.None);
@@ -361,7 +387,7 @@ public class CourseEventTypeService_Tests
         mockRepo.UpdateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
             .Returns(updatedType);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new UpdateCourseEventTypeInput(typeId, "Virtual");
 
         // Act
@@ -378,6 +404,8 @@ public class CourseEventTypeService_Tests
         await mockRepo.Received(1).UpdateCourseEventTypeAsync(
             Arg.Is<CourseEventType>(t => t.Id == typeId && t.TypeName == "Virtual"),
             Arg.Any<CancellationToken>());
+        mockCache.Received(1).ResetEntity(existingType);
+        mockCache.Received(1).SetEntity(updatedType);
     }
 
     [Fact]
@@ -385,7 +413,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.UpdateCourseEventTypeAsync(null!, CancellationToken.None);
@@ -404,7 +432,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new UpdateCourseEventTypeInput(0, "Online");
 
         // Act
@@ -424,7 +452,7 @@ public class CourseEventTypeService_Tests
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         mockRepo.GetCourseEventTypeByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEventType(1, "Online"));
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new UpdateCourseEventTypeInput(1, "");
 
         // Act
@@ -444,7 +472,7 @@ public class CourseEventTypeService_Tests
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         mockRepo.GetCourseEventTypeByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEventType(1, "Online"));
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new UpdateCourseEventTypeInput(1, "   ");
 
         // Act
@@ -467,7 +495,7 @@ public class CourseEventTypeService_Tests
         mockRepo.GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns((CourseEventType)null!);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new UpdateCourseEventTypeInput(typeId, "Virtual");
 
         // Act
@@ -480,6 +508,8 @@ public class CourseEventTypeService_Tests
         Assert.Contains($"Course event type with ID '{typeId}' not found", result.Message);
 
         await mockRepo.DidNotReceive().UpdateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
+        mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
+        mockCache.DidNotReceive().SetEntity(Arg.Any<CourseEventType>());
     }
 
     [Fact]
@@ -496,7 +526,7 @@ public class CourseEventTypeService_Tests
         mockRepo.UpdateCourseEventTypeAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<CourseEventType?>(new Exception("Database error")));
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
         var input = new UpdateCourseEventTypeInput(typeId, "Virtual");
 
         // Act
@@ -531,7 +561,7 @@ public class CourseEventTypeService_Tests
         mockRepo.DeleteCourseEventTypeAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.DeleteCourseEventTypeAsync(typeId, CancellationToken.None);
@@ -543,6 +573,7 @@ public class CourseEventTypeService_Tests
         Assert.Equal("Course event type deleted successfully.", result.Message);
 
         await mockRepo.Received(1).DeleteCourseEventTypeAsync(typeId, Arg.Any<CancellationToken>());
+        mockCache.Received(1).ResetEntity(existingType);
     }
 
     [Fact]
@@ -550,7 +581,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.DeleteCourseEventTypeAsync(0, CancellationToken.None);
@@ -569,7 +600,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.DeleteCourseEventTypeAsync(-1, CancellationToken.None);
@@ -593,7 +624,7 @@ public class CourseEventTypeService_Tests
         mockRepo.GetCourseEventTypeByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns((CourseEventType)null!);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.DeleteCourseEventTypeAsync(typeId, CancellationToken.None);
@@ -605,6 +636,7 @@ public class CourseEventTypeService_Tests
         Assert.Contains($"Course event type with ID '{typeId}' not found", result.Message);
 
         await mockRepo.DidNotReceive().DeleteCourseEventTypeAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+        mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
     }
 
     [Fact]
@@ -621,7 +653,7 @@ public class CourseEventTypeService_Tests
         mockRepo.IsInUseAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.DeleteCourseEventTypeAsync(typeId, CancellationToken.None);
@@ -649,7 +681,7 @@ public class CourseEventTypeService_Tests
         mockRepo.DeleteCourseEventTypeAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<bool>(new Exception("Database error")));
 
-        var service = new CourseEventTypeService(mockRepo);
+        var service = CreateService(mockRepo, out var mockCache);
 
         // Act
         var result = await service.DeleteCourseEventTypeAsync(typeId, CancellationToken.None);
@@ -664,5 +696,10 @@ public class CourseEventTypeService_Tests
 
     #endregion
 }
+
+
+
+
+
 
 

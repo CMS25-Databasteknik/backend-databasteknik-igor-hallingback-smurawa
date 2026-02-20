@@ -1,3 +1,4 @@
+using Backend.Application.Modules.CourseRegistrationStatuses.Caching;
 using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
 using Backend.Application.Modules.CourseRegistrationStatuses.Outputs;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Contracts;
@@ -5,8 +6,9 @@ using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 
 namespace Backend.Application.Modules.CourseRegistrationStatuses;
 
-public class CourseRegistrationStatusService(ICourseRegistrationStatusRepository repository) : ICourseRegistrationStatusService
+public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cache, ICourseRegistrationStatusRepository repository) : ICourseRegistrationStatusService
 {
+    private readonly ICourseRegistrationStatusCache _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     private readonly ICourseRegistrationStatusRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     public async Task<CourseRegistrationStatusResult> CreateCourseRegistrationStatusAsync(CreateCourseRegistrationStatusInput input, CancellationToken cancellationToken = default)
@@ -25,6 +27,8 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusRepository
 
             var newStatus = new CourseRegistrationStatus(input.Name);
             var result = await _repository.CreateCourseRegistrationStatusAsync(newStatus, cancellationToken);
+            _cache.ResetEntity(result);
+            _cache.SetEntity(result);
 
             return new CourseRegistrationStatusResult
             {
@@ -58,7 +62,9 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusRepository
     {
         try
         {
-            var result = await _repository.GetAllCourseRegistrationStatusesAsync(cancellationToken);
+            var result = await _cache.GetAllAsync(
+                token => _repository.GetAllCourseRegistrationStatusesAsync(token),
+                cancellationToken) ?? [];
 
             return new CourseRegistrationStatusListResult
             {
@@ -88,7 +94,10 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusRepository
             if (id < 0)
                 throw new ArgumentException("Id must be zero or positive.", nameof(id));
 
-            var status = await _repository.GetCourseRegistrationStatusByIdAsync(id, cancellationToken);
+            var status = await _cache.GetByIdAsync(
+                id,
+                token => _repository.GetCourseRegistrationStatusByIdAsync(id, token),
+                cancellationToken);
             if (status == null)
             {
                 return new CourseRegistrationStatusResult
@@ -165,6 +174,9 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusRepository
                 };
             }
 
+            _cache.ResetEntity(result);
+            _cache.SetEntity(result);
+
             return new CourseRegistrationStatusResult
             {
                 Success = true,
@@ -200,7 +212,10 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusRepository
             if (id < 0)
                 throw new ArgumentException("Id must be zero or positive.", nameof(id));
 
-            var existing = await _repository.GetCourseRegistrationStatusByIdAsync(id, cancellationToken);
+            var existing = await _cache.GetByIdAsync(
+                id,
+                token => _repository.GetCourseRegistrationStatusByIdAsync(id, token),
+                cancellationToken);
             if (existing == null)
             {
                 return new CourseRegistrationStatusDeleteResult
@@ -225,6 +240,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusRepository
             }
 
             var deleted = await _repository.DeleteCourseRegistrationStatusAsync(id, cancellationToken);
+            _cache.ResetEntity(existing);
 
             return new CourseRegistrationStatusDeleteResult
             {

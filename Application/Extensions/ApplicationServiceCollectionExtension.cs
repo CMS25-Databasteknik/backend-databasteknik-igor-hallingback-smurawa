@@ -1,7 +1,9 @@
-﻿using Backend.Application.Modules.CourseEvents;
+using Backend.Application.Modules.CourseEvents;
 using Backend.Application.Modules.CourseEventTypes;
+using Backend.Application.Modules.CourseEventTypes.Caching;
 using Backend.Application.Modules.CourseRegistrations;
 using Backend.Application.Modules.CourseRegistrationStatuses;
+using Backend.Application.Modules.CourseRegistrationStatuses.Caching;
 using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.InPlaceLocations;
 using Backend.Application.Modules.InstructorRoles;
@@ -23,8 +25,10 @@ public static class ApplicationServiceCollectionExtension
 
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<ICourseEventService, CourseEventService>();
+        services.AddScoped<ICourseEventTypeCache, CourseEventTypeCache>();
         services.AddScoped<ICourseEventTypeService, CourseEventTypeService>();
         services.AddScoped<ICourseRegistrationService, CourseRegistrationService>();
+        services.AddScoped<ICourseRegistrationStatusCache, CourseRegistrationStatusCache>();
         services.AddScoped<ICourseRegistrationStatusService, CourseRegistrationStatusService>();
         services.AddScoped<IParticipantService, ParticipantService>();
         services.AddScoped<ILocationService, LocationService>();

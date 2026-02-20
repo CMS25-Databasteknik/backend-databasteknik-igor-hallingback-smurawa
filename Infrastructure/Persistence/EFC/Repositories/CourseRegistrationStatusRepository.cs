@@ -3,25 +3,13 @@ using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 
 public sealed class CourseRegistrationStatusRepository(
-    CoursesOnlineDbContext context,
-    IMemoryCache cache) : ICourseRegistrationStatusRepository
+    CoursesOnlineDbContext context) : ICourseRegistrationStatusRepository
 {
     private readonly CoursesOnlineDbContext _context = context;
-    private readonly IMemoryCache _cache = cache;
-
-    private static string _allKey = "courseRegistrationStatuses:all";
-    private static string _byIdKey(int id) => $"courseRegistrationStatuses:{id}";
-
-    private static MemoryCacheEntryOptions _cacheOptions => new()
-    {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
-        SlidingExpiration = TimeSpan.FromMinutes(2)
-    };
 
     private static CourseRegistrationStatus ToModel(CourseRegistrationStatusEntity entity)
         => new(entity.Id, entity.Name);
@@ -41,25 +29,17 @@ public sealed class CourseRegistrationStatusRepository(
         _context.CourseRegistrationStatuses.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        _cache.Remove(_allKey);
-        _cache.Remove(_byIdKey(entity.Id));
-
         return ToModel(entity);
     }
 
     public async Task<IReadOnlyList<CourseRegistrationStatus>> GetAllCourseRegistrationStatusesAsync(CancellationToken cancellationToken)
     {
-        return await _cache.GetOrCreateAsync<IReadOnlyList<CourseRegistrationStatus>>(_allKey, async entry =>
-        {
-            entry.SetOptions(_cacheOptions);
+        var entities = await _context.CourseRegistrationStatuses
+            .AsNoTracking()
+            .OrderBy(s => s.Id)
+            .ToListAsync(cancellationToken);
 
-            var entities = await _context.CourseRegistrationStatuses
-                .AsNoTracking()
-                .OrderBy(s => s.Id)
-                .ToListAsync(cancellationToken);
-
-            return [.. entities.Select(ToModel)];
-        }) ?? [];
+        return [.. entities.Select(ToModel)];
     }
 
     public async Task<CourseRegistrationStatus?> GetCourseRegistrationStatusByIdAsync(int statusId, CancellationToken cancellationToken)
@@ -67,18 +47,11 @@ public sealed class CourseRegistrationStatusRepository(
         if (statusId < 0)
             throw new ArgumentException("Status ID must be zero or positive.", nameof(statusId));
 
-        var key = _byIdKey(statusId);
+        var entity = await _context.CourseRegistrationStatuses
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Id == statusId, cancellationToken);
 
-        return await _cache.GetOrCreateAsync<CourseRegistrationStatus?>(key, async entry =>
-        {
-            entry.SetOptions(_cacheOptions);
-
-            var entity = await _context.CourseRegistrationStatuses
-                .AsNoTracking()
-                .SingleOrDefaultAsync(s => s.Id == statusId, cancellationToken);
-
-            return entity == null ? null : ToModel(entity);
-        });
+        return entity == null ? null : ToModel(entity);
     }
 
     public async Task<CourseRegistrationStatus?> UpdateCourseRegistrationStatusAsync(CourseRegistrationStatus status, CancellationToken cancellationToken)
@@ -93,9 +66,6 @@ public sealed class CourseRegistrationStatusRepository(
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        _cache.Remove(_allKey);
-        _cache.Remove(_byIdKey(status.Id));
-
         return ToModel(entity);
     }
 
@@ -109,9 +79,6 @@ public sealed class CourseRegistrationStatusRepository(
 
         _context.CourseRegistrationStatuses.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
-
-        _cache.Remove(_allKey);
-        _cache.Remove(_byIdKey(statusId));
 
         return true;
     }
