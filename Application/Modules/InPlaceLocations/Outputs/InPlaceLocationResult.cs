@@ -7,7 +7,7 @@ public sealed class InPlaceLocationResult : ResultCommon<InPlaceLocation>
 {
 }
 
-public sealed class InPlaceLocationListResult : ResultCommon<IEnumerable<InPlaceLocation>>
+public sealed class InPlaceLocationListResult : ResultCommon<IReadOnlyList<InPlaceLocation>>
 {
 }
 

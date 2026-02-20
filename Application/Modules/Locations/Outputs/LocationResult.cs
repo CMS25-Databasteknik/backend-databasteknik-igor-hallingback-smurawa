@@ -7,7 +7,7 @@ public sealed class LocationResult : ResultCommon<Location>
 {
 }
 
-public sealed class LocationListResult : ResultCommon<IEnumerable<Location>>
+public sealed class LocationListResult : ResultCommon<IReadOnlyList<Location>>
 {
 }
 

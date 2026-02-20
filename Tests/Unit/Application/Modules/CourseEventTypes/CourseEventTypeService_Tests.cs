@@ -14,7 +14,7 @@ public class CourseEventTypeService_Tests
         cache = Substitute.For<ICourseEventTypeCache>();
 
         cache.GetAllAsync(Arg.Any<Func<CancellationToken, Task<IReadOnlyList<CourseEventType>>>>(), Arg.Any<CancellationToken>())
-            .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<CourseEventType>>>>()(ci.Arg<CancellationToken>()));
+            .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<CourseEventType>>>>()(ci.Arg<CancellationToken>())!);
 
         cache.GetByIdAsync(Arg.Any<int>(), Arg.Any<Func<CancellationToken, Task<CourseEventType?>>>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Func<CancellationToken, Task<CourseEventType?>>>()(ci.Arg<CancellationToken>()));

@@ -18,7 +18,7 @@ public class CourseRegistrationStatusService_Tests
         cache = Substitute.For<ICourseRegistrationStatusCache>();
 
         cache.GetAllAsync(Arg.Any<Func<CancellationToken, Task<IReadOnlyList<CourseRegistrationStatus>>>>(), Arg.Any<CancellationToken>())
-            .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<CourseRegistrationStatus>>>>()(ci.Arg<CancellationToken>()));
+            .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<CourseRegistrationStatus>>>>()(ci.Arg<CancellationToken>())!);
 
         cache.GetByIdAsync(Arg.Any<int>(), Arg.Any<Func<CancellationToken, Task<CourseRegistrationStatus?>>>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Func<CancellationToken, Task<CourseRegistrationStatus?>>>()(ci.Arg<CancellationToken>()));
