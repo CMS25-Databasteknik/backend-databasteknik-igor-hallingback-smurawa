@@ -11,11 +11,13 @@ public static class CourseRegistrationsEndpoints
     {
         var group = api.MapGroup("/course-registrations")
             .WithTags("Course registrations");
+        var participantsGroup = api.MapGroup("/participants");
+        var courseEventsGroup = api.MapGroup("/course-events");
 
         group.MapGet("", GetAllCourseRegistrations).WithName("GetAllCourseRegistrations");
         group.MapGet("/{id:guid}", GetCourseRegistrationById).WithName("GetCourseRegistrationById");
-        api.MapGet("/participants/{participantId:guid}/registrations", GetCourseRegistrationsByParticipantId).WithName("GetCourseRegistrationsByParticipantId");
-        api.MapGet("/course-events/{courseEventId:guid}/registrations", GetCourseRegistrationsByCourseEventId).WithName("GetCourseRegistrationsByCourseEventId");
+        participantsGroup.MapGet("/{participantId:guid}/registrations", GetCourseRegistrationsByParticipantId).WithName("GetCourseRegistrationsByParticipantId");
+        courseEventsGroup.MapGet("/{courseEventId:guid}/registrations", GetCourseRegistrationsByCourseEventId).WithName("GetCourseRegistrationsByCourseEventId");
         group.MapPost("", CreateCourseRegistration).WithName("CreateCourseRegistration");
         group.MapPut("/{id:guid}", UpdateCourseRegistration).WithName("UpdateCourseRegistration");
         group.MapDelete("/{id:guid}", DeleteCourseRegistration).WithName("DeleteCourseRegistration");
