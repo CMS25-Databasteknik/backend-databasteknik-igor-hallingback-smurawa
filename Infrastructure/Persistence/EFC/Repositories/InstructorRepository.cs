@@ -104,9 +104,3 @@ public class InstructorRepository(CoursesOnlineDbContext context)
             .AnyAsync(cancellationToken);
     }
 }
-
-
-
-
-
-

@@ -83,7 +83,3 @@ public class LocationRepository(CoursesOnlineDbContext context)
             .AnyAsync(ipl => ipl.LocationId == locationId, cancellationToken);
     }
 }
-
-
-
-

@@ -96,7 +96,3 @@ public class InPlaceLocationRepository(CoursesOnlineDbContext context)
             .AnyAsync(cancellationToken);
     }
 }
-
-
-
-

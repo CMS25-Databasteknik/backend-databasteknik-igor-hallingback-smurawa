@@ -110,7 +110,3 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
             .AnyAsync(cr => cr.ParticipantId == participantId, cancellationToken);
     }
 }
-
-
-
-
