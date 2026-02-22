@@ -10,10 +10,11 @@ public static class InPlaceLocationsEndpoints
     {
         var group = api.MapGroup("/in-place-locations")
             .WithTags("In-place locations");
+        var locationsGroup = api.MapGroup("/locations");
 
         group.MapGet("", GetAllInPlaceLocations).WithName("GetAllInPlaceLocations");
         group.MapGet("/{id:int}", GetInPlaceLocationById).WithName("GetInPlaceLocationById");
-        api.MapGet("/locations/{locationId:int}/in-place-locations", GetInPlaceLocationsByLocationId).WithName("GetInPlaceLocationsByLocationId");
+        locationsGroup.MapGet("/{locationId:int}/in-place-locations", GetInPlaceLocationsByLocationId).WithName("GetInPlaceLocationsByLocationId");
         group.MapPost("", CreateInPlaceLocation).WithName("CreateInPlaceLocation");
         group.MapPut("/{id:int}", UpdateInPlaceLocation).WithName("UpdateInPlaceLocation");
         group.MapDelete("/{id:int}", DeleteInPlaceLocation).WithName("DeleteInPlaceLocation");

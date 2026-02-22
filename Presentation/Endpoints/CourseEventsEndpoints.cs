@@ -10,10 +10,11 @@ public static class CourseEventsEndpoints
     {
         var group = api.MapGroup("/course-events")
             .WithTags("Course events");
+        var coursesGroup = api.MapGroup("/courses");
 
         group.MapGet("", GetAllCourseEvents).WithName("GetAllCourseEvents");
         group.MapGet("/{id:guid}", GetCourseEventById).WithName("GetCourseEventById");
-        api.MapGet("/courses/{courseId:guid}/events", GetCourseEventsByCourseId).WithName("GetCourseEventsByCourseId");
+        coursesGroup.MapGet("/{courseId:guid}/events", GetCourseEventsByCourseId).WithName("GetCourseEventsByCourseId");
         group.MapPost("", CreateCourseEvent).WithName("CreateCourseEvent");
         group.MapPut("/{id:guid}", UpdateCourseEvent).WithName("UpdateCourseEvent");
         group.MapDelete("/{id:guid}", DeleteCourseEvent).WithName("DeleteCourseEvent");
