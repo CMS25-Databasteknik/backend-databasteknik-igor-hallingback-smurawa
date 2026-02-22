@@ -372,6 +372,3 @@ public class CourseDeleteResult_Tests
         Assert.False(result.Result);
     }
 }
-
-
-

@@ -19,4 +19,3 @@ public class ParticipantContactType_Tests
         Assert.False(Enum.IsDefined(typeof(ParticipantContactType), (ParticipantContactType)999));
     }
 }
-

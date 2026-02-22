@@ -315,19 +315,3 @@ public class CourseEventService_Tests
 
     #endregion
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -20,4 +20,3 @@ public class PaymentMethod_Tests
         Assert.False(Enum.IsDefined(typeof(PaymentMethod), (PaymentMethod)999));
     }
 }
-

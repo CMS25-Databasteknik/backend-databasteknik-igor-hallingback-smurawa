@@ -856,13 +856,3 @@ public class ParticipantService_Tests
 
     #endregion
 }
-
-
-
-
-
-
-
-
-
-

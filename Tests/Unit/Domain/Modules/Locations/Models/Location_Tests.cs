@@ -336,4 +336,3 @@ public class Location_Tests
         Assert.Equal(initialCity, location.City);
     }
 }
-

@@ -384,12 +384,3 @@ public class CourseRegistrationStatusService_Tests
         Assert.Throws<ArgumentNullException>(() => new CourseRegistrationStatusService(cache, null!));
     }
 }
-
-
-
-
-
-
-
-
-

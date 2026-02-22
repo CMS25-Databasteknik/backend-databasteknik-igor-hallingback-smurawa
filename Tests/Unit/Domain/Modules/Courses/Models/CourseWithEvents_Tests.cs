@@ -177,11 +177,3 @@ public class CourseWithEvents_Tests
         Assert.Same(courseWithEvents1.Course, courseWithEvents2.Course);
     }
 }
-
-
-
-
-
-
-
-

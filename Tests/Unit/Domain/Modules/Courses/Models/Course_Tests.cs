@@ -581,5 +581,3 @@ public class Course_Tests
 
     #endregion
 }
-
-

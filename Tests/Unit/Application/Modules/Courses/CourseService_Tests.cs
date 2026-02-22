@@ -830,12 +830,3 @@ public class CourseService_Tests
 
     #endregion
 }
-
-
-
-
-
-
-
-
-

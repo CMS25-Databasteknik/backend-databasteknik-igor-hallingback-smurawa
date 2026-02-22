@@ -918,8 +918,3 @@ public class InPlaceLocationService_Tests
 
     #endregion
 }
-
-
-
-
-

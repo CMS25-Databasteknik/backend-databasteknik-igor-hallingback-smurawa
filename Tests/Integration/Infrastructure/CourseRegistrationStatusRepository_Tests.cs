@@ -99,7 +99,3 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
         Assert.Null(loaded);
     }
 }
-
-
-
-

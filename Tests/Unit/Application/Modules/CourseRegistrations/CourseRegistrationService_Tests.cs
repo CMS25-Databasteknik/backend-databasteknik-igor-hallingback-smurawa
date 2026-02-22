@@ -884,16 +884,3 @@ public class CourseRegistrationService_Tests
 
     #endregion
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

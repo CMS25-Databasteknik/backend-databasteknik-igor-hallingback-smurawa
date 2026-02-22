@@ -93,7 +93,3 @@ public class CourseEventTypeRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Null(loaded);
     }
 }
-
-
-
-

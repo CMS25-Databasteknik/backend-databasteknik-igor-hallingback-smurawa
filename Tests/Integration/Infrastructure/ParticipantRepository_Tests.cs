@@ -104,8 +104,3 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Null(loaded);
     }
 }
-
-
-
-
-

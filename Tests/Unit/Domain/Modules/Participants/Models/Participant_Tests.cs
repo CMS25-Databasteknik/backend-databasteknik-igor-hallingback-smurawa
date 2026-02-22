@@ -443,5 +443,3 @@ public class Participant_Tests
         Assert.Equal(phoneNumber, participant.PhoneNumber);
     }
 }
-
-

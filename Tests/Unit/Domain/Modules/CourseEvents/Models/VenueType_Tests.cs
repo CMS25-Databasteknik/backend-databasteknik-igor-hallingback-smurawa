@@ -19,4 +19,3 @@ public class VenueType_Tests
         Assert.False(Enum.IsDefined(typeof(VenueType), (VenueType)999));
     }
 }
-

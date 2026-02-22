@@ -212,4 +212,3 @@ public class CourseEventType_Tests
         Assert.Equal(typeName, courseEventType.TypeName);
     }
 }
-

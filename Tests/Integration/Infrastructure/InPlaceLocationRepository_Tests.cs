@@ -98,8 +98,3 @@ public class InPlaceLocationRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Null(loaded);
     }
 }
-
-
-
-
-
