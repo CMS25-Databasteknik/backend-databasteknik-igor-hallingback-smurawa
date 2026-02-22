@@ -15,8 +15,8 @@ public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new InstructorRepository(context);
         var input = new Instructor(Guid.NewGuid(), "Test Instructor", role);
 
-        var created = await repo.CreateInstructorAsync(input, CancellationToken.None);
-        var loaded = await repo.GetInstructorByIdAsync(created.Id, CancellationToken.None);
+        var created = await repo.AddAsync(input, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
 
         Assert.NotNull(loaded);
         Assert.Equal(input.Id, created.Id);
@@ -41,7 +41,7 @@ public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
         var created = await RepositoryTestDataHelper.CreateInstructorAsync(context);
         var repo = new InstructorRepository(context);
 
-        var all = await repo.GetAllInstructorsAsync(CancellationToken.None);
+        var all = await repo.GetAllAsync(CancellationToken.None);
 
         Assert.Contains(all, x => x.Id == created.Id);
     }
@@ -53,7 +53,8 @@ public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
         var instructor = await RepositoryTestDataHelper.CreateInstructorAsync(context);
         var repo = new InstructorRepository(context);
 
-        var updated = await repo.UpdateInstructorAsync(
+        var updated = await repo.UpdateAsync(
+            instructor.Id,
             new Instructor(instructor.Id, "Updated Instructor", instructor.Role),
             CancellationToken.None);
 
@@ -88,10 +89,15 @@ public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
         var instructor = await RepositoryTestDataHelper.CreateInstructorAsync(context);
         var repo = new InstructorRepository(context);
 
-        var deleted = await repo.DeleteInstructorAsync(instructor.Id, CancellationToken.None);
-        var loaded = await repo.GetInstructorByIdAsync(instructor.Id, CancellationToken.None);
+        var deleted = await repo.RemoveAsync(instructor.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(instructor.Id, CancellationToken.None);
 
         Assert.True(deleted);
         Assert.Null(loaded);
     }
 }
+
+
+
+
+

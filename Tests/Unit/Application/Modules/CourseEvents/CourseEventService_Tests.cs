@@ -6,7 +6,6 @@ using Backend.Domain.Modules.CourseEventTypes.Contracts;
 using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
-using Backend.Domain.Modules.CourseWithEvents.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using NSubstitute;
 
@@ -25,19 +24,19 @@ public class CourseEventService_Tests
 
         if (courseRepository is null)
         {
-            cRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            cRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
                 .Returns(ci =>
                 {
                     var id = ci.Arg<Guid>();
                     return id == Guid.Empty
-                        ? Task.FromResult<CourseWithEvents?>(null)
-                        : Task.FromResult<CourseWithEvents?>(new CourseWithEvents(new Course(id, "Title", "Desc", 1), Array.Empty<CourseEvent>()));
+                        ? Task.FromResult<Course?>(null)
+                        : Task.FromResult<Course?>(new Course(id, "Title", "Desc", 1));
                 });
         }
 
         if (courseEventTypeRepository is null)
         {
-            typeRepo.GetCourseEventTypeByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            typeRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
                 .Returns(ci =>
                 {
                     var id = ci.Arg<int>();
@@ -57,7 +56,7 @@ public class CourseEventService_Tests
         var courseId = Guid.NewGuid();
         var date = DateTime.UtcNow.AddDays(10);
         var created = new CourseEvent(Guid.NewGuid(), courseId, date, 100, 10, 1, VenueType.InPerson);
-        eventRepo.CreateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>()).Returns(created);
+        eventRepo.AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>()).Returns(created);
 
         var service = CreateService(eventRepo);
         var input = new CreateCourseEventInput(courseId, date, 100, 10, 1, VenueType.InPerson);
@@ -67,7 +66,7 @@ public class CourseEventService_Tests
         Assert.True(result.Success);
         Assert.Equal(201, result.StatusCode);
         Assert.Equal(created, result.Result);
-        await eventRepo.Received(1).CreateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
+        await eventRepo.Received(1).AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -80,7 +79,7 @@ public class CourseEventService_Tests
 
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
-        await eventRepo.DidNotReceive().CreateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
+        await eventRepo.DidNotReceive().AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -88,10 +87,10 @@ public class CourseEventService_Tests
     {
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var courseRepo = Substitute.For<ICourseRepository>();
-        courseRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns((CourseWithEvents?)null);
+        courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((Course?)null);
         var typeRepo = Substitute.For<ICourseEventTypeRepository>();
-        typeRepo.GetCourseEventTypeByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        typeRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEventType(1, "Online"));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
@@ -102,7 +101,7 @@ public class CourseEventService_Tests
         Assert.False(result.Success);
         Assert.Equal(404, result.StatusCode);
         Assert.Contains("Course with ID", result.Message);
-        await eventRepo.DidNotReceive().CreateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
+        await eventRepo.DidNotReceive().AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -110,11 +109,11 @@ public class CourseEventService_Tests
     {
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var typeRepo = Substitute.For<ICourseEventTypeRepository>();
-        typeRepo.GetCourseEventTypeByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        typeRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((CourseEventType?)null);
         var courseRepo = Substitute.For<ICourseRepository>();
-        courseRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Title", "Desc", 1), Array.Empty<CourseEvent>()));
+        courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Course(Guid.NewGuid(), "Title", "Desc", 1));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
         var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(5), 100, 10, 99, VenueType.InPerson);
@@ -124,7 +123,7 @@ public class CourseEventService_Tests
         Assert.False(result.Success);
         Assert.Equal(404, result.StatusCode);
         Assert.Contains("Course event type with ID", result.Message);
-        await eventRepo.DidNotReceive().CreateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
+        await eventRepo.DidNotReceive().AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -139,14 +138,14 @@ public class CourseEventService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Contains("Price cannot be negative", result.Message);
-        await eventRepo.DidNotReceive().CreateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
+        await eventRepo.DidNotReceive().AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task Create_Should_Return_500_When_Repository_Throws()
     {
         var eventRepo = Substitute.For<ICourseEventRepository>();
-        eventRepo.CreateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>())
+        eventRepo.AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<CourseEvent>(new Exception("db fail")));
 
         var service = CreateService(eventRepo);
@@ -172,7 +171,7 @@ public class CourseEventService_Tests
             new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson),
             new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 20, 10, 1, VenueType.InPerson)
         };
-        eventRepo.GetAllCourseEventsAsync(Arg.Any<CancellationToken>()).Returns(events);
+        eventRepo.GetAllAsync(Arg.Any<CancellationToken>()).Returns(events);
 
         var service = CreateService(eventRepo);
 
@@ -211,8 +210,8 @@ public class CourseEventService_Tests
         var existing = new CourseEvent(eventId, courseId, DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson);
         var updated = new CourseEvent(eventId, courseId, DateTime.UtcNow.AddDays(2), 20, 8, 2, VenueType.InPerson);
 
-        eventRepo.GetCourseEventByIdAsync(eventId, Arg.Any<CancellationToken>()).Returns(existing);
-        eventRepo.UpdateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>()).Returns(updated);
+        eventRepo.GetByIdAsync(eventId, Arg.Any<CancellationToken>()).Returns(existing);
+        eventRepo.UpdateAsync(Arg.Any<Guid>(), Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>()).Returns(updated);
 
         var service = CreateService(eventRepo);
         var input = new UpdateCourseEventInput(eventId, courseId, updated.EventDate, updated.Price, updated.Seats, updated.CourseEventTypeId, VenueType.InPerson);
@@ -228,7 +227,7 @@ public class CourseEventService_Tests
     public async Task Update_Should_Return_404_When_Event_Not_Found()
     {
         var eventRepo = Substitute.For<ICourseEventRepository>();
-        eventRepo.GetCourseEventByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns((CourseEvent?)null);
+        eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns((CourseEvent?)null);
 
         var service = CreateService(eventRepo);
         var input = new UpdateCourseEventInput(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson);
@@ -236,7 +235,7 @@ public class CourseEventService_Tests
         var result = await service.UpdateCourseEventAsync(input);
 
         Assert.Equal(404, result.StatusCode);
-        await eventRepo.DidNotReceive().UpdateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
+        await eventRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -244,13 +243,13 @@ public class CourseEventService_Tests
     {
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var courseRepo = Substitute.For<ICourseRepository>();
-        courseRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns((CourseWithEvents?)null);
-        eventRepo.GetCourseEventByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((Course?)null);
+        eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson));
 
         var typeRepo = Substitute.For<ICourseEventTypeRepository>();
-        typeRepo.GetCourseEventTypeByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        typeRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEventType(1, "Online"));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
@@ -266,15 +265,15 @@ public class CourseEventService_Tests
     {
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var typeRepo = Substitute.For<ICourseEventTypeRepository>();
-        typeRepo.GetCourseEventTypeByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        typeRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((CourseEventType?)null);
 
-        eventRepo.GetCourseEventByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson));
 
         var courseRepo = Substitute.For<ICourseRepository>();
-        courseRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Title", "Desc", 1), Array.Empty<CourseEvent>()));
+        courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Course(Guid.NewGuid(), "Title", "Desc", 1));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
         var input = new UpdateCourseEventInput(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 20, 8, 2, VenueType.InPerson);
@@ -290,7 +289,7 @@ public class CourseEventService_Tests
     {
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var courseId = Guid.NewGuid();
-        eventRepo.GetCourseEventByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson));
 
         var service = CreateService(eventRepo);
@@ -299,7 +298,7 @@ public class CourseEventService_Tests
         var result = await service.UpdateCourseEventAsync(input);
 
         Assert.Equal(400, result.StatusCode);
-        await eventRepo.DidNotReceive().UpdateCourseEventAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
+        await eventRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
     #endregion
@@ -316,6 +315,13 @@ public class CourseEventService_Tests
 
     #endregion
 }
+
+
+
+
+
+
+
 
 
 

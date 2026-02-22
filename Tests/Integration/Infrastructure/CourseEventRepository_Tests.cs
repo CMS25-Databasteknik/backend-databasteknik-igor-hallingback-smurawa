@@ -17,8 +17,8 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new CourseEventRepository(context);
 
         var input = new CourseEvent(Guid.NewGuid(), course.Id, DateTime.UtcNow.AddDays(1), 100m, 10, type.Id, VenueType.InPerson);
-        var created = await repo.CreateCourseEventAsync(input, CancellationToken.None);
-        var byId = await repo.GetCourseEventByIdAsync(created.Id, CancellationToken.None);
+        var created = await repo.AddAsync(input, CancellationToken.None);
+        var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
         var byCourse = await repo.GetCourseEventsByCourseIdAsync(course.Id, CancellationToken.None);
 
         Assert.NotNull(byId);
@@ -55,7 +55,7 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         var created = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
         var repo = new CourseEventRepository(context);
 
-        var all = await repo.GetAllCourseEventsAsync(CancellationToken.None);
+        var all = await repo.GetAllAsync(CancellationToken.None);
 
         Assert.Contains(all, x => x.Id == created.Id);
     }
@@ -67,7 +67,8 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         var courseEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
         var repo = new CourseEventRepository(context);
 
-        var updated = await repo.UpdateCourseEventAsync(
+        var updated = await repo.UpdateAsync(
+            courseEvent.Id,
             new CourseEvent(
                 courseEvent.Id,
                 courseEvent.CourseId,
@@ -111,10 +112,14 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         var courseEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
         var repo = new CourseEventRepository(context);
 
-        var deleted = await repo.DeleteCourseEventAsync(courseEvent.Id, CancellationToken.None);
-        var loaded = await repo.GetCourseEventByIdAsync(courseEvent.Id, CancellationToken.None);
+        var deleted = await repo.RemoveAsync(courseEvent.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(courseEvent.Id, CancellationToken.None);
 
         Assert.True(deleted);
         Assert.Null(loaded);
     }
 }
+
+
+
+

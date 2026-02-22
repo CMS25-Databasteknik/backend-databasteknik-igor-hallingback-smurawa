@@ -17,7 +17,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var expectedCourse = new Course(Guid.NewGuid(), "Test Course", "Test Description", 5);
 
-        mockRepo.CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(expectedCourse);
 
         var service = new CourseService(mockRepo);
@@ -35,7 +35,7 @@ public class CourseService_Tests
         Assert.Equal(5, result.Result.DurationInDays);
         Assert.Equal("Course created successfully.", result.Message);
 
-        await mockRepo.Received(1).CreateCourseAsync(
+        await mockRepo.Received(1).AddAsync(
             Arg.Is<Course>(c => c.Title == "Test Course" && c.Description == "Test Description" && c.DurationInDays == 5),
             Arg.Any<CancellationToken>());
     }
@@ -56,7 +56,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Equal("Course cannot be null.", result.Message);
 
-        await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
-        await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
-        await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
-        await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
-        await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
-        mockRepo.CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Course>(new Exception("Database error")));
 
         var service = new CourseService(mockRepo);
@@ -212,7 +212,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var expectedCourse = new Course(Guid.NewGuid(), title, description, duration);
 
-        mockRepo.CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(expectedCourse);
 
         var service = new CourseService(mockRepo);
@@ -237,7 +237,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var capturedGuids = new List<Guid>();
 
-        mockRepo.CreateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
                 var course = callInfo.Arg<Course>();
@@ -281,7 +281,7 @@ public class CourseService_Tests
             new Course(Guid.NewGuid(), "Course 3", "Description 3", 15)
         };
 
-        mockRepo.GetAllCoursesAsync(Arg.Any<CancellationToken>())
+        mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(courses);
 
         var service = new CourseService(mockRepo);
@@ -296,7 +296,7 @@ public class CourseService_Tests
         Assert.Equal(3, result.Result.Count());
         Assert.Equal("Retrieved 3 course(s) successfully.", result.Message);
 
-        await mockRepo.Received(1).GetAllCoursesAsync(Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -304,7 +304,7 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
-        mockRepo.GetAllCoursesAsync(Arg.Any<CancellationToken>())
+        mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Course>());
 
         var service = new CourseService(mockRepo);
@@ -325,7 +325,7 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
-        mockRepo.GetAllCoursesAsync(Arg.Any<CancellationToken>())
+        mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException<IReadOnlyList<Course>>(new Exception("Database connection failed")));
 
         var service = new CourseService(mockRepo);
@@ -447,13 +447,13 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
-        var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
+        var courseWithEvents = existingCourse;
         var updatedCourse = new Course(courseId, "Updated Title", "Updated Description", 10);
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
-        mockRepo.UpdateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
+        mockRepo.UpdateAsync(Arg.Any<Guid>(), Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(updatedCourse);
 
         var service = new CourseService(mockRepo);
@@ -471,7 +471,8 @@ public class CourseService_Tests
         Assert.Equal(10, result.Result.DurationInDays);
         Assert.Equal("Course updated successfully.", result.Message);
 
-        await mockRepo.Received(1).UpdateCourseAsync(
+        await mockRepo.Received(1).UpdateAsync(
+            Arg.Is<Guid>(id => id == courseId),
             Arg.Is<Course>(c => c.Id == courseId && c.Title == "Updated Title" && c.Description == "Updated Description" && c.DurationInDays == 10),
             Arg.Any<CancellationToken>());
     }
@@ -492,7 +493,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Equal("Course cannot be null.", result.Message);
 
-        await mockRepo.DidNotReceive().UpdateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -512,7 +513,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Equal("Course ID cannot be empty.", result.Message);
 
-        await mockRepo.DidNotReceive().GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -520,8 +521,8 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
-        mockRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5), Array.Empty<CourseEvent>()));
+        mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "", "Test Description", 5);
 
@@ -540,8 +541,8 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
-        mockRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5), Array.Empty<CourseEvent>()));
+        mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "", 5);
 
@@ -560,8 +561,8 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
-        mockRepo.GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5), Array.Empty<CourseEvent>()));
+        mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "Test Description", 0);
 
@@ -582,8 +583,8 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
-            .Returns((CourseWithEvents)null!);
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
+            .Returns((Course?)null);
 
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(courseId, "Test Title", "Test Description", 5);
@@ -597,7 +598,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Contains($"Course with ID '{courseId}' not found", result.Message);
 
-        await mockRepo.DidNotReceive().UpdateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -607,12 +608,12 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
-        var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
+        var courseWithEvents = existingCourse;
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
-        mockRepo.UpdateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
+        mockRepo.UpdateAsync(Arg.Any<Guid>(), Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Course?>(new InvalidOperationException("Course was modified by another user")));
 
         var service = new CourseService(mockRepo);
@@ -635,12 +636,12 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
-        var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
+        var courseWithEvents = existingCourse;
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
-        mockRepo.UpdateCourseAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
+        mockRepo.UpdateAsync(Arg.Any<Guid>(), Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Course?>(new Exception("Database error")));
 
         var service = new CourseService(mockRepo);
@@ -668,15 +669,15 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
-        var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
+        var courseWithEvents = existingCourse;
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
         mockRepo.HasCourseEventsAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        mockRepo.DeleteCourseAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.RemoveAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(true);
 
         var service = new CourseService(mockRepo);
@@ -690,7 +691,7 @@ public class CourseService_Tests
         Assert.True(result.Result);
         Assert.Equal("Course deleted successfully.", result.Message);
 
-        await mockRepo.Received(1).DeleteCourseAsync(courseId, Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).RemoveAsync(courseId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -709,7 +710,7 @@ public class CourseService_Tests
         Assert.False(result.Result);
         Assert.Equal("Course ID cannot be empty.", result.Message);
 
-        await mockRepo.DidNotReceive().GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -719,8 +720,8 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
-            .Returns((CourseWithEvents)null!);
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
+            .Returns((Course?)null);
 
         var service = new CourseService(mockRepo);
 
@@ -733,7 +734,7 @@ public class CourseService_Tests
         Assert.False(result.Result);
         Assert.Contains($"Course with ID '{courseId}' not found", result.Message);
 
-        await mockRepo.DidNotReceive().DeleteCourseAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -743,9 +744,9 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
-        var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
+        var courseWithEvents = existingCourse;
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
         mockRepo.HasCourseEventsAsync(courseId, Arg.Any<CancellationToken>())
@@ -763,7 +764,7 @@ public class CourseService_Tests
         Assert.Contains("Cannot delete course", result.Message);
         Assert.Contains("has associated course events", result.Message);
 
-        await mockRepo.DidNotReceive().DeleteCourseAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -773,15 +774,15 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
-        var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
+        var courseWithEvents = existingCourse;
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
         mockRepo.HasCourseEventsAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        mockRepo.DeleteCourseAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.RemoveAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<bool>(new Exception("Database error")));
 
         var service = new CourseService(mockRepo);
@@ -804,15 +805,15 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
-        var courseWithEvents = new CourseWithEvents(existingCourse, new List<CourseEvent>());
+        var courseWithEvents = existingCourse;
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
         mockRepo.HasCourseEventsAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        mockRepo.DeleteCourseAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.RemoveAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(false);
 
         var service = new CourseService(mockRepo);
@@ -829,6 +830,11 @@ public class CourseService_Tests
 
     #endregion
 }
+
+
+
+
+
 
 
 

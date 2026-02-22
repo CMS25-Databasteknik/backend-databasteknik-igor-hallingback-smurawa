@@ -14,7 +14,7 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
         var repo = new CourseRegistrationStatusRepository(context);
         var name = $"Status-{Guid.NewGuid():N}";
 
-        var created = await repo.CreateCourseRegistrationStatusAsync(new CourseRegistrationStatus(name), CancellationToken.None);
+        var created = await repo.AddAsync(new CourseRegistrationStatus(name), CancellationToken.None);
         var byName = await repo.GetCourseRegistrationStatusByNameAsync(name, CancellationToken.None);
 
         Assert.NotNull(byName);
@@ -36,7 +36,7 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRegistrationStatusRepository(context);
 
-        var all = await repo.GetAllCourseRegistrationStatusesAsync(CancellationToken.None);
+        var all = await repo.GetAllAsync(CancellationToken.None);
 
         Assert.Contains(all, x => x.Id == 0 && x.Name == "Pending");
         Assert.Contains(all, x => x.Id == 1 && x.Name == "Paid");
@@ -48,7 +48,7 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRegistrationStatusRepository(context);
 
-        var loaded = await repo.GetCourseRegistrationStatusByIdAsync(0, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(0, CancellationToken.None);
 
         Assert.NotNull(loaded);
         Assert.Equal("Pending", loaded!.Name);
@@ -59,9 +59,9 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRegistrationStatusRepository(context);
-        var created = await repo.CreateCourseRegistrationStatusAsync(new CourseRegistrationStatus($"Status-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(new CourseRegistrationStatus($"Status-{Guid.NewGuid():N}"), CancellationToken.None);
 
-        var updated = await repo.UpdateCourseRegistrationStatusAsync(new CourseRegistrationStatus(created.Id, "Renamed"), CancellationToken.None);
+        var updated = await repo.UpdateAsync(created.Id, new CourseRegistrationStatus(created.Id, "Renamed"), CancellationToken.None);
 
         Assert.NotNull(updated);
         Assert.Equal("Renamed", updated!.Name);
@@ -90,12 +90,16 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRegistrationStatusRepository(context);
-        var created = await repo.CreateCourseRegistrationStatusAsync(new CourseRegistrationStatus($"Status-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(new CourseRegistrationStatus($"Status-{Guid.NewGuid():N}"), CancellationToken.None);
 
-        var deleted = await repo.DeleteCourseRegistrationStatusAsync(created.Id, CancellationToken.None);
-        var loaded = await repo.GetCourseRegistrationStatusByIdAsync(created.Id, CancellationToken.None);
+        var deleted = await repo.RemoveAsync(created.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
 
         Assert.True(deleted);
         Assert.Null(loaded);
     }
 }
+
+
+
+

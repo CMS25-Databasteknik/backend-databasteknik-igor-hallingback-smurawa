@@ -15,8 +15,8 @@ public class InPlaceLocationRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new InPlaceLocationRepository(context);
         var input = new InPlaceLocation(0, location.Id, 101, 20);
 
-        var created = await repo.CreateInPlaceLocationAsync(input, CancellationToken.None);
-        var loaded = await repo.GetInPlaceLocationByIdAsync(created.Id, CancellationToken.None);
+        var created = await repo.AddAsync(input, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
         var byLocation = await repo.GetInPlaceLocationsByLocationIdAsync(location.Id, CancellationToken.None);
 
         Assert.NotNull(loaded);
@@ -42,7 +42,7 @@ public class InPlaceLocationRepository_Tests(SqliteInMemoryFixture fixture)
         var created = await RepositoryTestDataHelper.CreateInPlaceLocationAsync(context);
         var repo = new InPlaceLocationRepository(context);
 
-        var all = await repo.GetAllInPlaceLocationsAsync(CancellationToken.None);
+        var all = await repo.GetAllAsync(CancellationToken.None);
 
         Assert.Contains(all, x => x.Id == created.Id);
     }
@@ -54,7 +54,8 @@ public class InPlaceLocationRepository_Tests(SqliteInMemoryFixture fixture)
         var created = await RepositoryTestDataHelper.CreateInPlaceLocationAsync(context);
         var repo = new InPlaceLocationRepository(context);
 
-        var updated = await repo.UpdateInPlaceLocationAsync(
+        var updated = await repo.UpdateAsync(
+            created.Id,
             new InPlaceLocation(created.Id, created.LocationId, 202, 30),
             CancellationToken.None);
 
@@ -90,10 +91,15 @@ public class InPlaceLocationRepository_Tests(SqliteInMemoryFixture fixture)
         var created = await RepositoryTestDataHelper.CreateInPlaceLocationAsync(context);
         var repo = new InPlaceLocationRepository(context);
 
-        var deleted = await repo.DeleteInPlaceLocationAsync(created.Id, CancellationToken.None);
-        var loaded = await repo.GetInPlaceLocationByIdAsync(created.Id, CancellationToken.None);
+        var deleted = await repo.RemoveAsync(created.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
 
         Assert.True(deleted);
         Assert.Null(loaded);
     }
 }
+
+
+
+
+
