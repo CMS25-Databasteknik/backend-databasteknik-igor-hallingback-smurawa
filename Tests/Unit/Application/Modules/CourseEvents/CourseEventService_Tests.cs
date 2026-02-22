@@ -280,7 +280,6 @@ public class CourseEventService_Tests
 
         var result = await service.UpdateCourseEventAsync(input);
 
-        Console.WriteLine($"Status:{result.StatusCode} Message:{result.Message}");
         Assert.Equal(404, result.StatusCode);
     }
 
