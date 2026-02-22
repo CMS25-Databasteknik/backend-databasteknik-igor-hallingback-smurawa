@@ -26,7 +26,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var role = await _instructorRoleRepository.GetInstructorRoleByIdAsync(instructor.InstructorRoleId, cancellationToken);
+            var role = await _instructorRoleRepository.GetByIdAsync(instructor.InstructorRoleId, cancellationToken);
             if (role == null)
             {
                 return new InstructorResult
@@ -40,7 +40,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
 
             var newInstructor = new Instructor(Guid.NewGuid(), instructor.Name, role);
 
-            var result = await _instructorRepository.CreateInstructorAsync(newInstructor, cancellationToken);
+            var result = await _instructorRepository.AddAsync(newInstructor, cancellationToken);
 
             return new InstructorResult
             {
@@ -86,7 +86,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
     {
         try
         {
-            var instructors = await _instructorRepository.GetAllInstructorsAsync(cancellationToken);
+            var instructors = await _instructorRepository.GetAllAsync(cancellationToken);
 
             if (!instructors.Any())
             {
@@ -132,7 +132,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var result = await _instructorRepository.GetInstructorByIdAsync(instructorId, cancellationToken);
+            var result = await _instructorRepository.GetByIdAsync(instructorId, cancellationToken);
 
             if (result == null)
             {
@@ -186,7 +186,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var role = await _instructorRoleRepository.GetInstructorRoleByIdAsync(instructor.InstructorRoleId, cancellationToken);
+            var role = await _instructorRoleRepository.GetByIdAsync(instructor.InstructorRoleId, cancellationToken);
             if (role == null)
             {
                 return new InstructorResult
@@ -199,7 +199,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
 
             var updatedInstructor = new Instructor(instructor.Id, instructor.Name, role);
 
-            var existingInstructor = await _instructorRepository.GetInstructorByIdAsync(instructor.Id, cancellationToken);
+            var existingInstructor = await _instructorRepository.GetByIdAsync(instructor.Id, cancellationToken);
             if (existingInstructor == null)
             {
                 return new InstructorResult
@@ -210,7 +210,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var result = await _instructorRepository.UpdateInstructorAsync(updatedInstructor, cancellationToken);
+            var result = await _instructorRepository.UpdateAsync(updatedInstructor.Id, updatedInstructor, cancellationToken);
 
             if (result == null)
             {
@@ -265,7 +265,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var existingInstructor = await _instructorRepository.GetInstructorByIdAsync(instructorId, cancellationToken);
+            var existingInstructor = await _instructorRepository.GetByIdAsync(instructorId, cancellationToken);
             if (existingInstructor == null)
             {
                 return new InstructorDeleteResult
@@ -289,7 +289,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var result = await _instructorRepository.DeleteInstructorAsync(instructorId, cancellationToken);
+            var result = await _instructorRepository.RemoveAsync(instructorId, cancellationToken);
 
             if (!result)
             {
@@ -332,5 +332,6 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
         }
     }
 }
+
 
 

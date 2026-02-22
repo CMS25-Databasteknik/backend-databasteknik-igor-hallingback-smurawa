@@ -1,12 +1,8 @@
 using Backend.Domain.Modules.InstructorRoles.Models;
+using Backend.Domain.Common.Base;
 
 namespace Backend.Domain.Modules.InstructorRoles.Contracts;
 
-public interface IInstructorRoleRepository
+public interface IInstructorRoleRepository : IRepositoryBase<InstructorRole, int>
 {
-    Task<InstructorRole> CreateInstructorRoleAsync(InstructorRole role, CancellationToken cancellationToken);
-    Task<IReadOnlyList<InstructorRole>> GetAllInstructorRolesAsync(CancellationToken cancellationToken);
-    Task<InstructorRole?> GetInstructorRoleByIdAsync(int id, CancellationToken cancellationToken);
-    Task<InstructorRole?> UpdateInstructorRoleAsync(InstructorRole role, CancellationToken cancellationToken);
-    Task<bool> DeleteInstructorRoleAsync(int id, CancellationToken cancellationToken);
 }

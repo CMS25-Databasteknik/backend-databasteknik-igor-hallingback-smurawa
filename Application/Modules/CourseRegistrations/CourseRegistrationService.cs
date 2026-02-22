@@ -40,7 +40,7 @@ public class CourseRegistrationService(
                 courseRegistration.PaymentMethod
             );
 
-            var participant = await _participantRepository.GetParticipantByIdAsync(newCourseRegistration.ParticipantId, cancellationToken);
+            var participant = await _participantRepository.GetByIdAsync(newCourseRegistration.ParticipantId, cancellationToken);
             if (participant is null)
             {
                 return new CourseRegistrationResult
@@ -52,7 +52,7 @@ public class CourseRegistrationService(
                 };
             }
 
-            var courseEvent = await _courseEventRepository.GetCourseEventByIdAsync(newCourseRegistration.CourseEventId, cancellationToken);
+            var courseEvent = await _courseEventRepository.GetByIdAsync(newCourseRegistration.CourseEventId, cancellationToken);
             if (courseEvent is null)
             {
                 return new CourseRegistrationResult
@@ -64,7 +64,7 @@ public class CourseRegistrationService(
                 };
             }
 
-            var result = await _courseRegistrationRepository.CreateCourseRegistrationAsync(newCourseRegistration, cancellationToken);
+            var result = await _courseRegistrationRepository.AddAsync(newCourseRegistration, cancellationToken);
 
             return new CourseRegistrationResult
             {
@@ -100,7 +100,7 @@ public class CourseRegistrationService(
     {
         try
         {
-            var courseRegistrations = await _courseRegistrationRepository.GetAllCourseRegistrationsAsync(cancellationToken);
+            var courseRegistrations = await _courseRegistrationRepository.GetAllAsync(cancellationToken);
 
             if (!courseRegistrations.Any())
             {
@@ -146,7 +146,7 @@ public class CourseRegistrationService(
                 };
             }
 
-            var result = await _courseRegistrationRepository.GetCourseRegistrationByIdAsync(courseRegistrationId, cancellationToken);
+            var result = await _courseRegistrationRepository.GetByIdAsync(courseRegistrationId, cancellationToken);
 
             if (result == null)
             {
@@ -292,7 +292,7 @@ public class CourseRegistrationService(
                 courseRegistration.PaymentMethod
             );
 
-            var existingCourseRegistration = await _courseRegistrationRepository.GetCourseRegistrationByIdAsync(courseRegistration.Id, cancellationToken);
+            var existingCourseRegistration = await _courseRegistrationRepository.GetByIdAsync(courseRegistration.Id, cancellationToken);
             if (existingCourseRegistration == null)
             {
                 return new CourseRegistrationResult
@@ -312,7 +312,7 @@ public class CourseRegistrationService(
                 courseRegistration.PaymentMethod
             );
 
-            var participant = await _participantRepository.GetParticipantByIdAsync(updatedCourseRegistration.ParticipantId, cancellationToken);
+            var participant = await _participantRepository.GetByIdAsync(updatedCourseRegistration.ParticipantId, cancellationToken);
             if (participant is null)
             {
                 return new CourseRegistrationResult
@@ -323,7 +323,7 @@ public class CourseRegistrationService(
                 };
             }
 
-            var courseEvent = await _courseEventRepository.GetCourseEventByIdAsync(updatedCourseRegistration.CourseEventId, cancellationToken);
+            var courseEvent = await _courseEventRepository.GetByIdAsync(updatedCourseRegistration.CourseEventId, cancellationToken);
             if (courseEvent is null)
             {
                 return new CourseRegistrationResult
@@ -334,7 +334,7 @@ public class CourseRegistrationService(
                 };
             }
 
-            var result = await _courseRegistrationRepository.UpdateCourseRegistrationAsync(updatedCourseRegistration, cancellationToken);
+            var result = await _courseRegistrationRepository.UpdateAsync(updatedCourseRegistration.Id, updatedCourseRegistration, cancellationToken);
 
             if (result == null)
             {
@@ -398,7 +398,7 @@ public class CourseRegistrationService(
                 };
             }
 
-            var existingCourseRegistration = await _courseRegistrationRepository.GetCourseRegistrationByIdAsync(courseRegistrationId, cancellationToken);
+            var existingCourseRegistration = await _courseRegistrationRepository.GetByIdAsync(courseRegistrationId, cancellationToken);
             if (existingCourseRegistration == null)
             {
                 return new CourseRegistrationDeleteResult
@@ -410,7 +410,7 @@ public class CourseRegistrationService(
                 };
             }
 
-            var result = await _courseRegistrationRepository.DeleteCourseRegistrationAsync(courseRegistrationId, cancellationToken);
+            var result = await _courseRegistrationRepository.RemoveAsync(courseRegistrationId, cancellationToken);
 
             if (!result)
             {
@@ -443,5 +443,6 @@ public class CourseRegistrationService(
         }
     }
 }
+
 
 

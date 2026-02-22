@@ -31,7 +31,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 location.City
             );
 
-            var result = await _locationRepository.CreateLocationAsync(newLocation, cancellationToken);
+            var result = await _locationRepository.AddAsync(newLocation, cancellationToken);
 
             return new LocationResult
             {
@@ -67,7 +67,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
     {
         try
         {
-            var locations = await _locationRepository.GetAllLocationsAsync(cancellationToken);
+            var locations = await _locationRepository.GetAllAsync(cancellationToken);
 
             if (!locations.Any())
             {
@@ -113,7 +113,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            var existingLocation = await _locationRepository.GetLocationByIdAsync(locationId, cancellationToken);
+            var existingLocation = await _locationRepository.GetByIdAsync(locationId, cancellationToken);
 
             if (existingLocation == null)
             {
@@ -168,7 +168,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            var existingLocation = await _locationRepository.GetLocationByIdAsync(location.Id, cancellationToken);
+            var existingLocation = await _locationRepository.GetByIdAsync(location.Id, cancellationToken);
             if (existingLocation == null)
             {
                 return new LocationResult
@@ -186,7 +186,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 location.City
             );
 
-            var result = await _locationRepository.UpdateLocationAsync(updatedLocation, cancellationToken);
+            var result = await _locationRepository.UpdateAsync(updatedLocation.Id, updatedLocation, cancellationToken);
 
             if (result == null)
             {
@@ -241,7 +241,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            var existingLocation = await _locationRepository.GetLocationByIdAsync(locationId, cancellationToken);
+            var existingLocation = await _locationRepository.GetByIdAsync(locationId, cancellationToken);
             if (existingLocation == null)
             {
                 return new LocationDeleteResult
@@ -265,7 +265,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            var result = await _locationRepository.DeleteLocationAsync(locationId, cancellationToken);
+            var result = await _locationRepository.RemoveAsync(locationId, cancellationToken);
 
             if (!result)
             {
@@ -298,3 +298,4 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
         }
     }
 }
+

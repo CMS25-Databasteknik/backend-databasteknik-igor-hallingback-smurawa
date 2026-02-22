@@ -9,16 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories
 {
-    public class CourseRepository(CoursesOnlineDbContext context) : ICourseRepository
+    public class CourseRepository(CoursesOnlineDbContext context)
+        : RepositoryBase<Course, Guid, CourseEntity, CoursesOnlineDbContext>(context), ICourseRepository
     {
-        private readonly CoursesOnlineDbContext _context = context;
-
-        public static Course ToModel(CourseEntity entity)
+        protected override Course ToModel(CourseEntity entity)
             => new(entity.Id, entity.Title, entity.Description, entity.DurationInDays);
 
-        public async Task<Course> CreateCourseAsync(Course course, CancellationToken cancellationToken)
-        {
-            var entity = new CourseEntity
+        protected override CourseEntity ToEntity(Course course)
+            => new()
             {
                 Id = course.Id,
                 Title = course.Title,
@@ -26,26 +24,26 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 DurationInDays = course.DurationInDays
             };
 
+        public override async Task<Course> AddAsync(Course course, CancellationToken cancellationToken)
+        {
+            var entity = ToEntity(course);
             _context.Courses.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
-
             return ToModel(entity);
         }
 
-        public async Task<bool> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken)
+        public override async Task<bool> RemoveAsync(Guid courseId, CancellationToken cancellationToken)
         {
             var entity = await _context.Courses.SingleOrDefaultAsync(c => c.Id == courseId, cancellationToken);
-
             if (entity == null)
                 throw new KeyNotFoundException($"Course '{courseId}' not found.");
 
             _context.Courses.Remove(entity);
             await _context.SaveChangesAsync(cancellationToken);
-
             return true;
         }
 
-        public async Task<IReadOnlyList<Course>> GetAllCoursesAsync(CancellationToken cancellationToken)
+        public override async Task<IReadOnlyList<Course>> GetAllAsync(CancellationToken cancellationToken)
         {
             var entities = await _context.Courses
                 .AsNoTracking()
@@ -80,11 +78,10 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             return new CourseWithEvents(course, events);
         }
 
-        public async Task<Course?> UpdateCourseAsync(Course course, CancellationToken cancellationToken)
+        public override async Task<Course?> UpdateAsync(Guid id, Course course, CancellationToken cancellationToken)
         {
-            var entity = await _context.Courses.SingleOrDefaultAsync(c => c.Id == course.Id, cancellationToken);
-
-            if (entity == null)
+            var entity = await _context.Courses.SingleOrDefaultAsync(c => c.Id == id, cancellationToken);
+            if (entity is null)
                 throw new KeyNotFoundException($"Course '{course.Id}' not found.");
 
             entity.Title = course.Title;

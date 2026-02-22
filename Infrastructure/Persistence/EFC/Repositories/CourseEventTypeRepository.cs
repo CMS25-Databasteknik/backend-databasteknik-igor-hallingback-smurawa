@@ -6,40 +6,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 
-public class CourseEventTypeRepository(CoursesOnlineDbContext context) : ICourseEventTypeRepository
+public class CourseEventTypeRepository(CoursesOnlineDbContext context)
+    : RepositoryBase<CourseEventType, int, CourseEventTypeEntity, CoursesOnlineDbContext>(context), ICourseEventTypeRepository
 {
-    private readonly CoursesOnlineDbContext _context = context;
-
-    private static CourseEventType ToModel(CourseEventTypeEntity entity)
+    protected override CourseEventType ToModel(CourseEventTypeEntity entity)
         => new(entity.Id, entity.TypeName);
 
-    public async Task<CourseEventType> CreateCourseEventTypeAsync(CourseEventType courseEventType, CancellationToken cancellationToken)
-    {
-        var entity = new CourseEventTypeEntity
+    protected override CourseEventTypeEntity ToEntity(CourseEventType courseEventType)
+        => new()
         {
+            Id = courseEventType.Id,
             TypeName = courseEventType.TypeName
         };
 
+    public override async Task<CourseEventType> AddAsync(CourseEventType courseEventType, CancellationToken cancellationToken)
+    {
+        var entity = ToEntity(courseEventType);
+        entity.Id = default;
         _context.CourseEventTypes.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
-
         return ToModel(entity);
     }
 
-    public async Task<bool> DeleteCourseEventTypeAsync(int courseEventTypeId, CancellationToken cancellationToken)
+    public override async Task<bool> RemoveAsync(int courseEventTypeId, CancellationToken cancellationToken)
     {
         var entity = await _context.CourseEventTypes.SingleOrDefaultAsync(cet => cet.Id == courseEventTypeId, cancellationToken);
-
         if (entity == null)
             throw new KeyNotFoundException($"Course event type '{courseEventTypeId}' not found.");
 
         _context.CourseEventTypes.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 
-    public async Task<IReadOnlyList<CourseEventType>> GetAllCourseEventTypesAsync(CancellationToken cancellationToken)
+    public override async Task<IReadOnlyList<CourseEventType>> GetAllAsync(CancellationToken cancellationToken)
     {
         var entities = await _context.CourseEventTypes
             .AsNoTracking()
@@ -49,7 +49,7 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context) : ICourse
         return [.. entities.Select(ToModel)];
     }
 
-    public async Task<CourseEventType?> GetCourseEventTypeByIdAsync(int courseEventTypeId, CancellationToken cancellationToken)
+    public override async Task<CourseEventType?> GetByIdAsync(int courseEventTypeId, CancellationToken cancellationToken)
     {
         var entity = await _context.CourseEventTypes
             .AsNoTracking()
@@ -67,15 +67,13 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context) : ICourse
         return entity == null ? null : ToModel(entity);
     }
 
-    public async Task<CourseEventType?> UpdateCourseEventTypeAsync(CourseEventType courseEventType, CancellationToken cancellationToken)
+    public override async Task<CourseEventType?> UpdateAsync(int id, CourseEventType courseEventType, CancellationToken cancellationToken)
     {
-        var entity = await _context.CourseEventTypes.SingleOrDefaultAsync(cet => cet.Id == courseEventType.Id, cancellationToken);
-
-        if (entity == null)
+        var entity = await _context.CourseEventTypes.SingleOrDefaultAsync(cet => cet.Id == id, cancellationToken);
+        if (entity is null)
             throw new KeyNotFoundException($"Course event type '{courseEventType.Id}' not found.");
 
         entity.TypeName = courseEventType.TypeName;
-
         await _context.SaveChangesAsync(cancellationToken);
 
         return ToModel(entity);

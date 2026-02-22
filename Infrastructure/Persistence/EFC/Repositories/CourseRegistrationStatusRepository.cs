@@ -7,14 +7,20 @@ using Microsoft.EntityFrameworkCore;
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 
 public sealed class CourseRegistrationStatusRepository(
-    CoursesOnlineDbContext context) : ICourseRegistrationStatusRepository
+    CoursesOnlineDbContext context)
+    : RepositoryBase<CourseRegistrationStatus, int, CourseRegistrationStatusEntity, CoursesOnlineDbContext>(context), ICourseRegistrationStatusRepository
 {
-    private readonly CoursesOnlineDbContext _context = context;
-
-    private static CourseRegistrationStatus ToModel(CourseRegistrationStatusEntity entity)
+    protected override CourseRegistrationStatus ToModel(CourseRegistrationStatusEntity entity)
         => new(entity.Id, entity.Name);
 
-    public async Task<CourseRegistrationStatus> CreateCourseRegistrationStatusAsync(CourseRegistrationStatus status, CancellationToken cancellationToken)
+    protected override CourseRegistrationStatusEntity ToEntity(CourseRegistrationStatus status)
+        => new()
+        {
+            Id = status.Id,
+            Name = status.Name
+        };
+
+    public override async Task<CourseRegistrationStatus> AddAsync(CourseRegistrationStatus status, CancellationToken cancellationToken)
     {
         var currentMaxId = await _context.CourseRegistrationStatuses
             .AsNoTracking()
@@ -32,7 +38,7 @@ public sealed class CourseRegistrationStatusRepository(
         return ToModel(entity);
     }
 
-    public async Task<IReadOnlyList<CourseRegistrationStatus>> GetAllCourseRegistrationStatusesAsync(CancellationToken cancellationToken)
+    public override async Task<IReadOnlyList<CourseRegistrationStatus>> GetAllAsync(CancellationToken cancellationToken)
     {
         var entities = await _context.CourseRegistrationStatuses
             .AsNoTracking()
@@ -42,7 +48,7 @@ public sealed class CourseRegistrationStatusRepository(
         return [.. entities.Select(ToModel)];
     }
 
-    public async Task<CourseRegistrationStatus?> GetCourseRegistrationStatusByIdAsync(int statusId, CancellationToken cancellationToken)
+    public override async Task<CourseRegistrationStatus?> GetByIdAsync(int statusId, CancellationToken cancellationToken)
     {
         if (statusId < 0)
             throw new ArgumentException("Status ID must be zero or positive.", nameof(statusId));
@@ -63,22 +69,21 @@ public sealed class CourseRegistrationStatusRepository(
         return entity == null ? null : ToModel(entity);
     }
 
-    public async Task<CourseRegistrationStatus?> UpdateCourseRegistrationStatusAsync(CourseRegistrationStatus status, CancellationToken cancellationToken)
+    public override async Task<CourseRegistrationStatus?> UpdateAsync(int id, CourseRegistrationStatus status, CancellationToken cancellationToken)
     {
         var entity = await _context.CourseRegistrationStatuses
-            .SingleOrDefaultAsync(s => s.Id == status.Id, cancellationToken);
+            .SingleOrDefaultAsync(s => s.Id == id, cancellationToken);
 
         if (entity == null)
             throw new KeyNotFoundException($"Course registration status '{status.Id}' not found.");
 
         entity.Name = status.Name;
-
         await _context.SaveChangesAsync(cancellationToken);
 
         return ToModel(entity);
     }
 
-    public async Task<bool> DeleteCourseRegistrationStatusAsync(int statusId, CancellationToken cancellationToken)
+    public override async Task<bool> RemoveAsync(int statusId, CancellationToken cancellationToken)
     {
         var entity = await _context.CourseRegistrationStatuses
             .SingleOrDefaultAsync(s => s.Id == statusId, cancellationToken);

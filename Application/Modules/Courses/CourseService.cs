@@ -31,7 +31,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 course.DurationInDays
             );
 
-            _ = await _courseRepository.CreateCourseAsync(newCourse, cancellationToken);
+            _ = await _courseRepository.AddAsync(newCourse, cancellationToken);
 
             return new CourseResult
             {
@@ -67,7 +67,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
     {
         try
         {
-            var courses = await _courseRepository.GetAllCoursesAsync(cancellationToken);
+            var courses = await _courseRepository.GetAllAsync(cancellationToken);
 
             if (!courses.Any())
             {
@@ -168,7 +168,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var existingCourse = await _courseRepository.GetCourseByIdAsync(course.Id, cancellationToken);
+            var existingCourse = await _courseRepository.GetByIdAsync(course.Id, cancellationToken);
             if (existingCourse == null)
             {
                 return new CourseResult
@@ -186,7 +186,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 course.DurationInDays
             );
 
-            var result = await _courseRepository.UpdateCourseAsync(updatedCourse, cancellationToken);
+            var result = await _courseRepository.UpdateAsync(updatedCourse.Id, updatedCourse, cancellationToken);
 
             if (result == null)
             {
@@ -250,7 +250,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var existingCourse = await _courseRepository.GetCourseByIdAsync(courseId, cancellationToken);
+            var existingCourse = await _courseRepository.GetByIdAsync(courseId, cancellationToken);
             if (existingCourse == null)
             {
                 return new CourseDeleteResult
@@ -274,7 +274,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var result = await _courseRepository.DeleteCourseAsync(courseId, cancellationToken);
+            var result = await _courseRepository.RemoveAsync(courseId, cancellationToken);
 
             if (!result)
             {
@@ -317,4 +317,5 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
         }
     }
 }
+
 

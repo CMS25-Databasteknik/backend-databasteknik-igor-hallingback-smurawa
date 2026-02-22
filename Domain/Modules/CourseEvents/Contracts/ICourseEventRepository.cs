@@ -1,15 +1,11 @@
 using Backend.Domain.Modules.CourseEvents.Models;
+using Backend.Domain.Common.Base;
 
 namespace Backend.Domain.Modules.CourseEvents.Contracts
 {
-    public interface ICourseEventRepository
+    public interface ICourseEventRepository : IRepositoryBase<CourseEvent, Guid>
     {
-        Task<CourseEvent> CreateCourseEventAsync(CourseEvent courseEvent, CancellationToken cancellationToken);
-        Task<CourseEvent?> GetCourseEventByIdAsync(Guid courseEventId, CancellationToken cancellationToken);
-        Task<IReadOnlyList<CourseEvent>> GetAllCourseEventsAsync(CancellationToken cancellationToken);
         Task<IReadOnlyList<CourseEvent>> GetCourseEventsByCourseIdAsync(Guid courseId, CancellationToken cancellationToken);
-        Task<CourseEvent?> UpdateCourseEventAsync(CourseEvent courseEvent, CancellationToken cancellationToken);
-        Task<bool> DeleteCourseEventAsync(Guid courseEventId, CancellationToken cancellationToken);
         Task<bool> HasRegistrationsAsync(Guid courseEventId, CancellationToken cancellationToken);
     }
 }

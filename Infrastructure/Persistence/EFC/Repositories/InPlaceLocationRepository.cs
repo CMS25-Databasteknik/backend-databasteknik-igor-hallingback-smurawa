@@ -6,42 +6,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 
-public class InPlaceLocationRepository(CoursesOnlineDbContext context) : IInPlaceLocationRepository
+public class InPlaceLocationRepository(CoursesOnlineDbContext context)
+    : RepositoryBase<InPlaceLocation, int, InPlaceLocationEntity, CoursesOnlineDbContext>(context), IInPlaceLocationRepository
 {
-    private readonly CoursesOnlineDbContext _context = context;
-
-    private static InPlaceLocation ToModel(InPlaceLocationEntity entity)
+    protected override InPlaceLocation ToModel(InPlaceLocationEntity entity)
         => new(entity.Id, entity.LocationId, entity.RoomNumber, entity.Seats);
 
-    public async Task<InPlaceLocation> CreateInPlaceLocationAsync(InPlaceLocation inPlaceLocation, CancellationToken cancellationToken)
-    {
-        var entity = new InPlaceLocationEntity
+    protected override InPlaceLocationEntity ToEntity(InPlaceLocation inPlaceLocation)
+        => new()
         {
+            Id = inPlaceLocation.Id,
             LocationId = inPlaceLocation.LocationId,
             RoomNumber = inPlaceLocation.RoomNumber,
             Seats = inPlaceLocation.Seats
         };
 
+    public override async Task<InPlaceLocation> AddAsync(InPlaceLocation inPlaceLocation, CancellationToken cancellationToken)
+    {
+        var entity = ToEntity(inPlaceLocation);
+        entity.Id = default;
         _context.InPlaceLocations.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
-
         return ToModel(entity);
     }
 
-    public async Task<bool> DeleteInPlaceLocationAsync(int inPlaceLocationId, CancellationToken cancellationToken)
+    public override async Task<bool> RemoveAsync(int inPlaceLocationId, CancellationToken cancellationToken)
     {
         var entity = await _context.InPlaceLocations.SingleOrDefaultAsync(ipl => ipl.Id == inPlaceLocationId, cancellationToken);
-
         if (entity == null)
             throw new KeyNotFoundException($"In-place location '{inPlaceLocationId}' not found.");
 
         _context.InPlaceLocations.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 
-    public async Task<IReadOnlyList<InPlaceLocation>> GetAllInPlaceLocationsAsync(CancellationToken cancellationToken)
+    public override async Task<IReadOnlyList<InPlaceLocation>> GetAllAsync(CancellationToken cancellationToken)
     {
         var entities = await _context.InPlaceLocations
             .AsNoTracking()
@@ -52,7 +52,7 @@ public class InPlaceLocationRepository(CoursesOnlineDbContext context) : IInPlac
         return [.. entities.Select(ToModel)];
     }
 
-    public async Task<InPlaceLocation?> GetInPlaceLocationByIdAsync(int inPlaceLocationId, CancellationToken cancellationToken)
+    public override async Task<InPlaceLocation?> GetByIdAsync(int inPlaceLocationId, CancellationToken cancellationToken)
     {
         var entity = await _context.InPlaceLocations
             .AsNoTracking()
@@ -72,11 +72,10 @@ public class InPlaceLocationRepository(CoursesOnlineDbContext context) : IInPlac
         return [.. entities.Select(ToModel)];
     }
 
-    public async Task<InPlaceLocation?> UpdateInPlaceLocationAsync(InPlaceLocation inPlaceLocation, CancellationToken cancellationToken)
+    public override async Task<InPlaceLocation?> UpdateAsync(int id, InPlaceLocation inPlaceLocation, CancellationToken cancellationToken)
     {
-        var entity = await _context.InPlaceLocations.SingleOrDefaultAsync(ipl => ipl.Id == inPlaceLocation.Id, cancellationToken);
-
-        if (entity == null)
+        var entity = await _context.InPlaceLocations.SingleOrDefaultAsync(ipl => ipl.Id == id, cancellationToken);
+        if (entity is null)
             throw new KeyNotFoundException($"In-place location '{inPlaceLocation.Id}' not found.");
 
         entity.LocationId = inPlaceLocation.LocationId;
