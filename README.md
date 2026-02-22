@@ -114,6 +114,46 @@ Similar patterns exist for other modules (course events, instructors, participan
 - **Connection**: Configured in `appsettings.json`
 - **Migrations**: Located in `Infrastructure/Persistence/EFC/Migrations/`
 
+### Transaction Handling
+
+Transactions are used in repository operations that need atomic multi-step behavior.
+
+- `Infrastructure/Persistence/EFC/Repositories/CourseRegistrationRepository.cs`
+  - Uses `BeginTransactionAsync(...)` in create/update flows.
+  - Commits on success and rolls back on failure.
+- `Infrastructure/Persistence/EFC/Repositories/CourseEventRepository.cs`
+  - Wraps event + relation updates in a transaction.
+- `Infrastructure/Persistence/EFC/Repositories/ParticipantRepository.cs`
+  - Uses transaction when applying multi-step updates.
+
+### Raw SQL Usage
+
+Raw SQL is used only in specific repository scenarios where direct SQL is more suitable.
+
+- `Infrastructure/Persistence/EFC/Repositories/CourseRegistrationRepository.cs`
+  - Uses `Database.SqlQuery<int>(...)` for SQL-based checks/calculations in registration flows.
+- `Infrastructure/Persistence/EFC/Repositories/CourseEventRepository.cs`
+  - Uses `Database.ExecuteSqlAsync(...)` for relation-table updates in transactional operations.
+- `Infrastructure/Persistence/EFC/Repositories/ParticipantRepository.cs`
+  - Uses `Database.ExecuteSqlAsync(...)` in targeted update operations.
+
+### Caching
+
+Caching is implemented in the **Application layer** (not in repositories), using `IMemoryCache`.
+
+- Base caching abstractions:
+  - `Application/Common/Caching/ICacheEntityBase.cs`
+  - `Application/Common/Caching/CacheEntityBase.cs`
+  - `Application/Extensions/Caching/MemoryCacheExtensions.cs`
+- Concrete cache implementations:
+  - `Application/Modules/CourseEventTypes/Caching/CourseEventTypeCache.cs`
+  - `Application/Modules/CourseRegistrationStatuses/Caching/CourseRegistrationStatusCache.cs`
+- Services that currently use cache:
+  - `Application/Modules/CourseEventTypes/CourseEventTypeService.cs`
+  - `Application/Modules/CourseRegistrationStatuses/CourseRegistrationStatusService.cs`
+
+The cache is primarily used for read operations (`get by id`, `get all`) and is invalidated/reset on writes.
+
 ### Connection String
 
 ```json
