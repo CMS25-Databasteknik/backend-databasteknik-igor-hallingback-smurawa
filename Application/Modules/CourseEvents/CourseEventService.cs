@@ -39,7 +39,7 @@ public class CourseEventService(
                 courseEvent.CourseEventTypeId,
                 courseEvent.VenueType);
 
-            var existingCourse = await _courseRepository.GetCourseByIdAsync(newCourseEvent.CourseId, cancellationToken);
+            var existingCourse = await _courseRepository.GetByIdAsync(newCourseEvent.CourseId, cancellationToken);
             if (existingCourse == null)
             {
                 return new CourseEventResult
@@ -50,7 +50,7 @@ public class CourseEventService(
                 };
             }
 
-            var existingCourseEventType = await _courseEventTypeRepository.GetCourseEventTypeByIdAsync(newCourseEvent.CourseEventTypeId, cancellationToken);
+            var existingCourseEventType = await _courseEventTypeRepository.GetByIdAsync(newCourseEvent.CourseEventTypeId, cancellationToken);
             if (existingCourseEventType == null)
             {
                 return new CourseEventResult
@@ -61,7 +61,7 @@ public class CourseEventService(
                 };
             }
 
-            var result = await _courseEventRepository.CreateCourseEventAsync(newCourseEvent, cancellationToken);
+            var result = await _courseEventRepository.AddAsync(newCourseEvent, cancellationToken);
 
             return new CourseEventResult
             {
@@ -95,7 +95,7 @@ public class CourseEventService(
     {
         try
         {
-            var result = await _courseEventRepository.GetAllCourseEventsAsync(cancellationToken);
+            var result = await _courseEventRepository.GetAllAsync(cancellationToken);
 
             return new CourseEventListResult
             {
@@ -132,7 +132,7 @@ public class CourseEventService(
                 };
             }
 
-            var result = await _courseEventRepository.GetCourseEventByIdAsync(courseEventId, cancellationToken);
+            var result = await _courseEventRepository.GetByIdAsync(courseEventId, cancellationToken);
             if (result == null)
             {
                 return new CourseEventResult
@@ -213,7 +213,7 @@ public class CourseEventService(
                 };
             }
 
-            var existingCourseEvent = await _courseEventRepository.GetCourseEventByIdAsync(courseEvent.Id, cancellationToken);
+            var existingCourseEvent = await _courseEventRepository.GetByIdAsync(courseEvent.Id, cancellationToken);
             if (existingCourseEvent == null)
             {
                 return new CourseEventResult
@@ -224,7 +224,7 @@ public class CourseEventService(
                 };
             }
 
-            var existingCourse = await _courseRepository.GetCourseByIdAsync(courseEvent.CourseId, cancellationToken);
+            var existingCourse = await _courseRepository.GetByIdAsync(courseEvent.CourseId, cancellationToken);
             if (existingCourse == null)
             {
                 return new CourseEventResult
@@ -235,7 +235,7 @@ public class CourseEventService(
                 };
             }
 
-            var existingCourseEventType = await _courseEventTypeRepository.GetCourseEventTypeByIdAsync(courseEvent.CourseEventTypeId, cancellationToken);
+            var existingCourseEventType = await _courseEventTypeRepository.GetByIdAsync(courseEvent.CourseEventTypeId, cancellationToken);
             if (existingCourseEventType == null)
             {
                 return new CourseEventResult
@@ -255,7 +255,7 @@ public class CourseEventService(
                 courseEvent.CourseEventTypeId,
                 courseEvent.VenueType);
 
-            var result = await _courseEventRepository.UpdateCourseEventAsync(updatedCourseEvent, cancellationToken);
+            var result = await _courseEventRepository.UpdateAsync(updatedCourseEvent.Id, updatedCourseEvent, cancellationToken);
             if (result == null)
             {
                 return new CourseEventResult
@@ -318,7 +318,7 @@ public class CourseEventService(
                 };
             }
 
-            var existingCourseEvent = await _courseEventRepository.GetCourseEventByIdAsync(courseEventId, cancellationToken);
+            var existingCourseEvent = await _courseEventRepository.GetByIdAsync(courseEventId, cancellationToken);
             if (existingCourseEvent == null)
             {
                 return new CourseEventDeleteResult
@@ -342,7 +342,7 @@ public class CourseEventService(
                 };
             }
 
-            var result = await _courseEventRepository.DeleteCourseEventAsync(courseEventId, cancellationToken);
+            var result = await _courseEventRepository.RemoveAsync(courseEventId, cancellationToken);
             return new CourseEventDeleteResult
             {
                 Success = true,
@@ -373,4 +373,5 @@ public class CourseEventService(
         }
     }
 }
+
 

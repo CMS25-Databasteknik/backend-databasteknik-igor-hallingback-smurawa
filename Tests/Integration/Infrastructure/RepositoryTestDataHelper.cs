@@ -19,7 +19,7 @@ namespace Tests.Integration.Infrastructure;
 internal static class RepositoryTestDataHelper
 {
     public static Task<Course> CreateCourseAsync(CoursesOnlineDbContext context)
-        => new CourseRepository(context).CreateCourseAsync(
+        => new CourseRepository(context).AddAsync(
             new Course(
                 Guid.NewGuid(),
                 $"Course-{Guid.NewGuid():N}",
@@ -28,7 +28,7 @@ internal static class RepositoryTestDataHelper
             CancellationToken.None);
 
     public static Task<CourseEventType> CreateCourseEventTypeAsync(CoursesOnlineDbContext context)
-        => new CourseEventTypeRepository(context).CreateCourseEventTypeAsync(
+        => new CourseEventTypeRepository(context).AddAsync(
             new CourseEventType($"Type-{Guid.NewGuid():N}"),
             CancellationToken.None);
 
@@ -38,13 +38,13 @@ internal static class RepositoryTestDataHelper
             ? await new CourseRepository(context).GetCourseByIdAsync(courseId.Value, CancellationToken.None)
             : null;
         var eventType = typeId.HasValue
-            ? await new CourseEventTypeRepository(context).GetCourseEventTypeByIdAsync(typeId.Value, CancellationToken.None)
+            ? await new CourseEventTypeRepository(context).GetByIdAsync(typeId.Value, CancellationToken.None)
             : null;
 
         var resolvedCourseId = course?.Course.Id ?? (await CreateCourseAsync(context)).Id;
         var resolvedTypeId = eventType?.Id ?? (await CreateCourseEventTypeAsync(context)).Id;
 
-        return await new CourseEventRepository(context).CreateCourseEventAsync(
+        return await new CourseEventRepository(context).AddAsync(
             new CourseEvent(
                 Guid.NewGuid(),
                 resolvedCourseId,
@@ -57,7 +57,7 @@ internal static class RepositoryTestDataHelper
     }
 
     public static Task<Participant> CreateParticipantAsync(CoursesOnlineDbContext context)
-        => new ParticipantRepository(context).CreateParticipantAsync(
+        => new ParticipantRepository(context).AddAsync(
             new Participant(
                 Guid.NewGuid(),
                 "First",
@@ -67,30 +67,30 @@ internal static class RepositoryTestDataHelper
             CancellationToken.None);
 
     public static Task<Location> CreateLocationAsync(CoursesOnlineDbContext context)
-        => new LocationRepository(context).CreateLocationAsync(
+        => new LocationRepository(context).AddAsync(
             new Location(0, $"Street-{Guid.NewGuid():N}", "12345", "City"),
             CancellationToken.None);
 
     public static async Task<InPlaceLocation> CreateInPlaceLocationAsync(CoursesOnlineDbContext context, int? locationId = null)
     {
         var resolvedLocationId = locationId ?? (await CreateLocationAsync(context)).Id;
-        return await new InPlaceLocationRepository(context).CreateInPlaceLocationAsync(
+        return await new InPlaceLocationRepository(context).AddAsync(
             new InPlaceLocation(0, resolvedLocationId, 101, 20),
             CancellationToken.None);
     }
 
     public static Task<InstructorRole> CreateInstructorRoleAsync(CoursesOnlineDbContext context)
-        => new InstructorRoleRepository(context).CreateInstructorRoleAsync(
+        => new InstructorRoleRepository(context).AddAsync(
             new InstructorRole($"Role-{Guid.NewGuid():N}"),
             CancellationToken.None);
 
     public static async Task<Instructor> CreateInstructorAsync(CoursesOnlineDbContext context, int? roleId = null)
     {
         var role = roleId.HasValue
-            ? await new InstructorRoleRepository(context).GetInstructorRoleByIdAsync(roleId.Value, CancellationToken.None)
+            ? await new InstructorRoleRepository(context).GetByIdAsync(roleId.Value, CancellationToken.None)
             : await CreateInstructorRoleAsync(context);
 
-        return await new InstructorRepository(context).CreateInstructorAsync(
+        return await new InstructorRepository(context).AddAsync(
             new Instructor(Guid.NewGuid(), $"Instructor-{Guid.NewGuid():N}", role!),
             CancellationToken.None);
     }
@@ -105,7 +105,7 @@ internal static class RepositoryTestDataHelper
         var resolvedEventId = courseEventId ?? (await CreateCourseEventAsync(context)).Id;
         var resolvedStatus = status ?? CourseRegistrationStatus.Pending;
 
-        return await new CourseRegistrationRepository(context).CreateCourseRegistrationAsync(
+        return await new CourseRegistrationRepository(context).AddAsync(
             new CourseRegistration(
                 Guid.NewGuid(),
                 resolvedParticipantId,
@@ -132,4 +132,8 @@ internal static class RepositoryTestDataHelper
         await context.SaveChangesAsync();
     }
 }
+
+
+
+
 

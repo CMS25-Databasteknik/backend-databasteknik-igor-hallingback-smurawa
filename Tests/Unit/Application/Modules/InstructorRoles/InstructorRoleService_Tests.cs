@@ -11,15 +11,15 @@ public class InstructorRoleService_Tests
     private static IInstructorRoleRepository CreateRepo()
     {
         var repo = Substitute.For<IInstructorRoleRepository>();
-        repo.CreateInstructorRoleAsync(Arg.Any<InstructorRole>(), Arg.Any<CancellationToken>())
+        repo.AddAsync(Arg.Any<InstructorRole>(), Arg.Any<CancellationToken>())
             .Returns(ci => new InstructorRole(1, ci.Arg<InstructorRole>().RoleName));
-        repo.GetInstructorRoleByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        repo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<int>() == 9 ? null : new InstructorRole(ci.Arg<int>(), $"Role{ci.Arg<int>()}"));
-        repo.GetAllInstructorRolesAsync(Arg.Any<CancellationToken>())
+        repo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<InstructorRole>>(new List<InstructorRole> { new(1, "Lead") }));
-        repo.UpdateInstructorRoleAsync(Arg.Any<InstructorRole>(), Arg.Any<CancellationToken>())
+        repo.UpdateAsync(Arg.Any<int>(), Arg.Any<InstructorRole>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<InstructorRole>().Id == 9 ? null : ci.Arg<InstructorRole>());
-        repo.DeleteInstructorRoleAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        repo.RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<int>() != 9);
         return repo;
     }
@@ -98,5 +98,3 @@ public class InstructorRoleService_Tests
         Assert.Equal(404, result.StatusCode);
     }
 }
-
-

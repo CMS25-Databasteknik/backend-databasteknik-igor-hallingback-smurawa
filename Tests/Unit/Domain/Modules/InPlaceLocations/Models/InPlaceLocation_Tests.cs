@@ -362,4 +362,3 @@ public class InPlaceLocation_Tests
         Assert.Equal(roomNumber, inPlaceLocation.RoomNumber);
     }
 }
-

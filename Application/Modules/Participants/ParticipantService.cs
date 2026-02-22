@@ -33,7 +33,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 participant.ContactType
             );
 
-            var result = await _participantRepository.CreateParticipantAsync(newParticipant, cancellationToken);
+            var result = await _participantRepository.AddAsync(newParticipant, cancellationToken);
 
             return new ParticipantResult
             {
@@ -69,7 +69,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
     {
         try
         {
-            var participants = await _participantRepository.GetAllParticipantsAsync(cancellationToken);
+            var participants = await _participantRepository.GetAllAsync(cancellationToken);
 
             if (!participants.Any())
             {
@@ -115,7 +115,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            var existingParticipant = await _participantRepository.GetParticipantByIdAsync(participantId, cancellationToken);
+            var existingParticipant = await _participantRepository.GetByIdAsync(participantId, cancellationToken);
 
             if (existingParticipant == null)
             {
@@ -170,7 +170,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            var existingParticipant = await _participantRepository.GetParticipantByIdAsync(participant.Id, cancellationToken);
+            var existingParticipant = await _participantRepository.GetByIdAsync(participant.Id, cancellationToken);
             if (existingParticipant == null)
             {
                 return new ParticipantResult
@@ -190,7 +190,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 participant.ContactType
             );
 
-            var result = await _participantRepository.UpdateParticipantAsync(updatedParticipant, cancellationToken);
+            var result = await _participantRepository.UpdateAsync(updatedParticipant.Id, updatedParticipant, cancellationToken);
 
             if (result == null)
             {
@@ -254,7 +254,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            var existingParticipant = await _participantRepository.GetParticipantByIdAsync(participantId, cancellationToken);
+            var existingParticipant = await _participantRepository.GetByIdAsync(participantId, cancellationToken);
             if (existingParticipant == null)
             {
                 return new ParticipantDeleteResult
@@ -278,7 +278,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            var result = await _participantRepository.DeleteParticipantAsync(participantId, cancellationToken);
+            var result = await _participantRepository.RemoveAsync(participantId, cancellationToken);
 
             if (!result)
             {
@@ -321,4 +321,5 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
         }
     }
 }
+
 

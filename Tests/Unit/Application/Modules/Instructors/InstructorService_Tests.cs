@@ -13,7 +13,7 @@ public class InstructorService_Tests
     private static IInstructorRoleRepository CreateRoleRepo()
     {
         var repo = Substitute.For<IInstructorRoleRepository>();
-        repo.GetInstructorRoleByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        repo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(ci => new InstructorRole(ci.Arg<int>(), $"Role-{ci.Arg<int>()}"));
         return repo;
     }
@@ -26,12 +26,12 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         var mockRoleRepo = Substitute.For<IInstructorRoleRepository>();
-        mockRoleRepo.GetInstructorRoleByIdAsync(1, Arg.Any<CancellationToken>())
+        mockRoleRepo.GetByIdAsync(1, Arg.Any<CancellationToken>())
             .Returns(new InstructorRole(1, "Lead"));
 
         var expectedInstructor = new Instructor(Guid.NewGuid(), "Dr. John Doe", new InstructorRole(1, "Lead"));
 
-        mockRepo.CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(expectedInstructor);
 
         var service = new InstructorService(mockRepo, mockRoleRepo);
@@ -47,7 +47,7 @@ public class InstructorService_Tests
         Assert.Equal("Dr. John Doe", result.Result.Name);
         Assert.Equal("Instructor created successfully.", result.Message);
 
-        await mockRepo.Received(1).CreateInstructorAsync(
+        await mockRepo.Received(1).AddAsync(
             Arg.Is<Instructor>(i => i.Name == "Dr. John Doe"),
             Arg.Any<CancellationToken>());
     }
@@ -68,7 +68,7 @@ public class InstructorService_Tests
         Assert.Null(result.Result);
         Assert.Equal("Instructor cannot be null.", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class InstructorService_Tests
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class InstructorService_Tests
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        mockRepo.CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Instructor>(new Exception("Database error")));
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -144,7 +144,7 @@ public class InstructorService_Tests
         var mockRepo = Substitute.For<IInstructorRepository>();
         var expectedInstructor = new Instructor(Guid.NewGuid(), name, new InstructorRole(1, "Lead"));
 
-        mockRepo.CreateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(expectedInstructor);
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -186,7 +186,7 @@ public class InstructorService_Tests
             new Instructor(Guid.NewGuid(), "Dr. Robert Johnson", new InstructorRole(1, "Lead"))
         };
 
-        mockRepo.GetAllInstructorsAsync(Arg.Any<CancellationToken>())
+        mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(instructors);
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -201,7 +201,7 @@ public class InstructorService_Tests
         Assert.Equal(3, result.Result.Count());
         Assert.Equal("Retrieved 3 instructor(s) successfully.", result.Message);
 
-        await mockRepo.Received(1).GetAllInstructorsAsync(Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        mockRepo.GetAllInstructorsAsync(Arg.Any<CancellationToken>())
+        mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(new List<Instructor>());
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -230,7 +230,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        mockRepo.GetAllInstructorsAsync(Arg.Any<CancellationToken>())
+        mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException<IReadOnlyList<Instructor>>(new Exception("Database connection failed")));
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -257,7 +257,7 @@ public class InstructorService_Tests
         var instructorId = Guid.NewGuid();
         var instructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(instructor);
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -273,7 +273,7 @@ public class InstructorService_Tests
         Assert.Equal("Dr. John Doe", result.Result.Name);
         Assert.Equal("Instructor retrieved successfully.", result.Message);
 
-        await mockRepo.Received(1).GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).GetByIdAsync(instructorId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -283,7 +283,7 @@ public class InstructorService_Tests
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns((Instructor)null!);
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -314,7 +314,7 @@ public class InstructorService_Tests
         Assert.Null(result.Result);
         Assert.Equal("Instructor ID cannot be empty.", result.Message);
 
-        await mockRepo.DidNotReceive().GetInstructorByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -324,7 +324,7 @@ public class InstructorService_Tests
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Instructor?>(new Exception("Database error")));
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -353,10 +353,10 @@ public class InstructorService_Tests
         var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
         var updatedInstructor = new Instructor(instructorId, "Prof. John Doe", new InstructorRole(2, "Assistant"));
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
 
-        mockRepo.UpdateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
+        mockRepo.UpdateAsync(Arg.Any<Guid>(), Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(updatedInstructor);
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -372,7 +372,8 @@ public class InstructorService_Tests
         Assert.Equal("Prof. John Doe", result.Result.Name);
         Assert.Equal("Instructor updated successfully.", result.Message);
 
-        await mockRepo.Received(1).UpdateInstructorAsync(
+        await mockRepo.Received(1).UpdateAsync(
+            Arg.Is<Guid>(id => id == instructorId),
             Arg.Is<Instructor>(i => i.Id == instructorId && i.Name == "Prof. John Doe"),
             Arg.Any<CancellationToken>());
     }
@@ -393,7 +394,7 @@ public class InstructorService_Tests
         Assert.Null(result.Result);
         Assert.Equal("Instructor cannot be null.", result.Message);
 
-        await mockRepo.DidNotReceive().UpdateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -413,7 +414,7 @@ public class InstructorService_Tests
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty", result.Message);
 
-        await mockRepo.DidNotReceive().GetInstructorByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -421,7 +422,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        mockRepo.GetInstructorByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new Instructor(Guid.NewGuid(), "Existing", new InstructorRole(1, "Lead")));
         var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(Guid.NewGuid(), "");
@@ -441,7 +442,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        mockRepo.GetInstructorByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new Instructor(Guid.NewGuid(), "Existing", new InstructorRole(1, "Lead")));
         var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(Guid.NewGuid(), "   ");
@@ -463,7 +464,7 @@ public class InstructorService_Tests
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns((Instructor)null!);
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -478,7 +479,7 @@ public class InstructorService_Tests
         Assert.Null(result.Result);
         Assert.Contains($"Instructor with ID '{instructorId}' not found", result.Message);
 
-        await mockRepo.DidNotReceive().UpdateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<Instructor>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -489,10 +490,10 @@ public class InstructorService_Tests
         var instructorId = Guid.NewGuid();
         var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
 
-        mockRepo.UpdateInstructorAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
+        mockRepo.UpdateAsync(Arg.Any<Guid>(), Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<Instructor?>(new Exception("Database error")));
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -521,13 +522,13 @@ public class InstructorService_Tests
         var instructorId = Guid.NewGuid();
         var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
 
         mockRepo.HasCourseEventsAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        mockRepo.DeleteInstructorAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.RemoveAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(true);
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -541,7 +542,7 @@ public class InstructorService_Tests
         Assert.True(result.Result);
         Assert.Equal("Instructor deleted successfully.", result.Message);
 
-        await mockRepo.Received(1).DeleteInstructorAsync(instructorId, Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).RemoveAsync(instructorId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -560,7 +561,7 @@ public class InstructorService_Tests
         Assert.False(result.Result);
         Assert.Equal("Instructor ID cannot be empty.", result.Message);
 
-        await mockRepo.DidNotReceive().DeleteInstructorAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -570,7 +571,7 @@ public class InstructorService_Tests
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns((Instructor)null!);
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -584,7 +585,7 @@ public class InstructorService_Tests
         Assert.False(result.Result);
         Assert.Contains($"Instructor with ID '{instructorId}' not found", result.Message);
 
-        await mockRepo.DidNotReceive().DeleteInstructorAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -595,7 +596,7 @@ public class InstructorService_Tests
         var instructorId = Guid.NewGuid();
         var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
 
         mockRepo.HasCourseEventsAsync(instructorId, Arg.Any<CancellationToken>())
@@ -613,7 +614,7 @@ public class InstructorService_Tests
         Assert.Contains("Cannot delete instructor", result.Message);
         Assert.Contains("assigned to course events", result.Message);
 
-        await mockRepo.DidNotReceive().DeleteInstructorAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -624,13 +625,13 @@ public class InstructorService_Tests
         var instructorId = Guid.NewGuid();
         var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
 
         mockRepo.HasCourseEventsAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        mockRepo.DeleteInstructorAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.RemoveAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<bool>(new Exception("Database error")));
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -654,13 +655,13 @@ public class InstructorService_Tests
         var instructorId = Guid.NewGuid();
         var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
 
-        mockRepo.GetInstructorByIdAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
 
         mockRepo.HasCourseEventsAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        mockRepo.DeleteInstructorAsync(instructorId, Arg.Any<CancellationToken>())
+        mockRepo.RemoveAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(false);
 
         var service = new InstructorService(mockRepo, CreateRoleRepo());
@@ -677,8 +678,3 @@ public class InstructorService_Tests
 
     #endregion
 }
-
-
-
-
-

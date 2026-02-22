@@ -7,11 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories
 {
-    public class CourseEventRepository(CoursesOnlineDbContext context) : ICourseEventRepository
+    public class CourseEventRepository(CoursesOnlineDbContext context)
+        : RepositoryBase<CourseEvent, Guid, CourseEventEntity, CoursesOnlineDbContext>(context), ICourseEventRepository
     {
-        private readonly CoursesOnlineDbContext _context = context;
-
-        private static CourseEvent ToModel(CourseEventEntity entity)
+        protected override CourseEvent ToModel(CourseEventEntity entity)
             => new(
                 entity.Id,
                 entity.CourseId,
@@ -21,9 +20,8 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 entity.CourseEventTypeId,
                 (VenueType)entity.VenueTypeId);
 
-        public async Task<CourseEvent> CreateCourseEventAsync(CourseEvent courseEvent, CancellationToken cancellationToken)
-        {
-            var entity = new CourseEventEntity
+        protected override CourseEventEntity ToEntity(CourseEvent courseEvent)
+            => new()
             {
                 Id = courseEvent.Id,
                 CourseId = courseEvent.CourseId,
@@ -34,13 +32,15 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 VenueTypeId = (int)courseEvent.VenueType
             };
 
+        public override async Task<CourseEvent> AddAsync(CourseEvent courseEvent, CancellationToken cancellationToken)
+        {
+            var entity = ToEntity(courseEvent);
             _context.CourseEvents.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
-
             return ToModel(entity);
         }
 
-        public async Task<bool> DeleteCourseEventAsync(Guid courseEventId, CancellationToken cancellationToken)
+        public override async Task<bool> RemoveAsync(Guid courseEventId, CancellationToken cancellationToken)
         {
             using var tx = await _context.Database.BeginTransactionAsync(cancellationToken);
 
@@ -85,7 +85,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 .AnyAsync(cr => cr.CourseEventId == courseEventId, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<CourseEvent>> GetAllCourseEventsAsync(CancellationToken cancellationToken)
+        public override async Task<IReadOnlyList<CourseEvent>> GetAllAsync(CancellationToken cancellationToken)
         {
             var entities = await _context.CourseEvents
                 .AsNoTracking()
@@ -95,7 +95,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             return [.. entities.Select(ToModel)];
         }
 
-        public async Task<CourseEvent?> GetCourseEventByIdAsync(Guid courseEventId, CancellationToken cancellationToken)
+        public override async Task<CourseEvent?> GetByIdAsync(Guid courseEventId, CancellationToken cancellationToken)
         {
             var entity = await _context.CourseEvents
                 .AsNoTracking()
@@ -115,9 +115,9 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             return [.. entities.Select(ToModel)];
         }
 
-        public async Task<CourseEvent?> UpdateCourseEventAsync(CourseEvent courseEvent, CancellationToken cancellationToken)
+        public override async Task<CourseEvent?> UpdateAsync(Guid id, CourseEvent courseEvent, CancellationToken cancellationToken)
         {
-            var entity = await _context.CourseEvents.SingleOrDefaultAsync(ce => ce.Id == courseEvent.Id, cancellationToken);
+            var entity = await _context.CourseEvents.SingleOrDefaultAsync(ce => ce.Id == id, cancellationToken);
 
             if (entity == null)
                 throw new KeyNotFoundException($"Course event '{courseEvent.Id}' not found.");
@@ -134,6 +134,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
             return ToModel(entity);
         }
+
     }
 }
 

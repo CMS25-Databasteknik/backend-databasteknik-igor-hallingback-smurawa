@@ -48,5 +48,3 @@ public class InstructorRole_Tests
         Assert.Equal("roleName", ex.ParamName);
     }
 }
-
-

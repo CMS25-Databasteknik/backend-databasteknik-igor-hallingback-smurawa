@@ -17,7 +17,7 @@ public class InPlaceLocationService_Tests
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var expectedInPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
 
-        mockRepo.CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
             .Returns(expectedInPlaceLocation);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -35,7 +35,7 @@ public class InPlaceLocationService_Tests
         Assert.Equal(30, result.Result.Seats);
         Assert.Equal("In-place location created successfully.", result.Message);
 
-        await mockRepo.Received(1).CreateInPlaceLocationAsync(
+        await mockRepo.Received(1).AddAsync(
             Arg.Is<InPlaceLocation>(ipl => ipl.LocationId == 1 && ipl.RoomNumber == 101 && ipl.Seats == 30),
             Arg.Any<CancellationToken>());
     }
@@ -56,7 +56,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Equal("In-place location cannot be null.", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -176,7 +176,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
-        mockRepo.CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<InPlaceLocation>(new Exception("Database error")));
 
         var service = new InPlaceLocationService(mockRepo);
@@ -212,7 +212,7 @@ public class InPlaceLocationService_Tests
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var expectedInPlaceLocation = new InPlaceLocation(1, locationId, roomNumber, seats);
 
-        mockRepo.CreateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
+        mockRepo.AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
             .Returns(expectedInPlaceLocation);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -253,7 +253,7 @@ public class InPlaceLocationService_Tests
             new InPlaceLocation(3, 2, 201, 50)
         };
 
-        mockRepo.GetAllInPlaceLocationsAsync(Arg.Any<CancellationToken>())
+        mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(inPlaceLocations);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -268,7 +268,7 @@ public class InPlaceLocationService_Tests
         Assert.Equal(3, result.Result.Count());
         Assert.Equal("Retrieved 3 in-place location(s) successfully.", result.Message);
 
-        await mockRepo.Received(1).GetAllInPlaceLocationsAsync(Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -276,7 +276,7 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
-        mockRepo.GetAllInPlaceLocationsAsync(Arg.Any<CancellationToken>())
+        mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(new List<InPlaceLocation>());
 
         var service = new InPlaceLocationService(mockRepo);
@@ -297,7 +297,7 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
-        mockRepo.GetAllInPlaceLocationsAsync(Arg.Any<CancellationToken>())
+        mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException<IReadOnlyList<InPlaceLocation>>(new Exception("Database connection failed")));
 
         var service = new InPlaceLocationService(mockRepo);
@@ -324,7 +324,7 @@ public class InPlaceLocationService_Tests
         var inPlaceLocationId = 1;
         var inPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(inPlaceLocation);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -340,7 +340,7 @@ public class InPlaceLocationService_Tests
         Assert.Equal(101, result.Result.RoomNumber);
         Assert.Equal("In-place location retrieved successfully.", result.Message);
 
-        await mockRepo.Received(1).GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -350,7 +350,7 @@ public class InPlaceLocationService_Tests
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns((InPlaceLocation)null!);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -381,7 +381,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -400,7 +400,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -410,7 +410,7 @@ public class InPlaceLocationService_Tests
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<InPlaceLocation?>(new Exception("Database error")));
 
         var service = new InPlaceLocationService(mockRepo);
@@ -554,10 +554,10 @@ public class InPlaceLocationService_Tests
         var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
         var updatedInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 35);
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
 
-        mockRepo.UpdateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
+        mockRepo.UpdateAsync(Arg.Any<int>(), Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
             .Returns(updatedInPlaceLocation);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -573,7 +573,8 @@ public class InPlaceLocationService_Tests
         Assert.Equal(35, result.Result.Seats);
         Assert.Equal("In-place location updated successfully.", result.Message);
 
-        await mockRepo.Received(1).UpdateInPlaceLocationAsync(
+        await mockRepo.Received(1).UpdateAsync(
+            Arg.Is<int>(id => id == inPlaceLocationId),
             Arg.Is<InPlaceLocation>(ipl => ipl.Id == inPlaceLocationId && ipl.Seats == 35),
             Arg.Any<CancellationToken>());
     }
@@ -594,7 +595,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Equal("In-place location cannot be null.", result.Message);
 
-        await mockRepo.DidNotReceive().UpdateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -614,7 +615,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -622,7 +623,7 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
-        mockRepo.GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new InPlaceLocation(1, 1, 101, 30));
         var service = new InPlaceLocationService(mockRepo);
         var input = new UpdateInPlaceLocationInput(1, 0, 101, 30);
@@ -642,7 +643,7 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
-        mockRepo.GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new InPlaceLocation(1, 1, 101, 30));
         var service = new InPlaceLocationService(mockRepo);
         var input = new UpdateInPlaceLocationInput(1, 1, 0, 30);
@@ -662,7 +663,7 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
-        mockRepo.GetInPlaceLocationByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new InPlaceLocation(1, 1, 101, 30));
         var service = new InPlaceLocationService(mockRepo);
         var input = new UpdateInPlaceLocationInput(1, 1, 101, 0);
@@ -684,7 +685,7 @@ public class InPlaceLocationService_Tests
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns((InPlaceLocation)null!);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -699,7 +700,7 @@ public class InPlaceLocationService_Tests
         Assert.Null(result.Result);
         Assert.Contains($"In-place location with ID '{inPlaceLocationId}' not found", result.Message);
 
-        await mockRepo.DidNotReceive().UpdateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -710,10 +711,10 @@ public class InPlaceLocationService_Tests
         var inPlaceLocationId = 1;
         var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
 
-        mockRepo.UpdateInPlaceLocationAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
+        mockRepo.UpdateAsync(Arg.Any<int>(), Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<InPlaceLocation?>(new Exception("Database error")));
 
         var service = new InPlaceLocationService(mockRepo);
@@ -742,13 +743,13 @@ public class InPlaceLocationService_Tests
         var inPlaceLocationId = 1;
         var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
 
         mockRepo.HasCourseEventsAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        mockRepo.DeleteInPlaceLocationAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.RemoveAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(true);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -762,7 +763,7 @@ public class InPlaceLocationService_Tests
         Assert.True(result.Result);
         Assert.Equal("In-place location deleted successfully.", result.Message);
 
-        await mockRepo.Received(1).DeleteInPlaceLocationAsync(inPlaceLocationId, Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).RemoveAsync(inPlaceLocationId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -781,7 +782,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().DeleteInPlaceLocationAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -800,7 +801,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Result);
         Assert.Contains("greater than zero", result.Message);
 
-        await mockRepo.DidNotReceive().DeleteInPlaceLocationAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -810,7 +811,7 @@ public class InPlaceLocationService_Tests
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns((InPlaceLocation)null!);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -824,7 +825,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Result);
         Assert.Contains($"In-place location with ID '{inPlaceLocationId}' not found", result.Message);
 
-        await mockRepo.DidNotReceive().DeleteInPlaceLocationAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -835,7 +836,7 @@ public class InPlaceLocationService_Tests
         var inPlaceLocationId = 1;
         var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
 
         mockRepo.HasCourseEventsAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
@@ -853,7 +854,7 @@ public class InPlaceLocationService_Tests
         Assert.Contains("Cannot delete in-place location", result.Message);
         Assert.Contains("assigned to course events", result.Message);
 
-        await mockRepo.DidNotReceive().DeleteInPlaceLocationAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -864,13 +865,13 @@ public class InPlaceLocationService_Tests
         var inPlaceLocationId = 1;
         var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
 
         mockRepo.HasCourseEventsAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        mockRepo.DeleteInPlaceLocationAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.RemoveAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<bool>(new Exception("Database error")));
 
         var service = new InPlaceLocationService(mockRepo);
@@ -894,13 +895,13 @@ public class InPlaceLocationService_Tests
         var inPlaceLocationId = 1;
         var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
 
-        mockRepo.GetInPlaceLocationByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
 
         mockRepo.HasCourseEventsAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        mockRepo.DeleteInPlaceLocationAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+        mockRepo.RemoveAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(false);
 
         var service = new InPlaceLocationService(mockRepo);
@@ -917,4 +918,3 @@ public class InPlaceLocationService_Tests
 
     #endregion
 }
-

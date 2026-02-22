@@ -39,7 +39,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
 
             var newCourseEventType = new CourseEventType(courseEventType.TypeName);
 
-            var createdCourseEventType = await _courseEventTypeRepository.CreateCourseEventTypeAsync(newCourseEventType, cancellationToken);
+            var createdCourseEventType = await _courseEventTypeRepository.AddAsync(newCourseEventType, cancellationToken);
             _cache.ResetEntity(createdCourseEventType);
             _cache.SetEntity(createdCourseEventType);
 
@@ -77,7 +77,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
         try
         {
             var courseEventTypes = await _cache.GetAllAsync(
-                token => _courseEventTypeRepository.GetAllCourseEventTypesAsync(token),
+                token => _courseEventTypeRepository.GetAllAsync(token),
                 cancellationToken);
 
             if (!courseEventTypes.Any())
@@ -126,7 +126,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
 
             var result = await _cache.GetByIdAsync(
                 courseEventTypeId,
-                token => _courseEventTypeRepository.GetCourseEventTypeByIdAsync(courseEventTypeId, token),
+                token => _courseEventTypeRepository.GetByIdAsync(courseEventTypeId, token),
                 cancellationToken);
 
             if (result == null)
@@ -217,7 +217,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 };
             }
 
-            var existingCourseEventType = await _courseEventTypeRepository.GetCourseEventTypeByIdAsync(courseEventType.Id, cancellationToken);
+            var existingCourseEventType = await _courseEventTypeRepository.GetByIdAsync(courseEventType.Id, cancellationToken);
 
             if (existingCourseEventType == null)
             {
@@ -231,7 +231,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
 
             var newCourseEventType = new CourseEventType(courseEventType.Id, courseEventType.TypeName);
 
-            var updatedCourseEventType = await _courseEventTypeRepository.UpdateCourseEventTypeAsync(newCourseEventType, cancellationToken);
+            var updatedCourseEventType = await _courseEventTypeRepository.UpdateAsync(newCourseEventType.Id, newCourseEventType, cancellationToken);
 
             if (updatedCourseEventType == null)
             {
@@ -289,7 +289,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 };
             }
 
-            var existingCourseEventType = await _courseEventTypeRepository.GetCourseEventTypeByIdAsync(courseEventTypeId, cancellationToken);
+            var existingCourseEventType = await _courseEventTypeRepository.GetByIdAsync(courseEventTypeId, cancellationToken);
             if (existingCourseEventType == null)
             {
                 return new CourseEventTypeDeleteResult
@@ -313,7 +313,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 };
             }
 
-            var result = await _courseEventTypeRepository.DeleteCourseEventTypeAsync(courseEventTypeId, cancellationToken);
+            var result = await _courseEventTypeRepository.RemoveAsync(courseEventTypeId, cancellationToken);
             _cache.ResetEntity(existingCourseEventType);
 
             return new CourseEventTypeDeleteResult
@@ -336,3 +336,4 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
         }
     }
 }
+

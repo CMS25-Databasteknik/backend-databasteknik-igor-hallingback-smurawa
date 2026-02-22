@@ -31,7 +31,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 inPlaceLocation.Seats
             );
 
-            var result = await _inPlaceLocationRepository.CreateInPlaceLocationAsync(newInPlaceLocation, cancellationToken);
+            var result = await _inPlaceLocationRepository.AddAsync(newInPlaceLocation, cancellationToken);
 
             return new InPlaceLocationResult
             {
@@ -67,7 +67,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
     {
         try
         {
-            var inPlaceLocations = await _inPlaceLocationRepository.GetAllInPlaceLocationsAsync(cancellationToken);
+            var inPlaceLocations = await _inPlaceLocationRepository.GetAllAsync(cancellationToken);
 
             if (!inPlaceLocations.Any())
             {
@@ -113,7 +113,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            var result = await _inPlaceLocationRepository.GetInPlaceLocationByIdAsync(inPlaceLocationId, cancellationToken);
+            var result = await _inPlaceLocationRepository.GetByIdAsync(inPlaceLocationId, cancellationToken);
 
             if (result == null)
             {
@@ -214,7 +214,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            var existingInPlaceLocation = await _inPlaceLocationRepository.GetInPlaceLocationByIdAsync(inPlaceLocation.Id, cancellationToken);
+            var existingInPlaceLocation = await _inPlaceLocationRepository.GetByIdAsync(inPlaceLocation.Id, cancellationToken);
             if (existingInPlaceLocation == null)
             {
                 return new InPlaceLocationResult
@@ -232,7 +232,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 inPlaceLocation.Seats
             );
 
-            var result = await _inPlaceLocationRepository.UpdateInPlaceLocationAsync(updatedInPlaceLocation, cancellationToken);
+            var result = await _inPlaceLocationRepository.UpdateAsync(updatedInPlaceLocation.Id, updatedInPlaceLocation, cancellationToken);
 
             if (result == null)
             {
@@ -287,7 +287,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            var existingInPlaceLocation = await _inPlaceLocationRepository.GetInPlaceLocationByIdAsync(inPlaceLocationId, cancellationToken);
+            var existingInPlaceLocation = await _inPlaceLocationRepository.GetByIdAsync(inPlaceLocationId, cancellationToken);
             if (existingInPlaceLocation == null)
             {
                 return new InPlaceLocationDeleteResult
@@ -311,7 +311,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            var result = await _inPlaceLocationRepository.DeleteInPlaceLocationAsync(inPlaceLocationId, cancellationToken);
+            var result = await _inPlaceLocationRepository.RemoveAsync(inPlaceLocationId, cancellationToken);
 
             if (!result)
             {
@@ -344,3 +344,4 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
         }
     }
 }
+

@@ -173,4 +173,3 @@ public class CreateCourseInput_Tests
         Assert.Equal(10, durationInDays);
     }
 }
-

@@ -30,7 +30,7 @@ public class CourseRegistrationStatusService_Tests
     public async Task GetAll_Should_Return_Success_With_Data()
     {
         var service = CreateService(out var repo, out var cache);
-        repo.GetAllCourseRegistrationStatusesAsync(Arg.Any<CancellationToken>())
+        repo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(new List<CourseRegistrationStatus> { new(1, "Paid"), new(0, "Pending") });
 
         CourseRegistrationStatusListResult result = await service.GetAllCourseRegistrationStatusesAsync();
@@ -39,7 +39,7 @@ public class CourseRegistrationStatusService_Tests
         Assert.Equal(200, result.StatusCode);
         Assert.Equal(2, result.Result?.Count());
         Assert.Equal("Retrieved 2 course registration status(es) successfully.", result.Message);
-        await repo.Received(1).GetAllCourseRegistrationStatusesAsync(Arg.Any<CancellationToken>());
+        await repo.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
         await cache.Received(1).GetAllAsync(
             Arg.Any<Func<CancellationToken, Task<IReadOnlyList<CourseRegistrationStatus>>>>(),
             Arg.Any<CancellationToken>());
@@ -49,7 +49,7 @@ public class CourseRegistrationStatusService_Tests
     public async Task GetAll_Should_Return_Success_NoData()
     {
         var service = CreateService(out var repo, out _);
-        repo.GetAllCourseRegistrationStatusesAsync(Arg.Any<CancellationToken>())
+        repo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(new List<CourseRegistrationStatus>());
 
         var result = await service.GetAllCourseRegistrationStatusesAsync();
@@ -65,7 +65,7 @@ public class CourseRegistrationStatusService_Tests
     public async Task GetAll_Should_Handle_Exception()
     {
         var service = CreateService(out var repo, out _);
-        repo.GetAllCourseRegistrationStatusesAsync(Arg.Any<CancellationToken>())
+        repo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromException<IReadOnlyList<CourseRegistrationStatus>>(new Exception("db failure")));
 
         var result = await service.GetAllCourseRegistrationStatusesAsync();
@@ -91,7 +91,7 @@ public class CourseRegistrationStatusService_Tests
     public async Task GetById_Should_Return_404_When_NotFound()
     {
         var service = CreateService(out var repo, out var cache);
-        repo.GetCourseRegistrationStatusByIdAsync(5, Arg.Any<CancellationToken>()).Returns((CourseRegistrationStatus?)null);
+        repo.GetByIdAsync(5, Arg.Any<CancellationToken>()).Returns((CourseRegistrationStatus?)null);
 
         var result = await service.GetCourseRegistrationStatusByIdAsync(5);
 
@@ -107,7 +107,7 @@ public class CourseRegistrationStatusService_Tests
     public async Task GetById_Should_Return_Status_When_Found()
     {
         var service = CreateService(out var repo, out var cache);
-        repo.GetCourseRegistrationStatusByIdAsync(1, Arg.Any<CancellationToken>()).Returns(new CourseRegistrationStatus(1, "Paid"));
+        repo.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(new CourseRegistrationStatus(1, "Paid"));
 
         var result = await service.GetCourseRegistrationStatusByIdAsync(1);
 
@@ -195,7 +195,7 @@ public class CourseRegistrationStatusService_Tests
     public async Task Delete_Should_Return_404_When_NotFound()
     {
         var service = CreateService(out var repo, out var cache);
-        repo.GetCourseRegistrationStatusByIdAsync(3, Arg.Any<CancellationToken>()).Returns((CourseRegistrationStatus?)null);
+        repo.GetByIdAsync(3, Arg.Any<CancellationToken>()).Returns((CourseRegistrationStatus?)null);
 
         var result = await service.DeleteCourseRegistrationStatusAsync(3);
 
@@ -208,7 +208,7 @@ public class CourseRegistrationStatusService_Tests
     public async Task Delete_Should_Return_409_When_InUse()
     {
         var service = CreateService(out var repo, out var cache);
-        repo.GetCourseRegistrationStatusByIdAsync(1, Arg.Any<CancellationToken>()).Returns(new CourseRegistrationStatus(1, "Paid"));
+        repo.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(new CourseRegistrationStatus(1, "Paid"));
         repo.IsInUseAsync(1, Arg.Any<CancellationToken>()).Returns(true);
 
         var result = await service.DeleteCourseRegistrationStatusAsync(1);
@@ -222,9 +222,9 @@ public class CourseRegistrationStatusService_Tests
     public async Task Delete_Should_Return_200_For_Valid_NotInUse()
     {
         var service = CreateService(out var repo, out var cache);
-        repo.GetCourseRegistrationStatusByIdAsync(1, Arg.Any<CancellationToken>()).Returns(new CourseRegistrationStatus(1, "Paid"));
+        repo.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(new CourseRegistrationStatus(1, "Paid"));
         repo.IsInUseAsync(1, Arg.Any<CancellationToken>()).Returns(false);
-        repo.DeleteCourseRegistrationStatusAsync(1, Arg.Any<CancellationToken>()).Returns(true);
+        repo.RemoveAsync(1, Arg.Any<CancellationToken>()).Returns(true);
 
         var result = await service.DeleteCourseRegistrationStatusAsync(1);
 
@@ -238,10 +238,10 @@ public class CourseRegistrationStatusService_Tests
     public async Task Delete_Should_Return_500_When_Repository_Throws()
     {
         var service = CreateService(out var repo, out var cache);
-        repo.GetCourseRegistrationStatusByIdAsync(1, Arg.Any<CancellationToken>())
+        repo.GetByIdAsync(1, Arg.Any<CancellationToken>())
             .Returns(new CourseRegistrationStatus(1, "Paid"));
         repo.IsInUseAsync(1, Arg.Any<CancellationToken>()).Returns(false);
-        repo.DeleteCourseRegistrationStatusAsync(1, Arg.Any<CancellationToken>())
+        repo.RemoveAsync(1, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<bool>(new Exception("db failure")));
 
         var result = await service.DeleteCourseRegistrationStatusAsync(1);
@@ -268,7 +268,7 @@ public class CourseRegistrationStatusService_Tests
     {
         var service = CreateService(out _, out var cache);
         var repo = Substitute.For<ICourseRegistrationStatusRepository>();
-        repo.CreateCourseRegistrationStatusAsync(Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>())
+        repo.AddAsync(Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>())
             .Returns(new CourseRegistrationStatus(4, "New"));
         service = new CourseRegistrationStatusService(cache, repo);
 
@@ -294,7 +294,7 @@ public class CourseRegistrationStatusService_Tests
         Assert.False(result.Success);
         Assert.Equal(400, result.StatusCode);
         Assert.Equal("A status with the same name already exists.", result.Message);
-        await repo.DidNotReceive().CreateCourseRegistrationStatusAsync(Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>());
+        await repo.DidNotReceive().AddAsync(Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>());
         cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
         cache.DidNotReceive().SetEntity(Arg.Any<CourseRegistrationStatus>());
     }
@@ -306,7 +306,7 @@ public class CourseRegistrationStatusService_Tests
         var cache = Substitute.For<ICourseRegistrationStatusCache>();
         cache.GetByIdAsync(Arg.Any<int>(), Arg.Any<Func<CancellationToken, Task<CourseRegistrationStatus?>>>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Func<CancellationToken, Task<CourseRegistrationStatus?>>>()(ci.Arg<CancellationToken>()));
-        repo.GetCourseRegistrationStatusByIdAsync(1, Arg.Any<CancellationToken>())
+        repo.GetByIdAsync(1, Arg.Any<CancellationToken>())
             .Returns(new CourseRegistrationStatus(1, "Paid"));
         var service = new CourseRegistrationStatusService(cache, repo);
 
@@ -325,9 +325,9 @@ public class CourseRegistrationStatusService_Tests
         var cache = Substitute.For<ICourseRegistrationStatusCache>();
         cache.GetByIdAsync(Arg.Any<int>(), Arg.Any<Func<CancellationToken, Task<CourseRegistrationStatus?>>>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Func<CancellationToken, Task<CourseRegistrationStatus?>>>()(ci.Arg<CancellationToken>()));
-        repo.GetCourseRegistrationStatusByIdAsync(1, Arg.Any<CancellationToken>())
+        repo.GetByIdAsync(1, Arg.Any<CancellationToken>())
             .Returns(new CourseRegistrationStatus(1, "Paid"));
-        repo.UpdateCourseRegistrationStatusAsync(Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>())
+        repo.UpdateAsync(Arg.Any<int>(), Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>())
             .Returns(new CourseRegistrationStatus(1, "Paid Updated"));
         var service = new CourseRegistrationStatusService(cache, repo);
 
@@ -345,7 +345,7 @@ public class CourseRegistrationStatusService_Tests
     public async Task Update_Should_Return_404_When_Status_NotFound()
     {
         var service = CreateService(out var repo, out var cache);
-        repo.GetCourseRegistrationStatusByIdAsync(99, Arg.Any<CancellationToken>())
+        repo.GetByIdAsync(99, Arg.Any<CancellationToken>())
             .Returns((CourseRegistrationStatus?)null);
 
         var result = await service.UpdateCourseRegistrationStatusAsync(new UpdateCourseRegistrationStatusInput(99, "Paid"));
@@ -360,9 +360,9 @@ public class CourseRegistrationStatusService_Tests
     public async Task Update_Should_Return_500_When_Repository_Throws()
     {
         var service = CreateService(out var repo, out var cache);
-        repo.GetCourseRegistrationStatusByIdAsync(1, Arg.Any<CancellationToken>())
+        repo.GetByIdAsync(1, Arg.Any<CancellationToken>())
             .Returns(new CourseRegistrationStatus(1, "Paid"));
-        repo.UpdateCourseRegistrationStatusAsync(Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>())
+        repo.UpdateAsync(Arg.Any<int>(), Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException<CourseRegistrationStatus?>(new Exception("db failure")));
 
         var result = await service.UpdateCourseRegistrationStatusAsync(new UpdateCourseRegistrationStatusInput(1, "Paid Updated"));
@@ -384,8 +384,3 @@ public class CourseRegistrationStatusService_Tests
         Assert.Throws<ArgumentNullException>(() => new CourseRegistrationStatusService(cache, null!));
     }
 }
-
-
-
-
-

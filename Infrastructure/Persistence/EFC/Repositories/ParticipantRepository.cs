@@ -7,16 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 
-public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipantRepository
+public class ParticipantRepository(CoursesOnlineDbContext context)
+    : RepositoryBase<Participant, Guid, ParticipantEntity, CoursesOnlineDbContext>(context), IParticipantRepository
 {
-    private readonly CoursesOnlineDbContext _context = context;
-
-    private static Participant ToModel(ParticipantEntity entity)
+    protected override Participant ToModel(ParticipantEntity entity)
         => new(entity.Id, entity.FirstName, entity.LastName, entity.Email, entity.PhoneNumber, (ParticipantContactType)entity.ContactTypeId);
 
-    public async Task<Participant> CreateParticipantAsync(Participant participant, CancellationToken cancellationToken)
-    {
-        var entity = new ParticipantEntity
+    protected override ParticipantEntity ToEntity(Participant participant)
+        => new()
         {
             Id = participant.Id,
             FirstName = participant.FirstName,
@@ -26,13 +24,17 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
             ContactTypeId = (int)participant.ContactType
         };
 
+    public override async Task<Participant> AddAsync(Participant participant, CancellationToken cancellationToken)
+    {
+        var entity = ToEntity(participant);
+
         _context.Participants.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
         return ToModel(entity);
     }
 
-    public async Task<bool> DeleteParticipantAsync(Guid participantId, CancellationToken cancellationToken)
+    public override async Task<bool> RemoveAsync(Guid participantId, CancellationToken cancellationToken)
     {
         using var tx = await _context.Database.BeginTransactionAsync(cancellationToken);
 
@@ -62,7 +64,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
         }
     }
 
-    public async Task<IReadOnlyList<Participant>> GetAllParticipantsAsync(CancellationToken cancellationToken)
+    public override async Task<IReadOnlyList<Participant>> GetAllAsync(CancellationToken cancellationToken)
     {
         var entities = await _context.Participants
             .AsNoTracking()
@@ -73,7 +75,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
         return [.. entities.Select(ToModel)];
     }
 
-    public async Task<Participant?> GetParticipantByIdAsync(Guid participantId, CancellationToken cancellationToken)
+    public override async Task<Participant?> GetByIdAsync(Guid participantId, CancellationToken cancellationToken)
     {
         var entity = await _context.Participants
             .AsNoTracking()
@@ -82,11 +84,11 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
         return entity == null ? null : ToModel(entity);
     }
 
-    public async Task<Participant?> UpdateParticipantAsync(Participant participant, CancellationToken cancellationToken)
+    public override async Task<Participant?> UpdateAsync(Guid id, Participant participant, CancellationToken cancellationToken)
     {
-        var entity = await _context.Participants.SingleOrDefaultAsync(p => p.Id == participant.Id, cancellationToken);
+        var entity = await _context.Participants.SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
 
-        if (entity == null)
+        if (entity is null)
             throw new KeyNotFoundException($"Participant '{participant.Id}' not found.");
 
         entity.FirstName = participant.FirstName;
@@ -108,7 +110,3 @@ public class ParticipantRepository(CoursesOnlineDbContext context) : IParticipan
             .AnyAsync(cr => cr.ParticipantId == participantId, cancellationToken);
     }
 }
-
-
-
-

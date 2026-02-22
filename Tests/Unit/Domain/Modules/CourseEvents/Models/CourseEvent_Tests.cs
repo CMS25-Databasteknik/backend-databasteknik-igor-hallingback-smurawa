@@ -424,10 +424,3 @@ public class CourseEvent_Tests
         Assert.Equal(price, courseEvent.Price);
     }
 }
-
-
-
-
-
-
-

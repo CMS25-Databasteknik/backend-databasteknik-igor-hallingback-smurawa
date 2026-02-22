@@ -8,10 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 
-public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICourseRegistrationRepository
+public class CourseRegistrationRepository(CoursesOnlineDbContext context)
+    : RepositoryBase<CourseRegistration, Guid, CourseRegistrationEntity, CoursesOnlineDbContext>(context), ICourseRegistrationRepository
 {
-    private readonly CoursesOnlineDbContext _context = context;
-
     private static CourseRegistrationStatus ToStatusModel(CourseRegistrationEntity entity)
     {
         var statusName = entity.CourseRegistrationStatus?.Name;
@@ -29,10 +28,20 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
         };
     }
 
-    private static CourseRegistration ToModel(CourseRegistrationEntity entity)
+    protected override CourseRegistration ToModel(CourseRegistrationEntity entity)
         => new(entity.Id, entity.ParticipantId, entity.CourseEventId, entity.RegistrationDate, ToStatusModel(entity), (PaymentMethod)entity.PaymentMethodId);
 
-    public async Task<CourseRegistration> CreateCourseRegistrationAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken)
+    protected override CourseRegistrationEntity ToEntity(CourseRegistration courseRegistration)
+        => new()
+        {
+            Id = courseRegistration.Id,
+            ParticipantId = courseRegistration.ParticipantId,
+            CourseEventId = courseRegistration.CourseEventId,
+            CourseRegistrationStatusId = courseRegistration.Status.Id,
+            PaymentMethodId = (int)courseRegistration.PaymentMethod
+        };
+
+    public override async Task<CourseRegistration> AddAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken)
     {
         using var tx = await _context.Database.BeginTransactionAsync(
             System.Data.IsolationLevel.Serializable,
@@ -54,14 +63,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
             if (availableSeats <= 0)
                 throw new InvalidOperationException($"No available seats for course event '{courseRegistration.CourseEventId}'.");
 
-            var entity = new CourseRegistrationEntity
-            {
-                Id = courseRegistration.Id,
-                ParticipantId = courseRegistration.ParticipantId,
-                CourseEventId = courseRegistration.CourseEventId,
-                CourseRegistrationStatusId = courseRegistration.Status.Id,
-                PaymentMethodId = (int)courseRegistration.PaymentMethod
-            };
+            var entity = ToEntity(courseRegistration);
 
             _context.CourseRegistrations.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
@@ -75,6 +77,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
             throw;
         }
     }
+
     public async Task<CourseRegistration?> CreateRegistrationWithSeatCheckAsync(
         CourseRegistration courseRegistration,
         CancellationToken cancellationToken)
@@ -102,14 +105,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
                 return null;
             }
 
-            var entity = new CourseRegistrationEntity
-            {
-                Id = courseRegistration.Id,
-                ParticipantId = courseRegistration.ParticipantId,
-                CourseEventId = courseRegistration.CourseEventId,
-                CourseRegistrationStatusId = courseRegistration.Status.Id,
-                PaymentMethodId = (int)courseRegistration.PaymentMethod
-            };
+            var entity = ToEntity(courseRegistration);
 
             _context.CourseRegistrations.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
@@ -124,20 +120,18 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
         }
     }
 
-    public async Task<bool> DeleteCourseRegistrationAsync(Guid courseRegistrationId, CancellationToken cancellationToken)
+    public override async Task<bool> RemoveAsync(Guid courseRegistrationId, CancellationToken cancellationToken)
     {
         var entity = await _context.CourseRegistrations.SingleOrDefaultAsync(cr => cr.Id == courseRegistrationId, cancellationToken);
-
         if (entity == null)
             throw new KeyNotFoundException($"Course registration '{courseRegistrationId}' not found.");
 
         _context.CourseRegistrations.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 
-    public async Task<IReadOnlyList<CourseRegistration>> GetAllCourseRegistrationsAsync(CancellationToken cancellationToken)
+    public override async Task<IReadOnlyList<CourseRegistration>> GetAllAsync(CancellationToken cancellationToken)
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
@@ -148,7 +142,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
         return [.. entities.Select(ToModel)];
     }
 
-    public async Task<CourseRegistration?> GetCourseRegistrationByIdAsync(Guid courseRegistrationId, CancellationToken cancellationToken)
+    public override async Task<CourseRegistration?> GetByIdAsync(Guid courseRegistrationId, CancellationToken cancellationToken)
     {
         var entity = await _context.CourseRegistrations
             .AsNoTracking()
@@ -182,9 +176,9 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
         return [.. entities.Select(ToModel)];
     }
 
-    public async Task<CourseRegistration?> UpdateCourseRegistrationAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken)
+    public override async Task<CourseRegistration?> UpdateAsync(Guid id, CourseRegistration courseRegistration, CancellationToken cancellationToken)
     {
-        var entity = await _context.CourseRegistrations.SingleOrDefaultAsync(cr => cr.Id == courseRegistration.Id, cancellationToken);
+        var entity = await _context.CourseRegistrations.SingleOrDefaultAsync(cr => cr.Id == id, cancellationToken);
 
         if (entity == null)
             throw new KeyNotFoundException($"Course registration '{courseRegistration.Id}' not found.");
@@ -199,6 +193,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context) : ICou
 
         return ToModel(entity);
     }
+
 }
 
 

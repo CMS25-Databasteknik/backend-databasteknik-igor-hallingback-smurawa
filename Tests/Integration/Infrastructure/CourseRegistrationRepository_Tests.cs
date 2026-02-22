@@ -25,8 +25,8 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
             CourseRegistrationStatus.Pending,
             PaymentMethod.Card);
 
-        var created = await repo.CreateCourseRegistrationAsync(input, CancellationToken.None);
-        var byId = await repo.GetCourseRegistrationByIdAsync(created.Id, CancellationToken.None);
+        var created = await repo.AddAsync(input, CancellationToken.None);
+        var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
 
         Assert.NotNull(byId);
         Assert.Equal(input.Id, created.Id);
@@ -82,7 +82,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         var created = await RepositoryTestDataHelper.CreateCourseRegistrationAsync(context);
         var repo = new CourseRegistrationRepository(context);
 
-        var all = await repo.GetAllCourseRegistrationsAsync(CancellationToken.None);
+        var all = await repo.GetAllAsync(CancellationToken.None);
 
         Assert.Contains(all, x => x.Id == created.Id);
     }
@@ -122,7 +122,8 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         var created = await RepositoryTestDataHelper.CreateCourseRegistrationAsync(context, participant.Id, courseEvent.Id);
         var repo = new CourseRegistrationRepository(context);
 
-        var updated = await repo.UpdateCourseRegistrationAsync(
+        var updated = await repo.UpdateAsync(
+            created.Id,
             new CourseRegistration(
                 created.Id,
                 created.ParticipantId,
@@ -150,8 +151,8 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         var created = await RepositoryTestDataHelper.CreateCourseRegistrationAsync(context);
         var repo = new CourseRegistrationRepository(context);
 
-        var deleted = await repo.DeleteCourseRegistrationAsync(created.Id, CancellationToken.None);
-        var loaded = await repo.GetCourseRegistrationByIdAsync(created.Id, CancellationToken.None);
+        var deleted = await repo.RemoveAsync(created.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
 
         Assert.True(deleted);
         Assert.Null(loaded);

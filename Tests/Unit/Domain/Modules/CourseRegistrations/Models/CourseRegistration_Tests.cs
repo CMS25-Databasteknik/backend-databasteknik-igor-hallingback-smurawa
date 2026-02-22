@@ -103,4 +103,3 @@ public class CourseRegistration_Tests
         Assert.Equal(date, registration.RegistrationDate);
     }
 }
-

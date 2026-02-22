@@ -1,14 +1,10 @@
 using Backend.Domain.Modules.Instructors.Models;
+using Backend.Domain.Common.Base;
 
 namespace Backend.Domain.Modules.Instructors.Contracts;
 
-public interface IInstructorRepository
+public interface IInstructorRepository : IRepositoryBase<Instructor, Guid>
 {
-    Task<Instructor> CreateInstructorAsync(Instructor instructor, CancellationToken cancellationToken);
-    Task<Instructor?> GetInstructorByIdAsync(Guid instructorId, CancellationToken cancellationToken);
-    Task<IReadOnlyList<Instructor>> GetAllInstructorsAsync(CancellationToken cancellationToken);
-    Task<Instructor?> UpdateInstructorAsync(Instructor instructor, CancellationToken cancellationToken);
-    Task<bool> DeleteInstructorAsync(Guid instructorId, CancellationToken cancellationToken);
     Task<bool> HasCourseEventsAsync(Guid instructorId, CancellationToken cancellationToken);
 }
 

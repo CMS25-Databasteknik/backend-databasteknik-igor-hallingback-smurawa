@@ -14,7 +14,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new CourseRepository(context);
         var input = new Course(Guid.NewGuid(), $"Test Course {Guid.NewGuid():N}", "A course for testing", 5);
 
-        var course = await repo.CreateCourseAsync(input, CancellationToken.None);
+        var course = await repo.AddAsync(input, CancellationToken.None);
 
         Assert.NotNull(course);
         Assert.Equal(input.Id, course.Id);
@@ -39,10 +39,10 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRepository(context);
 
-        await repo.CreateCourseAsync(new Course(Guid.NewGuid(), $"C-{Guid.NewGuid():N}", "D1", 1), CancellationToken.None);
-        await repo.CreateCourseAsync(new Course(Guid.NewGuid(), $"C-{Guid.NewGuid():N}", "D2", 2), CancellationToken.None);
+        await repo.AddAsync(new Course(Guid.NewGuid(), $"C-{Guid.NewGuid():N}", "D1", 1), CancellationToken.None);
+        await repo.AddAsync(new Course(Guid.NewGuid(), $"C-{Guid.NewGuid():N}", "D2", 2), CancellationToken.None);
 
-        var courses = await repo.GetAllCoursesAsync(CancellationToken.None);
+        var courses = await repo.GetAllAsync(CancellationToken.None);
 
         Assert.True(courses.Count >= 2);
     }
@@ -69,7 +69,8 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new CourseRepository(context);
         var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
 
-        var updated = await repo.UpdateCourseAsync(
+        var updated = await repo.UpdateAsync(
+            course.Id,
             new Course(course.Id, "Updated Title", "Updated Description", 10),
             CancellationToken.None);
 
@@ -105,7 +106,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new CourseRepository(context);
         var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
 
-        var deleted = await repo.DeleteCourseAsync(course.Id, CancellationToken.None);
+        var deleted = await repo.RemoveAsync(course.Id, CancellationToken.None);
         var loaded = await repo.GetCourseByIdAsync(course.Id, CancellationToken.None);
 
         Assert.True(deleted);

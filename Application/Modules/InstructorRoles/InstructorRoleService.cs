@@ -24,7 +24,7 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
             }
 
             var role = new InstructorRole(input.RoleName);
-            var created = await _repository.CreateInstructorRoleAsync(role, cancellationToken);
+            var created = await _repository.AddAsync(role, cancellationToken);
 
             return new InstructorRoleResult
             {
@@ -58,7 +58,7 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
     {
         try
         {
-            var roles = await _repository.GetAllInstructorRolesAsync(cancellationToken);
+            var roles = await _repository.GetAllAsync(cancellationToken);
             return new InstructorRoleListResult
             {
                 Success = true,
@@ -92,7 +92,7 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 };
             }
 
-            var role = await _repository.GetInstructorRoleByIdAsync(id, cancellationToken);
+            var role = await _repository.GetByIdAsync(id, cancellationToken);
             if (role == null)
             {
                 return new InstructorRoleResult
@@ -146,7 +146,8 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 };
             }
 
-            var updated = await _repository.UpdateInstructorRoleAsync(new InstructorRole(input.Id, input.RoleName), cancellationToken);
+            var updatedRole = new InstructorRole(input.Id, input.RoleName);
+            var updated = await _repository.UpdateAsync(updatedRole.Id, updatedRole, cancellationToken);
             if (updated == null)
             {
                 return new InstructorRoleResult
@@ -200,7 +201,7 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 };
             }
 
-            var result = await _repository.DeleteInstructorRoleAsync(id, cancellationToken);
+            var result = await _repository.RemoveAsync(id, cancellationToken);
             if (!result)
             {
                 return new InstructorRoleDeleteResult
@@ -242,3 +243,4 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
         }
     }
 }
+

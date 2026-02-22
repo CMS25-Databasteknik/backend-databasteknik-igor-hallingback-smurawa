@@ -6,27 +6,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 
-public class InstructorRoleRepository(CoursesOnlineDbContext context) : IInstructorRoleRepository
+public class InstructorRoleRepository(CoursesOnlineDbContext context)
+    : RepositoryBase<InstructorRole, int, InstructorRoleEntity, CoursesOnlineDbContext>(context), IInstructorRoleRepository
 {
-    private readonly CoursesOnlineDbContext _context = context;
-
-    private static InstructorRole ToModel(InstructorRoleEntity entity) =>
+    protected override InstructorRole ToModel(InstructorRoleEntity entity) =>
         new(entity.Id, entity.RoleName);
 
-    public async Task<InstructorRole> CreateInstructorRoleAsync(InstructorRole role, CancellationToken cancellationToken)
-    {
-        var entity = new InstructorRoleEntity
+    protected override InstructorRoleEntity ToEntity(InstructorRole role)
+        => new()
         {
+            Id = role.Id,
             RoleName = role.RoleName
         };
 
+    public override async Task<InstructorRole> AddAsync(InstructorRole role, CancellationToken cancellationToken)
+    {
+        var entity = ToEntity(role);
+        entity.Id = default;
         _context.InstructorRoles.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
-
-        return new InstructorRole(entity.Id, entity.RoleName);
+        return ToModel(entity);
     }
 
-    public async Task<IReadOnlyList<InstructorRole>> GetAllInstructorRolesAsync(CancellationToken cancellationToken)
+    public override async Task<IReadOnlyList<InstructorRole>> GetAllAsync(CancellationToken cancellationToken)
     {
         var entities = await _context.InstructorRoles
             .AsNoTracking()
@@ -36,7 +38,7 @@ public class InstructorRoleRepository(CoursesOnlineDbContext context) : IInstruc
         return [.. entities.Select(ToModel)];
     }
 
-    public async Task<InstructorRole?> GetInstructorRoleByIdAsync(int id, CancellationToken cancellationToken)
+    public override async Task<InstructorRole?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         var entity = await _context.InstructorRoles
             .AsNoTracking()
@@ -45,10 +47,10 @@ public class InstructorRoleRepository(CoursesOnlineDbContext context) : IInstruc
         return entity == null ? null : ToModel(entity);
     }
 
-    public async Task<InstructorRole?> UpdateInstructorRoleAsync(InstructorRole role, CancellationToken cancellationToken)
+    public override async Task<InstructorRole?> UpdateAsync(int id, InstructorRole role, CancellationToken cancellationToken)
     {
         var entity = await _context.InstructorRoles
-            .SingleOrDefaultAsync(r => r.Id == role.Id, cancellationToken);
+            .SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
 
         if (entity == null)
             return null;
@@ -59,10 +61,9 @@ public class InstructorRoleRepository(CoursesOnlineDbContext context) : IInstruc
         return ToModel(entity);
     }
 
-    public async Task<bool> DeleteInstructorRoleAsync(int id, CancellationToken cancellationToken)
+    public override async Task<bool> RemoveAsync(int id, CancellationToken cancellationToken)
     {
         var entity = await _context.InstructorRoles.SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
-
         if (entity == null)
             return false;
 
@@ -70,4 +71,5 @@ public class InstructorRoleRepository(CoursesOnlineDbContext context) : IInstruc
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
+
 }

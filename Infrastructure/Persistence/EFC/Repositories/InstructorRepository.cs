@@ -7,11 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 
-public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorRepository
+public class InstructorRepository(CoursesOnlineDbContext context)
+    : RepositoryBase<Instructor, Guid, InstructorEntity, CoursesOnlineDbContext>(context), IInstructorRepository
 {
-    private readonly CoursesOnlineDbContext _context = context;
-
-    private static Instructor ToModel(InstructorEntity entity)
+    protected override Instructor ToModel(InstructorEntity entity)
     {
         if (entity.InstructorRole == null)
             throw new InvalidOperationException("InstructorRole must be included when mapping Instructor.");
@@ -20,7 +19,15 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
         return new Instructor(entity.Id, entity.Name, role);
     }
 
-    public async Task<Instructor> CreateInstructorAsync(Instructor instructor, CancellationToken cancellationToken)
+    protected override InstructorEntity ToEntity(Instructor instructor)
+        => new()
+        {
+            Id = instructor.Id,
+            Name = instructor.Name,
+            InstructorRoleId = instructor.InstructorRoleId
+        };
+
+    public override async Task<Instructor> AddAsync(Instructor instructor, CancellationToken cancellationToken)
     {
         var roleExists = await _context.InstructorRoles
             .AsNoTracking()
@@ -28,13 +35,7 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
         if (roleExists == null)
             throw new KeyNotFoundException($"Instructor role '{instructor.InstructorRoleId}' not found.");
 
-        var entity = new InstructorEntity
-        {
-            Id = instructor.Id,
-            Name = instructor.Name,
-            InstructorRoleId = instructor.InstructorRoleId
-        };
-
+        var entity = ToEntity(instructor);
         _context.Instructors.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -42,20 +43,18 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
         return new Instructor(entity.Id, entity.Name, role);
     }
 
-    public async Task<bool> DeleteInstructorAsync(Guid instructorId, CancellationToken cancellationToken)
+    public override async Task<bool> RemoveAsync(Guid instructorId, CancellationToken cancellationToken)
     {
         var entity = await _context.Instructors.SingleOrDefaultAsync(i => i.Id == instructorId, cancellationToken);
-
         if (entity == null)
             throw new KeyNotFoundException($"Instructor '{instructorId}' not found.");
 
         _context.Instructors.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 
-    public async Task<IReadOnlyList<Instructor>> GetAllInstructorsAsync(CancellationToken cancellationToken)
+    public override async Task<IReadOnlyList<Instructor>> GetAllAsync(CancellationToken cancellationToken)
     {
         var entities = await _context.Instructors
             .AsNoTracking()
@@ -66,7 +65,7 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
         return [.. entities.Select(ToModel)];
     }
 
-    public async Task<Instructor?> GetInstructorByIdAsync(Guid instructorId, CancellationToken cancellationToken)
+    public override async Task<Instructor?> GetByIdAsync(Guid instructorId, CancellationToken cancellationToken)
     {
         var entity = await _context.Instructors
             .AsNoTracking()
@@ -76,7 +75,7 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
         return entity == null ? null : ToModel(entity);
     }
 
-    public async Task<Instructor?> UpdateInstructorAsync(Instructor instructor, CancellationToken cancellationToken)
+    public override async Task<Instructor?> UpdateAsync(Guid id, Instructor instructor, CancellationToken cancellationToken)
     {
         var roleEntity = await _context.InstructorRoles
             .AsNoTracking()
@@ -84,14 +83,12 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
         if (roleEntity == null)
             throw new KeyNotFoundException($"Instructor role '{instructor.InstructorRoleId}' not found.");
 
-        var entity = await _context.Instructors.SingleOrDefaultAsync(i => i.Id == instructor.Id, cancellationToken);
-
+        var entity = await _context.Instructors.SingleOrDefaultAsync(i => i.Id == id, cancellationToken);
         if (entity == null)
             throw new KeyNotFoundException($"Instructor '{instructor.Id}' not found.");
 
         entity.Name = instructor.Name;
         entity.InstructorRoleId = instructor.InstructorRoleId;
-
         await _context.SaveChangesAsync(cancellationToken);
 
         var role = new InstructorRole(roleEntity.Id, roleEntity.RoleName);
@@ -107,9 +104,3 @@ public class InstructorRepository(CoursesOnlineDbContext context) : IInstructorR
             .AnyAsync(cancellationToken);
     }
 }
-
-
-
-
-
-

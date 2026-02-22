@@ -63,5 +63,3 @@ public class Instructor_Tests
         Assert.Equal("Jane", instructor.Name);
     }
 }
-
-
