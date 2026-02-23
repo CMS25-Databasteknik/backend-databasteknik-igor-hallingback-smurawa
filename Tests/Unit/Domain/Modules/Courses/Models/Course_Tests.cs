@@ -483,9 +483,9 @@ public class Course_Tests
         Assert.NotNull(durationProperty);
 
         Assert.Null(idProperty.SetMethod);
-        Assert.Null(titleProperty.SetMethod);
-        Assert.Null(descriptionProperty.SetMethod);
-        Assert.Null(durationProperty.SetMethod);
+        Assert.Null(titleProperty.GetSetMethod());
+        Assert.Null(descriptionProperty.GetSetMethod());
+        Assert.Null(durationProperty.GetSetMethod());
     }
 
     [Fact]
@@ -577,6 +577,31 @@ public class Course_Tests
 
         // Assert
         Assert.Equal("Advanced C# 🚀", course.Title);
+    }
+
+    #endregion
+
+    #region Update
+
+    [Fact]
+    public void Update_Should_Change_Values_When_Input_Is_Valid()
+    {
+        var course = new Course(Guid.NewGuid(), "Old", "Old desc", 5);
+
+        course.Update("New Title", "New Description", 10);
+
+        Assert.Equal("New Title", course.Title);
+        Assert.Equal("New Description", course.Description);
+        Assert.Equal(10, course.DurationInDays);
+    }
+
+    [Fact]
+    public void Update_Should_Throw_ArgumentException_When_Title_Is_Whitespace()
+    {
+        var course = new Course(Guid.NewGuid(), "Old", "Old desc", 5);
+
+        var ex = Assert.Throws<ArgumentException>(() => course.Update("   ", "New Description", 10));
+        Assert.Equal("title", ex.ParamName);
     }
 
     #endregion

@@ -423,4 +423,52 @@ public class CourseEvent_Tests
         // Assert
         Assert.Equal(price, courseEvent.Price);
     }
+
+    [Fact]
+    public void Update_Should_Change_Values_When_Input_Is_Valid()
+    {
+        // Arrange
+        var courseEvent = new CourseEvent(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            100m,
+            10,
+            1,
+            VenueType.InPerson);
+
+        var newCourseId = Guid.NewGuid();
+        var newEventDate = DateTime.UtcNow.AddDays(7);
+
+        // Act
+        courseEvent.Update(newCourseId, newEventDate, 250m, 25, 2, VenueType.Hybrid);
+
+        // Assert
+        Assert.Equal(newCourseId, courseEvent.CourseId);
+        Assert.Equal(newEventDate, courseEvent.EventDate);
+        Assert.Equal(250m, courseEvent.Price);
+        Assert.Equal(25, courseEvent.Seats);
+        Assert.Equal(2, courseEvent.CourseEventTypeId);
+        Assert.Equal(VenueType.Hybrid, courseEvent.VenueType);
+    }
+
+    [Fact]
+    public void Update_Should_Throw_When_VenueType_Is_Invalid()
+    {
+        // Arrange
+        var courseEvent = new CourseEvent(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            100m,
+            10,
+            1,
+            VenueType.InPerson);
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() =>
+            courseEvent.Update(Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 100m, 10, 1, (VenueType)999));
+
+        Assert.Equal("venueType", exception.ParamName);
+    }
 }

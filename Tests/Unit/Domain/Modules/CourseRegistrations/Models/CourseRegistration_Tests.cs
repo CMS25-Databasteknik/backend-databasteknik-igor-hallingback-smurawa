@@ -102,4 +102,54 @@ public class CourseRegistration_Tests
 
         Assert.Equal(date, registration.RegistrationDate);
     }
+
+    [Fact]
+    public void Update_Should_Change_Values_When_Input_Is_Valid()
+    {
+        var registration = new CourseRegistration(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            CourseRegistrationStatus.Pending,
+            PaymentMethod.Card);
+
+        var newParticipantId = Guid.NewGuid();
+        var newCourseEventId = Guid.NewGuid();
+        var newDate = DateTime.UtcNow.AddDays(1);
+
+        registration.Update(
+            newParticipantId,
+            newCourseEventId,
+            newDate,
+            CourseRegistrationStatus.Paid,
+            PaymentMethod.Invoice);
+
+        Assert.Equal(newParticipantId, registration.ParticipantId);
+        Assert.Equal(newCourseEventId, registration.CourseEventId);
+        Assert.Equal(newDate, registration.RegistrationDate);
+        Assert.Equal(CourseRegistrationStatus.Paid, registration.Status);
+        Assert.Equal(PaymentMethod.Invoice, registration.PaymentMethod);
+    }
+
+    [Fact]
+    public void Update_Should_Throw_When_ParticipantId_Is_Empty()
+    {
+        var registration = new CourseRegistration(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            CourseRegistrationStatus.Pending,
+            PaymentMethod.Card);
+
+        var ex = Assert.Throws<ArgumentException>(() => registration.Update(
+            Guid.Empty,
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            CourseRegistrationStatus.Paid,
+            PaymentMethod.Invoice));
+
+        Assert.Equal("participantId", ex.ParamName);
+    }
 }

@@ -361,4 +361,25 @@ public class InPlaceLocation_Tests
         // Assert
         Assert.Equal(roomNumber, inPlaceLocation.RoomNumber);
     }
+
+    [Fact]
+    public void Update_Should_Change_Values_When_Input_Is_Valid()
+    {
+        var inPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+
+        inPlaceLocation.Update(2, 202, 45);
+
+        Assert.Equal(2, inPlaceLocation.LocationId);
+        Assert.Equal(202, inPlaceLocation.RoomNumber);
+        Assert.Equal(45, inPlaceLocation.Seats);
+    }
+
+    [Fact]
+    public void Update_Should_Throw_ArgumentException_When_Seats_Is_Zero()
+    {
+        var inPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+
+        var ex = Assert.Throws<ArgumentException>(() => inPlaceLocation.Update(1, 101, 0));
+        Assert.Equal("seats", ex.ParamName);
+    }
 }
