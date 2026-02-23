@@ -149,8 +149,8 @@ public class CourseEventService(
                 result.EventDate,
                 result.Price,
                 result.Seats,
-                new LookupItem(result.CourseEventType.Id, result.CourseEventType.TypeName),
-                new LookupItem((int)result.VenueType, result.VenueTypeName)
+                new CourseEventLookupItem(result.CourseEventType.Id, result.CourseEventType.TypeName),
+                new CourseEventLookupItem((int)result.VenueType, result.VenueTypeName)
             );
 
             return new CourseEventDetailsResult

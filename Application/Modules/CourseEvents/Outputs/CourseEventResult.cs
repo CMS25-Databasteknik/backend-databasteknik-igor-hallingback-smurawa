@@ -3,7 +3,7 @@ using Backend.Domain.Modules.CourseEvents.Models;
 
 namespace Backend.Application.Modules.CourseEvents.Outputs;
 
-public sealed record LookupItem(int Id, string Name);
+public sealed record CourseEventLookupItem(int Id, string Name);
 
 public sealed record CourseEventDetails(
     Guid Id,
@@ -11,8 +11,8 @@ public sealed record CourseEventDetails(
     DateTime EventDate,
     decimal Price,
     int Seats,
-    LookupItem CourseEventType,
-    LookupItem VenueType
+    CourseEventLookupItem CourseEventType,
+    CourseEventLookupItem VenueType
 );
 
 public sealed class CourseEventResult : ResultCommon<CourseEvent>
