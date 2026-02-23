@@ -303,14 +303,35 @@ public class CourseRegistrationService(
                 };
             }
 
-            _ = new CourseRegistration(
-                courseRegistration.Id,
-                courseRegistration.ParticipantId,
-                courseRegistration.CourseEventId,
-                DateTime.UtcNow,
-                courseRegistration.Status,
-                courseRegistration.PaymentMethod
-            );
+            if (courseRegistration.Id == Guid.Empty)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Course registration ID cannot be empty."
+                };
+            }
+
+            if (courseRegistration.ParticipantId == Guid.Empty)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Participant ID cannot be empty."
+                };
+            }
+
+            if (courseRegistration.CourseEventId == Guid.Empty)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Course event ID cannot be empty."
+                };
+            }
 
             var existingCourseRegistration = await _courseRegistrationRepository.GetByIdAsync(courseRegistration.Id, cancellationToken);
             if (existingCourseRegistration == null)
@@ -323,8 +344,29 @@ public class CourseRegistrationService(
                 };
             }
 
-            var updatedCourseRegistration = new CourseRegistration(
-                courseRegistration.Id,
+            var participant = await _participantRepository.GetByIdAsync(courseRegistration.ParticipantId, cancellationToken);
+            if (participant is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Participant with ID '{courseRegistration.ParticipantId}' not found."
+                };
+            }
+
+            var courseEvent = await _courseEventRepository.GetByIdAsync(courseRegistration.CourseEventId, cancellationToken);
+            if (courseEvent is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course event with ID '{courseRegistration.CourseEventId}' not found."
+                };
+            }
+
+            existingCourseRegistration.Update(
                 courseRegistration.ParticipantId,
                 courseRegistration.CourseEventId,
                 existingCourseRegistration.RegistrationDate,
@@ -332,31 +374,9 @@ public class CourseRegistrationService(
                 courseRegistration.PaymentMethod
             );
 
-            var participant = await _participantRepository.GetByIdAsync(updatedCourseRegistration.ParticipantId, cancellationToken);
-            if (participant is null)
-            {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    StatusCode = 404,
-                    Message = $"Participant with ID '{updatedCourseRegistration.ParticipantId}' not found."
-                };
-            }
+            var updatedCourseRegistration = await _courseRegistrationRepository.UpdateAsync(existingCourseRegistration.Id, existingCourseRegistration, cancellationToken);
 
-            var courseEvent = await _courseEventRepository.GetByIdAsync(updatedCourseRegistration.CourseEventId, cancellationToken);
-            if (courseEvent is null)
-            {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    StatusCode = 404,
-                    Message = $"Course event with ID '{updatedCourseRegistration.CourseEventId}' not found."
-                };
-            }
-
-            var result = await _courseRegistrationRepository.UpdateAsync(updatedCourseRegistration.Id, updatedCourseRegistration, cancellationToken);
-
-            if (result == null)
+            if (updatedCourseRegistration == null)
             {
                 return new CourseRegistrationResult
                 {
@@ -370,7 +390,7 @@ public class CourseRegistrationService(
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = updatedCourseRegistration,
                 Message = "Course registration updated successfully."
             };
         }

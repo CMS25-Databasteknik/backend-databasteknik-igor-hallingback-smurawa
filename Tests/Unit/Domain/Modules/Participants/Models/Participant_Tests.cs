@@ -442,4 +442,49 @@ public class Participant_Tests
         // Assert
         Assert.Equal(phoneNumber, participant.PhoneNumber);
     }
+
+    [Fact]
+    public void Update_Should_Change_Values_When_Input_Is_Valid()
+    {
+        // Arrange
+        var participant = new Participant(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            "john.doe@example.com",
+            "+46701234567");
+
+        // Act
+        participant.Update(
+            "Jane",
+            "Smith",
+            "jane.smith@example.com",
+            "+46709876543",
+            ParticipantContactType.Billing);
+
+        // Assert
+        Assert.Equal("Jane", participant.FirstName);
+        Assert.Equal("Smith", participant.LastName);
+        Assert.Equal("jane.smith@example.com", participant.Email);
+        Assert.Equal("+46709876543", participant.PhoneNumber);
+        Assert.Equal(ParticipantContactType.Billing, participant.ContactType);
+    }
+
+    [Fact]
+    public void Update_Should_Throw_ArgumentException_When_Email_Is_Empty()
+    {
+        // Arrange
+        var participant = new Participant(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            "john.doe@example.com",
+            "+46701234567");
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() =>
+            participant.Update("Jane", "Smith", "", "+46709876543", ParticipantContactType.Primary));
+
+        Assert.Equal("email", exception.ParamName);
+    }
 }

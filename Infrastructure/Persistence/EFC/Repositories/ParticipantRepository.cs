@@ -17,8 +17,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
             entity.LastName,
             entity.Email,
             entity.PhoneNumber,
-            DomainValueConverters.ToParticipantContactType(entity.ContactTypeId),
-            entity.ContactType?.Name);
+            DomainValueConverters.ToParticipantContactType(entity.ContactTypeId));
 
     protected override ParticipantEntity ToEntity(Participant participant)
         => new()

@@ -47,4 +47,24 @@ public class InstructorRole_Tests
         var ex = Assert.Throws<ArgumentException>(() => new InstructorRole(1, name!));
         Assert.Equal("roleName", ex.ParamName);
     }
+
+    [Fact]
+    public void Update_Should_Change_RoleName_When_Input_Is_Valid()
+    {
+        var role = new InstructorRole(1, "Lead");
+
+        role.Update("Assistant");
+
+        Assert.Equal(1, role.Id);
+        Assert.Equal("Assistant", role.RoleName);
+    }
+
+    [Fact]
+    public void Update_Should_Throw_When_Name_Is_Whitespace()
+    {
+        var role = new InstructorRole(1, "Lead");
+
+        var ex = Assert.Throws<ArgumentException>(() => role.Update("   "));
+        Assert.Equal("roleName", ex.ParamName);
+    }
 }

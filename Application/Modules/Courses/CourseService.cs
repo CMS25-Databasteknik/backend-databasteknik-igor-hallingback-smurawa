@@ -179,16 +179,15 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var updatedCourse = new Course(
-                course.Id,
+            existingCourse.Update(
                 course.Title,
                 course.Description,
                 course.DurationInDays
             );
 
-            var result = await _courseRepository.UpdateAsync(updatedCourse.Id, updatedCourse, cancellationToken);
+            var updatedCourse = await _courseRepository.UpdateAsync(existingCourse.Id, existingCourse, cancellationToken);
 
-            if (result == null)
+            if (updatedCourse == null)
             {
                 return new CourseResult
                 {
@@ -202,7 +201,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = updatedCourse,
                 Message = "Course updated successfully."
             };
         }

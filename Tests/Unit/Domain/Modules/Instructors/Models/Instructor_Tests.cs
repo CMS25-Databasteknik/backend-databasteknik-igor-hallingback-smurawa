@@ -62,4 +62,27 @@ public class Instructor_Tests
 
         Assert.Equal("Jane", instructor.Name);
     }
+
+    [Fact]
+    public void Update_Should_Change_Name_And_Role_When_Input_Is_Valid()
+    {
+        var instructor = new Instructor(Guid.NewGuid(), "Jane", new InstructorRole(1, "Lead"));
+        var newRole = new InstructorRole(2, "Assistant");
+
+        instructor.Update("John", newRole);
+
+        Assert.Equal("John", instructor.Name);
+        Assert.Equal(2, instructor.InstructorRoleId);
+        Assert.Equal(newRole, instructor.Role);
+    }
+
+    [Fact]
+    public void Update_Should_Throw_When_Role_Id_Is_Zero()
+    {
+        var instructor = new Instructor(Guid.NewGuid(), "Jane", new InstructorRole(1, "Lead"));
+        var invalidRole = new InstructorRole(0, "Assistant");
+
+        var ex = Assert.Throws<ArgumentException>(() => instructor.Update("John", invalidRole));
+        Assert.Equal("role", ex.ParamName);
+    }
 }

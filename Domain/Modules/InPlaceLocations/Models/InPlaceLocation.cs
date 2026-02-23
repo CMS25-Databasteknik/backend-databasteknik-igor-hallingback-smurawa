@@ -3,15 +3,26 @@ namespace Backend.Domain.Modules.InPlaceLocations.Models;
 public sealed class InPlaceLocation
 {
     public int Id { get; }
-    public int LocationId { get; }
-    public int RoomNumber { get; }
-    public int Seats { get; }
+    public int LocationId { get; private set; }
+    public int RoomNumber { get; private set; }
+    public int Seats { get; private set; }
 
     public InPlaceLocation(int id, int locationId, int roomNumber, int seats)
     {
         if (id < 0)
             throw new ArgumentException("ID must be greater than or equal to zero.", nameof(id));
 
+        Id = id;
+        SetValues(locationId, roomNumber, seats);
+    }
+
+    public void Update(int locationId, int roomNumber, int seats)
+    {
+        SetValues(locationId, roomNumber, seats);
+    }
+
+    private void SetValues(int locationId, int roomNumber, int seats)
+    {
         if (locationId <= 0)
             throw new ArgumentException("Location ID must be greater than zero.", nameof(locationId));
 
@@ -21,7 +32,6 @@ public sealed class InPlaceLocation
         if (seats <= 0)
             throw new ArgumentException("Seats must be greater than zero.", nameof(seats));
 
-        Id = id;
         LocationId = locationId;
         RoomNumber = roomNumber;
         Seats = seats;

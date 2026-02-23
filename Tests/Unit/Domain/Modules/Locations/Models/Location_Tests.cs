@@ -335,4 +335,25 @@ public class Location_Tests
         var initialCity = location.City;
         Assert.Equal(initialCity, location.City);
     }
+
+    [Fact]
+    public void Update_Should_Change_Values_When_Input_Is_Valid()
+    {
+        var location = new Location(1, "Old Street", "111 11", "Old City");
+
+        location.Update("New Street", "222 22", "New City");
+
+        Assert.Equal("New Street", location.StreetName);
+        Assert.Equal("222 22", location.PostalCode);
+        Assert.Equal("New City", location.City);
+    }
+
+    [Fact]
+    public void Update_Should_Throw_ArgumentException_When_City_Is_Whitespace()
+    {
+        var location = new Location(1, "Old Street", "111 11", "Old City");
+
+        var ex = Assert.Throws<ArgumentException>(() => location.Update("New Street", "222 22", "   "));
+        Assert.Equal("city", ex.ParamName);
+    }
 }

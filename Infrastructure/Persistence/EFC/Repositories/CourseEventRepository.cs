@@ -17,8 +17,6 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 ? null
                 : new CourseEventType(entity.CourseEventType.Id, entity.CourseEventType.TypeName);
 
-            var venueTypeName = entity.VenueType?.Name;
-
             return new(
                 entity.Id,
                 entity.CourseId,
@@ -27,8 +25,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 entity.Seats,
                 entity.CourseEventTypeId,
                 DomainValueConverters.ToVenueType(entity.VenueTypeId),
-                courseEventType,
-                venueTypeName);
+                courseEventType);
         }
 
         protected override CourseEventEntity ToEntity(CourseEvent courseEvent)

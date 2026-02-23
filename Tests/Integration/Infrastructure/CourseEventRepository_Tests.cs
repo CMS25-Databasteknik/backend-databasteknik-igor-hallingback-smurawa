@@ -120,7 +120,7 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
-    public async Task GetCourseEventByIdAsync_ShouldIncludeJoinedCourseEventTypeAndVenueTypeName()
+    public async Task GetCourseEventByIdAsync_ShouldIncludeJoinedCourseEventType()
     {
         await using var context = fixture.CreateDbContext();
         var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
@@ -145,7 +145,6 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal(type.Id, loaded!.CourseEventType.Id);
         Assert.Equal("Workshop", loaded.CourseEventType.TypeName);
         Assert.Equal((int)VenueType.Online, (int)loaded.VenueType);
-        Assert.Equal("Online", loaded.VenueTypeName);
     }
 
     [Fact]

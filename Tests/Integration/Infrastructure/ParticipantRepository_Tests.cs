@@ -106,7 +106,7 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
-    public async Task GetParticipantByIdAsync_ShouldIncludeJoinedContactTypeName()
+    public async Task GetParticipantByIdAsync_ShouldReturnContactType()
     {
         await using var context = fixture.CreateDbContext();
         var repo = new ParticipantRepository(context);
@@ -125,6 +125,5 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
 
         Assert.NotNull(loaded);
         Assert.Equal(ParticipantContactType.Billing, loaded!.ContactType);
-        Assert.Equal("Billing", loaded.ContactTypeName);
     }
 }

@@ -211,4 +211,29 @@ public class CourseEventType_Tests
         // Assert
         Assert.Equal(typeName, courseEventType.TypeName);
     }
+
+    [Fact]
+    public void Update_Should_Change_TypeName_When_Input_Is_Valid()
+    {
+        // Arrange
+        var courseEventType = new CourseEventType(1, "Online");
+
+        // Act
+        courseEventType.Update("Hybrid");
+
+        // Assert
+        Assert.Equal(1, courseEventType.Id);
+        Assert.Equal("Hybrid", courseEventType.TypeName);
+    }
+
+    [Fact]
+    public void Update_Should_Throw_ArgumentException_When_TypeName_Is_Whitespace()
+    {
+        // Arrange
+        var courseEventType = new CourseEventType(1, "Online");
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() => courseEventType.Update("   "));
+        Assert.Equal("typeName", exception.ParamName);
+    }
 }

@@ -1,19 +1,19 @@
 using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Backend.Domain.Modules.CourseEvents.Models;
 
 public sealed class CourseEvent
 {
     public Guid Id { get; }
-    public Guid CourseId { get; }
-    public DateTime EventDate { get; }
-    public decimal Price { get; }
-    public int Seats { get; }
-    public int CourseEventTypeId { get; }
-    public CourseEventType CourseEventType { get; }
-    public VenueType VenueType { get; }
-    public string VenueTypeName { get; }
+    public Guid CourseId { get; private set; }
+    public DateTime EventDate { get; private set; }
+    public decimal Price { get; private set; }
+    public int Seats { get; private set; }
+    public int CourseEventTypeId { get; private set; }
+    public CourseEventType CourseEventType { get; private set; }
+    public VenueType VenueType { get; private set; }
 
     public CourseEvent(
         Guid id,
@@ -23,12 +23,37 @@ public sealed class CourseEvent
         int seats,
         int courseEventTypeId,
         VenueType venueType,
-        CourseEventType? courseEventType = null,
-        string? venueTypeName = null)
+        CourseEventType? courseEventType = null)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("CourseEvent id cannot be empty.", nameof(id));
 
+        Id = id;
+        SetValues(courseId, eventDate, price, seats, courseEventTypeId, venueType, courseEventType);
+    }
+
+    public void Update(
+        Guid courseId,
+        DateTime eventDate,
+        decimal price,
+        int seats,
+        int courseEventTypeId,
+        VenueType venueType,
+        CourseEventType? courseEventType = null)
+    {
+        SetValues(courseId, eventDate, price, seats, courseEventTypeId, venueType, courseEventType);
+    }
+
+    [MemberNotNull(nameof(CourseEventType))]
+    private void SetValues(
+        Guid courseId,
+        DateTime eventDate,
+        decimal price,
+        int seats,
+        int courseEventTypeId,
+        VenueType venueType,
+        CourseEventType? courseEventType)
+    {
         if (courseId == Guid.Empty)
             throw new ArgumentException("Course id cannot be empty.", nameof(courseId));
 
@@ -47,7 +72,6 @@ public sealed class CourseEvent
         if (courseEventType is not null && courseEventType.Id != courseEventTypeId)
             throw new ArgumentException("Course event type ID mismatch.", nameof(courseEventType));
 
-        Id = id;
         CourseId = courseId;
         EventDate = eventDate;
         Price = price;
@@ -55,8 +79,5 @@ public sealed class CourseEvent
         CourseEventTypeId = courseEventTypeId;
         CourseEventType = courseEventType ?? new CourseEventType(courseEventTypeId, $"Type {courseEventTypeId}");
         VenueType = venueType;
-        VenueTypeName = string.IsNullOrWhiteSpace(venueTypeName)
-            ? venueType.ToString()
-            : venueTypeName.Trim();
     }
 }

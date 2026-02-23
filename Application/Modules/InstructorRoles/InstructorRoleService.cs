@@ -146,9 +146,20 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 };
             }
 
-            var updatedRole = new InstructorRole(input.Id, input.RoleName);
-            var updated = await _repository.UpdateAsync(updatedRole.Id, updatedRole, cancellationToken);
-            if (updated == null)
+            var existingRole = await _repository.GetByIdAsync(input.Id, cancellationToken);
+            if (existingRole == null)
+            {
+                return new InstructorRoleResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Instructor role with ID '{input.Id}' not found."
+                };
+            }
+
+            existingRole.Update(input.RoleName);
+            var updatedInstructorRole = await _repository.UpdateAsync(existingRole.Id, existingRole, cancellationToken);
+            if (updatedInstructorRole == null)
             {
                 return new InstructorRoleResult
                 {
@@ -162,7 +173,7 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
             {
                 Success = true,
                 StatusCode = 200,
-                Result = updated,
+                Result = updatedInstructorRole,
                 Message = "Instructor role updated successfully."
             };
         }

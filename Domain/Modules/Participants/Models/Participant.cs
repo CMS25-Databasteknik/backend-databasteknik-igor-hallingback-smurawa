@@ -5,12 +5,11 @@ namespace Backend.Domain.Modules.Participants.Models;
 public sealed class Participant
 {
     public Guid Id { get; }
-    public string FirstName { get; }
-    public string LastName { get; }
-    public string Email { get; }
-    public string PhoneNumber { get; }
-    public ParticipantContactType ContactType { get; }
-    public string? ContactTypeName { get; }
+    public string FirstName { get; private set; } = string.Empty;
+    public string LastName { get; private set; } = string.Empty;
+    public string Email { get; private set; } = string.Empty;
+    public string PhoneNumber { get; private set; } = string.Empty;
+    public ParticipantContactType ContactType { get; private set; }
 
     public Participant(
         Guid id,
@@ -18,12 +17,32 @@ public sealed class Participant
         string lastName,
         string email,
         string phoneNumber,
-        ParticipantContactType contactType = ParticipantContactType.Primary,
-        string? contactTypeName = null)
+        ParticipantContactType contactType = ParticipantContactType.Primary)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("ID cannot be empty.", nameof(id));
 
+        Id = id;
+        SetValues(firstName, lastName, email, phoneNumber, contactType);
+    }
+
+    public void Update(
+        string firstName,
+        string lastName,
+        string email,
+        string phoneNumber,
+        ParticipantContactType contactType = ParticipantContactType.Primary)
+    {
+        SetValues(firstName, lastName, email, phoneNumber, contactType);
+    }
+
+    private void SetValues(
+        string firstName,
+        string lastName,
+        string email,
+        string phoneNumber,
+        ParticipantContactType contactType)
+    {
         if (string.IsNullOrWhiteSpace(firstName))
             throw new ArgumentException("First name cannot be empty or whitespace.", nameof(firstName));
 
@@ -39,12 +58,10 @@ public sealed class Participant
         if (!Enum.IsDefined(typeof(ParticipantContactType), contactType))
             throw new ArgumentException("Participant contact type is invalid.", nameof(contactType));
 
-        Id = id;
         FirstName = firstName.Trim();
         LastName = lastName.Trim();
         Email = email.Trim();
         PhoneNumber = phoneNumber.Trim();
         ContactType = contactType;
-        ContactTypeName = contactTypeName;
     }
 }
