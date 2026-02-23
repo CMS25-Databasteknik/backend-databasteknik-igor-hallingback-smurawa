@@ -157,4 +157,58 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.True(deleted);
         Assert.Null(loaded);
     }
+
+    [Fact]
+    public async Task GetCourseRegistrationByIdAsync_ShouldIncludeJoinedStatusName()
+    {
+        await using var context = fixture.CreateDbContext();
+        var created = await RepositoryTestDataHelper.CreateCourseRegistrationAsync(context, status: CourseRegistrationStatus.Paid);
+        var repo = new CourseRegistrationRepository(context);
+
+        var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
+
+        Assert.NotNull(loaded);
+        Assert.Equal(CourseRegistrationStatus.Paid.Id, loaded!.Status.Id);
+        Assert.Equal("Paid", loaded.Status.Name);
+        Assert.Equal(created.ParticipantId, loaded.ParticipantId);
+        Assert.Equal(created.CourseEventId, loaded.CourseEventId);
+    }
+
+    [Fact]
+    public async Task CreateCourseRegistrationAsync_ShouldThrow_WhenForeignKeysAreInvalid()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationRepository(context);
+        var existingEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
+
+        var input = new CourseRegistration(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            existingEvent.Id,
+            DateTime.UtcNow,
+            CourseRegistrationStatus.Pending,
+            PaymentMethod.Card);
+
+        await Assert.ThrowsAsync<DbUpdateException>(() => repo.AddAsync(input, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task GetCourseRegistrationByIdAsync_ShouldReturnNull_WhenRegistrationDoesNotExist()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationRepository(context);
+
+        var loaded = await repo.GetByIdAsync(Guid.NewGuid(), CancellationToken.None);
+
+        Assert.Null(loaded);
+    }
+
+    [Fact]
+    public async Task DeleteCourseRegistrationAsync_ShouldThrow_WhenRegistrationDoesNotExist()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationRepository(context);
+
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => repo.RemoveAsync(Guid.NewGuid(), CancellationToken.None));
+    }
 }

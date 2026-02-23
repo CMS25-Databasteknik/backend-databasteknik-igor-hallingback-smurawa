@@ -1,4 +1,5 @@
 using Backend.Domain.Modules.Participants.Models;
+using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -102,5 +103,28 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
 
         Assert.True(deleted);
         Assert.Null(loaded);
+    }
+
+    [Fact]
+    public async Task GetParticipantByIdAsync_ShouldIncludeJoinedContactTypeName()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new ParticipantRepository(context);
+
+        var created = await repo.AddAsync(
+            new Participant(
+                Guid.NewGuid(),
+                "Billing",
+                "Contact",
+                $"billing-{Guid.NewGuid():N}@example.com",
+                "555123",
+                ParticipantContactType.Billing),
+            CancellationToken.None);
+
+        var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
+
+        Assert.NotNull(loaded);
+        Assert.Equal(ParticipantContactType.Billing, loaded!.ContactType);
+        Assert.Equal("Billing", loaded.ContactTypeName);
     }
 }

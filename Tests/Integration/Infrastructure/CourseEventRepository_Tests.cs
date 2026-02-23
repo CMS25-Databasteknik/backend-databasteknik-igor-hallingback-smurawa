@@ -118,4 +118,85 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.True(deleted);
         Assert.Null(loaded);
     }
+
+    [Fact]
+    public async Task GetCourseEventByIdAsync_ShouldIncludeJoinedCourseEventTypeAndVenueTypeName()
+    {
+        await using var context = fixture.CreateDbContext();
+        var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
+        var type = await new CourseEventTypeRepository(context)
+            .AddAsync(new Backend.Domain.Modules.CourseEventTypes.Models.CourseEventType("Workshop"), CancellationToken.None);
+        var repo = new CourseEventRepository(context);
+
+        var created = await repo.AddAsync(
+            new CourseEvent(
+                Guid.NewGuid(),
+                course.Id,
+                DateTime.UtcNow.AddDays(2),
+                249m,
+                12,
+                type.Id,
+                VenueType.Online),
+            CancellationToken.None);
+
+        var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
+
+        Assert.NotNull(loaded);
+        Assert.Equal(type.Id, loaded!.CourseEventType.Id);
+        Assert.Equal("Workshop", loaded.CourseEventType.TypeName);
+        Assert.Equal((int)VenueType.Online, (int)loaded.VenueType);
+        Assert.Equal("Online", loaded.VenueTypeName);
+    }
+
+    [Fact]
+    public async Task GetCourseEventByIdAsync_ShouldReturnNull_WhenCourseEventDoesNotExist()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseEventRepository(context);
+
+        var loaded = await repo.GetByIdAsync(Guid.NewGuid(), CancellationToken.None);
+
+        Assert.Null(loaded);
+    }
+
+    [Fact]
+    public async Task UpdateCourseEventAsync_ShouldThrow_WhenCourseEventDoesNotExist()
+    {
+        await using var context = fixture.CreateDbContext();
+        var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
+        var type = await RepositoryTestDataHelper.CreateCourseEventTypeAsync(context);
+        var repo = new CourseEventRepository(context);
+        var missingId = Guid.NewGuid();
+
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            repo.UpdateAsync(
+                missingId,
+                new CourseEvent(
+                    missingId,
+                    course.Id,
+                    DateTime.UtcNow.AddDays(1),
+                    149m,
+                    20,
+                    type.Id,
+                    VenueType.InPerson),
+                CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task CreateCourseEventAsync_ShouldThrow_WhenForeignKeysAreInvalid()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseEventRepository(context);
+
+        var input = new CourseEvent(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow.AddDays(1),
+            199m,
+            10,
+            999_999,
+            VenueType.InPerson);
+
+        await Assert.ThrowsAsync<DbUpdateException>(() => repo.AddAsync(input, CancellationToken.None));
+    }
 }
