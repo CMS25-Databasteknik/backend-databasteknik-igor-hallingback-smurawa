@@ -24,7 +24,7 @@ Application services, use cases, and caching logic.
   - Domain project
   - Microsoft.Extensions.Configuration (10.0.2)
   - Microsoft.Extensions.DependencyInjection (10.0.2)
-- Microsoft.Extensions.Hosting (10.0.2)
+  - Microsoft.Extensions.Hosting (10.0.2)
 
 #### **Infrastructure** (`Infrastructure.csproj`)
 
@@ -251,6 +251,14 @@ The project has two kinds of tests:
 
 In normal app runtime, `DB_PROVIDER` is not set, so SQL Server is used.
 
+### Domain Update Pattern Testing
+
+Domain models use a shared validation path where constructors and `Update(...)` methods both call internal `SetValues(...)` methods.
+
+- This keeps validation/invariants in one place.
+- Application update services load existing models, call `existingModel.Update(...)`, and then persist.
+- Unit tests include explicit `Update(...)` behavior checks for domain models (valid updates + invalid input cases).
+
 ## Technology Stack
 
 - **.NET 10.0**
@@ -282,5 +290,7 @@ Backend/
 - **Dependency injection** is used throughout the application
 - Transaction handling is used in repositories that need atomic multi-step operations.
 - Caching is implemented in the **Application** layer (services/caches), not in repositories.
+- Domain entities centralize validation by using `constructor + Update(...) + SetValues(...)`.
+- Service update flows follow: `load existing -> existing.Update(...) -> repository.UpdateAsync(...)`.
 - Common persistence/domain conversion logic is centralized in:
   - `Infrastructure/Common/Repositories/DomainValueConverters.cs`
