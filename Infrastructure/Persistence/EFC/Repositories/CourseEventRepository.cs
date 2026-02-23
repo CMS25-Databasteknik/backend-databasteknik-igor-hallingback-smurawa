@@ -1,7 +1,7 @@
 using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.CourseEventTypes.Models;
-using Backend.Domain.Modules.VenueTypes.Models;
+using Backend.Infrastructure.Common.Repositories;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +26,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 entity.Price,
                 entity.Seats,
                 entity.CourseEventTypeId,
-                (VenueType)entity.VenueTypeId,
+                DomainValueConverters.ToVenueType(entity.VenueTypeId),
                 courseEventType,
                 venueTypeName);
         }
@@ -40,7 +40,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 Price = courseEvent.Price,
                 Seats = courseEvent.Seats,
                 CourseEventTypeId = courseEvent.CourseEventTypeId,
-                VenueTypeId = (int)courseEvent.VenueType
+                VenueTypeId = DomainValueConverters.ToId(courseEvent.VenueType)
             };
 
         public override async Task<CourseEvent> AddAsync(CourseEvent courseEvent, CancellationToken cancellationToken)
@@ -140,7 +140,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             entity.Price = courseEvent.Price;
             entity.Seats = courseEvent.Seats;
             entity.CourseEventTypeId = courseEvent.CourseEventTypeId;
-            entity.VenueTypeId = (int)courseEvent.VenueType;
+            entity.VenueTypeId = DomainValueConverters.ToId(courseEvent.VenueType);
             entity.ModifiedAtUtc = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);

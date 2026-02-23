@@ -1,6 +1,6 @@
-using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.Participants.Models;
+using Backend.Infrastructure.Common.Repositories;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +17,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
             entity.LastName,
             entity.Email,
             entity.PhoneNumber,
-            (ParticipantContactType)entity.ContactTypeId,
+            DomainValueConverters.ToParticipantContactType(entity.ContactTypeId),
             entity.ContactType?.Name);
 
     protected override ParticipantEntity ToEntity(Participant participant)
@@ -28,7 +28,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
             LastName = participant.LastName,
             Email = participant.Email,
             PhoneNumber = participant.PhoneNumber,
-            ContactTypeId = (int)participant.ContactType
+            ContactTypeId = DomainValueConverters.ToId(participant.ContactType)
         };
 
     public override async Task<Participant> AddAsync(Participant participant, CancellationToken cancellationToken)
@@ -103,7 +103,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
         entity.LastName = participant.LastName;
         entity.Email = participant.Email;
         entity.PhoneNumber = participant.PhoneNumber;
-        entity.ContactTypeId = (int)participant.ContactType;
+        entity.ContactTypeId = DomainValueConverters.ToId(participant.ContactType);
         entity.ModifiedAtUtc = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
