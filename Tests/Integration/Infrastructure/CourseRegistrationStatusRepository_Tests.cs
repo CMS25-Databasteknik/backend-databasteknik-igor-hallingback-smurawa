@@ -55,6 +55,17 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
     }
 
     [Fact]
+    public async Task GetCourseRegistrationStatusByIdAsync_ShouldReturnNull_WhenStatusDoesNotExist()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationStatusRepository(context);
+
+        var loaded = await repo.GetByIdAsync(999_999, CancellationToken.None);
+
+        Assert.Null(loaded);
+    }
+
+    [Fact]
     public async Task UpdateCourseRegistrationStatusAsync_ShouldPersistChanges()
     {
         await using var context = fixture.CreateDbContext();
@@ -97,5 +108,65 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
 
         Assert.True(deleted);
         Assert.Null(loaded);
+    }
+
+    [Fact]
+    public async Task CreateCourseRegistrationStatusAsync_ShouldThrow_WhenNameAlreadyExists()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationStatusRepository(context);
+
+        await Assert.ThrowsAsync<DbUpdateException>(() =>
+            repo.AddAsync(new CourseRegistrationStatus("Pending"), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task DeleteCourseRegistrationStatusAsync_ShouldThrow_WhenStatusIsInUseByRegistration()
+    {
+        await using var context = fixture.CreateDbContext();
+        await RepositoryTestDataHelper.CreateCourseRegistrationAsync(context, status: CourseRegistrationStatus.Pending);
+        var repo = new CourseRegistrationStatusRepository(context);
+
+        var exception = await Record.ExceptionAsync(() => repo.RemoveAsync(CourseRegistrationStatus.Pending.Id, CancellationToken.None));
+
+        Assert.NotNull(exception);
+        Assert.True(exception is InvalidOperationException or DbUpdateException);
+    }
+
+    [Fact]
+    public async Task GetCourseRegistrationStatusByIdAsync_ShouldThrow_WhenIdIsNegative()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationStatusRepository(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => repo.GetByIdAsync(-1, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task IsInUseAsync_ShouldThrow_WhenIdIsNegative()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationStatusRepository(context);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => repo.IsInUseAsync(-1, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task UpdateCourseRegistrationStatusAsync_ShouldThrow_WhenStatusDoesNotExist()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationStatusRepository(context);
+
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            repo.UpdateAsync(999_999, new CourseRegistrationStatus(999_999, "Missing"), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task DeleteCourseRegistrationStatusAsync_ShouldThrow_WhenStatusDoesNotExist()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationStatusRepository(context);
+
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => repo.RemoveAsync(999_999, CancellationToken.None));
     }
 }
