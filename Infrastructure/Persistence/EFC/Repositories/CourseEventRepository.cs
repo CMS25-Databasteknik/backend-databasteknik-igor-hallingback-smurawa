@@ -1,6 +1,7 @@
 using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
-using Backend.Domain.Modules.VenueTypes.Models;
+using Backend.Domain.Modules.CourseEventTypes.Models;
+using Backend.Infrastructure.Common.Repositories;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -11,14 +12,24 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
         : RepositoryBase<CourseEvent, Guid, CourseEventEntity, CoursesOnlineDbContext>(context), ICourseEventRepository
     {
         protected override CourseEvent ToModel(CourseEventEntity entity)
-            => new(
+        {
+            var courseEventType = entity.CourseEventType is null
+                ? null
+                : new CourseEventType(entity.CourseEventType.Id, entity.CourseEventType.TypeName);
+
+            var venueTypeName = entity.VenueType?.Name;
+
+            return new(
                 entity.Id,
                 entity.CourseId,
                 entity.EventDate,
                 entity.Price,
                 entity.Seats,
                 entity.CourseEventTypeId,
-                (VenueType)entity.VenueTypeId);
+                DomainValueConverters.ToVenueType(entity.VenueTypeId),
+                courseEventType,
+                venueTypeName);
+        }
 
         protected override CourseEventEntity ToEntity(CourseEvent courseEvent)
             => new()
@@ -29,7 +40,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 Price = courseEvent.Price,
                 Seats = courseEvent.Seats,
                 CourseEventTypeId = courseEvent.CourseEventTypeId,
-                VenueTypeId = (int)courseEvent.VenueType
+                VenueTypeId = DomainValueConverters.ToId(courseEvent.VenueType)
             };
 
         public override async Task<CourseEvent> AddAsync(CourseEvent courseEvent, CancellationToken cancellationToken)
@@ -99,6 +110,8 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
         {
             var entity = await _context.CourseEvents
                 .AsNoTracking()
+                .Include(ce => ce.CourseEventType)
+                .Include(ce => ce.VenueType)
                 .SingleOrDefaultAsync(ce => ce.Id == courseEventId, cancellationToken);
 
             return entity == null ? null : ToModel(entity);
@@ -127,7 +140,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             entity.Price = courseEvent.Price;
             entity.Seats = courseEvent.Seats;
             entity.CourseEventTypeId = courseEvent.CourseEventTypeId;
-            entity.VenueTypeId = (int)courseEvent.VenueType;
+            entity.VenueTypeId = DomainValueConverters.ToId(courseEvent.VenueType);
             entity.ModifiedAtUtc = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);

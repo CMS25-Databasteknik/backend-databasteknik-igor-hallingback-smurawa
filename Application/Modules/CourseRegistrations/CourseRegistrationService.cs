@@ -132,13 +132,13 @@ public class CourseRegistrationService(
         }
     }
 
-    public async Task<CourseRegistrationResult> GetCourseRegistrationByIdAsync(Guid courseRegistrationId, CancellationToken cancellationToken = default)
+    public async Task<CourseRegistrationDetailsResult> GetCourseRegistrationByIdAsync(Guid courseRegistrationId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (courseRegistrationId == Guid.Empty)
             {
-                return new CourseRegistrationResult
+                return new CourseRegistrationDetailsResult
                 {
                     Success = false,
                     StatusCode = 400,
@@ -150,7 +150,7 @@ public class CourseRegistrationService(
 
             if (result == null)
             {
-                return new CourseRegistrationResult
+                return new CourseRegistrationDetailsResult
                 {
                     Success = false,
                     StatusCode = 404,
@@ -158,17 +158,37 @@ public class CourseRegistrationService(
                 };
             }
 
-            return new CourseRegistrationResult
+            var participant = await _participantRepository.GetByIdAsync(result.ParticipantId, cancellationToken);
+            var participantName = participant == null
+                ? result.ParticipantId.ToString()
+                : $"{participant.FirstName} {participant.LastName}".Trim();
+
+            var courseEvent = await _courseEventRepository.GetByIdAsync(result.CourseEventId, cancellationToken);
+
+            var details = new CourseRegistrationDetails(
+                result.Id,
+                new RegistrationGuidLookupItem(
+                    result.ParticipantId,
+                    participantName),
+                new RegistrationCourseEventItem(
+                    result.CourseEventId,
+                    courseEvent?.EventDate),
+                result.RegistrationDate,
+                new RegistrationLookupItem(result.Status.Id, result.Status.Name),
+                new RegistrationLookupItem((int)result.PaymentMethod, result.PaymentMethod.ToString())
+            );
+
+            return new CourseRegistrationDetailsResult
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = details,
                 Message = "Course registration retrieved successfully."
             };
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationResult
+            return new CourseRegistrationDetailsResult
             {
                 Success = false,
                 StatusCode = 500,

@@ -119,12 +119,12 @@ Similar patterns exist for other modules (course events, instructors, participan
 Transactions are used in repository operations that need atomic multi-step behavior.
 
 - `Infrastructure/Persistence/EFC/Repositories/CourseRegistrationRepository.cs`
-  - Uses `BeginTransactionAsync(...)` in create/update flows.
+  - Uses `BeginTransactionAsync(...)` in registration create flows (`AddAsync`, `CreateRegistrationWithSeatCheckAsync`).
   - Commits on success and rolls back on failure.
 - `Infrastructure/Persistence/EFC/Repositories/CourseEventRepository.cs`
-  - Wraps event + relation updates in a transaction.
+  - Wraps multi-step delete operations (event + relation table cleanup) in a transaction.
 - `Infrastructure/Persistence/EFC/Repositories/ParticipantRepository.cs`
-  - Uses transaction when applying multi-step updates.
+  - Uses transaction for multi-step delete operations (registrations + participant).
 
 ### Raw SQL Usage
 
@@ -133,9 +133,9 @@ Raw SQL is used only in specific repository scenarios where direct SQL is more s
 - `Infrastructure/Persistence/EFC/Repositories/CourseRegistrationRepository.cs`
   - Uses `Database.SqlQuery<int>(...)` for SQL-based checks/calculations in registration flows.
 - `Infrastructure/Persistence/EFC/Repositories/CourseEventRepository.cs`
-  - Uses `Database.ExecuteSqlAsync(...)` for relation-table updates in transactional operations.
+  - Uses `Database.ExecuteSqlAsync(...)` for relation-table cleanup in transactional delete operations.
 - `Infrastructure/Persistence/EFC/Repositories/ParticipantRepository.cs`
-  - Uses `Database.ExecuteSqlAsync(...)` in targeted update operations.
+  - Uses `Database.ExecuteSqlAsync(...)` for registration + participant delete operations.
 
 ### Caching
 
@@ -282,3 +282,5 @@ Backend/
 - **Dependency injection** is used throughout the application
 - Transaction handling is used in repositories that need atomic multi-step operations.
 - Caching is implemented in the **Application** layer (services/caches), not in repositories.
+- Common persistence/domain conversion logic is centralized in:
+  - `Infrastructure/Common/Repositories/DomainValueConverters.cs`

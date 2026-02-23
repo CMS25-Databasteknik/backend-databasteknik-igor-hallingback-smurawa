@@ -1,6 +1,6 @@
-using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.Participants.Models;
+using Backend.Infrastructure.Common.Repositories;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +11,14 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
     : RepositoryBase<Participant, Guid, ParticipantEntity, CoursesOnlineDbContext>(context), IParticipantRepository
 {
     protected override Participant ToModel(ParticipantEntity entity)
-        => new(entity.Id, entity.FirstName, entity.LastName, entity.Email, entity.PhoneNumber, (ParticipantContactType)entity.ContactTypeId);
+        => new(
+            entity.Id,
+            entity.FirstName,
+            entity.LastName,
+            entity.Email,
+            entity.PhoneNumber,
+            DomainValueConverters.ToParticipantContactType(entity.ContactTypeId),
+            entity.ContactType?.Name);
 
     protected override ParticipantEntity ToEntity(Participant participant)
         => new()
@@ -21,7 +28,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
             LastName = participant.LastName,
             Email = participant.Email,
             PhoneNumber = participant.PhoneNumber,
-            ContactTypeId = (int)participant.ContactType
+            ContactTypeId = DomainValueConverters.ToId(participant.ContactType)
         };
 
     public override async Task<Participant> AddAsync(Participant participant, CancellationToken cancellationToken)
@@ -79,6 +86,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
     {
         var entity = await _context.Participants
             .AsNoTracking()
+            .Include(p => p.ContactType)
             .SingleOrDefaultAsync(p => p.Id == participantId, cancellationToken);
 
         return entity == null ? null : ToModel(entity);
@@ -95,7 +103,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
         entity.LastName = participant.LastName;
         entity.Email = participant.Email;
         entity.PhoneNumber = participant.PhoneNumber;
-        entity.ContactTypeId = (int)participant.ContactType;
+        entity.ContactTypeId = DomainValueConverters.ToId(participant.ContactType);
         entity.ModifiedAtUtc = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);

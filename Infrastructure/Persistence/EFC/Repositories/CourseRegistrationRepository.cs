@@ -1,7 +1,6 @@
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
-using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
-using Backend.Domain.Modules.PaymentMethod.Models;
+using Backend.Infrastructure.Common.Repositories;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -11,25 +10,14 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories;
 public class CourseRegistrationRepository(CoursesOnlineDbContext context)
     : RepositoryBase<CourseRegistration, Guid, CourseRegistrationEntity, CoursesOnlineDbContext>(context), ICourseRegistrationRepository
 {
-    private static CourseRegistrationStatus ToStatusModel(CourseRegistrationEntity entity)
-    {
-        var statusName = entity.CourseRegistrationStatus?.Name;
-
-        if (!string.IsNullOrWhiteSpace(statusName))
-            return new CourseRegistrationStatus(entity.CourseRegistrationStatusId, statusName);
-
-        return entity.CourseRegistrationStatusId switch
-        {
-            0 => CourseRegistrationStatus.Pending,
-            1 => CourseRegistrationStatus.Paid,
-            2 => CourseRegistrationStatus.Cancelled,
-            3 => CourseRegistrationStatus.Refunded,
-            _ => new CourseRegistrationStatus(entity.CourseRegistrationStatusId, $"Status {entity.CourseRegistrationStatusId}")
-        };
-    }
-
     protected override CourseRegistration ToModel(CourseRegistrationEntity entity)
-        => new(entity.Id, entity.ParticipantId, entity.CourseEventId, entity.RegistrationDate, ToStatusModel(entity), (PaymentMethod)entity.PaymentMethodId);
+        => new(
+            entity.Id,
+            entity.ParticipantId,
+            entity.CourseEventId,
+            entity.RegistrationDate,
+            DomainValueConverters.ToCourseRegistrationStatus(entity.CourseRegistrationStatusId, entity.CourseRegistrationStatus?.Name),
+            DomainValueConverters.ToPaymentMethod(entity.PaymentMethodId));
 
     protected override CourseRegistrationEntity ToEntity(CourseRegistration courseRegistration)
         => new()
@@ -38,7 +26,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
             ParticipantId = courseRegistration.ParticipantId,
             CourseEventId = courseRegistration.CourseEventId,
             CourseRegistrationStatusId = courseRegistration.Status.Id,
-            PaymentMethodId = (int)courseRegistration.PaymentMethod
+            PaymentMethodId = DomainValueConverters.ToId(courseRegistration.PaymentMethod)
         };
 
     public override async Task<CourseRegistration> AddAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken)
@@ -135,7 +123,6 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
-            .Include(cr => cr.CourseRegistrationStatus)
             .OrderByDescending(cr => cr.RegistrationDate)
             .ToListAsync(cancellationToken);
 
@@ -156,7 +143,6 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
-            .Include(cr => cr.CourseRegistrationStatus)
             .Where(cr => cr.ParticipantId == participantId)
             .OrderByDescending(cr => cr.RegistrationDate)
             .ToListAsync(cancellationToken);
@@ -168,7 +154,6 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
-            .Include(cr => cr.CourseRegistrationStatus)
             .Where(cr => cr.CourseEventId == courseEventId)
             .OrderByDescending(cr => cr.RegistrationDate)
             .ToListAsync(cancellationToken);
@@ -186,7 +171,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
         entity.ParticipantId = courseRegistration.ParticipantId;
         entity.CourseEventId = courseRegistration.CourseEventId;
         entity.CourseRegistrationStatusId = courseRegistration.Status.Id;
-        entity.PaymentMethodId = (int)courseRegistration.PaymentMethod;
+        entity.PaymentMethodId = DomainValueConverters.ToId(courseRegistration.PaymentMethod);
         entity.ModifiedAtUtc = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
