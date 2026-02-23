@@ -11,7 +11,14 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
     : RepositoryBase<Participant, Guid, ParticipantEntity, CoursesOnlineDbContext>(context), IParticipantRepository
 {
     protected override Participant ToModel(ParticipantEntity entity)
-        => new(entity.Id, entity.FirstName, entity.LastName, entity.Email, entity.PhoneNumber, (ParticipantContactType)entity.ContactTypeId);
+        => new(
+            entity.Id,
+            entity.FirstName,
+            entity.LastName,
+            entity.Email,
+            entity.PhoneNumber,
+            (ParticipantContactType)entity.ContactTypeId,
+            entity.ContactType?.Name);
 
     protected override ParticipantEntity ToEntity(Participant participant)
         => new()
@@ -79,6 +86,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
     {
         var entity = await _context.Participants
             .AsNoTracking()
+            .Include(p => p.ContactType)
             .SingleOrDefaultAsync(p => p.Id == participantId, cancellationToken);
 
         return entity == null ? null : ToModel(entity);

@@ -29,7 +29,13 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
     }
 
     protected override CourseRegistration ToModel(CourseRegistrationEntity entity)
-        => new(entity.Id, entity.ParticipantId, entity.CourseEventId, entity.RegistrationDate, ToStatusModel(entity), (PaymentMethod)entity.PaymentMethodId);
+        => new(
+            entity.Id,
+            entity.ParticipantId,
+            entity.CourseEventId,
+            entity.RegistrationDate,
+            ToStatusModel(entity),
+            (PaymentMethod)entity.PaymentMethodId);
 
     protected override CourseRegistrationEntity ToEntity(CourseRegistration courseRegistration)
         => new()
@@ -135,7 +141,6 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
-            .Include(cr => cr.CourseRegistrationStatus)
             .OrderByDescending(cr => cr.RegistrationDate)
             .ToListAsync(cancellationToken);
 
@@ -156,7 +161,6 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
-            .Include(cr => cr.CourseRegistrationStatus)
             .Where(cr => cr.ParticipantId == participantId)
             .OrderByDescending(cr => cr.RegistrationDate)
             .ToListAsync(cancellationToken);
@@ -168,7 +172,6 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.CourseRegistrations
             .AsNoTracking()
-            .Include(cr => cr.CourseRegistrationStatus)
             .Where(cr => cr.CourseEventId == courseEventId)
             .OrderByDescending(cr => cr.RegistrationDate)
             .ToListAsync(cancellationToken);

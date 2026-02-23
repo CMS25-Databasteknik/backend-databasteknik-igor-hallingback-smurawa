@@ -10,8 +10,16 @@ public sealed class Participant
     public string Email { get; }
     public string PhoneNumber { get; }
     public ParticipantContactType ContactType { get; }
+    public string? ContactTypeName { get; }
 
-    public Participant(Guid id, string firstName, string lastName, string email, string phoneNumber, ParticipantContactType contactType = ParticipantContactType.Primary)
+    public Participant(
+        Guid id,
+        string firstName,
+        string lastName,
+        string email,
+        string phoneNumber,
+        ParticipantContactType contactType = ParticipantContactType.Primary,
+        string? contactTypeName = null)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("ID cannot be empty.", nameof(id));
@@ -37,5 +45,6 @@ public sealed class Participant
         Email = email.Trim();
         PhoneNumber = phoneNumber.Trim();
         ContactType = contactType;
+        ContactTypeName = contactTypeName;
     }
 }

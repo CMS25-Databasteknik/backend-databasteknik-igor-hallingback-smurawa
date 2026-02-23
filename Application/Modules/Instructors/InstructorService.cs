@@ -118,13 +118,13 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
         }
     }
 
-    public async Task<InstructorResult> GetInstructorByIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
+    public async Task<InstructorDetailsResult> GetInstructorByIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (instructorId == Guid.Empty)
             {
-                return new InstructorResult
+                return new InstructorDetailsResult
                 {
                     Success = false,
                     StatusCode = 400,
@@ -136,7 +136,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
 
             if (result == null)
             {
-                return new InstructorResult
+                return new InstructorDetailsResult
                 {
                     Success = false,
                     StatusCode = 404,
@@ -144,17 +144,23 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            return new InstructorResult
+            var details = new InstructorDetails(
+                result.Id,
+                result.Name,
+                new InstructorLookupItem(result.Role.Id, result.Role.RoleName)
+            );
+
+            return new InstructorDetailsResult
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = details,
                 Message = "Instructor retrieved successfully."
             };
         }
         catch (KeyNotFoundException ex)
         {
-            return new InstructorResult
+            return new InstructorDetailsResult
             {
                 Success = false,
                 StatusCode = 404,
@@ -163,7 +169,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
         }
         catch (Exception ex)
         {
-            return new InstructorResult
+            return new InstructorDetailsResult
             {
                 Success = false,
                 StatusCode = 500,

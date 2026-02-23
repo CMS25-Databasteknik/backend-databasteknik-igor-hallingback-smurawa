@@ -101,13 +101,13 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
         }
     }
 
-    public async Task<ParticipantResult> GetParticipantByIdAsync(Guid participantId, CancellationToken cancellationToken = default)
+    public async Task<ParticipantDetailsResult> GetParticipantByIdAsync(Guid participantId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (participantId == Guid.Empty)
             {
-                return new ParticipantResult
+                return new ParticipantDetailsResult
                 {
                     Success = false,
                     StatusCode = 400,
@@ -119,7 +119,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
 
             if (existingParticipant == null)
             {
-                return new ParticipantResult
+                return new ParticipantDetailsResult
                 {
                     Success = false,
                     StatusCode = 404,
@@ -127,17 +127,28 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            return new ParticipantResult
+            var details = new ParticipantDetails(
+                existingParticipant.Id,
+                existingParticipant.FirstName,
+                existingParticipant.LastName,
+                existingParticipant.Email,
+                existingParticipant.PhoneNumber,
+                new ParticipantLookupItem(
+                    (int)existingParticipant.ContactType,
+                    existingParticipant.ContactTypeName ?? existingParticipant.ContactType.ToString())
+            );
+
+            return new ParticipantDetailsResult
             {
                 Success = true,
                 StatusCode = 200,
-                Result = existingParticipant,
+                Result = details,
                 Message = "Participant retrieved successfully."
             };
         }
         catch (Exception ex)
         {
-            return new ParticipantResult
+            return new ParticipantDetailsResult
             {
                 Success = false,
                 StatusCode = 500,

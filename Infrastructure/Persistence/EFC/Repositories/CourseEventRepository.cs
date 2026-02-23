@@ -1,5 +1,6 @@
 using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
+using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
@@ -11,14 +12,24 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
         : RepositoryBase<CourseEvent, Guid, CourseEventEntity, CoursesOnlineDbContext>(context), ICourseEventRepository
     {
         protected override CourseEvent ToModel(CourseEventEntity entity)
-            => new(
+        {
+            var courseEventType = entity.CourseEventType is null
+                ? null
+                : new CourseEventType(entity.CourseEventType.Id, entity.CourseEventType.TypeName);
+
+            var venueTypeName = entity.VenueType?.Name;
+
+            return new(
                 entity.Id,
                 entity.CourseId,
                 entity.EventDate,
                 entity.Price,
                 entity.Seats,
                 entity.CourseEventTypeId,
-                (VenueType)entity.VenueTypeId);
+                (VenueType)entity.VenueTypeId,
+                courseEventType,
+                venueTypeName);
+        }
 
         protected override CourseEventEntity ToEntity(CourseEvent courseEvent)
             => new()
@@ -99,6 +110,8 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
         {
             var entity = await _context.CourseEvents
                 .AsNoTracking()
+                .Include(ce => ce.CourseEventType)
+                .Include(ce => ce.VenueType)
                 .SingleOrDefaultAsync(ce => ce.Id == courseEventId, cancellationToken);
 
             return entity == null ? null : ToModel(entity);

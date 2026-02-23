@@ -118,13 +118,13 @@ public class CourseEventService(
         }
     }
 
-    public async Task<CourseEventResult> GetCourseEventByIdAsync(Guid courseEventId, CancellationToken cancellationToken = default)
+    public async Task<CourseEventDetailsResult> GetCourseEventByIdAsync(Guid courseEventId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (courseEventId == Guid.Empty)
             {
-                return new CourseEventResult
+                return new CourseEventDetailsResult
                 {
                     Success = false,
                     StatusCode = 400,
@@ -135,7 +135,7 @@ public class CourseEventService(
             var result = await _courseEventRepository.GetByIdAsync(courseEventId, cancellationToken);
             if (result == null)
             {
-                return new CourseEventResult
+                return new CourseEventDetailsResult
                 {
                     Success = false,
                     StatusCode = 404,
@@ -143,17 +143,27 @@ public class CourseEventService(
                 };
             }
 
-            return new CourseEventResult
+            var details = new CourseEventDetails(
+                result.Id,
+                result.CourseId,
+                result.EventDate,
+                result.Price,
+                result.Seats,
+                new LookupItem(result.CourseEventType.Id, result.CourseEventType.TypeName),
+                new LookupItem((int)result.VenueType, result.VenueTypeName)
+            );
+
+            return new CourseEventDetailsResult
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = details,
                 Message = "Course event retrieved successfully."
             };
         }
         catch (Exception ex)
         {
-            return new CourseEventResult
+            return new CourseEventDetailsResult
             {
                 Success = false,
                 StatusCode = 500,
