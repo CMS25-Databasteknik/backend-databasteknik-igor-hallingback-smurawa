@@ -225,16 +225,15 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            var updatedInPlaceLocation = new InPlaceLocation(
-                inPlaceLocation.Id,
+            existingInPlaceLocation.Update(
                 inPlaceLocation.LocationId,
                 inPlaceLocation.RoomNumber,
                 inPlaceLocation.Seats
             );
 
-            var result = await _inPlaceLocationRepository.UpdateAsync(updatedInPlaceLocation.Id, updatedInPlaceLocation, cancellationToken);
+            var updatedInPlaceLocation = await _inPlaceLocationRepository.UpdateAsync(existingInPlaceLocation.Id, existingInPlaceLocation, cancellationToken);
 
-            if (result == null)
+            if (updatedInPlaceLocation == null)
             {
                 return new InPlaceLocationResult
                 {
@@ -248,7 +247,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = updatedInPlaceLocation,
                 Message = "In-place location updated successfully."
             };
         }

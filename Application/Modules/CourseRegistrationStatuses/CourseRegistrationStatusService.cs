@@ -219,8 +219,8 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 };
             }
 
-            var newStatus = new CourseRegistrationStatus(input.Id, input.Name);
-            var updatedStatus = await _repository.UpdateAsync(newStatus.Id, newStatus, cancellationToken);
+            existingStatus.Update(input.Name);
+            var updatedStatus = await _repository.UpdateAsync(existingStatus.Id, existingStatus, cancellationToken);
 
             if (updatedStatus == null)
             {

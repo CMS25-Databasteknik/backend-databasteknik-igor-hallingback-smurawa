@@ -192,6 +192,16 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
+            if (instructor.Id == Guid.Empty)
+            {
+                return new InstructorResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Instructor ID cannot be empty."
+                };
+            }
+
             var role = await _instructorRoleRepository.GetByIdAsync(instructor.InstructorRoleId, cancellationToken);
             if (role == null)
             {
@@ -202,8 +212,6 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                     Message = $"Instructor role with ID '{instructor.InstructorRoleId}' not found."
                 };
             }
-
-            var updatedInstructor = new Instructor(instructor.Id, instructor.Name, role);
 
             var existingInstructor = await _instructorRepository.GetByIdAsync(instructor.Id, cancellationToken);
             if (existingInstructor == null)
@@ -216,9 +224,11 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var result = await _instructorRepository.UpdateAsync(updatedInstructor.Id, updatedInstructor, cancellationToken);
+            existingInstructor.Update(instructor.Name, role);
 
-            if (result == null)
+            var updatedInstructor = await _instructorRepository.UpdateAsync(existingInstructor.Id, existingInstructor, cancellationToken);
+
+            if (updatedInstructor == null)
             {
                 return new InstructorResult
                 {
@@ -232,7 +242,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = updatedInstructor,
                 Message = "Instructor updated successfully."
             };
         }

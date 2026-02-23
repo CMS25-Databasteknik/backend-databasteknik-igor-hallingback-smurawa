@@ -179,16 +179,15 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            var updatedLocation = new Location(
-                location.Id,
+            existingLocation.Update(
                 location.StreetName,
                 location.PostalCode,
                 location.City
             );
 
-            var result = await _locationRepository.UpdateAsync(updatedLocation.Id, updatedLocation, cancellationToken);
+            var updatedLocation = await _locationRepository.UpdateAsync(existingLocation.Id, existingLocation, cancellationToken);
 
-            if (result == null)
+            if (updatedLocation == null)
             {
                 return new LocationResult
                 {
@@ -202,7 +201,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = updatedLocation,
                 Message = "Location updated successfully."
             };
         }

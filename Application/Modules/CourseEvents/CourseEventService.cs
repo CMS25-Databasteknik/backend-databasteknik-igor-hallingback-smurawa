@@ -150,7 +150,7 @@ public class CourseEventService(
                 result.Price,
                 result.Seats,
                 new CourseEventLookupItem(result.CourseEventType.Id, result.CourseEventType.TypeName),
-                new CourseEventLookupItem((int)result.VenueType, result.VenueTypeName)
+                new CourseEventLookupItem((int)result.VenueType, result.VenueType.ToString())
             );
 
             return new CourseEventDetailsResult
@@ -256,17 +256,17 @@ public class CourseEventService(
                 };
             }
 
-            var updatedCourseEvent = new CourseEvent(
-                courseEvent.Id,
+            existingCourseEvent.Update(
                 courseEvent.CourseId,
                 courseEvent.EventDate,
                 courseEvent.Price,
                 courseEvent.Seats,
                 courseEvent.CourseEventTypeId,
-                courseEvent.VenueType);
+                courseEvent.VenueType,
+                existingCourseEventType);
 
-            var result = await _courseEventRepository.UpdateAsync(updatedCourseEvent.Id, updatedCourseEvent, cancellationToken);
-            if (result == null)
+            var updatedCourseEvent = await _courseEventRepository.UpdateAsync(existingCourseEvent.Id, existingCourseEvent, cancellationToken);
+            if (updatedCourseEvent == null)
             {
                 return new CourseEventResult
                 {
@@ -280,7 +280,7 @@ public class CourseEventService(
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = updatedCourseEvent,
                 Message = "Course event updated successfully."
             };
         }

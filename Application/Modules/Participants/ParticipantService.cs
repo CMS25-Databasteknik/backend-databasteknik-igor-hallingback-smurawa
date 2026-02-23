@@ -135,7 +135,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 existingParticipant.PhoneNumber,
                 new ParticipantLookupItem(
                     (int)existingParticipant.ContactType,
-                    existingParticipant.ContactTypeName ?? existingParticipant.ContactType.ToString())
+                    existingParticipant.ContactType.ToString())
             );
 
             return new ParticipantDetailsResult
@@ -192,8 +192,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
-            var updatedParticipant = new Participant(
-                participant.Id,
+            existingParticipant.Update(
                 participant.FirstName,
                 participant.LastName,
                 participant.Email,
@@ -201,9 +200,9 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 participant.ContactType
             );
 
-            var result = await _participantRepository.UpdateAsync(updatedParticipant.Id, updatedParticipant, cancellationToken);
+            var updatedParticipant = await _participantRepository.UpdateAsync(existingParticipant.Id, existingParticipant, cancellationToken);
 
-            if (result == null)
+            if (updatedParticipant == null)
             {
                 return new ParticipantResult
                 {
@@ -217,7 +216,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = updatedParticipant,
                 Message = "Participant updated successfully."
             };
         }

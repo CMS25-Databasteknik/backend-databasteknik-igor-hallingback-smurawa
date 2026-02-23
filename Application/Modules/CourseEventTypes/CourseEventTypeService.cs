@@ -229,9 +229,9 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 };
             }
 
-            var newCourseEventType = new CourseEventType(courseEventType.Id, courseEventType.TypeName);
+            existingCourseEventType.Update(courseEventType.TypeName);
 
-            var updatedCourseEventType = await _courseEventTypeRepository.UpdateAsync(newCourseEventType.Id, newCourseEventType, cancellationToken);
+            var updatedCourseEventType = await _courseEventTypeRepository.UpdateAsync(existingCourseEventType.Id, existingCourseEventType, cancellationToken);
 
             if (updatedCourseEventType == null)
             {
