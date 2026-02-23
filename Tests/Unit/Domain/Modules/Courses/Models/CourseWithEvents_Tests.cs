@@ -162,6 +162,21 @@ public class CourseWithEvents_Tests
     }
 
     [Fact]
+    public void Constructor_Should_Throw_ArgumentException_When_Event_Belongs_To_Another_Course()
+    {
+        // Arrange
+        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var events = new List<CourseEvent>
+        {
+            new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 20, 1, VenueType.InPerson)
+        };
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() => new CourseWithEvents(course, events));
+        Assert.Equal("events", exception.ParamName);
+    }
+
+    [Fact]
     public void Two_Instances_With_Same_Course_Should_Have_Same_Course_Reference()
     {
         // Arrange

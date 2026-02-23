@@ -15,6 +15,9 @@ public sealed class CourseWithEvents
 
         if (Events.Any(e => e is null))
             throw new ArgumentException("Events collection cannot contain null items.", nameof(events));
+
+        if (Events.Any(e => e.CourseId != Course.Id))
+            throw new ArgumentException("All events must belong to the same course.", nameof(events));
     }
 }
 
