@@ -17,7 +17,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
             entity.LastName,
             entity.Email,
             entity.PhoneNumber,
-            DomainValueConverters.ToParticipantContactType(entity.ContactTypeId));
+            DomainValueConverters.ToParticipantContactType(entity.ContactTypeId, entity.ContactType?.Name));
 
     protected override ParticipantEntity ToEntity(Participant participant)
         => new()
@@ -37,7 +37,12 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
         _context.Participants.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return ToModel(entity);
+        var created = await _context.Participants
+            .AsNoTracking()
+            .Include(p => p.ContactType)
+            .SingleAsync(p => p.Id == entity.Id, cancellationToken);
+
+        return ToModel(created);
     }
 
     public override async Task<bool> RemoveAsync(Guid participantId, CancellationToken cancellationToken)
@@ -74,6 +79,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.Participants
             .AsNoTracking()
+            .Include(p => p.ContactType)
             .OrderBy(p => p.LastName)
             .ThenBy(p => p.FirstName)
             .ToListAsync(cancellationToken);
@@ -107,7 +113,12 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return ToModel(entity);
+        var updated = await _context.Participants
+            .AsNoTracking()
+            .Include(p => p.ContactType)
+            .SingleAsync(p => p.Id == id, cancellationToken);
+
+        return ToModel(updated);
     }
 
     public async Task<bool> HasRegistrationsAsync(Guid participantId, CancellationToken cancellationToken)

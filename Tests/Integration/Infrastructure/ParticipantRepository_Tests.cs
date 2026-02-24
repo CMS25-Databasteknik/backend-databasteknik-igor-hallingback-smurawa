@@ -39,7 +39,7 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal(input.LastName, persisted.LastName);
         Assert.Equal(input.Email, persisted.Email);
         Assert.Equal(input.PhoneNumber, persisted.PhoneNumber);
-        Assert.Equal((int)input.ContactType, persisted.ContactTypeId);
+        Assert.Equal(input.ContactType.Id, persisted.ContactTypeId);
     }
 
     [Fact]
@@ -118,12 +118,12 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
                 "Contact",
                 $"billing-{Guid.NewGuid():N}@example.com",
                 "555123",
-                ParticipantContactType.Billing),
+                new ParticipantContactType(2, "Billing")),
             CancellationToken.None);
 
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
 
         Assert.NotNull(loaded);
-        Assert.Equal(ParticipantContactType.Billing, loaded!.ContactType);
+        Assert.Equal(new ParticipantContactType(2, "Billing"), loaded!.ContactType);
     }
 }

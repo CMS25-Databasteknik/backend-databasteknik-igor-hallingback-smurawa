@@ -22,12 +22,9 @@ internal static class DomainValueConverters
         };
     }
 
-    public static PaymentMethod ToPaymentMethod(int id)
+    public static PaymentMethod ToPaymentMethod(int id, string? name = null)
     {
-        if (!Enum.IsDefined(typeof(PaymentMethod), id))
-            throw new InvalidOperationException($"Unsupported payment method id '{id}'.");
-
-        return (PaymentMethod)id;
+        return new PaymentMethod(id, string.IsNullOrWhiteSpace(name) ? $"PaymentMethod {id}" : name);
     }
 
     public static VenueType ToVenueType(int id, string? name = null)
@@ -35,15 +32,12 @@ internal static class DomainValueConverters
         return new VenueType(id, string.IsNullOrWhiteSpace(name) ? $"VenueType {id}" : name);
     }
 
-    public static ParticipantContactType ToParticipantContactType(int id)
+    public static ParticipantContactType ToParticipantContactType(int id, string? name = null)
     {
-        if (!Enum.IsDefined(typeof(ParticipantContactType), id))
-            throw new InvalidOperationException($"Unsupported participant contact type id '{id}'.");
-
-        return (ParticipantContactType)id;
+        return new ParticipantContactType(id, string.IsNullOrWhiteSpace(name) ? $"ContactType {id}" : name);
     }
 
-    public static int ToId(PaymentMethod paymentMethod) => (int)paymentMethod;
+    public static int ToId(PaymentMethod paymentMethod) => paymentMethod.Id;
     public static int ToId(VenueType venueType) => venueType.Id;
-    public static int ToId(ParticipantContactType contactType) => (int)contactType;
+    public static int ToId(ParticipantContactType contactType) => contactType.Id;
 }

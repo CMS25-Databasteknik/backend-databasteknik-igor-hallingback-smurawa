@@ -134,8 +134,8 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 existingParticipant.Email,
                 existingParticipant.PhoneNumber,
                 new ParticipantLookupItem(
-                    (int)existingParticipant.ContactType,
-                    existingParticipant.ContactType.ToString())
+                    existingParticipant.ContactType.Id,
+                    existingParticipant.ContactType.Name)
             );
 
             return new ParticipantDetailsResult

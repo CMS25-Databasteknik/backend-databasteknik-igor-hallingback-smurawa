@@ -112,7 +112,7 @@ internal static class RepositoryTestDataHelper
                 resolvedEventId,
                 DateTime.UtcNow,
                 resolvedStatus,
-                PaymentMethod.Card),
+                new PaymentMethod(1, "Card")),
             CancellationToken.None);
     }
 

@@ -23,7 +23,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
             courseEvent.Id,
             DateTime.UtcNow,
             CourseRegistrationStatus.Pending,
-            PaymentMethod.Card);
+            new PaymentMethod(1, "Card"));
 
         var created = await repo.AddAsync(input, CancellationToken.None);
         var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
@@ -33,7 +33,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal(participant.Id, byId!.ParticipantId);
         Assert.Equal(courseEvent.Id, byId.CourseEventId);
         Assert.Equal(CourseRegistrationStatus.Pending.Id, byId.Status.Id);
-        Assert.Equal(PaymentMethod.Card, byId.PaymentMethod);
+        Assert.Equal(new PaymentMethod(1, "Card"), byId.PaymentMethod);
 
         var persisted = await context.CourseRegistrations
             .AsNoTracking()
@@ -43,7 +43,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal(participant.Id, persisted.ParticipantId);
         Assert.Equal(courseEvent.Id, persisted.CourseEventId);
         Assert.Equal(CourseRegistrationStatus.Pending.Id, persisted.CourseRegistrationStatusId);
-        Assert.Equal((int)PaymentMethod.Card, persisted.PaymentMethodId);
+        Assert.Equal(new PaymentMethod(1, "Card").Id, persisted.PaymentMethodId);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
                 courseEvent.Id,
                 DateTime.UtcNow,
                 CourseRegistrationStatus.Pending,
-                PaymentMethod.Card),
+                new PaymentMethod(1, "Card")),
             CancellationToken.None);
 
         Assert.Null(second);
@@ -130,7 +130,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
                 created.CourseEventId,
                 created.RegistrationDate,
                 CourseRegistrationStatus.Paid,
-                PaymentMethod.Invoice),
+                new PaymentMethod(2, "Invoice")),
             CancellationToken.None);
 
         Assert.NotNull(updated);
@@ -141,7 +141,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
             .SingleAsync(x => x.Id == created.Id, CancellationToken.None);
 
         Assert.Equal(CourseRegistrationStatus.Paid.Id, persisted.CourseRegistrationStatusId);
-        Assert.Equal((int)PaymentMethod.Invoice, persisted.PaymentMethodId);
+        Assert.Equal(new PaymentMethod(2, "Invoice").Id, persisted.PaymentMethodId);
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
             existingEvent.Id,
             DateTime.UtcNow,
             CourseRegistrationStatus.Pending,
-            PaymentMethod.Card);
+            new PaymentMethod(1, "Card"));
 
         await Assert.ThrowsAsync<DbUpdateException>(() => repo.AddAsync(input, CancellationToken.None));
     }

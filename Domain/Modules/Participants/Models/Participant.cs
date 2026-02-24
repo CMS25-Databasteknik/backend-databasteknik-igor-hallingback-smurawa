@@ -9,7 +9,7 @@ public sealed class Participant
     public string LastName { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
     public string PhoneNumber { get; private set; } = string.Empty;
-    public ParticipantContactType ContactType { get; private set; }
+    public ParticipantContactType ContactType { get; private set; } = null!;
 
     public Participant(
         Guid id,
@@ -17,7 +17,7 @@ public sealed class Participant
         string lastName,
         string email,
         string phoneNumber,
-        ParticipantContactType contactType = ParticipantContactType.Primary)
+        ParticipantContactType? contactType = null)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("ID cannot be empty.", nameof(id));
@@ -31,7 +31,7 @@ public sealed class Participant
         string lastName,
         string email,
         string phoneNumber,
-        ParticipantContactType contactType = ParticipantContactType.Primary)
+        ParticipantContactType? contactType = null)
     {
         SetValues(firstName, lastName, email, phoneNumber, contactType);
     }
@@ -41,7 +41,7 @@ public sealed class Participant
         string lastName,
         string email,
         string phoneNumber,
-        ParticipantContactType contactType)
+        ParticipantContactType? contactType)
     {
         if (string.IsNullOrWhiteSpace(firstName))
             throw new ArgumentException("First name cannot be empty or whitespace.", nameof(firstName));
@@ -55,13 +55,12 @@ public sealed class Participant
         if (string.IsNullOrWhiteSpace(phoneNumber))
             throw new ArgumentException("Phone number cannot be empty or whitespace.", nameof(phoneNumber));
 
-        if (!Enum.IsDefined(typeof(ParticipantContactType), contactType))
-            throw new ArgumentException("Participant contact type is invalid.", nameof(contactType));
+        var resolvedContactType = contactType ?? new ParticipantContactType(1, "Primary");
 
         FirstName = firstName.Trim();
         LastName = lastName.Trim();
         Email = email.Trim();
         PhoneNumber = phoneNumber.Trim();
-        ContactType = contactType;
+        ContactType = resolvedContactType;
     }
 }
