@@ -13,7 +13,7 @@ public class InstructorRepository(CoursesOnlineDbContext context)
     protected override Instructor ToModel(InstructorEntity entity)
     {
         if (entity.InstructorRole == null)
-            throw new InvalidOperationException("InstructorRole must be included when mapping Instructor.");
+            throw new InvalidOperationException("Instructor role must be loaded from database.");
 
         var role = new InstructorRole(entity.InstructorRole.Id, entity.InstructorRole.RoleName);
         return new Instructor(entity.Id, entity.Name, role);

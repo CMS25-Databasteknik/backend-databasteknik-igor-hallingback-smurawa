@@ -1,4 +1,6 @@
 using Backend.Domain.Modules.Instructors.Models;
+using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +9,12 @@ namespace Tests.Integration.Infrastructure;
 [Collection(SqliteInMemoryCollection.Name)]
 public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
 {
+    private sealed class TestableInstructorRepository(CoursesOnlineDbContext context)
+        : InstructorRepository(context)
+    {
+        public Instructor MapToModel(InstructorEntity entity) => base.ToModel(entity);
+    }
+
     [Fact]
     public async Task CreateInstructorAsync_ShouldPersist_And_BeReadableById()
     {
@@ -94,5 +102,22 @@ public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
 
         Assert.True(deleted);
         Assert.Null(loaded);
+    }
+
+    [Fact]
+    public async Task ToModel_ShouldThrow_WhenInstructorRoleIsNotLoaded()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new TestableInstructorRepository(context);
+        var entity = new InstructorEntity
+        {
+            Id = Guid.NewGuid(),
+            Name = "Instructor",
+            InstructorRoleId = 1,
+            InstructorRole = null!
+        };
+
+        var ex = Assert.Throws<InvalidOperationException>(() => repo.MapToModel(entity));
+        Assert.Equal("Instructor role must be loaded from database.", ex.Message);
     }
 }
