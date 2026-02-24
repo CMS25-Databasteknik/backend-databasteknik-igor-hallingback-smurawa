@@ -4,18 +4,24 @@ namespace Backend.Tests.Unit.Domain.Modules.Participants.Models;
 
 public class ParticipantContactType_Tests
 {
-    [Theory]
-    [InlineData(ParticipantContactType.Primary)]
-    [InlineData(ParticipantContactType.Billing)]
-    [InlineData(ParticipantContactType.Emergency)]
-    public void Enum_Should_Define_All_Known_Values(ParticipantContactType contactType)
+    public static IEnumerable<object[]> ValidContactTypes()
     {
-        Assert.True(Enum.IsDefined(typeof(ParticipantContactType), contactType));
+        yield return [new ParticipantContactType(1, "Primary")];
+        yield return [new ParticipantContactType(2, "Billing")];
+        yield return [new ParticipantContactType(3, "Emergency")];
+    }
+
+    [Theory]
+    [MemberData(nameof(ValidContactTypes))]
+    public void Constructor_Should_Create_ContactType_When_Valid(ParticipantContactType contactType)
+    {
+        Assert.True(contactType.Id > 0);
+        Assert.False(string.IsNullOrWhiteSpace(contactType.Name));
     }
 
     [Fact]
-    public void Enum_Should_Reject_Invalid_Value()
+    public void Constructor_Should_Throw_When_Id_Is_Invalid()
     {
-        Assert.False(Enum.IsDefined(typeof(ParticipantContactType), (ParticipantContactType)999));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new ParticipantContactType(0, "Invalid"));
     }
 }

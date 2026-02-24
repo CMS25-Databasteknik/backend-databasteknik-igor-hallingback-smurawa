@@ -4,19 +4,25 @@ namespace Backend.Tests.Unit.Domain.Modules.CourseRegistrations.Models;
 
 public class PaymentMethod_Tests
 {
-    [Theory]
-    [InlineData(PaymentMethod.Card)]
-    [InlineData(PaymentMethod.Invoice)]
-    [InlineData(PaymentMethod.Cash)]
-    [InlineData(PaymentMethod.Unknown)]
-    public void Enum_Should_Define_Known_Values(PaymentMethod paymentMethod)
+    public static IEnumerable<object[]> ValidPaymentMethods()
     {
-        Assert.True(Enum.IsDefined(typeof(PaymentMethod), paymentMethod));
+        yield return [new PaymentMethod(1, "Card")];
+        yield return [new PaymentMethod(2, "Invoice")];
+        yield return [new PaymentMethod(3, "Cash")];
+        yield return [new PaymentMethod(0, "Unknown")];
+    }
+
+    [Theory]
+    [MemberData(nameof(ValidPaymentMethods))]
+    public void Constructor_Should_Create_PaymentMethod_When_Valid(PaymentMethod paymentMethod)
+    {
+        Assert.True(paymentMethod.Id >= 0);
+        Assert.False(string.IsNullOrWhiteSpace(paymentMethod.Name));
     }
 
     [Fact]
-    public void Enum_Should_Reject_Invalid_Value()
+    public void Constructor_Should_Throw_When_Id_Is_Negative()
     {
-        Assert.False(Enum.IsDefined(typeof(PaymentMethod), (PaymentMethod)999));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new PaymentMethod(-1, "Invalid"));
     }
 }

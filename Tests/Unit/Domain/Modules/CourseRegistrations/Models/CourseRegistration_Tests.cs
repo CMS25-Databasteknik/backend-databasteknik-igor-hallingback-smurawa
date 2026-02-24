@@ -20,7 +20,7 @@ public class CourseRegistration_Tests
             courseEventId,
             registrationDate,
             CourseRegistrationStatus.Pending,
-            PaymentMethod.Card);
+            new PaymentMethod(1, "Card"));
 
         Assert.NotNull(courseRegistration);
         Assert.Equal(id, courseRegistration.Id);
@@ -37,7 +37,7 @@ public class CourseRegistration_Tests
         var courseEventId = Guid.NewGuid();
 
         var ex = Assert.Throws<ArgumentException>(() =>
-            new CourseRegistration(Guid.Empty, participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Paid, PaymentMethod.Invoice));
+            new CourseRegistration(Guid.Empty, participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Paid, new PaymentMethod(2, "Invoice")));
 
         Assert.Equal("id", ex.ParamName);
         Assert.Contains("ID cannot be empty", ex.Message);
@@ -47,28 +47,25 @@ public class CourseRegistration_Tests
     public void Constructor_Should_Throw_When_Status_Is_Null()
     {
         var ex = Assert.Throws<ArgumentNullException>(() =>
-            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, null!, PaymentMethod.Cash));
+            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, null!, new PaymentMethod(3, "Cash")));
         Assert.Equal("status", ex.ParamName);
     }
 
     [Fact]
-    public void Constructor_Should_Throw_When_PaymentMethod_Is_Invalid()
+    public void Constructor_Should_Throw_When_PaymentMethod_Is_Null()
     {
-        var invalidPayment = (PaymentMethod)(-1);
-
-        var ex = Assert.Throws<ArgumentException>(() =>
-            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, invalidPayment));
+        var ex = Assert.Throws<ArgumentNullException>(() =>
+            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, null!));
 
         Assert.Equal("paymentMethod", ex.ParamName);
-        Assert.Contains("Payment method is invalid", ex.Message);
     }
 
     public static IEnumerable<object[]> ValidStatusAndPaymentData =>
     [
-        [CourseRegistrationStatus.Pending, PaymentMethod.Card],
-        [CourseRegistrationStatus.Paid, PaymentMethod.Invoice],
-        [CourseRegistrationStatus.Cancelled, PaymentMethod.Cash],
-        [CourseRegistrationStatus.Refunded, PaymentMethod.Card]
+        [CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card")],
+        [CourseRegistrationStatus.Paid, new PaymentMethod(2, "Invoice")],
+        [CourseRegistrationStatus.Cancelled, new PaymentMethod(3, "Cash")],
+        [CourseRegistrationStatus.Refunded, new PaymentMethod(1, "Card")]
     ];
 
     [Theory]
@@ -84,7 +81,7 @@ public class CourseRegistration_Tests
     [Fact]
     public void Properties_Should_Be_ReadOnly()
     {
-        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, PaymentMethod.Card);
+        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, new PaymentMethod(1, "Card"));
 
         Assert.Equal(registration.Id, registration.Id);
         Assert.Equal(registration.ParticipantId, registration.ParticipantId);
@@ -98,7 +95,7 @@ public class CourseRegistration_Tests
     {
         var date = DateTime.UtcNow.AddDays(-10);
 
-        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), date, CourseRegistrationStatus.Paid, PaymentMethod.Cash);
+        var registration = new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), date, CourseRegistrationStatus.Paid, new PaymentMethod(3, "Cash"));
 
         Assert.Equal(date, registration.RegistrationDate);
     }
@@ -112,7 +109,7 @@ public class CourseRegistration_Tests
             Guid.NewGuid(),
             DateTime.UtcNow,
             CourseRegistrationStatus.Pending,
-            PaymentMethod.Card);
+            new PaymentMethod(1, "Card"));
 
         var newParticipantId = Guid.NewGuid();
         var newCourseEventId = Guid.NewGuid();
@@ -123,13 +120,13 @@ public class CourseRegistration_Tests
             newCourseEventId,
             newDate,
             CourseRegistrationStatus.Paid,
-            PaymentMethod.Invoice);
+            new PaymentMethod(2, "Invoice"));
 
         Assert.Equal(newParticipantId, registration.ParticipantId);
         Assert.Equal(newCourseEventId, registration.CourseEventId);
         Assert.Equal(newDate, registration.RegistrationDate);
         Assert.Equal(CourseRegistrationStatus.Paid, registration.Status);
-        Assert.Equal(PaymentMethod.Invoice, registration.PaymentMethod);
+        Assert.Equal(new PaymentMethod(2, "Invoice"), registration.PaymentMethod);
     }
 
     [Fact]
@@ -141,14 +138,14 @@ public class CourseRegistration_Tests
             Guid.NewGuid(),
             DateTime.UtcNow,
             CourseRegistrationStatus.Pending,
-            PaymentMethod.Card);
+            new PaymentMethod(1, "Card"));
 
         var ex = Assert.Throws<ArgumentException>(() => registration.Update(
             Guid.Empty,
             Guid.NewGuid(),
             DateTime.UtcNow,
             CourseRegistrationStatus.Paid,
-            PaymentMethod.Invoice));
+            new PaymentMethod(2, "Invoice")));
 
         Assert.Equal("participantId", ex.ParamName);
     }

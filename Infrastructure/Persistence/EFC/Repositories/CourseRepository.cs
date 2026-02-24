@@ -2,7 +2,7 @@ using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
 using Backend.Domain.Modules.CourseWithEvents.Models;
-using Backend.Infrastructure.Common.Repositories;
+using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +58,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             var entity = await _context.Courses
                 .AsNoTracking()
                 .Include(c => c.CourseEvents)
+                .ThenInclude(ce => ce.VenueType)
                 .SingleOrDefaultAsync(c => c.Id == courseId, cancellationToken);
 
             if (entity == null)
@@ -72,7 +73,10 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                     ce.Price,
                     ce.Seats,
                     ce.CourseEventTypeId,
-                    DomainValueConverters.ToVenueType(ce.VenueTypeId)))
+                    new VenueType(
+                        ce.VenueTypeId,
+                        ce.VenueType?.Name
+                            ?? throw new InvalidOperationException("Venue type must be loaded from database."))))
                 .ToList();
 
             return new CourseWithEvents(course, events);
