@@ -14,6 +14,7 @@ public static class ApiEndpoints
         api.MapParticipantContactTypesEndpoints();
         api.MapParticipantsEndpoints();
         api.MapPaymentMethodsEndpoints();
+        api.MapVenueTypesEndpoints();
         api.MapLocationsEndpoints();
         api.MapInPlaceLocationsEndpoints();
         api.MapInstructorsEndpoints();
