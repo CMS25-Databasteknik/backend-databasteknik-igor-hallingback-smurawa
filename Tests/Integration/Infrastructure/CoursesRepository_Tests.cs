@@ -1,12 +1,24 @@
 using Backend.Domain.Modules.Courses.Models;
+using Backend.Infrastructure.Persistence.Entities;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Tests.Integration.Infrastructure;
 
 [Collection(SqliteInMemoryCollection.Name)]
 public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
 {
+    private static void InvokeToCourseEventModel(CourseEventEntity entity)
+    {
+        var method = typeof(CourseRepository).GetMethod(
+            "ToCourseEventModel",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        Assert.NotNull(method);
+        _ = method!.Invoke(null, [entity]);
+    }
+
     [Fact]
     public async Task CreateCourseAsync_ShouldAddCourseToDatabase_And_Return_Course()
     {
@@ -118,5 +130,47 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
 
         Assert.True(deleted);
         Assert.Null(loaded);
+    }
+
+    [Fact]
+    public void ToCourseEventModel_ShouldThrow_WhenCourseEventTypeIsNotLoaded()
+    {
+        var entity = new CourseEventEntity
+        {
+            Id = Guid.NewGuid(),
+            CourseId = Guid.NewGuid(),
+            EventDate = DateTime.UtcNow.AddDays(1),
+            Price = 100m,
+            Seats = 10,
+            CourseEventTypeId = 1,
+            VenueTypeId = 1,
+            CourseEventType = null!,
+            VenueType = new VenueTypeEntity { Id = 1, Name = "InPerson" }
+        };
+
+        var ex = Assert.Throws<TargetInvocationException>(() => InvokeToCourseEventModel(entity));
+        Assert.IsType<InvalidOperationException>(ex.InnerException);
+        Assert.Equal("Course event type must be loaded from database.", ex.InnerException!.Message);
+    }
+
+    [Fact]
+    public void ToCourseEventModel_ShouldThrow_WhenVenueTypeIsNotLoaded()
+    {
+        var entity = new CourseEventEntity
+        {
+            Id = Guid.NewGuid(),
+            CourseId = Guid.NewGuid(),
+            EventDate = DateTime.UtcNow.AddDays(1),
+            Price = 100m,
+            Seats = 10,
+            CourseEventTypeId = 1,
+            VenueTypeId = 1,
+            CourseEventType = new CourseEventTypeEntity { Id = 1, TypeName = "Online" },
+            VenueType = null!
+        };
+
+        var ex = Assert.Throws<TargetInvocationException>(() => InvokeToCourseEventModel(entity));
+        Assert.IsType<InvalidOperationException>(ex.InnerException);
+        Assert.Equal("Venue type must be loaded from database.", ex.InnerException!.Message);
     }
 }

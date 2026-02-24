@@ -11,27 +11,36 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
     : RepositoryBase<Participant, Guid, ParticipantEntity, CoursesOnlineDbContext>(context), IParticipantRepository
 {
     protected override Participant ToModel(ParticipantEntity entity)
-        => new(
+    {
+        var contactTypeEntity = entity.ContactType
+            ?? throw new InvalidOperationException("Participant contact type must be loaded from database.");
+
+        var contactType = new ParticipantContactType(contactTypeEntity.Id, contactTypeEntity.Name);
+
+        return new Participant(
             entity.Id,
             entity.FirstName,
             entity.LastName,
             entity.Email,
             entity.PhoneNumber,
-            new ParticipantContactType(
-                entity.ContactTypeId,
-                entity.ContactType?.Name
-                    ?? throw new InvalidOperationException("Participant contact type must be loaded from database.")));
+            contactType);
+    }
 
     protected override ParticipantEntity ToEntity(Participant participant)
-        => new()
+    {
+        var contactType = participant.ContactType
+            ?? throw new InvalidOperationException("Participant contact type must be set when mapping participant.");
+
+        return new ParticipantEntity
         {
             Id = participant.Id,
             FirstName = participant.FirstName,
             LastName = participant.LastName,
             Email = participant.Email,
             PhoneNumber = participant.PhoneNumber,
-            ContactTypeId = participant.ContactType.Id
+            ContactTypeId = contactType.Id
         };
+    }
 
     public override async Task<Participant> AddAsync(Participant participant, CancellationToken cancellationToken)
     {

@@ -1,5 +1,7 @@
 using Backend.Domain.Modules.Participants.Models;
 using Backend.Domain.Modules.ParticipantContactTypes.Models;
+using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +10,12 @@ namespace Tests.Integration.Infrastructure;
 [Collection(SqliteInMemoryCollection.Name)]
 public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
 {
+    private sealed class TestableParticipantRepository(CoursesOnlineDbContext context)
+        : ParticipantRepository(context)
+    {
+        public Participant MapToModel(ParticipantEntity entity) => base.ToModel(entity);
+    }
+
     [Fact]
     public async Task CreateParticipantAsync_ShouldPersist_And_BeReadableById()
     {
@@ -125,5 +133,25 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
 
         Assert.NotNull(loaded);
         Assert.Equal(new ParticipantContactType(2, "Billing"), loaded!.ContactType);
+    }
+
+    [Fact]
+    public async Task ToModel_ShouldThrow_WhenContactTypeIsNotLoaded()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new TestableParticipantRepository(context);
+        var entity = new ParticipantEntity
+        {
+            Id = Guid.NewGuid(),
+            FirstName = "Ada",
+            LastName = "Lovelace",
+            Email = $"ada-{Guid.NewGuid():N}@example.com",
+            PhoneNumber = "123456789",
+            ContactTypeId = 1,
+            ContactType = null!
+        };
+
+        var ex = Assert.Throws<InvalidOperationException>(() => repo.MapToModel(entity));
+        Assert.Equal("Participant contact type must be loaded from database.", ex.Message);
     }
 }

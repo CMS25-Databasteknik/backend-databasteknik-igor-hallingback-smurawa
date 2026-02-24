@@ -1,6 +1,8 @@
 using Backend.Domain.Modules.CourseRegistrations.Models;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.PaymentMethod.Models;
+using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +11,12 @@ namespace Tests.Integration.Infrastructure;
 [Collection(SqliteInMemoryCollection.Name)]
 public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
 {
+    private sealed class TestableCourseRegistrationRepository(CoursesOnlineDbContext context)
+        : CourseRegistrationRepository(context)
+    {
+        public CourseRegistration MapToModel(CourseRegistrationEntity entity) => base.ToModel(entity);
+    }
+
     [Fact]
     public async Task CreateCourseRegistrationAsync_ShouldPersist_And_BeReadableById()
     {
@@ -210,5 +218,47 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new CourseRegistrationRepository(context);
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() => repo.RemoveAsync(Guid.NewGuid(), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task ToModel_ShouldThrow_WhenStatusIsNotLoaded()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new TestableCourseRegistrationRepository(context);
+        var entity = new CourseRegistrationEntity
+        {
+            Id = Guid.NewGuid(),
+            ParticipantId = Guid.NewGuid(),
+            CourseEventId = Guid.NewGuid(),
+            RegistrationDate = DateTime.UtcNow,
+            CourseRegistrationStatusId = 1,
+            PaymentMethodId = 1,
+            PaymentMethod = new PaymentMethodEntity { Id = 1, Name = "Card" },
+            CourseRegistrationStatus = null!
+        };
+
+        var ex = Assert.Throws<InvalidOperationException>(() => repo.MapToModel(entity));
+        Assert.Equal("Course registration status must be loaded from database.", ex.Message);
+    }
+
+    [Fact]
+    public async Task ToModel_ShouldThrow_WhenPaymentMethodIsNotLoaded()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new TestableCourseRegistrationRepository(context);
+        var entity = new CourseRegistrationEntity
+        {
+            Id = Guid.NewGuid(),
+            ParticipantId = Guid.NewGuid(),
+            CourseEventId = Guid.NewGuid(),
+            RegistrationDate = DateTime.UtcNow,
+            CourseRegistrationStatusId = 1,
+            PaymentMethodId = 1,
+            CourseRegistrationStatus = new CourseRegistrationStatusEntity { Id = 1, Name = "Paid" },
+            PaymentMethod = null!
+        };
+
+        var ex = Assert.Throws<InvalidOperationException>(() => repo.MapToModel(entity));
+        Assert.Equal("Payment method must be loaded from database.", ex.Message);
     }
 }

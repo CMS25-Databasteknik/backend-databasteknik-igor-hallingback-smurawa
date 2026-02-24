@@ -13,34 +13,32 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
     {
         protected override CourseEvent ToModel(CourseEventEntity entity)
         {
-            var courseEventType = entity.CourseEventType is null
-                ? null
-                : new CourseEventType(entity.CourseEventType.Id, entity.CourseEventType.TypeName);
-            var venueType = entity.VenueType is null
-                ? null
-                : new VenueType(entity.VenueType.Id, entity.VenueType.Name);
+            var courseEventTypeEntity = entity.CourseEventType
+                ?? throw new InvalidOperationException("Course event type must be loaded from database.");
+            var venueTypeEntity = entity.VenueType
+                ?? throw new InvalidOperationException("Venue type must be loaded from database.");
 
-            return new(
+            var courseEventType = new CourseEventType(courseEventTypeEntity.Id, courseEventTypeEntity.TypeName);
+            var venueType = new VenueType(venueTypeEntity.Id, venueTypeEntity.Name);
+
+            return new CourseEvent(
                 entity.Id,
                 entity.CourseId,
                 entity.EventDate,
                 entity.Price,
                 entity.Seats,
                 entity.CourseEventTypeId,
-                new VenueType(
-                    entity.VenueTypeId,
-                    entity.VenueType?.Name
-                        ?? throw new InvalidOperationException("Venue type must be loaded from database.")),
+                venueType,
                 courseEventType,
                 venueType);
         }
 
         protected override CourseEventEntity ToEntity(CourseEvent courseEvent)
         {
+            var venueType = courseEvent.VenueType
+                ?? throw new InvalidOperationException("Venue type must be set when mapping course event.");
 
-
-
-            var entity = new CourseEventEntity
+            return new CourseEventEntity
             {
                 Id = courseEvent.Id,
                 CourseId = courseEvent.CourseId,
@@ -48,10 +46,8 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 Price = courseEvent.Price,
                 Seats = courseEvent.Seats,
                 CourseEventTypeId = courseEvent.CourseEventTypeId,
-                VenueTypeId = courseEvent.VenueType.Id
+                VenueTypeId = venueType.Id
             };
-
-            return entity;
         }
 
         public override async Task<CourseEvent> AddAsync(CourseEvent courseEvent, CancellationToken cancellationToken)
@@ -178,7 +174,4 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
     }
 }
-
-
-
 
