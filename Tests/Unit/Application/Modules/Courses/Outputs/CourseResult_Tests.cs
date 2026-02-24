@@ -1,7 +1,6 @@
 using Backend.Application.Modules.Courses.Outputs;
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.Courses.Models;
-using Backend.Domain.Modules.CourseWithEvents.Models;
 
 namespace Backend.Tests.Unit.Application.Modules.Courses.Outputs;
 

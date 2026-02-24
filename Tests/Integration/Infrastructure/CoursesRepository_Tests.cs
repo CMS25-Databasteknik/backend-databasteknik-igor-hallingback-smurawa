@@ -55,7 +55,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         await RepositoryTestDataHelper.CreateCourseEventAsync(context, course.Id);
         var repo = new CourseRepository(context);
 
-        var loaded = await repo.GetCourseByIdAsync(course.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdWithEventsAsync(course.Id, CancellationToken.None);
 
         Assert.NotNull(loaded);
         Assert.Equal(course.Id, loaded!.Course.Id);
@@ -107,7 +107,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
 
         var deleted = await repo.RemoveAsync(course.Id, CancellationToken.None);
-        var loaded = await repo.GetCourseByIdAsync(course.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdWithEventsAsync(course.Id, CancellationToken.None);
 
         Assert.True(deleted);
         Assert.Null(loaded);

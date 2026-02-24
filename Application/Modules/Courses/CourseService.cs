@@ -113,7 +113,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var result = await _courseRepository.GetCourseByIdAsync(courseId, cancellationToken);
+            var result = await _courseRepository.GetByIdWithEventsAsync(courseId, cancellationToken);
 
             if (result == null)
             {
