@@ -11,7 +11,7 @@ public sealed class CourseRegistration
     public Guid CourseEventId { get; private set; }
     public DateTime RegistrationDate { get; private set; }
     public CourseRegistrationStatus Status { get; private set; }
-    public PaymentMethodModel PaymentMethod { get; private set; }
+    public PaymentMethodModel PaymentMethod { get; private set; } = null!;
 
     public CourseRegistration(
         Guid id,
@@ -56,14 +56,12 @@ public sealed class CourseRegistration
             throw new ArgumentException("Registration date must be specified.", nameof(registrationDate));
 
         ArgumentNullException.ThrowIfNull(status);
-
-        if (!Enum.IsDefined(typeof(PaymentMethodModel), paymentMethod))
-            throw new ArgumentException("Payment method is invalid.", nameof(paymentMethod));
+        ArgumentNullException.ThrowIfNull(paymentMethod);
 
         ParticipantId = participantId;
         CourseEventId = courseEventId;
         RegistrationDate = registrationDate;
         Status = status;
-        PaymentMethod = paymentMethod;
+        PaymentMethod = new PaymentMethodModel(paymentMethod.Id, paymentMethod.Name);
     }
 }

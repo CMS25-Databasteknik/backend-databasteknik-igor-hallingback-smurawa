@@ -175,7 +175,7 @@ public class CourseRegistrationService(
                     courseEvent?.EventDate),
                 result.RegistrationDate,
                 new RegistrationLookupItem(result.Status.Id, result.Status.Name),
-                new RegistrationLookupItem((int)result.PaymentMethod, result.PaymentMethod.ToString())
+                new RegistrationLookupItem(result.PaymentMethod.Id, result.PaymentMethod.Name)
             );
 
             return new CourseRegistrationDetailsResult

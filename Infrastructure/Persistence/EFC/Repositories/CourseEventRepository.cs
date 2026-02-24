@@ -1,7 +1,7 @@
 using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.CourseEventTypes.Models;
-using Backend.Infrastructure.Common.Repositories;
+using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +16,9 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             var courseEventType = entity.CourseEventType is null
                 ? null
                 : new CourseEventType(entity.CourseEventType.Id, entity.CourseEventType.TypeName);
+            var venueType = entity.VenueType is null
+                ? null
+                : new VenueType(entity.VenueType.Id, entity.VenueType.Name);
 
             return new(
                 entity.Id,
@@ -24,12 +27,20 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 entity.Price,
                 entity.Seats,
                 entity.CourseEventTypeId,
-                DomainValueConverters.ToVenueType(entity.VenueTypeId),
-                courseEventType);
+                new VenueType(
+                    entity.VenueTypeId,
+                    entity.VenueType?.Name
+                        ?? throw new InvalidOperationException("Venue type must be loaded from database.")),
+                courseEventType,
+                venueType);
         }
 
         protected override CourseEventEntity ToEntity(CourseEvent courseEvent)
-            => new()
+        {
+
+
+
+            var entity = new CourseEventEntity
             {
                 Id = courseEvent.Id,
                 CourseId = courseEvent.CourseId,
@@ -37,15 +48,25 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 Price = courseEvent.Price,
                 Seats = courseEvent.Seats,
                 CourseEventTypeId = courseEvent.CourseEventTypeId,
-                VenueTypeId = DomainValueConverters.ToId(courseEvent.VenueType)
+                VenueTypeId = courseEvent.VenueType.Id
             };
+
+            return entity;
+        }
 
         public override async Task<CourseEvent> AddAsync(CourseEvent courseEvent, CancellationToken cancellationToken)
         {
             var entity = ToEntity(courseEvent);
             _context.CourseEvents.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
-            return ToModel(entity);
+
+            var created = await _context.CourseEvents
+                .AsNoTracking()
+                .Include(ce => ce.CourseEventType)
+                .Include(ce => ce.VenueType)
+                .SingleAsync(ce => ce.Id == entity.Id, cancellationToken);
+
+            return ToModel(created);
         }
 
         public override async Task<bool> RemoveAsync(Guid courseEventId, CancellationToken cancellationToken)
@@ -97,6 +118,8 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
         {
             var entities = await _context.CourseEvents
                 .AsNoTracking()
+                .Include(ce => ce.CourseEventType)
+                .Include(ce => ce.VenueType)
                 .OrderByDescending(ce => ce.CreatedAtUtc)
                 .ToListAsync(cancellationToken);
 
@@ -118,6 +141,8 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
         {
             var entities = await _context.CourseEvents
                 .AsNoTracking()
+                .Include(ce => ce.CourseEventType)
+                .Include(ce => ce.VenueType)
                 .Where(ce => ce.CourseId == courseId)
                 .OrderBy(ce => ce.EventDate)
                 .ToListAsync(cancellationToken);
@@ -137,12 +162,18 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             entity.Price = courseEvent.Price;
             entity.Seats = courseEvent.Seats;
             entity.CourseEventTypeId = courseEvent.CourseEventTypeId;
-            entity.VenueTypeId = DomainValueConverters.ToId(courseEvent.VenueType);
+            entity.VenueTypeId = courseEvent.VenueType.Id;
             entity.ModifiedAtUtc = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return ToModel(entity);
+            var updated = await _context.CourseEvents
+                .AsNoTracking()
+                .Include(ce => ce.CourseEventType)
+                .Include(ce => ce.VenueType)
+                .SingleAsync(ce => ce.Id == id, cancellationToken);
+
+            return ToModel(updated);
         }
 
     }

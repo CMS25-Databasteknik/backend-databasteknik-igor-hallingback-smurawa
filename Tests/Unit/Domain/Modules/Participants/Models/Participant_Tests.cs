@@ -25,21 +25,17 @@ public class Participant_Tests
         Assert.Equal(lastName, participant.LastName);
         Assert.Equal(email, participant.Email);
         Assert.Equal(phoneNumber, participant.PhoneNumber);
-        Assert.Equal(ParticipantContactType.Primary, participant.ContactType);
+        Assert.Equal(new ParticipantContactType(1, "Primary"), participant.ContactType);
     }
 
     [Fact]
-    public void Constructor_Should_Throw_ArgumentException_When_ContactType_Invalid()
+    public void Constructor_Should_Default_ContactType_When_Not_Provided()
     {
-        // Arrange
         var id = Guid.NewGuid();
 
-        // Act & Assert
-        var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, "John", "Doe", "john.doe@example.com", "+46701234567", (ParticipantContactType)999));
+        var participant = new Participant(id, "John", "Doe", "john.doe@example.com", "+46701234567");
 
-        Assert.Equal("contactType", exception.ParamName);
-        Assert.Contains("contact type is invalid", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(new ParticipantContactType(1, "Primary"), participant.ContactType);
     }
 
     [Fact]
@@ -460,14 +456,14 @@ public class Participant_Tests
             "Smith",
             "jane.smith@example.com",
             "+46709876543",
-            ParticipantContactType.Billing);
+            new ParticipantContactType(2, "Billing"));
 
         // Assert
         Assert.Equal("Jane", participant.FirstName);
         Assert.Equal("Smith", participant.LastName);
         Assert.Equal("jane.smith@example.com", participant.Email);
         Assert.Equal("+46709876543", participant.PhoneNumber);
-        Assert.Equal(ParticipantContactType.Billing, participant.ContactType);
+        Assert.Equal(new ParticipantContactType(2, "Billing"), participant.ContactType);
     }
 
     [Fact]
@@ -483,7 +479,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            participant.Update("Jane", "Smith", "", "+46709876543", ParticipantContactType.Primary));
+            participant.Update("Jane", "Smith", "", "+46709876543", new ParticipantContactType(1, "Primary")));
 
         Assert.Equal("email", exception.ParamName);
     }

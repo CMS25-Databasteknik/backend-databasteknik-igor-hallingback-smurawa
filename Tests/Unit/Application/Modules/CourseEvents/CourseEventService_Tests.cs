@@ -55,11 +55,11 @@ public class CourseEventService_Tests
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var courseId = Guid.NewGuid();
         var date = DateTime.UtcNow.AddDays(10);
-        var created = new CourseEvent(Guid.NewGuid(), courseId, date, 100, 10, 1, VenueType.InPerson);
+        var created = new CourseEvent(Guid.NewGuid(), courseId, date, 100, 10, 1, new VenueType(1, "InPerson"));
         eventRepo.AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>()).Returns(created);
 
         var service = CreateService(eventRepo);
-        var input = new CreateCourseEventInput(courseId, date, 100, 10, 1, VenueType.InPerson);
+        var input = new CreateCourseEventInput(courseId, date, 100, 10, 1, new VenueType(1, "InPerson"));
 
         var result = await service.CreateCourseEventAsync(input);
 
@@ -94,7 +94,7 @@ public class CourseEventService_Tests
             .Returns(new CourseEventType(1, "Online"));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
-        var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(5), 100, 10, 1, VenueType.InPerson);
+        var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(5), 100, 10, 1, new VenueType(1, "InPerson"));
 
         var result = await service.CreateCourseEventAsync(input);
 
@@ -116,7 +116,7 @@ public class CourseEventService_Tests
             .Returns(new Course(Guid.NewGuid(), "Title", "Desc", 1));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
-        var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(5), 100, 10, 99, VenueType.InPerson);
+        var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(5), 100, 10, 99, new VenueType(1, "InPerson"));
 
         var result = await service.CreateCourseEventAsync(input);
 
@@ -131,7 +131,7 @@ public class CourseEventService_Tests
     {
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var service = CreateService(eventRepo);
-        var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(1), -1, 10, 1, VenueType.InPerson);
+        var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(1), -1, 10, 1, new VenueType(1, "InPerson"));
 
         var result = await service.CreateCourseEventAsync(input);
 
@@ -149,7 +149,7 @@ public class CourseEventService_Tests
             .Returns(Task.FromException<CourseEvent>(new Exception("db fail")));
 
         var service = CreateService(eventRepo);
-        var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 100, 10, 1, VenueType.InPerson);
+        var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 100, 10, 1, new VenueType(1, "InPerson"));
 
         var result = await service.CreateCourseEventAsync(input);
 
@@ -168,8 +168,8 @@ public class CourseEventService_Tests
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var events = new List<CourseEvent>
         {
-            new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson),
-            new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 20, 10, 1, VenueType.InPerson)
+            new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, new VenueType(1, "InPerson")),
+            new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 20, 10, 1, new VenueType(1, "InPerson"))
         };
         eventRepo.GetAllAsync(Arg.Any<CancellationToken>()).Returns(events);
 
@@ -207,14 +207,14 @@ public class CourseEventService_Tests
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var eventId = Guid.NewGuid();
         var courseId = Guid.NewGuid();
-        var existing = new CourseEvent(eventId, courseId, DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson);
-        var updated = new CourseEvent(eventId, courseId, DateTime.UtcNow.AddDays(2), 20, 8, 2, VenueType.InPerson);
+        var existing = new CourseEvent(eventId, courseId, DateTime.UtcNow.AddDays(1), 10, 5, 1, new VenueType(1, "InPerson"));
+        var updated = new CourseEvent(eventId, courseId, DateTime.UtcNow.AddDays(2), 20, 8, 2, new VenueType(1, "InPerson"));
 
         eventRepo.GetByIdAsync(eventId, Arg.Any<CancellationToken>()).Returns(existing);
         eventRepo.UpdateAsync(Arg.Any<Guid>(), Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>()).Returns(updated);
 
         var service = CreateService(eventRepo);
-        var input = new UpdateCourseEventInput(eventId, courseId, updated.EventDate, updated.Price, updated.Seats, updated.CourseEventTypeId, VenueType.InPerson);
+        var input = new UpdateCourseEventInput(eventId, courseId, updated.EventDate, updated.Price, updated.Seats, updated.CourseEventTypeId, new VenueType(1, "InPerson"));
 
         var result = await service.UpdateCourseEventAsync(input);
 
@@ -230,7 +230,7 @@ public class CourseEventService_Tests
         eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns((CourseEvent?)null);
 
         var service = CreateService(eventRepo);
-        var input = new UpdateCourseEventInput(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson);
+        var input = new UpdateCourseEventInput(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, new VenueType(1, "InPerson"));
 
         var result = await service.UpdateCourseEventAsync(input);
 
@@ -246,14 +246,14 @@ public class CourseEventService_Tests
         courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((Course?)null);
         eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson));
+            .Returns(new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, new VenueType(1, "InPerson")));
 
         var typeRepo = Substitute.For<ICourseEventTypeRepository>();
         typeRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEventType(1, "Online"));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
-        var input = new UpdateCourseEventInput(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 20, 8, 1, VenueType.InPerson);
+        var input = new UpdateCourseEventInput(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 20, 8, 1, new VenueType(1, "InPerson"));
 
         var result = await service.UpdateCourseEventAsync(input);
 
@@ -269,14 +269,14 @@ public class CourseEventService_Tests
             .Returns((CourseEventType?)null);
 
         eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson));
+            .Returns(new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, new VenueType(1, "InPerson")));
 
         var courseRepo = Substitute.For<ICourseRepository>();
         courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new Course(Guid.NewGuid(), "Title", "Desc", 1));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
-        var input = new UpdateCourseEventInput(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 20, 8, 2, VenueType.InPerson);
+        var input = new UpdateCourseEventInput(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 20, 8, 2, new VenueType(1, "InPerson"));
 
         var result = await service.UpdateCourseEventAsync(input);
 
@@ -289,10 +289,10 @@ public class CourseEventService_Tests
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var courseId = Guid.NewGuid();
         eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson));
+            .Returns(new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 10, 5, 1, new VenueType(1, "InPerson")));
 
         var service = CreateService(eventRepo);
-        var input = new UpdateCourseEventInput(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), -1, 5, 1, VenueType.InPerson);
+        var input = new UpdateCourseEventInput(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), -1, 5, 1, new VenueType(1, "InPerson"));
 
         var result = await service.UpdateCourseEventAsync(input);
 

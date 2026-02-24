@@ -52,7 +52,7 @@ internal static class RepositoryTestDataHelper
                 99m,
                 seats,
                 resolvedTypeId,
-                VenueType.InPerson),
+                new VenueType(1, "InPerson")),
             CancellationToken.None);
     }
 
@@ -112,7 +112,7 @@ internal static class RepositoryTestDataHelper
                 resolvedEventId,
                 DateTime.UtcNow,
                 resolvedStatus,
-                PaymentMethod.Card),
+                new PaymentMethod(1, "Card")),
             CancellationToken.None);
     }
 
