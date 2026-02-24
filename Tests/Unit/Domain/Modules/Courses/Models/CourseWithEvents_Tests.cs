@@ -74,8 +74,8 @@ public class CourseWithEvents_Tests
         var course = new Course(courseId, "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>
         {
-            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, VenueType.InPerson),
-            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 1500m, 25, 1, VenueType.InPerson)
+            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, new VenueType(1, "InPerson")),
+            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 1500m, 25, 1, new VenueType(1, "InPerson"))
         };
 
         // Act
@@ -94,7 +94,7 @@ public class CourseWithEvents_Tests
         var course = new Course(courseId, "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>
         {
-            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, VenueType.InPerson)
+            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, new VenueType(1, "InPerson"))
         };
 
         // Act
@@ -151,7 +151,7 @@ public class CourseWithEvents_Tests
 
         for (int i = 0; i < 100; i++)
         {
-            events.Add(new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(i), 1000m + i, 20, 1, VenueType.InPerson));
+            events.Add(new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(i), 1000m + i, 20, 1, new VenueType(1, "InPerson")));
         }
 
         // Act
@@ -168,7 +168,7 @@ public class CourseWithEvents_Tests
         var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>
         {
-            new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 20, 1, VenueType.InPerson)
+            new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 20, 1, new VenueType(1, "InPerson"))
         };
 
         // Act & Assert

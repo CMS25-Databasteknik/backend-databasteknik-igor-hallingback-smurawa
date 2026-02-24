@@ -4,18 +4,24 @@ namespace Backend.Tests.Unit.Domain.Modules.CourseEvents.Models;
 
 public class VenueType_Tests
 {
-    [Theory]
-    [InlineData(VenueType.InPerson)]
-    [InlineData(VenueType.Online)]
-    [InlineData(VenueType.Hybrid)]
-    public void Enum_Should_Contain_Expected_Values(VenueType venueType)
+    public static IEnumerable<object[]> ValidVenueTypes()
     {
-        Assert.True(Enum.IsDefined(typeof(VenueType), venueType));
+        yield return [new VenueType(1, "InPerson")];
+        yield return [new VenueType(2, "Online")];
+        yield return [new VenueType(3, "Hybrid")];
+    }
+
+    [Theory]
+    [MemberData(nameof(ValidVenueTypes))]
+    public void Constructor_Should_Create_VenueType_When_Values_Are_Valid(VenueType venueType)
+    {
+        Assert.True(venueType.Id > 0);
+        Assert.False(string.IsNullOrWhiteSpace(venueType.Name));
     }
 
     [Fact]
-    public void Enum_Should_Reject_Invalid_Value()
+    public void Constructor_Should_Throw_When_Id_Is_Invalid()
     {
-        Assert.False(Enum.IsDefined(typeof(VenueType), (VenueType)999));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new VenueType(0, "InPerson"));
     }
 }

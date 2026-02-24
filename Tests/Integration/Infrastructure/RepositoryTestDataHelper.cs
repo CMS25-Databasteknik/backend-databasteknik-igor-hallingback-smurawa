@@ -52,7 +52,7 @@ internal static class RepositoryTestDataHelper
                 99m,
                 seats,
                 resolvedTypeId,
-                VenueType.InPerson),
+                new VenueType(1, "InPerson")),
             CancellationToken.None);
     }
 

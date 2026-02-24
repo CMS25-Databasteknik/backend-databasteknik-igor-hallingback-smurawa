@@ -30,12 +30,9 @@ internal static class DomainValueConverters
         return (PaymentMethod)id;
     }
 
-    public static VenueType ToVenueType(int id)
+    public static VenueType ToVenueType(int id, string? name = null)
     {
-        if (!Enum.IsDefined(typeof(VenueType), id))
-            throw new InvalidOperationException($"Unsupported venue type id '{id}'.");
-
-        return (VenueType)id;
+        return new VenueType(id, string.IsNullOrWhiteSpace(name) ? $"VenueType {id}" : name);
     }
 
     public static ParticipantContactType ToParticipantContactType(int id)
@@ -47,6 +44,6 @@ internal static class DomainValueConverters
     }
 
     public static int ToId(PaymentMethod paymentMethod) => (int)paymentMethod;
-    public static int ToId(VenueType venueType) => (int)venueType;
+    public static int ToId(VenueType venueType) => venueType.Id;
     public static int ToId(ParticipantContactType contactType) => (int)contactType;
 }

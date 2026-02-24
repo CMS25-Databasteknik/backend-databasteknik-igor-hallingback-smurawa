@@ -35,7 +35,7 @@ public class CourseRegistrationService_Tests
             .Returns(ci =>
             {
                 var id = ci.Arg<Guid>();
-                return id == Guid.Empty ? null : new CourseEvent(id, Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.InPerson);
+                return id == Guid.Empty ? null : new CourseEvent(id, Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, new VenueType(1, "InPerson"));
             });
 
         return new CourseRegistrationService(regRepo, pRepo, ceRepo);
