@@ -9,7 +9,10 @@ using Backend.Application.Modules.InPlaceLocations;
 using Backend.Application.Modules.InstructorRoles;
 using Backend.Application.Modules.Instructors;
 using Backend.Application.Modules.Locations;
+using Backend.Application.Modules.ParticipantContactTypes;
 using Backend.Application.Modules.Participants;
+using Backend.Application.Modules.PaymentMethods;
+using Backend.Application.Modules.VenueTypes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,6 +38,9 @@ public static class ApplicationServiceCollectionExtension
         services.AddScoped<IInPlaceLocationService, InPlaceLocationService>();
         services.AddScoped<IInstructorService, InstructorService>();
         services.AddScoped<IInstructorRoleService, InstructorRoleService>();
+        services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+        services.AddScoped<IVenueTypeService, VenueTypeService>();
+        services.AddScoped<IParticipantContactTypeService, ParticipantContactTypeService>();
 
         return services;
     }

@@ -11,7 +11,10 @@ public static class ApiEndpoints
         api.MapCourseEventTypesEndpoints();
         api.MapCourseRegistrationsEndpoints();
         api.MapCourseRegistrationStatusesEndpoints();
+        api.MapParticipantContactTypesEndpoints();
         api.MapParticipantsEndpoints();
+        api.MapPaymentMethodsEndpoints();
+        api.MapVenueTypesEndpoints();
         api.MapLocationsEndpoints();
         api.MapInPlaceLocationsEndpoints();
         api.MapInstructorsEndpoints();
