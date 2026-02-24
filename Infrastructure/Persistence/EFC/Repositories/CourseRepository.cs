@@ -17,8 +17,13 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
         private static CourseEvent ToCourseEventModel(CourseEventEntity entity)
         {
-            var courseEventType = new CourseEventType(entity.CourseEventType.Id, entity.CourseEventType.TypeName);
-            var venueType = new VenueType(entity.VenueTypeId, entity.VenueType.Name);
+            var courseEventTypeEntity = entity.CourseEventType
+                ?? throw new InvalidOperationException("Course event type must be loaded from database.");
+            var venueTypeEntity = entity.VenueType
+                ?? throw new InvalidOperationException("Venue type must be loaded from database.");
+
+            var courseEventType = new CourseEventType(courseEventTypeEntity.Id, courseEventTypeEntity.TypeName);
+            var venueType = new VenueType(venueTypeEntity.Id, venueTypeEntity.Name);
 
             return new CourseEvent(
                 entity.Id,
