@@ -7,7 +7,10 @@ using Backend.Domain.Modules.InPlaceLocations.Contracts;
 using Backend.Domain.Modules.InstructorRoles.Contracts;
 using Backend.Domain.Modules.Instructors.Contracts;
 using Backend.Domain.Modules.Locations.Contracts;
+using Backend.Domain.Modules.ParticipantContactTypes.Contracts;
 using Backend.Domain.Modules.Participants.Contracts;
+using Backend.Domain.Modules.PaymentMethod.Contracts;
+using Backend.Domain.Modules.VenueTypes.Contracts;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.Data.Sqlite;
@@ -62,5 +65,8 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IInPlaceLocationRepository, InPlaceLocationRepository>();
         services.AddScoped<IInstructorRepository, InstructorRepository>();
         services.AddScoped<IInstructorRoleRepository, InstructorRoleRepository>();
+        services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
+        services.AddScoped<IVenueTypeRepository, VenueTypeRepository>();
+        services.AddScoped<IParticipantContactTypeRepository, ParticipantContactTypeRepository>();
     }
 }
