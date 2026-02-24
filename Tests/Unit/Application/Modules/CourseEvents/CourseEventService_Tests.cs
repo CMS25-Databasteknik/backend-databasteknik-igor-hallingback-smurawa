@@ -6,6 +6,7 @@ using Backend.Domain.Modules.CourseEventTypes.Contracts;
 using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
+using Backend.Domain.Modules.CourseWithEvents.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using NSubstitute;
 
@@ -29,8 +30,8 @@ public class CourseEventService_Tests
                 {
                     var id = ci.Arg<Guid>();
                     return id == Guid.Empty
-                        ? Task.FromResult<Course?>(null)
-                        : Task.FromResult<Course?>(new Course(id, "Title", "Desc", 1));
+                        ? (CourseWithEvents?)null
+                        : new CourseWithEvents(new Course(id, "Title", "Desc", 1), []);
                 });
         }
 
@@ -88,7 +89,7 @@ public class CourseEventService_Tests
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var courseRepo = Substitute.For<ICourseRepository>();
         courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns((Course?)null);
+            .Returns((CourseWithEvents?)null);
         var typeRepo = Substitute.For<ICourseEventTypeRepository>();
         typeRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEventType(1, "Online"));
@@ -113,7 +114,7 @@ public class CourseEventService_Tests
             .Returns((CourseEventType?)null);
         var courseRepo = Substitute.For<ICourseRepository>();
         courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Course(Guid.NewGuid(), "Title", "Desc", 1));
+            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Title", "Desc", 1), []));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
         var input = new CreateCourseEventInput(Guid.NewGuid(), DateTime.UtcNow.AddDays(5), 100, 10, 99, new VenueType(1, "InPerson"));
@@ -244,7 +245,7 @@ public class CourseEventService_Tests
         var eventRepo = Substitute.For<ICourseEventRepository>();
         var courseRepo = Substitute.For<ICourseRepository>();
         courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns((Course?)null);
+            .Returns((CourseWithEvents?)null);
         eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, new VenueType(1, "InPerson")));
 
@@ -273,7 +274,7 @@ public class CourseEventService_Tests
 
         var courseRepo = Substitute.For<ICourseRepository>();
         courseRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Course(Guid.NewGuid(), "Title", "Desc", 1));
+            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Title", "Desc", 1), []));
 
         var service = new CourseEventService(eventRepo, courseRepo, typeRepo);
         var input = new UpdateCourseEventInput(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 20, 8, 2, new VenueType(1, "InPerson"));

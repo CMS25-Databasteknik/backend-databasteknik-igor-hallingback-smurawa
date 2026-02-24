@@ -113,8 +113,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var result = await _courseRepository.GetCourseByIdAsync(courseId, cancellationToken);
-
+            var result = await _courseRepository.GetByIdAsync(courseId, cancellationToken);
             if (result == null)
             {
                 return new CourseWithEventsResult
@@ -168,8 +167,8 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var existingCourse = await _courseRepository.GetByIdAsync(course.Id, cancellationToken);
-            if (existingCourse == null)
+            var existingCourseWithEvents = await _courseRepository.GetByIdAsync(course.Id, cancellationToken);
+            if (existingCourseWithEvents == null)
             {
                 return new CourseResult
                 {
@@ -178,6 +177,8 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                     Message = $"Course with ID '{course.Id}' not found."
                 };
             }
+
+            var existingCourse = existingCourseWithEvents.Course;
 
             existingCourse.Update(
                 course.Title,
@@ -249,8 +250,8 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var existingCourse = await _courseRepository.GetByIdAsync(courseId, cancellationToken);
-            if (existingCourse == null)
+            var existingCourseWithEvents = await _courseRepository.GetByIdAsync(courseId, cancellationToken);
+            if (existingCourseWithEvents == null)
             {
                 return new CourseDeleteResult
                 {
@@ -316,5 +317,6 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
         }
     }
 }
+
 
 

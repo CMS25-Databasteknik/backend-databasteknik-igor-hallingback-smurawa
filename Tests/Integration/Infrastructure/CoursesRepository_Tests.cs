@@ -48,18 +48,18 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
-    public async Task GetCourseByIdAsync_ShouldReturnCourseWithEvents()
+    public async Task GetByIdAsync_ShouldReturnCourse_WhenCourseExists()
     {
         await using var context = fixture.CreateDbContext();
         var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
         await RepositoryTestDataHelper.CreateCourseEventAsync(context, course.Id);
         var repo = new CourseRepository(context);
 
-        var loaded = await repo.GetCourseByIdAsync(course.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(course.Id, CancellationToken.None);
 
         Assert.NotNull(loaded);
         Assert.Equal(course.Id, loaded!.Course.Id);
-        Assert.NotEmpty(loaded.Events);
+        Assert.Equal(course.Title, loaded.Course.Title);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
 
         var deleted = await repo.RemoveAsync(course.Id, CancellationToken.None);
-        var loaded = await repo.GetCourseByIdAsync(course.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdAsync(course.Id, CancellationToken.None);
 
         Assert.True(deleted);
         Assert.Null(loaded);

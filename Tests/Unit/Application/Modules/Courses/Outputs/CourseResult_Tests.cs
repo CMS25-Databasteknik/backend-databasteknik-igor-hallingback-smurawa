@@ -184,10 +184,10 @@ public class CourseListResult_Tests
     public void Should_Store_Course_List_In_Result_Property()
     {
         // Arrange
-        var courses = new List<Course>
+        var courses = new List<CourseWithEvents>
         {
-            new Course(Guid.NewGuid(), "Course 1", "Description 1", 5),
-            new Course(Guid.NewGuid(), "Course 2", "Description 2", 10)
+            new(new Course(Guid.NewGuid(), "Course 1", "Description 1", 5), []),
+            new(new Course(Guid.NewGuid(), "Course 2", "Description 2", 10), [])
         };
         var result = new CourseListResult
         {
@@ -203,11 +203,11 @@ public class CourseListResult_Tests
     public void Should_Support_Success_Response_With_Multiple_Courses()
     {
         // Arrange
-        var courses = new List<Course>
+        var courses = new List<CourseWithEvents>
         {
-            new Course(Guid.NewGuid(), "Course 1", "Description 1", 5),
-            new Course(Guid.NewGuid(), "Course 2", "Description 2", 10),
-            new Course(Guid.NewGuid(), "Course 3", "Description 3", 15)
+            new(new Course(Guid.NewGuid(), "Course 1", "Description 1", 5), []),
+            new(new Course(Guid.NewGuid(), "Course 2", "Description 2", 10), []),
+            new(new Course(Guid.NewGuid(), "Course 3", "Description 3", 15), [])
         };
         var result = new CourseListResult
         {
@@ -233,7 +233,7 @@ public class CourseListResult_Tests
             Success = true,
             StatusCode = 200,
             Message = "No courses found",
-            Result = new List<Course>()
+            Result = new List<CourseWithEvents>()
         };
 
         // Assert
@@ -264,10 +264,10 @@ public class CourseListResult_Tests
     public void Should_Be_Enumerable()
     {
         // Arrange
-        var courses = new List<Course>
+        var courses = new List<CourseWithEvents>
         {
-            new Course(Guid.NewGuid(), "Course 1", "Description 1", 5),
-            new Course(Guid.NewGuid(), "Course 2", "Description 2", 10)
+            new(new Course(Guid.NewGuid(), "Course 1", "Description 1", 5), []),
+            new(new Course(Guid.NewGuid(), "Course 2", "Description 2", 10), [])
         };
         var result = new CourseListResult { Result = courses };
 
@@ -372,3 +372,4 @@ public class CourseDeleteResult_Tests
         Assert.False(result.Result);
     }
 }
+

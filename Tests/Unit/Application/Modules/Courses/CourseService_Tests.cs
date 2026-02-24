@@ -1,6 +1,5 @@
 using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
-using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
 using Backend.Domain.Modules.CourseWithEvents.Models;
@@ -274,11 +273,11 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
-        var courses = new List<Course>
+        var courses = new List<CourseWithEvents>
         {
-            new Course(Guid.NewGuid(), "Course 1", "Description 1", 10),
-            new Course(Guid.NewGuid(), "Course 2", "Description 2", 20),
-            new Course(Guid.NewGuid(), "Course 3", "Description 3", 15)
+            new(new Course(Guid.NewGuid(), "Course 1", "Description 1", 10), []),
+            new(new Course(Guid.NewGuid(), "Course 2", "Description 2", 20), []),
+            new(new Course(Guid.NewGuid(), "Course 3", "Description 3", 15), [])
         };
 
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
@@ -305,7 +304,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(new List<Course>());
+            .Returns(new List<CourseWithEvents>());
 
         var service = new CourseService(mockRepo);
 
@@ -326,7 +325,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromException<IReadOnlyList<Course>>(new Exception("Database connection failed")));
+            .Returns(Task.FromException<IReadOnlyList<CourseWithEvents>>(new Exception("Database connection failed")));
 
         var service = new CourseService(mockRepo);
 
@@ -351,9 +350,9 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var course = new Course(courseId, "Test Course", "Test Description", 10);
-        var courseWithEvents = new CourseWithEvents(course, new List<CourseEvent>());
+        var courseWithEvents = new CourseWithEvents(course, []);
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
 
         var service = new CourseService(mockRepo);
@@ -369,7 +368,7 @@ public class CourseService_Tests
         Assert.Equal("Test Course", result.Result.Course.Title);
         Assert.Equal("Course retrieved successfully.", result.Message);
 
-        await mockRepo.Received(1).GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).GetByIdAsync(courseId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -379,8 +378,8 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
-            .Returns((CourseWithEvents)null!);
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
+            .Returns((CourseWithEvents?)null);
 
         var service = new CourseService(mockRepo);
 
@@ -410,7 +409,7 @@ public class CourseService_Tests
         Assert.Null(result.Result);
         Assert.Equal("Course ID cannot be empty.", result.Message);
 
-        await mockRepo.DidNotReceive().GetCourseByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -420,7 +419,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
 
-        mockRepo.GetCourseByIdAsync(courseId, Arg.Any<CancellationToken>())
+        mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(Task.FromException<CourseWithEvents?>(new Exception("Database error")));
 
         var service = new CourseService(mockRepo);
@@ -447,7 +446,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
-        var courseWithEvents = existingCourse;
+        var courseWithEvents = new CourseWithEvents(existingCourse, []);
         var updatedCourse = new Course(courseId, "Updated Title", "Updated Description", 10);
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -522,7 +521,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5));
+            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5), []));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "", "Test Description", 5);
 
@@ -542,7 +541,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5));
+            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5), []));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "", 5);
 
@@ -562,7 +561,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5));
+            .Returns(new CourseWithEvents(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5), []));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "Test Description", 0);
 
@@ -584,7 +583,7 @@ public class CourseService_Tests
         var courseId = Guid.NewGuid();
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
-            .Returns((Course?)null);
+            .Returns((CourseWithEvents?)null);
 
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(courseId, "Test Title", "Test Description", 5);
@@ -608,7 +607,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
-        var courseWithEvents = existingCourse;
+        var courseWithEvents = new CourseWithEvents(existingCourse, []);
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
@@ -636,7 +635,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
-        var courseWithEvents = existingCourse;
+        var courseWithEvents = new CourseWithEvents(existingCourse, []);
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
@@ -669,7 +668,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
-        var courseWithEvents = existingCourse;
+        var courseWithEvents = new CourseWithEvents(existingCourse, []);
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
@@ -721,7 +720,7 @@ public class CourseService_Tests
         var courseId = Guid.NewGuid();
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
-            .Returns((Course?)null);
+            .Returns((CourseWithEvents?)null);
 
         var service = new CourseService(mockRepo);
 
@@ -744,7 +743,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
-        var courseWithEvents = existingCourse;
+        var courseWithEvents = new CourseWithEvents(existingCourse, []);
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
@@ -774,7 +773,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
-        var courseWithEvents = existingCourse;
+        var courseWithEvents = new CourseWithEvents(existingCourse, []);
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
@@ -805,7 +804,7 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
         var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
-        var courseWithEvents = existingCourse;
+        var courseWithEvents = new CourseWithEvents(existingCourse, []);
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
@@ -830,3 +829,7 @@ public class CourseService_Tests
 
     #endregion
 }
+
+
+
+

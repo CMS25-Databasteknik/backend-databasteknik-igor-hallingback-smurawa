@@ -12,7 +12,7 @@ public sealed class CourseWithEventsResult : ResultCommon<CourseWithEvents>
 {
 }
 
-public sealed class CourseListResult : ResultCommon<IReadOnlyList<Course>>
+public sealed class CourseListResult : ResultCommon<IReadOnlyList<CourseWithEvents>>
 {
 }
 
