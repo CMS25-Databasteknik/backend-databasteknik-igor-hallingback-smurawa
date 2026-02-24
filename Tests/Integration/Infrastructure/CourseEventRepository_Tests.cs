@@ -1,5 +1,7 @@
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
+using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Infrastructure.Persistence.Entities;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +10,12 @@ namespace Tests.Integration.Infrastructure;
 [Collection(SqliteInMemoryCollection.Name)]
 public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
 {
+    private sealed class TestableCourseEventRepository(CoursesOnlineDbContext context)
+        : CourseEventRepository(context)
+    {
+        public CourseEvent MapToModel(CourseEventEntity entity) => base.ToModel(entity);
+    }
+
     [Fact]
     public async Task CreateCourseEventAsync_ShouldPersist_And_BeReadableByIdAndCourseId()
     {
@@ -197,5 +205,49 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
             new VenueType(1, "InPerson"));
 
         await Assert.ThrowsAsync<DbUpdateException>(() => repo.AddAsync(input, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task ToModel_ShouldThrow_WhenCourseEventTypeIsNotLoaded()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new TestableCourseEventRepository(context);
+        var entity = new CourseEventEntity
+        {
+            Id = Guid.NewGuid(),
+            CourseId = Guid.NewGuid(),
+            EventDate = DateTime.UtcNow.AddDays(1),
+            Price = 100m,
+            Seats = 10,
+            CourseEventTypeId = 1,
+            VenueTypeId = 1,
+            VenueType = new VenueTypeEntity { Id = 1, Name = "InPerson" },
+            CourseEventType = null!
+        };
+
+        var ex = Assert.Throws<InvalidOperationException>(() => repo.MapToModel(entity));
+        Assert.Equal("Course event type must be loaded from database.", ex.Message);
+    }
+
+    [Fact]
+    public async Task ToModel_ShouldThrow_WhenVenueTypeIsNotLoaded()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new TestableCourseEventRepository(context);
+        var entity = new CourseEventEntity
+        {
+            Id = Guid.NewGuid(),
+            CourseId = Guid.NewGuid(),
+            EventDate = DateTime.UtcNow.AddDays(1),
+            Price = 100m,
+            Seats = 10,
+            CourseEventTypeId = 1,
+            VenueTypeId = 1,
+            CourseEventType = new CourseEventTypeEntity { Id = 1, TypeName = "Online" },
+            VenueType = null!
+        };
+
+        var ex = Assert.Throws<InvalidOperationException>(() => repo.MapToModel(entity));
+        Assert.Equal("Venue type must be loaded from database.", ex.Message);
     }
 }

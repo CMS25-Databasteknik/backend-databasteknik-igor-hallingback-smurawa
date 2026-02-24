@@ -12,29 +12,40 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
     : RepositoryBase<CourseRegistration, Guid, CourseRegistrationEntity, CoursesOnlineDbContext>(context), ICourseRegistrationRepository
 {
     protected override CourseRegistration ToModel(CourseRegistrationEntity entity)
-        => new(
+    {
+        var statusEntity = entity.CourseRegistrationStatus
+            ?? throw new InvalidOperationException("Course registration status must be loaded from database.");
+        var paymentMethodEntity = entity.PaymentMethod
+            ?? throw new InvalidOperationException("Payment method must be loaded from database.");
+
+        var status = new CourseRegistrationStatus(statusEntity.Id, statusEntity.Name);
+        var paymentMethod = new PaymentMethod(paymentMethodEntity.Id, paymentMethodEntity.Name);
+
+        return new CourseRegistration(
             entity.Id,
             entity.ParticipantId,
             entity.CourseEventId,
             entity.RegistrationDate,
-            new CourseRegistrationStatus(
-                entity.CourseRegistrationStatusId,
-                entity.CourseRegistrationStatus?.Name
-                    ?? throw new InvalidOperationException("Course registration status must be loaded from database.")),
-            new PaymentMethod(
-                entity.PaymentMethodId,
-                entity.PaymentMethod?.Name
-                    ?? throw new InvalidOperationException("Payment method must be loaded from database.")));
+            status,
+            paymentMethod);
+    }
 
     protected override CourseRegistrationEntity ToEntity(CourseRegistration courseRegistration)
-        => new()
+    {
+        var status = courseRegistration.Status
+            ?? throw new InvalidOperationException("Course registration status must be set when mapping registration.");
+        var paymentMethod = courseRegistration.PaymentMethod
+            ?? throw new InvalidOperationException("Payment method must be set when mapping registration.");
+
+        return new CourseRegistrationEntity
         {
             Id = courseRegistration.Id,
             ParticipantId = courseRegistration.ParticipantId,
             CourseEventId = courseRegistration.CourseEventId,
-            CourseRegistrationStatusId = courseRegistration.Status.Id,
-            PaymentMethodId = courseRegistration.PaymentMethod.Id
+            CourseRegistrationStatusId = status.Id,
+            PaymentMethodId = paymentMethod.Id
         };
+    }
 
     public override async Task<CourseRegistration> AddAsync(CourseRegistration courseRegistration, CancellationToken cancellationToken)
     {
