@@ -42,7 +42,7 @@ public class InstructorRole_Tests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Constructor_Should_Throw_When_Name_Invalid(string name)
+    public void Constructor_Should_Throw_When_Name_Invalid(string? name)
     {
         var ex = Assert.Throws<ArgumentException>(() => new InstructorRole(1, name!));
         Assert.Equal("roleName", ex.ParamName);

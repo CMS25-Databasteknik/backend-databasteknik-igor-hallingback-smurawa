@@ -31,7 +31,7 @@ public class Instructor_Tests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Constructor_Should_Throw_When_Name_Is_Invalid(string name)
+    public void Constructor_Should_Throw_When_Name_Is_Invalid(string? name)
     {
         var ex = Assert.Throws<ArgumentException>(() => new Instructor(Guid.NewGuid(), name!, new InstructorRole(1, "Lead")));
         Assert.Equal("name", ex.ParamName);

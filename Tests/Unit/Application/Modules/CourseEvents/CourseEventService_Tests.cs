@@ -178,7 +178,8 @@ public class CourseEventService_Tests
         var result = await service.GetAllCourseEventsAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(2, result.Result.Count());
+        Assert.NotNull(result.Result);
+        Assert.Equal(events.Count, result.Result!.Count);
     }
 
     [Fact]
