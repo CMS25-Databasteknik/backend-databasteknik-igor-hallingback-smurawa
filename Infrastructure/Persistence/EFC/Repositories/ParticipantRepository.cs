@@ -1,6 +1,6 @@
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.Participants.Models;
-using Backend.Infrastructure.Common.Repositories;
+using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +17,10 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
             entity.LastName,
             entity.Email,
             entity.PhoneNumber,
-            DomainValueConverters.ToParticipantContactType(entity.ContactTypeId, entity.ContactType?.Name));
+            new ParticipantContactType(
+                entity.ContactTypeId,
+                entity.ContactType?.Name
+                    ?? throw new InvalidOperationException("Participant contact type must be loaded from database.")));
 
     protected override ParticipantEntity ToEntity(Participant participant)
         => new()
@@ -27,7 +30,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
             LastName = participant.LastName,
             Email = participant.Email,
             PhoneNumber = participant.PhoneNumber,
-            ContactTypeId = DomainValueConverters.ToId(participant.ContactType)
+            ContactTypeId = participant.ContactType.Id
         };
 
     public override async Task<Participant> AddAsync(Participant participant, CancellationToken cancellationToken)
@@ -108,7 +111,7 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
         entity.LastName = participant.LastName;
         entity.Email = participant.Email;
         entity.PhoneNumber = participant.PhoneNumber;
-        entity.ContactTypeId = DomainValueConverters.ToId(participant.ContactType);
+        entity.ContactTypeId = participant.ContactType.Id;
         entity.ModifiedAtUtc = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);

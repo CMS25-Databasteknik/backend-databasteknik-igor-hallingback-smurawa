@@ -2,7 +2,6 @@ using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
-using Backend.Infrastructure.Common.Repositories;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +27,10 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 entity.Price,
                 entity.Seats,
                 entity.CourseEventTypeId,
-                DomainValueConverters.ToVenueType(entity.VenueTypeId),
+                new VenueType(
+                    entity.VenueTypeId,
+                    entity.VenueType?.Name
+                        ?? throw new InvalidOperationException("Venue type must be loaded from database.")),
                 courseEventType,
                 venueType);
         }
@@ -46,7 +48,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 Price = courseEvent.Price,
                 Seats = courseEvent.Seats,
                 CourseEventTypeId = courseEvent.CourseEventTypeId,
-                VenueTypeId = DomainValueConverters.ToId(courseEvent.VenueType)
+                VenueTypeId = courseEvent.VenueType.Id
             };
 
             return entity;
@@ -160,7 +162,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             entity.Price = courseEvent.Price;
             entity.Seats = courseEvent.Seats;
             entity.CourseEventTypeId = courseEvent.CourseEventTypeId;
-            entity.VenueTypeId = DomainValueConverters.ToId(courseEvent.VenueType);
+            entity.VenueTypeId = courseEvent.VenueType.Id;
             entity.ModifiedAtUtc = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);

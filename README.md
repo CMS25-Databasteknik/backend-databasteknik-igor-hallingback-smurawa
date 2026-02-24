@@ -292,5 +292,5 @@ Backend/
 - Caching is implemented in the **Application** layer (services/caches), not in repositories.
 - Domain entities centralize validation by using `constructor + Update(...) + SetValues(...)`.
 - Service update flows follow: `load existing -> existing.Update(...) -> repository.UpdateAsync(...)`.
-- Common persistence/domain conversion logic is centralized in:
-  - `Infrastructure/Common/Repositories/DomainValueConverters.cs`
+- Persistence/domain conversion logic now lives in each repository mapper (`ToModel`/`ToEntity`) close to usage.
+- Lookup/domain-value mappings in repositories are strict: related lookup entities (for example status, payment method, venue type, contact type) must be loaded from the database in `ToModel` (typically via `Include(...)`), and mapping fails fast if lookup names are missing.
