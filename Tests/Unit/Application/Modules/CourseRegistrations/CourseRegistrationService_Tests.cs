@@ -71,7 +71,7 @@ public class CourseRegistrationService_Tests
         Assert.Equal("Course registration created successfully.", result.Message);
 
         await mockRepo.Received(1).AddAsync(
-            Arg.Is<CourseRegistration>(cr => cr.ParticipantId == participantId && cr.CourseEventId == courseEventId && cr.Status == CourseRegistrationStatus.Pending && cr.PaymentMethod == new PaymentMethod(1, "Card")),
+            Arg.Is<CourseRegistration>(cr => cr.ParticipantId == participantId && cr.CourseEventId == courseEventId && cr.Status == CourseRegistrationStatus.Pending && cr.PaymentMethod.Equals(new PaymentMethod(1, "Card"))),
             Arg.Any<CancellationToken>());
     }
 
@@ -595,7 +595,7 @@ public class CourseRegistrationService_Tests
 
         await mockRepo.Received(1).UpdateAsync(
             Arg.Is<Guid>(id => id == registrationId),
-            Arg.Is<CourseRegistration>(cr => cr.Id == registrationId && cr.Status == CourseRegistrationStatus.Paid && cr.PaymentMethod == new PaymentMethod(2, "Invoice")),
+            Arg.Is<CourseRegistration>(cr => cr.Id == registrationId && cr.Status == CourseRegistrationStatus.Paid && cr.PaymentMethod.Equals(new PaymentMethod(2, "Invoice"))),
             Arg.Any<CancellationToken>());
     }
 

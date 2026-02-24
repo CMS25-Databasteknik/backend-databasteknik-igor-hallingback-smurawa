@@ -34,12 +34,6 @@ public sealed class ParticipantContactType : IEquatable<ParticipantContactType>
 
     public override int GetHashCode() => HashCode.Combine(Id, Name);
 
-    public static bool operator ==(ParticipantContactType? left, ParticipantContactType? right)
-        => Equals(left, right);
-
-    public static bool operator !=(ParticipantContactType? left, ParticipantContactType? right)
-        => !Equals(left, right);
-
     private void SetValues(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

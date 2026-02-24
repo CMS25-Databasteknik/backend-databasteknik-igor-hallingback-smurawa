@@ -34,12 +34,6 @@ public sealed class PaymentMethod : IEquatable<PaymentMethod>
 
     public override int GetHashCode() => HashCode.Combine(Id, Name);
 
-    public static bool operator ==(PaymentMethod? left, PaymentMethod? right)
-        => Equals(left, right);
-
-    public static bool operator !=(PaymentMethod? left, PaymentMethod? right)
-        => !Equals(left, right);
-
     private void SetValues(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

@@ -36,12 +36,6 @@ public sealed class VenueType : IEquatable<VenueType>
 
     public override int GetHashCode() => HashCode.Combine(Id, Name);
 
-    public static bool operator ==(VenueType? left, VenueType? right)
-        => Equals(left, right);
-
-    public static bool operator !=(VenueType? left, VenueType? right)
-        => !Equals(left, right);
-
     private void SetValues(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
