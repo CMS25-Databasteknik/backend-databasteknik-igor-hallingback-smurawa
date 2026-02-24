@@ -52,14 +52,21 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
-        await RepositoryTestDataHelper.CreateCourseEventAsync(context, course.Id);
+        var eventType = await RepositoryTestDataHelper.CreateCourseEventTypeAsync(context);
+        var createdEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context, course.Id, eventType.Id);
         var repo = new CourseRepository(context);
 
-        var loaded = await repo.GetCourseByIdAsync(course.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdWithEventsAsync(course.Id, CancellationToken.None);
 
         Assert.NotNull(loaded);
         Assert.Equal(course.Id, loaded!.Course.Id);
         Assert.NotEmpty(loaded.Events);
+        var loadedEvent = Assert.Single(loaded.Events);
+        Assert.Equal(createdEvent.Id, loadedEvent.Id);
+        Assert.Equal(eventType.Id, loadedEvent.CourseEventType.Id);
+        Assert.Equal(eventType.TypeName, loadedEvent.CourseEventType.TypeName);
+        Assert.Equal(1, loadedEvent.VenueType.Id);
+        Assert.Equal("InPerson", loadedEvent.VenueType.Name);
     }
 
     [Fact]
@@ -107,7 +114,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
 
         var deleted = await repo.RemoveAsync(course.Id, CancellationToken.None);
-        var loaded = await repo.GetCourseByIdAsync(course.Id, CancellationToken.None);
+        var loaded = await repo.GetByIdWithEventsAsync(course.Id, CancellationToken.None);
 
         Assert.True(deleted);
         Assert.Null(loaded);

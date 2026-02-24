@@ -1,6 +1,5 @@
 using Backend.Application.Common;
 using Backend.Domain.Modules.Courses.Models;
-using Backend.Domain.Modules.CourseWithEvents.Models;
 
 namespace Backend.Application.Modules.Courses.Outputs;
 

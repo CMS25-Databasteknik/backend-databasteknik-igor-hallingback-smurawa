@@ -1,6 +1,5 @@
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.Courses.Models;
-using Backend.Domain.Modules.CourseWithEvents.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 
 namespace Backend.Tests.Unit.Domain.Modules.Courses.Models;

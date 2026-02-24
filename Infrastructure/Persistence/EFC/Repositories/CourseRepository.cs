@@ -1,7 +1,7 @@
 using Backend.Domain.Modules.CourseEvents.Models;
+using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
-using Backend.Domain.Modules.CourseWithEvents.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
@@ -14,6 +14,28 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
     {
         protected override Course ToModel(CourseEntity entity)
             => new(entity.Id, entity.Title, entity.Description, entity.DurationInDays);
+
+        private static CourseEvent ToCourseEventModel(CourseEventEntity entity)
+        {
+            var courseEventTypeEntity = entity.CourseEventType
+                ?? throw new InvalidOperationException("Course event type must be loaded from database.");
+            var venueTypeEntity = entity.VenueType
+                ?? throw new InvalidOperationException("Venue type must be loaded from database.");
+
+            var courseEventType = new CourseEventType(courseEventTypeEntity.Id, courseEventTypeEntity.TypeName);
+            var venueType = new VenueType(venueTypeEntity.Id, venueTypeEntity.Name);
+
+            return new CourseEvent(
+                entity.Id,
+                entity.CourseId,
+                entity.EventDate,
+                entity.Price,
+                entity.Seats,
+                entity.CourseEventTypeId,
+                venueType,
+                courseEventType,
+                venueType);
+        }
 
         protected override CourseEntity ToEntity(Course course)
             => new()
@@ -53,12 +75,14 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             return [.. entities.Select(ToModel)];
         }
 
-        public async Task<CourseWithEvents?> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken)
+        public async Task<CourseWithEvents?> GetByIdWithEventsAsync(Guid courseId, CancellationToken cancellationToken)
         {
             var entity = await _context.Courses
                 .AsNoTracking()
                 .Include(c => c.CourseEvents)
-                .ThenInclude(ce => ce.VenueType)
+                    .ThenInclude(ce => ce.CourseEventType)
+                .Include(c => c.CourseEvents)
+                    .ThenInclude(ce => ce.VenueType)
                 .SingleOrDefaultAsync(c => c.Id == courseId, cancellationToken);
 
             if (entity == null)
@@ -66,17 +90,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
             var course = ToModel(entity);
             var events = entity.CourseEvents
-                .Select(ce => new CourseEvent(
-                    ce.Id,
-                    ce.CourseId,
-                    ce.EventDate,
-                    ce.Price,
-                    ce.Seats,
-                    ce.CourseEventTypeId,
-                    new VenueType(
-                        ce.VenueTypeId,
-                        ce.VenueType?.Name
-                            ?? throw new InvalidOperationException("Venue type must be loaded from database."))))
+                .Select(ToCourseEventModel)
                 .ToList();
 
             return new CourseWithEvents(course, events);

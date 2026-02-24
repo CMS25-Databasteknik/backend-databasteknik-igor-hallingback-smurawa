@@ -1,7 +1,6 @@
 using Backend.Domain.Modules.CourseEvents.Models;
-using Backend.Domain.Modules.Courses.Models;
 
-namespace Backend.Domain.Modules.CourseWithEvents.Models;
+namespace Backend.Domain.Modules.Courses.Models;
 
 public sealed class CourseWithEvents
 {
@@ -20,5 +19,3 @@ public sealed class CourseWithEvents
             throw new ArgumentException("All events must belong to the same course.", nameof(events));
     }
 }
-
-

@@ -35,7 +35,7 @@ internal static class RepositoryTestDataHelper
     public static async Task<CourseEvent> CreateCourseEventAsync(CoursesOnlineDbContext context, Guid? courseId = null, int? typeId = null, int seats = 5)
     {
         var course = courseId.HasValue
-            ? await new CourseRepository(context).GetCourseByIdAsync(courseId.Value, CancellationToken.None)
+            ? await new CourseRepository(context).GetByIdWithEventsAsync(courseId.Value, CancellationToken.None)
             : null;
         var eventType = typeId.HasValue
             ? await new CourseEventTypeRepository(context).GetByIdAsync(typeId.Value, CancellationToken.None)
