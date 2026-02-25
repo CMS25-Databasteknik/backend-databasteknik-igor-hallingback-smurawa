@@ -1,5 +1,6 @@
 using Backend.Application.Modules.Courses;
 using Backend.Application.Modules.Courses.Inputs;
+using Backend.Presentation.API.Endpoints.Courses;
 using Backend.Presentation.API.Models.Course;
 
 namespace Backend.Presentation.API.Endpoints;
@@ -40,6 +41,10 @@ public static class CoursesEndpoints
 
     private static async Task<IResult> CreateCourse(CreateCourseRequest request, ICourseService courseService, CancellationToken cancellationToken)
     {
+        var errors = CourseRequestValidator.Validate(request.Title, request.Description, request.DurationInDays);
+        if (errors.Count > 0)
+            return Results.ValidationProblem(errors);
+
         var input = new CreateCourseInput(request.Title, request.Description, request.DurationInDays);
         var response = await courseService.CreateCourseAsync(input, cancellationToken);
         if (!response.Success)
@@ -50,6 +55,10 @@ public static class CoursesEndpoints
 
     private static async Task<IResult> UpdateCourse(Guid id, UpdateCourseRequest request, ICourseService courseService, CancellationToken cancellationToken)
     {
+        var errors = CourseRequestValidator.Validate(request.Title, request.Description, request.DurationInDays);
+        if (errors.Count > 0)
+            return Results.ValidationProblem(errors);
+
         var input = new UpdateCourseInput(id, request.Title, request.Description, request.DurationInDays);
         var response = await courseService.UpdateCourseAsync(input, cancellationToken);
         if (!response.Success)

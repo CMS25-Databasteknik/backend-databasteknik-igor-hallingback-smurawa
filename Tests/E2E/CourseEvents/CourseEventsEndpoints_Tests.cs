@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using Backend.Application.Modules.CourseEvents.Inputs;
 using Backend.Application.Modules.CourseEvents.Outputs;
@@ -7,6 +8,7 @@ using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.CourseRegistrations.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Tests.Common.Assertions;
 using Microsoft.Extensions.DependencyInjection;
 using Backend.Tests.Integration.Infrastructure;
 
@@ -100,6 +102,37 @@ public sealed class CourseEventsEndpoints_Tests(CoursesDbOnelineApiFactory facto
         Assert.Equal(404, payload.StatusCode);
     }
 
+    [Theory]
+    [InlineData("""{ "courseId": "not-a-guid", "eventDate": "2026-03-01T00:00:00Z", "price": 99, "seats": 10, "courseEventTypeId": 1, "venueType": { "id": 1, "name": "InPerson" } }""", "courseId")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", "eventDate": "not-a-date", "price": 99, "seats": 10, "courseEventTypeId": 1, "venueType": { "id": 1, "name": "InPerson" } }""", "eventDate")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", "eventDate": "2026-03-01T00:00:00Z", "price": "free", "seats": 10, "courseEventTypeId": 1, "venueType": { "id": 1, "name": "InPerson" } }""", "price")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", "eventDate": "2026-03-01T00:00:00Z", "price": 99, "seats": 10 }""", "courseEventTypeId")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", "eventDate": "2026-03-01T00:00:00Z", "price": 99, "seats": 10, "courseEventTypeId": 1, "venueType": null }""", "venueType")]
+    [InlineData("""{}""", "courseId")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", """, "json")]
+    public async Task CreateCourseEvent_ReturnsHelpfulError_ForMalformedOrPartialPayload(string jsonBody, string expectedFieldFragment)
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        using var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("/api/course-events", content);
+
+        await ClientErrorAssertions.MentionsFieldAsync(response, expectedFieldFragment);
+    }
+
+    [Fact]
+    public async Task CreateCourseEvent_ReturnsHelpfulError_ForEmptyBody()
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        using var content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("/api/course-events", content);
+
+        await ClientErrorAssertions.MentionsFieldAsync(response, "body", "json");
+    }
+
     [Fact]
     public async Task GetCourseEventById_ReturnsBadRequest_ForEmptyGuid()
     {
@@ -144,5 +177,58 @@ public sealed class CourseEventsEndpoints_Tests(CoursesDbOnelineApiFactory facto
         Assert.Equal(409, payload.StatusCode);
         Assert.False(payload.Result);
     }
+
+    [Theory]
+    [InlineData("""{ "courseId": "not-a-guid", "eventDate": "2026-03-01T00:00:00Z", "price": 199, "seats": 10, "courseEventTypeId": 1, "venueType": { "id": 1, "name": "InPerson" } }""", "courseId")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", "eventDate": "not-a-date", "price": 199, "seats": 10, "courseEventTypeId": 1, "venueType": { "id": 1, "name": "InPerson" } }""", "eventDate")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", "eventDate": "2026-03-01T00:00:00Z", "price": 199, "seats": "many", "courseEventTypeId": 1, "venueType": { "id": 1, "name": "InPerson" } }""", "seats")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", "eventDate": "2026-03-01T00:00:00Z", "price": 199 }""", "courseEventType")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", "eventDate": "2026-03-01T00:00:00Z", "price": 199, "seats": 10, "courseEventTypeId": 1, "venueType": null }""", "venueType")]
+    [InlineData("""{}""", "course")]
+    [InlineData("""{ "courseId": "11111111-1111-1111-1111-111111111111", """, "json")]
+    public async Task UpdateCourseEvent_ReturnsHelpfulError_ForMalformedOrPartialPayload(string jsonBody, string expectedFieldFragment)
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        Guid courseId;
+        Guid courseEventId;
+        int courseEventTypeId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            courseId = (await RepositoryTestDataHelper.CreateCourseAsync(db)).Id;
+            courseEventTypeId = (await RepositoryTestDataHelper.CreateCourseEventTypeAsync(db)).Id;
+            courseEventId = (await RepositoryTestDataHelper.CreateCourseEventAsync(db, courseId: courseId)).Id;
+        }
+
+        using var client = _factory.CreateClient();
+        var jsonToSend = jsonBody.Replace("11111111-1111-1111-1111-111111111111", courseId.ToString(), StringComparison.OrdinalIgnoreCase)
+                                 .Replace("\"courseEventTypeId\": 1", $"\"courseEventTypeId\": {courseEventTypeId}", StringComparison.OrdinalIgnoreCase);
+
+        using var content = new StringContent(jsonToSend, Encoding.UTF8, "application/json");
+        var response = await client.PutAsync($"/api/course-events/{courseEventId}", content);
+
+        await ClientErrorAssertions.MentionsFieldAsync(response, expectedFieldFragment);
+    }
+
+    [Fact]
+    public async Task UpdateCourseEvent_ReturnsHelpfulError_ForEmptyBody()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        Guid courseEventId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            courseEventId = (await RepositoryTestDataHelper.CreateCourseEventAsync(db)).Id;
+        }
+
+        using var client = _factory.CreateClient();
+        using var content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await client.PutAsync($"/api/course-events/{courseEventId}", content);
+
+        await ClientErrorAssertions.MentionsFieldAsync(response, "body", "json");
+    }
+
 }
 

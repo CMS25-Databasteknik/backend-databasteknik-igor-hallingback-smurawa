@@ -1,5 +1,5 @@
 using Backend.Application.Modules.CourseEvents;
-using Backend.Application.Modules.CourseEvents.Inputs;
+using Backend.Presentation.API.Endpoints.CourseEvents;
 using Backend.Presentation.API.Models.CourseEvent;
 
 namespace Backend.Presentation.API.Endpoints;
@@ -51,7 +51,17 @@ public static class CourseEventsEndpoints
 
     private static async Task<IResult> CreateCourseEvent(CreateCourseEventRequest request, ICourseEventService service, CancellationToken cancellationToken)
     {
-        var input = new CreateCourseEventInput(request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId, request.VenueType);
+        var errors = CourseEventRequestValidator.Validate(
+            request.CourseId,
+            request.EventDate,
+            request.Price,
+            request.Seats,
+            request.CourseEventTypeId,
+            request.VenueType);
+        if (errors.Count > 0)
+            return Results.ValidationProblem(errors);
+
+        var input = CourseEventRequestMapper.ToCreateInput(request);
         var response = await service.CreateCourseEventAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -61,7 +71,17 @@ public static class CourseEventsEndpoints
 
     private static async Task<IResult> UpdateCourseEvent(Guid id, UpdateCourseEventRequest request, ICourseEventService service, CancellationToken cancellationToken)
     {
-        var input = new UpdateCourseEventInput(id, request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId, request.VenueType);
+        var errors = CourseEventRequestValidator.Validate(
+            request.CourseId,
+            request.EventDate,
+            request.Price,
+            request.Seats,
+            request.CourseEventTypeId,
+            request.VenueType);
+        if (errors.Count > 0)
+            return Results.ValidationProblem(errors);
+
+        var input = CourseEventRequestMapper.ToUpdateInput(id, request);
         var response = await service.UpdateCourseEventAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();

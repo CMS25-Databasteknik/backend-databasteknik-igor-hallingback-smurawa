@@ -1,9 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.Courses.Outputs;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Tests.Common.Assertions;
 using Microsoft.Extensions.DependencyInjection;
 using Backend.Tests.Integration.Infrastructure;
 
@@ -71,12 +73,9 @@ public sealed class CoursesEndpoints_Tests(CoursesDbOnelineApiFactory factory) :
 
         var input = new CreateCourseInput("   ", "Valid description", 5);
         var response = await client.PostAsJsonAsync("/api/courses", input);
-        var payload = await response.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.NotNull(payload);
-        Assert.False(payload.Success);
-        Assert.Equal(400, payload.StatusCode);
+        await ClientErrorAssertions.MentionsFieldAsync(response, "title");
     }
 
     [Fact]
@@ -87,12 +86,38 @@ public sealed class CoursesEndpoints_Tests(CoursesDbOnelineApiFactory factory) :
 
         var input = new CreateCourseInput("Valid title", "Valid description", 0);
         var response = await client.PostAsJsonAsync("/api/courses", input);
-        var payload = await response.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.NotNull(payload);
-        Assert.False(payload.Success);
-        Assert.Equal(400, payload.StatusCode);
+        await ClientErrorAssertions.MentionsFieldAsync(response, "durationInDays");
+    }
+
+    [Theory]
+    [InlineData("""{ "title": "Valid", "description": "Valid", "durationInDays": "five" }""", "durationInDays")]
+    [InlineData("""{ "title": null, "description": "Valid", "durationInDays": 5 }""", "title")]
+    [InlineData("""{ "title": "Valid", "description": "Valid" }""", "durationInDays")]
+    [InlineData("""{}""", "title")]
+    [InlineData("""{ "title": "Valid", "description": "Valid", """, "json")]
+    public async Task CreateCourse_ReturnsHelpfulError_ForMalformedOrPartialPayload(string jsonBody, string expectedFieldFragment)
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        using var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("/api/courses", content);
+
+        await ClientErrorAssertions.MentionsFieldAsync(response, expectedFieldFragment);
+    }
+
+    [Fact]
+    public async Task CreateCourse_ReturnsHelpfulError_ForEmptyBody()
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        using var content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("/api/courses", content);
+
+        await ClientErrorAssertions.MentionsFieldAsync(response, "body", "json");
     }
 
     [Fact]
@@ -126,12 +151,31 @@ public sealed class CoursesEndpoints_Tests(CoursesDbOnelineApiFactory factory) :
         var courseId = createdPayload.Result.Id;
         var updateInput = new UpdateCourseInput(courseId, "Updated title", "Updated description", 0);
         var updateResponse = await client.PutAsJsonAsync($"/api/courses/{courseId}", updateInput);
-        var updatePayload = await updateResponse.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, updateResponse.StatusCode);
-        Assert.NotNull(updatePayload);
-        Assert.False(updatePayload.Success);
-        Assert.Equal(400, updatePayload.StatusCode);
+        await ClientErrorAssertions.MentionsFieldAsync(updateResponse, "durationInDays");
+    }
+
+    [Theory]
+    [InlineData("""{ "title": "Updated", "description": "Updated", "durationInDays": "ten" }""", "durationInDays")]
+    [InlineData("""{ "title": null, "description": "Updated", "durationInDays": 10 }""", "title")]
+    [InlineData("""{ "title": "Updated" }""", "description")]
+    [InlineData("""{}""", "title")]
+    [InlineData("""{ "title": "Updated", "description": "Updated", """, "json")]
+    public async Task UpdateCourse_ReturnsHelpfulError_ForMalformedOrPartialPayload(string jsonBody, string expectedFieldFragment)
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        var createInput = new CreateCourseInput("Initial title", "Initial description", 3);
+        var createResponse = await client.PostAsJsonAsync("/api/courses", createInput);
+        var createdPayload = await createResponse.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
+        Assert.NotNull(createdPayload?.Result);
+
+        using var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+        var response = await client.PutAsync($"/api/courses/{createdPayload.Result.Id}", content);
+
+        await ClientErrorAssertions.MentionsFieldAsync(response, expectedFieldFragment);
     }
 
     [Fact]
@@ -187,5 +231,6 @@ public sealed class CoursesEndpoints_Tests(CoursesDbOnelineApiFactory factory) :
         Assert.False(payload.Success);
         Assert.Equal(409, payload.StatusCode);
     }
+
 }
 

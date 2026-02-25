@@ -1,8 +1,8 @@
-﻿namespace Backend.Presentation.API.Models.Course;
+namespace Backend.Presentation.API.Models.Course;
 
-public sealed record UpdateCourseRequest
-(
-    string Title,
-    string Description,
-    int DurationInDays
-);
+public sealed class UpdateCourseRequest
+{
+    public required string Title { get; init; }
+    public required string Description { get; init; }
+    public required int DurationInDays { get; init; }
+}
