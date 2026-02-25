@@ -50,7 +50,7 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         }
 
         using var client = _factory.CreateClient();
-        var createInput = new CreateCourseEventRequest
+        var createRequest = new CreateCourseEventRequest
         {
             CourseId = courseId,
             EventDate = DateTime.UtcNow.AddDays(7),
@@ -60,7 +60,7 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
             VenueTypeId = 1
         };
 
-        var createResponse = await client.PostAsJsonAsync("/api/course-events", createInput);
+        var createResponse = await client.PostAsJsonAsync("/api/course-events", createRequest);
 
         Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
         Assert.NotNull(createResponse.Headers.Location);
@@ -84,7 +84,7 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        var createInput = new CreateCourseEventRequest
+        var createRequest = new CreateCourseEventRequest
         {
             CourseId = Guid.NewGuid(),
             EventDate = DateTime.UtcNow.AddDays(2),
@@ -94,7 +94,7 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
             VenueTypeId = 1
         };
 
-        var response = await client.PostAsJsonAsync("/api/course-events", createInput);
+        var response = await client.PostAsJsonAsync("/api/course-events", createRequest);
         var payload = await response.Content.ReadFromJsonAsync<CourseEventResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

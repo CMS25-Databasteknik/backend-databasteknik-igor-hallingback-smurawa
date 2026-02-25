@@ -70,13 +70,13 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        var input = new CreateCourseRequest
+        var request = new CreateCourseRequest
         {
             Title = "   ",
             Description = "Valid description",
             DurationInDays = 5
         };
-        var response = await client.PostAsJsonAsync("/api/courses", input);
+        var response = await client.PostAsJsonAsync("/api/courses", request);
         var payload = await response.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -91,13 +91,13 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        var input = new CreateCourseRequest
+        var request = new CreateCourseRequest
         {
             Title = "Valid title",
             Description = "Valid description",
             DurationInDays = 0
         };
-        var response = await client.PostAsJsonAsync("/api/courses", input);
+        var response = await client.PostAsJsonAsync("/api/courses", request);
         var payload = await response.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -133,13 +133,13 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         using var client = _factory.CreateClient();
 
         var missingCourseId = Guid.NewGuid();
-        var input = new UpdateCourseRequest
+        var request = new UpdateCourseRequest
         {
             Title = "Updated title",
             Description = "Updated description",
             DurationInDays = 2
         };
-        var response = await client.PutAsJsonAsync($"/api/courses/{missingCourseId}", input);
+        var response = await client.PutAsJsonAsync($"/api/courses/{missingCourseId}", request);
         var payload = await response.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -154,24 +154,24 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        var createInput = new CreateCourseRequest
+        var createRequest = new CreateCourseRequest
         {
             Title = "Initial title",
             Description = "Initial description",
             DurationInDays = 3
         };
-        var createResponse = await client.PostAsJsonAsync("/api/courses", createInput);
+        var createResponse = await client.PostAsJsonAsync("/api/courses", createRequest);
         var createdPayload = await createResponse.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
         Assert.NotNull(createdPayload?.Result);
 
         var courseId = createdPayload.Result.Id;
-        var updateInput = new UpdateCourseRequest
+        var updateRequest = new UpdateCourseRequest
         {
             Title = "Updated title",
             Description = "Updated description",
             DurationInDays = 0
         };
-        var updateResponse = await client.PutAsJsonAsync($"/api/courses/{courseId}", updateInput);
+        var updateResponse = await client.PutAsJsonAsync($"/api/courses/{courseId}", updateRequest);
         var updatePayload = await updateResponse.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, updateResponse.StatusCode);
@@ -240,13 +240,13 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        var createInput = new CreateCourseRequest
+        var createRequest = new CreateCourseRequest
         {
             Title = "E2E Course",
             Description = "E2E Description",
             DurationInDays = 5
         };
-        var createResponse = await client.PostAsJsonAsync("/api/courses", createInput);
+        var createResponse = await client.PostAsJsonAsync("/api/courses", createRequest);
         var createPayload = await createResponse.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
@@ -274,24 +274,24 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        var createInput = new CreateCourseRequest
+        var createRequest = new CreateCourseRequest
         {
             Title = "Initial Course",
             Description = "Initial Description",
             DurationInDays = 3
         };
-        var createResponse = await client.PostAsJsonAsync("/api/courses", createInput);
+        var createResponse = await client.PostAsJsonAsync("/api/courses", createRequest);
         var createPayload = await createResponse.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
         Assert.NotNull(createPayload?.Result);
 
         var courseId = createPayload.Result.Id;
-        var updateInput = new UpdateCourseRequest
+        var updateRequest = new UpdateCourseRequest
         {
             Title = "Updated Course",
             Description = "Updated Description",
             DurationInDays = 10
         };
-        var updateResponse = await client.PutAsJsonAsync($"/api/courses/{courseId}", updateInput);
+        var updateResponse = await client.PutAsJsonAsync($"/api/courses/{courseId}", updateRequest);
         var updatePayload = await updateResponse.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
@@ -309,13 +309,13 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        var createInput = new CreateCourseRequest
+        var createRequest = new CreateCourseRequest
         {
             Title = "Delete Me",
             Description = "Delete Me Description",
             DurationInDays = 2
         };
-        var createResponse = await client.PostAsJsonAsync("/api/courses", createInput);
+        var createResponse = await client.PostAsJsonAsync("/api/courses", createRequest);
         var createPayload = await createResponse.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
         Assert.NotNull(createPayload?.Result);
 
