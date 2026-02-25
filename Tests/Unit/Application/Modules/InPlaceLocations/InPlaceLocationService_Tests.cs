@@ -731,6 +731,33 @@ public class InPlaceLocationService_Tests
         Assert.Contains("Database error", result.Message);
     }
 
+    [Fact]
+    public async Task UpdateInPlaceLocationAsync_Should_Return_Conflict_When_Repository_Throws_DbUpdateException()
+    {
+        // Arrange
+        var mockRepo = Substitute.For<IInPlaceLocationRepository>();
+        var inPlaceLocationId = 1;
+        var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
+
+        mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
+            .Returns(existingInPlaceLocation);
+
+        mockRepo.UpdateAsync(Arg.Any<int>(), Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<InPlaceLocation?>(new DbUpdateException("FK violation")));
+
+        var service = new InPlaceLocationService(mockRepo);
+        var input = new UpdateInPlaceLocationInput(inPlaceLocationId, 9999, 101, 35);
+
+        // Act
+        var result = await service.UpdateInPlaceLocationAsync(input, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal(409, result.StatusCode);
+        Assert.Null(result.Result);
+        Assert.Contains("requested location reference is invalid", result.Message);
+    }
+
     #endregion
 
     #region DeleteInPlaceLocationAsync Tests
@@ -917,4 +944,6 @@ public class InPlaceLocationService_Tests
     }
 
     #endregion
+
+    private sealed class DbUpdateException(string message) : Exception(message);
 }
