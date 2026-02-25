@@ -2,7 +2,6 @@ using Backend.Application.Extensions;
 using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Presentation.API.Endpoints;
-using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Presentation.API;
 
