@@ -74,15 +74,21 @@ Unit, integration, and E2E tests.
 
 ## Features
 
-The system has CRUD support for these central modules:
+The system has CRUD support for these resources:
 
 - Courses
 - Course events
 - Course event types
-- Course registrations and statuses
-- Instructors and instructor roles
+- Course registrations
+- Course registration statuses
+- Instructors
+- Instructor roles
 - Participants
-- Locations and in-place locations
+- Locations
+- In-place locations
+- Payment methods
+- Venue types
+- Participant contact types
 
 ### CRUD by resource
 
@@ -294,13 +300,18 @@ Domain models use a shared validation path where constructors and `Update(...)` 
 
 ```
 Backend/
-├── Domain/                 # Enterprise business logic and entities
-├── Application/           # Application business logic and services
-├── Infrastructure/        # Data access and external services
-├── Presentation/          # Web API layer
-├── Tests/                 # Unit and integration tests
-└── Backend.slnx          # Solution file
+├── .github/              # CI/CD and workflow configuration
+├── Domain/               # Enterprise business logic and entities
+├── Application/          # Application business logic and services
+├── Infrastructure/       # Data access and external services
+├── Presentation/         # Web API layer
+├── Tests/                # Unit, integration, and E2E tests
+├── Backend.slnx          # Solution file
+├── dotnet-tools.json     # Local .NET tool manifest
+└── README.md             # Project documentation
 ```
+
+Note: `bin/` and `obj/` are build output directories and are omitted from the source structure.
 
 ## Development Notes
 
