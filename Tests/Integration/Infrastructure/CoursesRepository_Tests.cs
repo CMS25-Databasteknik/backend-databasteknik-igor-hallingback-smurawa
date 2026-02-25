@@ -4,7 +4,7 @@ using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
-namespace Tests.Integration.Infrastructure;
+namespace Backend.Tests.Integration.Infrastructure;
 
 [Collection(SqliteInMemoryCollection.Name)]
 public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
@@ -174,3 +174,4 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal("Venue type must be loaded from database.", ex.InnerException!.Message);
     }
 }
+

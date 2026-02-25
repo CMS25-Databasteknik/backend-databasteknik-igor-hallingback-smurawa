@@ -3,7 +3,7 @@ using Backend.Domain.Modules.Participants.Models;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tests.Integration.Infrastructure;
+namespace Backend.Tests.Integration.Infrastructure;
 
 [Collection(SqliteInMemoryCollection.Name)]
 public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixture)
@@ -56,3 +56,4 @@ public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixtur
         Assert.True(inUse);
     }
 }
+

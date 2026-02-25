@@ -4,7 +4,7 @@ using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMe
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tests.Integration.Infrastructure;
+namespace Backend.Tests.Integration.Infrastructure;
 
 [Collection(SqliteInMemoryCollection.Name)]
 public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
@@ -59,3 +59,4 @@ public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.True(inUse);
     }
 }
+

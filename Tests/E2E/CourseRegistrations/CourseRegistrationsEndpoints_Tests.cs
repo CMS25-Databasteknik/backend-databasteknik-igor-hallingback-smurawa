@@ -6,9 +6,9 @@ using Backend.Domain.Modules.PaymentMethod.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Presentation.API.Models.CourseRegistration;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Integration.Infrastructure;
+using Backend.Tests.Integration.Infrastructure;
 
-namespace Tests.E2E.CourseRegistrations;
+namespace Backend.Tests.E2E.CourseRegistrations;
 
 public sealed class CourseRegistrationsEndpoints_Tests(CoursesDbOnelineApiFactory factory) : IClassFixture<CoursesDbOnelineApiFactory>
 {
@@ -147,3 +147,4 @@ public sealed class CourseRegistrationsEndpoints_Tests(CoursesDbOnelineApiFactor
         Assert.Equal(404, payload.StatusCode);
     }
 }
+

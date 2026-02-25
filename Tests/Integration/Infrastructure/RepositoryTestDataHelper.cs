@@ -14,7 +14,7 @@ using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tests.Integration.Infrastructure;
+namespace Backend.Tests.Integration.Infrastructure;
 
 internal static class RepositoryTestDataHelper
 {
@@ -132,6 +132,7 @@ internal static class RepositoryTestDataHelper
         await context.SaveChangesAsync();
     }
 }
+
 
 
 

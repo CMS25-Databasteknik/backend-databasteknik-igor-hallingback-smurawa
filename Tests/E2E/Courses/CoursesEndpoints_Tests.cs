@@ -5,9 +5,9 @@ using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.Courses.Outputs;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Integration.Infrastructure;
+using Backend.Tests.Integration.Infrastructure;
 
-namespace Tests.E2E.Courses;
+namespace Backend.Tests.E2E.Courses;
 
 public sealed class CoursesEndpoints_Tests(CoursesDbOnelineApiFactory factory) : IClassFixture<CoursesDbOnelineApiFactory>
 {
@@ -188,3 +188,4 @@ public sealed class CoursesEndpoints_Tests(CoursesDbOnelineApiFactory factory) :
         Assert.Equal(409, payload.StatusCode);
     }
 }
+
