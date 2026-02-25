@@ -12,9 +12,9 @@ using Backend.Tests.Integration.Infrastructure;
 
 namespace Backend.Tests.E2E.CourseEvents;
 
-public sealed class CourseEventsEndpoints_Tests(CoursesDbOnelineApiFactory factory) : IClassFixture<CoursesDbOnelineApiFactory>
+public sealed class CourseEventsEndpoints_Tests(CoursesDbOnlineApiFactory factory) : IClassFixture<CoursesDbOnlineApiFactory>
 {
-    private readonly CoursesDbOnelineApiFactory _factory = factory;
+    private readonly CoursesDbOnlineApiFactory _factory = factory;
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
