@@ -261,6 +261,7 @@ The project has three kinds of tests:
 - Test full HTTP request/response flows through the API.
 - Use `WebApplicationFactory` with SQLite in-memory test mode.
 - Reset and reseed test data between tests for isolation.
+- Current E2E-covered resources: `Courses`, `Course Events`, and `Course Registrations`.
 
 ### How SQLite test mode works
 
