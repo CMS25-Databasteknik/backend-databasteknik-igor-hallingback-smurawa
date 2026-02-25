@@ -1,6 +1,5 @@
 using Backend.Application.Modules.Participants;
 using Backend.Application.Modules.Participants.Inputs;
-using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using Backend.Presentation.API.Models.Participant;
 
 namespace Backend.Presentation.API.Endpoints;
@@ -41,11 +40,7 @@ public static class ParticipantsEndpoints
 
     private static async Task<IResult> CreateParticipant(CreateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken)
     {
-        var contactType = MapContactType(request.ContactTypeId);
-        if (contactType is null)
-            return Results.BadRequest("Invalid contactTypeId. Value must be greater than zero.");
-
-        var input = new CreateParticipantInput(request.FirstName, request.LastName, request.Email, request.PhoneNumber, contactType);
+        var input = new CreateParticipantInput(request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.ContactTypeId);
         var response = await participantService.CreateParticipantAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -55,11 +50,7 @@ public static class ParticipantsEndpoints
 
     private static async Task<IResult> UpdateParticipant(Guid id, UpdateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken)
     {
-        var contactType = MapContactType(request.ContactTypeId);
-        if (contactType is null)
-            return Results.BadRequest("Invalid contactTypeId. Value must be greater than zero.");
-
-        var input = new UpdateParticipantInput(id, request.FirstName, request.LastName, request.Email, request.PhoneNumber, contactType);
+        var input = new UpdateParticipantInput(id, request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.ContactTypeId);
         var response = await participantService.UpdateParticipantAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -75,14 +66,4 @@ public static class ParticipantsEndpoints
 
         return Results.Ok(response);
     }
-
-    private static ParticipantContactType? MapContactType(int contactTypeId)
-        => contactTypeId switch
-        {
-            1 => new ParticipantContactType(1, "Primary"),
-            2 => new ParticipantContactType(2, "Billing"),
-            3 => new ParticipantContactType(3, "Emergency"),
-            <= 0 => null,
-            _ => new ParticipantContactType(contactTypeId, $"ContactType {contactTypeId}")
-        };
 }

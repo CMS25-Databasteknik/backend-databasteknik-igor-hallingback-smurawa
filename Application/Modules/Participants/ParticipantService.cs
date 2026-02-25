@@ -1,13 +1,18 @@
 using Backend.Application.Modules.Participants.Inputs;
 using Backend.Application.Modules.Participants.Outputs;
+using Backend.Domain.Modules.ParticipantContactTypes.Contracts;
+using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.Participants.Models;
 
 namespace Backend.Application.Modules.Participants;
 
-public class ParticipantService(IParticipantRepository participantRepository) : IParticipantService
+public class ParticipantService(
+    IParticipantRepository participantRepository,
+    IParticipantContactTypeRepository participantContactTypeRepository) : IParticipantService
 {
     private readonly IParticipantRepository _participantRepository = participantRepository ?? throw new ArgumentNullException(nameof(participantRepository));
+    private readonly IParticipantContactTypeRepository _participantContactTypeRepository = participantContactTypeRepository ?? throw new ArgumentNullException(nameof(participantContactTypeRepository));
 
     public async Task<ParticipantResult> CreateParticipantAsync(CreateParticipantInput participant, CancellationToken cancellationToken = default)
     {
@@ -24,13 +29,25 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
+            var contactType = await _participantContactTypeRepository.GetByIdAsync(participant.ContactTypeId, cancellationToken);
+            if (contactType == null)
+            {
+                return new ParticipantResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Result = null,
+                    Message = $"Participant contact type with ID '{participant.ContactTypeId}' not found."
+                };
+            }
+
             var newParticipant = new Participant(
                 Guid.NewGuid(),
                 participant.FirstName,
                 participant.LastName,
                 participant.Email,
                 participant.PhoneNumber,
-                participant.ContactType
+                contactType
             );
 
             var result = await _participantRepository.AddAsync(newParticipant, cancellationToken);
@@ -192,12 +209,23 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
                 };
             }
 
+            var contactType = await _participantContactTypeRepository.GetByIdAsync(participant.ContactTypeId, cancellationToken);
+            if (contactType == null)
+            {
+                return new ParticipantResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Participant contact type with ID '{participant.ContactTypeId}' not found."
+                };
+            }
+
             existingParticipant.Update(
                 participant.FirstName,
                 participant.LastName,
                 participant.Email,
                 participant.PhoneNumber,
-                participant.ContactType
+                contactType
             );
 
             var updatedParticipant = await _participantRepository.UpdateAsync(existingParticipant.Id, existingParticipant, cancellationToken);
@@ -330,6 +358,7 @@ public class ParticipantService(IParticipantRepository participantRepository) : 
             };
         }
     }
+
 }
 
 

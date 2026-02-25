@@ -1,8 +1,12 @@
 using Backend.Application.Modules.CourseRegistrations.Inputs;
 using Backend.Application.Modules.CourseRegistrations.Outputs;
 using Backend.Domain.Modules.CourseEvents.Contracts;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Contracts;
+using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
+using Backend.Domain.Modules.PaymentMethod.Contracts;
+using Backend.Domain.Modules.PaymentMethod.Models;
 using Backend.Domain.Modules.Participants.Contracts;
 
 namespace Backend.Application.Modules.CourseRegistrations;
@@ -10,11 +14,15 @@ namespace Backend.Application.Modules.CourseRegistrations;
 public class CourseRegistrationService(
     ICourseRegistrationRepository courseRegistrationRepository,
     IParticipantRepository participantRepository,
-    ICourseEventRepository courseEventRepository) : ICourseRegistrationService
+    ICourseEventRepository courseEventRepository,
+    ICourseRegistrationStatusRepository statusRepository,
+    IPaymentMethodRepository paymentMethodRepository) : ICourseRegistrationService
 {
     private readonly ICourseRegistrationRepository _courseRegistrationRepository = courseRegistrationRepository ?? throw new ArgumentNullException(nameof(courseRegistrationRepository));
     private readonly IParticipantRepository _participantRepository = participantRepository ?? throw new ArgumentNullException(nameof(participantRepository));
     private readonly ICourseEventRepository _courseEventRepository = courseEventRepository ?? throw new ArgumentNullException(nameof(courseEventRepository));
+    private readonly ICourseRegistrationStatusRepository _statusRepository = statusRepository ?? throw new ArgumentNullException(nameof(statusRepository));
+    private readonly IPaymentMethodRepository _paymentMethodRepository = paymentMethodRepository ?? throw new ArgumentNullException(nameof(paymentMethodRepository));
 
     public async Task<CourseRegistrationResult> CreateCourseRegistrationAsync(CreateCourseRegistrationInput courseRegistration, CancellationToken cancellationToken = default)
     {
@@ -31,16 +39,29 @@ public class CourseRegistrationService(
                 };
             }
 
-            var newCourseRegistration = new CourseRegistration(
-                Guid.NewGuid(),
-                courseRegistration.ParticipantId,
-                courseRegistration.CourseEventId,
-                DateTime.UtcNow,
-                courseRegistration.Status,
-                courseRegistration.PaymentMethod
-            );
+            if (courseRegistration.ParticipantId == Guid.Empty)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Result = null,
+                    Message = "Participant ID cannot be empty."
+                };
+            }
 
-            var participant = await _participantRepository.GetByIdAsync(newCourseRegistration.ParticipantId, cancellationToken);
+            if (courseRegistration.CourseEventId == Guid.Empty)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Result = null,
+                    Message = "Course event ID cannot be empty."
+                };
+            }
+
+            var participant = await _participantRepository.GetByIdAsync(courseRegistration.ParticipantId, cancellationToken);
             if (participant is null)
             {
                 return new CourseRegistrationResult
@@ -48,11 +69,11 @@ public class CourseRegistrationService(
                     Success = false,
                     StatusCode = 404,
                     Result = null,
-                    Message = $"Participant with ID '{newCourseRegistration.ParticipantId}' not found."
+                    Message = $"Participant with ID '{courseRegistration.ParticipantId}' not found."
                 };
             }
 
-            var courseEvent = await _courseEventRepository.GetByIdAsync(newCourseRegistration.CourseEventId, cancellationToken);
+            var courseEvent = await _courseEventRepository.GetByIdAsync(courseRegistration.CourseEventId, cancellationToken);
             if (courseEvent is null)
             {
                 return new CourseRegistrationResult
@@ -60,9 +81,42 @@ public class CourseRegistrationService(
                     Success = false,
                     StatusCode = 404,
                     Result = null,
-                    Message = $"Course event with ID '{newCourseRegistration.CourseEventId}' not found."
+                    Message = $"Course event with ID '{courseRegistration.CourseEventId}' not found."
                 };
             }
+
+            var status = await _statusRepository.GetByIdAsync(courseRegistration.StatusId, cancellationToken);
+            if (status is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Result = null,
+                    Message = $"Course registration status with ID '{courseRegistration.StatusId}' not found."
+                };
+            }
+
+            var paymentMethod = await _paymentMethodRepository.GetByIdAsync(courseRegistration.PaymentMethodId, cancellationToken);
+            if (paymentMethod is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Result = null,
+                    Message = $"Payment method with ID '{courseRegistration.PaymentMethodId}' not found."
+                };
+            }
+
+            var newCourseRegistration = new CourseRegistration(
+                Guid.NewGuid(),
+                courseRegistration.ParticipantId,
+                courseRegistration.CourseEventId,
+                DateTime.UtcNow,
+                status,
+                paymentMethod
+            );
 
             var result = await _courseRegistrationRepository.AddAsync(newCourseRegistration, cancellationToken);
 
@@ -366,12 +420,34 @@ public class CourseRegistrationService(
                 };
             }
 
+            var status = await _statusRepository.GetByIdAsync(courseRegistration.StatusId, cancellationToken);
+            if (status is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course registration status with ID '{courseRegistration.StatusId}' not found."
+                };
+            }
+
+            var paymentMethod = await _paymentMethodRepository.GetByIdAsync(courseRegistration.PaymentMethodId, cancellationToken);
+            if (paymentMethod is null)
+            {
+                return new CourseRegistrationResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Payment method with ID '{courseRegistration.PaymentMethodId}' not found."
+                };
+            }
+
             existingCourseRegistration.Update(
                 courseRegistration.ParticipantId,
                 courseRegistration.CourseEventId,
                 existingCourseRegistration.RegistrationDate,
-                courseRegistration.Status,
-                courseRegistration.PaymentMethod
+                status,
+                paymentMethod
             );
 
             var updatedCourseRegistration = await _courseRegistrationRepository.UpdateAsync(existingCourseRegistration.Id, existingCourseRegistration, cancellationToken);
@@ -482,6 +558,7 @@ public class CourseRegistrationService(
             };
         }
     }
+
 }
 
 
