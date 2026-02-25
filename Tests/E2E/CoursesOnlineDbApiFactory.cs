@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Backend.Tests.E2E;
 
-public sealed class CoursesDbOnlineApiFactory : WebApplicationFactory<Program>
+public sealed class CoursesOnlineDbApiFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
