@@ -1,5 +1,6 @@
 using Backend.Application.Modules.CourseRegistrationStatuses;
 using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
+using Backend.Presentation.API.Models.CourseRegistrationStatus;
 
 namespace Backend.Presentation.API.Endpoints;
 
@@ -37,8 +38,9 @@ public static class CourseRegistrationStatusesEndpoints
         return Results.Ok(response);
     }
 
-    private static async Task<IResult> CreateCourseRegistrationStatus(CreateCourseRegistrationStatusInput input, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
+    private static async Task<IResult> CreateCourseRegistrationStatus(CreateCourseRegistrationStatusRequest request, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
     {
+        var input = new CreateCourseRegistrationStatusInput(request.Name);
         var response = await statusService.CreateCourseRegistrationStatusAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -46,9 +48,9 @@ public static class CourseRegistrationStatusesEndpoints
         return Results.Created($"/api/course-registration-statuses/{response.Result?.Id}", response);
     }
 
-    private static async Task<IResult> UpdateCourseRegistrationStatus(int id, UpdateCourseRegistrationStatusInput input, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
+    private static async Task<IResult> UpdateCourseRegistrationStatus(int id, UpdateCourseRegistrationStatusRequest request, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
     {
-        var updateInput = new UpdateCourseRegistrationStatusInput(id, input.Name);
+        var updateInput = new UpdateCourseRegistrationStatusInput(id, request.Name);
         var response = await statusService.UpdateCourseRegistrationStatusAsync(updateInput, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();

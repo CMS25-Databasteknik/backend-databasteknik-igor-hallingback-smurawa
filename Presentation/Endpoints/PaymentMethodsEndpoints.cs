@@ -1,5 +1,6 @@
 using Backend.Application.Modules.PaymentMethods;
 using Backend.Application.Modules.PaymentMethods.Inputs;
+using Backend.Presentation.API.Models.PaymentMethod;
 
 namespace Backend.Presentation.API.Endpoints;
 
@@ -47,8 +48,9 @@ public static class PaymentMethodsEndpoints
         return Results.Ok(response);
     }
 
-    private static async Task<IResult> CreatePaymentMethod(CreatePaymentMethodInput input, IPaymentMethodService service, CancellationToken cancellationToken)
+    private static async Task<IResult> CreatePaymentMethod(CreatePaymentMethodRequest request, IPaymentMethodService service, CancellationToken cancellationToken)
     {
+        var input = new CreatePaymentMethodInput(request.Name);
         var response = await service.CreatePaymentMethodAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -56,9 +58,9 @@ public static class PaymentMethodsEndpoints
         return Results.Created($"/api/payment-methods/{response.Result?.Id}", response);
     }
 
-    private static async Task<IResult> UpdatePaymentMethod(int id, UpdatePaymentMethodInput input, IPaymentMethodService service, CancellationToken cancellationToken)
+    private static async Task<IResult> UpdatePaymentMethod(int id, UpdatePaymentMethodRequest request, IPaymentMethodService service, CancellationToken cancellationToken)
     {
-        var updateInput = new UpdatePaymentMethodInput(id, input.Name);
+        var updateInput = new UpdatePaymentMethodInput(id, request.Name);
         var response = await service.UpdatePaymentMethodAsync(updateInput, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();

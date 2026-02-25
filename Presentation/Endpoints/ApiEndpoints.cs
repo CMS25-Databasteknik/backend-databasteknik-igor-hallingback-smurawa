@@ -4,7 +4,8 @@ public static class ApiEndpoints
 {
     public static IEndpointRouteBuilder MapApiEndpoints(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("/api");
+        var api = app.MapGroup("/api")
+            .AddEndpointFilterFactory(RequestValidationFilter.Factory);
 
         api.MapCoursesEndpoints();
         api.MapCourseEventsEndpoints();

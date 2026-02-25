@@ -1,5 +1,6 @@
 using Backend.Application.Modules.CourseEvents;
 using Backend.Application.Modules.CourseEvents.Inputs;
+using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Presentation.API.Models.CourseEvent;
 
 namespace Backend.Presentation.API.Endpoints;
@@ -51,7 +52,11 @@ public static class CourseEventsEndpoints
 
     private static async Task<IResult> CreateCourseEvent(CreateCourseEventRequest request, ICourseEventService service, CancellationToken cancellationToken)
     {
-        var input = new CreateCourseEventInput(request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId, request.VenueType);
+        var venueType = MapVenueType(request.VenueTypeId);
+        if (venueType is null)
+            return Results.BadRequest("Invalid venueTypeId. Value must be greater than zero.");
+
+        var input = new CreateCourseEventInput(request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId, venueType);
         var response = await service.CreateCourseEventAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -61,7 +66,11 @@ public static class CourseEventsEndpoints
 
     private static async Task<IResult> UpdateCourseEvent(Guid id, UpdateCourseEventRequest request, ICourseEventService service, CancellationToken cancellationToken)
     {
-        var input = new UpdateCourseEventInput(id, request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId, request.VenueType);
+        var venueType = MapVenueType(request.VenueTypeId);
+        if (venueType is null)
+            return Results.BadRequest("Invalid venueTypeId. Value must be greater than zero.");
+
+        var input = new UpdateCourseEventInput(id, request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId, venueType);
         var response = await service.UpdateCourseEventAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -77,4 +86,14 @@ public static class CourseEventsEndpoints
 
         return Results.Ok(response);
     }
+
+    private static VenueType? MapVenueType(int venueTypeId)
+        => venueTypeId switch
+        {
+            1 => new VenueType(1, "InPerson"),
+            2 => new VenueType(2, "Online"),
+            3 => new VenueType(3, "Hybrid"),
+            <= 0 => null,
+            _ => new VenueType(venueTypeId, $"VenueType {venueTypeId}")
+        };
 }
