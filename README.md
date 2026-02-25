@@ -58,15 +58,18 @@ Minimal API layer exposing HTTP endpoints.
 
 #### **Tests** (`Tests.csproj`)
 
-Unit and integration tests.
+Unit, integration, and E2E tests.
 
 - **Target Framework**: .NET 10.0
 - **Testing Framework**: xUnit (2.9.3)
 - **Dependencies**:
   - Application project
   - Infrastructure project
+  - Presentation project
+  - Microsoft.AspNetCore.Mvc.Testing (10.0.2)
   - Microsoft.NET.Test.Sdk (17.14.1)
   - NSubstitute (5.3.0) - for mocking
+  - xunit.runner.visualstudio (3.1.4)
   - coverlet.collector (6.0.4) - for code coverage
 
 ## Features
@@ -93,6 +96,9 @@ The system has CRUD support for these central modules:
 - **Participants**: Create, Read (all/by id), Update, Delete
 - **Locations**: Create, Read (all/by id), Update, Delete
 - **In-Place Locations**: Create, Read (all/by id/by location), Update, Delete
+- **Payment Methods**: Create, Read (all/by id/by name), Update, Delete
+- **Venue Types**: Create, Read (all/by id/by name), Update, Delete
+- **Participant Contact Types**: Create, Read (all/by id/by name), Update, Delete
 
 ## API Endpoints
 
@@ -236,7 +242,7 @@ dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.Unit"
 
 ## Testing Setup
 
-The project has two kinds of tests:
+The project has three kinds of tests:
 
 1. **Unit tests**
 
@@ -249,6 +255,12 @@ The project has two kinds of tests:
 - Test real repository behavior against a real EF Core database context.
 - Use **SQLite in-memory** so tests are fast and isolated.
 - Data is created directly in a temporary in-memory database during test execution.
+
+3. **E2E tests**
+
+- Test full HTTP request/response flows through the API.
+- Use `WebApplicationFactory` with SQLite in-memory test mode.
+- Reset and reseed test data between tests for isolation.
 
 ### How SQLite test mode works
 
