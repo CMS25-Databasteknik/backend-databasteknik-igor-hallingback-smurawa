@@ -2,7 +2,7 @@ using Backend.Application.Modules.Courses.Outputs;
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.Courses.Models;
 
-namespace Backend.Tests.Unit.Application.Modules.Courses.Outputs;
+namespace Tests.Unit.Application.Modules.Courses.Outputs;
 
 public class CourseResult_Tests
 {

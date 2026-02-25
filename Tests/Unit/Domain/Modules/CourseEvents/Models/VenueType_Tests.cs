@@ -1,6 +1,6 @@
 using Backend.Domain.Modules.VenueTypes.Models;
 
-namespace Backend.Tests.Unit.Domain.Modules.CourseEvents.Models;
+namespace Tests.Unit.Domain.Modules.CourseEvents.Models;
 
 public class VenueType_Tests
 {

@@ -1,6 +1,6 @@
 using Backend.Domain.Modules.CourseEventTypes.Models;
 
-namespace Backend.Tests.Unit.Domain.Modules.CourseEventTypes.Models;
+namespace Tests.Unit.Domain.Modules.CourseEventTypes.Models;
 
 public class CourseEventType_Tests
 {

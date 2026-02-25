@@ -1,6 +1,6 @@
 using Backend.Domain.Modules.InstructorRoles.Models;
 
-namespace Backend.Tests.Unit.Domain.Modules.InstructorRoles.Models;
+namespace Tests.Unit.Domain.Modules.InstructorRoles.Models;
 
 public class InstructorRole_Tests
 {

@@ -5,7 +5,7 @@ using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.Participants.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.Participants;
+namespace Tests.Unit.Application.Modules.Participants;
 
 public class ParticipantService_Tests
 {

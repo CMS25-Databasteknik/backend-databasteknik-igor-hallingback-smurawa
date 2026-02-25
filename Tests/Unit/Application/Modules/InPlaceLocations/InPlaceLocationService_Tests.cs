@@ -4,7 +4,7 @@ using Backend.Domain.Modules.InPlaceLocations.Contracts;
 using Backend.Domain.Modules.InPlaceLocations.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.InPlaceLocations;
+namespace Tests.Unit.Application.Modules.InPlaceLocations;
 
 public class InPlaceLocationService_Tests
 {

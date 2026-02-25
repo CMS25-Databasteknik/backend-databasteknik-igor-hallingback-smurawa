@@ -4,7 +4,7 @@ using Backend.Domain.Modules.Locations.Contracts;
 using Backend.Domain.Modules.Locations.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.Locations;
+namespace Tests.Unit.Application.Modules.Locations;
 
 public class LocationService_Tests
 {

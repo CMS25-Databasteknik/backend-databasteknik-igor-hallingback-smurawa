@@ -4,7 +4,7 @@ using Backend.Domain.Modules.PaymentMethod.Contracts;
 using NSubstitute;
 using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
 
-namespace Backend.Tests.Unit.Application.Modules.PaymentMethods;
+namespace Tests.Unit.Application.Modules.PaymentMethods;
 
 public class PaymentMethodService_Tests
 {

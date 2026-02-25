@@ -1,6 +1,6 @@
 using Backend.Domain.Modules.ParticipantContactTypes.Models;
 
-namespace Backend.Tests.Unit.Domain.Modules.Participants.Models;
+namespace Tests.Unit.Domain.Modules.Participants.Models;
 
 public class ParticipantContactType_Tests
 {

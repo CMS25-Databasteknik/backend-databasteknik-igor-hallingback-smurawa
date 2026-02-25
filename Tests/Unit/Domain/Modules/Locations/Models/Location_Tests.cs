@@ -1,6 +1,6 @@
 using Backend.Domain.Modules.Locations.Models;
 
-namespace Backend.Tests.Unit.Domain.Modules.Locations.Models;
+namespace Tests.Unit.Domain.Modules.Locations.Models;
 
 public class Location_Tests
 {

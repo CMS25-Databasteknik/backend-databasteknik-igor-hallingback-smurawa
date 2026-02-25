@@ -4,7 +4,7 @@ using Backend.Domain.Modules.VenueTypes.Contracts;
 using Backend.Domain.Modules.VenueTypes.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.VenueTypes;
+namespace Tests.Unit.Application.Modules.VenueTypes;
 
 public class VenueTypeService_Tests
 {

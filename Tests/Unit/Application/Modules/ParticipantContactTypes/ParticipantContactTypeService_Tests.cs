@@ -4,7 +4,7 @@ using Backend.Domain.Modules.ParticipantContactTypes.Contracts;
 using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.ParticipantContactTypes;
+namespace Tests.Unit.Application.Modules.ParticipantContactTypes;
 
 public class ParticipantContactTypeService_Tests
 {

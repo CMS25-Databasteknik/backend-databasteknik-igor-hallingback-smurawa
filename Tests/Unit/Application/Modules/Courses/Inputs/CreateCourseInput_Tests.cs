@@ -1,6 +1,6 @@
 using Backend.Application.Modules.Courses.Inputs;
 
-namespace Backend.Tests.Unit.Application.Modules.Courses.Inputs;
+namespace Tests.Unit.Application.Modules.Courses.Inputs;
 
 public class CreateCourseInput_Tests
 {

@@ -6,7 +6,7 @@ using Backend.Domain.Modules.CourseRegistrationStatuses.Contracts;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.CourseRegistrations;
+namespace Tests.Unit.Application.Modules.CourseRegistrations;
 
 public class CourseRegistrationStatusService_Tests
 {

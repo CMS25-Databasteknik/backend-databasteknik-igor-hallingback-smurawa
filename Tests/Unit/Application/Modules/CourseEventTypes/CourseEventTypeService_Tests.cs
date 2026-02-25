@@ -5,7 +5,7 @@ using Backend.Domain.Modules.CourseEventTypes.Contracts;
 using Backend.Domain.Modules.CourseEventTypes.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.CourseEventTypes;
+namespace Tests.Unit.Application.Modules.CourseEventTypes;
 
 public class CourseEventTypeService_Tests
 {

@@ -6,7 +6,7 @@ using Backend.Domain.Modules.Instructors.Contracts;
 using Backend.Domain.Modules.Instructors.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.Instructors;
+namespace Tests.Unit.Application.Modules.Instructors;
 
 public class InstructorService_Tests
 {

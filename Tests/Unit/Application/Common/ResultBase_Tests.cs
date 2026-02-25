@@ -1,6 +1,6 @@
 using Backend.Application.Common;
 
-namespace Backend.Tests.Unit.Application.Common;
+namespace Tests.Unit.Application.Common;
 
 public class ResultBase_Tests
 {

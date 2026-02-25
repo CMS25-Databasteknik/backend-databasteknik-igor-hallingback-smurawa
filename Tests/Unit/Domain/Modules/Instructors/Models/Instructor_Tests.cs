@@ -1,7 +1,7 @@
 using Backend.Domain.Modules.InstructorRoles.Models;
 using Backend.Domain.Modules.Instructors.Models;
 
-namespace Backend.Tests.Unit.Domain.Modules.Instructors.Models;
+namespace Tests.Unit.Domain.Modules.Instructors.Models;
 
 public class Instructor_Tests
 {

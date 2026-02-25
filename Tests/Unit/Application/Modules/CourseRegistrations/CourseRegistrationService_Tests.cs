@@ -11,7 +11,7 @@ using Backend.Domain.Modules.PaymentMethod.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.CourseRegistrations;
+namespace Tests.Unit.Application.Modules.CourseRegistrations;
 
 public class CourseRegistrationService_Tests
 {

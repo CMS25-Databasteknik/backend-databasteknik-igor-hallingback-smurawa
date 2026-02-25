@@ -5,7 +5,7 @@ using Backend.Domain.Modules.InstructorRoles.Contracts;
 using Backend.Domain.Modules.InstructorRoles.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.InstructorRoles;
+namespace Tests.Unit.Application.Modules.InstructorRoles;
 
 public class InstructorRoleService_Tests
 {

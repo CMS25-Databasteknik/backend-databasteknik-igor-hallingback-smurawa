@@ -2,7 +2,7 @@ using Backend.Domain.Modules.CourseRegistrations.Models;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.PaymentMethod.Models;
 
-namespace Backend.Tests.Unit.Domain.Modules.CourseRegistrations.Models;
+namespace Tests.Unit.Domain.Modules.CourseRegistrations.Models;
 
 public class CourseRegistration_Tests
 {

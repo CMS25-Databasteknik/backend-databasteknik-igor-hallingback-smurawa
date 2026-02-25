@@ -1,6 +1,6 @@
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 
-namespace Backend.Tests.Unit.Domain.Modules.CourseRegistrationStatuses.Models;
+namespace Tests.Unit.Domain.Modules.CourseRegistrationStatuses.Models;
 
 public class CourseRegistrationStatus_Tests
 {

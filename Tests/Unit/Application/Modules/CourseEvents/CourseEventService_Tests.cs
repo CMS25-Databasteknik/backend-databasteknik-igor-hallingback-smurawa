@@ -9,7 +9,7 @@ using Backend.Domain.Modules.Courses.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.CourseEvents;
+namespace Tests.Unit.Application.Modules.CourseEvents;
 
 public class CourseEventService_Tests
 {

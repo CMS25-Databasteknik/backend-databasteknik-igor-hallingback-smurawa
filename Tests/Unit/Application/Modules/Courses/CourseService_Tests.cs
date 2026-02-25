@@ -5,7 +5,7 @@ using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
 using NSubstitute;
 
-namespace Backend.Tests.Unit.Application.Modules.Courses;
+namespace Tests.Unit.Application.Modules.Courses;
 
 public class CourseService_Tests
 {
