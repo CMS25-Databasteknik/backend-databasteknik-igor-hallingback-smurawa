@@ -1,5 +1,3 @@
-using Backend.Domain.Modules.ParticipantContactTypes.Models;
-
 namespace Backend.Application.Modules.Participants.Inputs;
 
 public sealed record CreateParticipantInput(
@@ -7,5 +5,5 @@ public sealed record CreateParticipantInput(
     string LastName,
     string Email,
     string PhoneNumber,
-    ParticipantContactType ContactType
+    int ContactTypeId
 );

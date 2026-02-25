@@ -1,5 +1,3 @@
-using Backend.Domain.Modules.VenueTypes.Models;
-
 namespace Backend.Application.Modules.CourseEvents.Inputs;
 
 public sealed record CreateCourseEventInput(
@@ -8,5 +6,5 @@ public sealed record CreateCourseEventInput(
     decimal Price,
     int Seats,
     int CourseEventTypeId,
-    VenueType VenueType
+    int VenueTypeId
 );

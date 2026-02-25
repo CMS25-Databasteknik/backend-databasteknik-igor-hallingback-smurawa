@@ -1,7 +1,5 @@
 using Backend.Application.Modules.CourseRegistrations;
 using Backend.Application.Modules.CourseRegistrations.Inputs;
-using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
-using Backend.Domain.Modules.PaymentMethod.Models;
 using Backend.Presentation.API.Models.CourseRegistration;
 
 namespace Backend.Presentation.API.Endpoints;
@@ -64,15 +62,7 @@ public static class CourseRegistrationsEndpoints
 
     private static async Task<IResult> CreateCourseRegistration(CreateCourseRegistrationRequest request, ICourseRegistrationService service, CancellationToken cancellationToken)
     {
-        var status = MapStatus(request.StatusId);
-        if (status is null)
-            return Results.BadRequest("Invalid statusId. Value must be zero or positive.");
-
-        var paymentMethod = MapPaymentMethod(request.PaymentMethodId);
-        if (paymentMethod is null)
-            return Results.BadRequest("Invalid paymentMethodId. Value must be zero or positive.");
-
-        var input = new CreateCourseRegistrationInput(request.ParticipantId, request.CourseEventId, status, paymentMethod);
+        var input = new CreateCourseRegistrationInput(request.ParticipantId, request.CourseEventId, request.StatusId, request.PaymentMethodId);
         var response = await service.CreateCourseRegistrationAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -82,15 +72,7 @@ public static class CourseRegistrationsEndpoints
 
     private static async Task<IResult> UpdateCourseRegistration(Guid id, UpdateCourseRegistrationRequest request, ICourseRegistrationService service, CancellationToken cancellationToken)
     {
-        var status = MapStatus(request.StatusId);
-        if (status is null)
-            return Results.BadRequest("Invalid statusId. Value must be zero or positive.");
-
-        var paymentMethod = MapPaymentMethod(request.PaymentMethodId);
-        if (paymentMethod is null)
-            return Results.BadRequest("Invalid paymentMethodId. Value must be zero or positive.");
-
-        var input = new UpdateCourseRegistrationInput(id, request.ParticipantId, request.CourseEventId, status, paymentMethod);
+        var input = new UpdateCourseRegistrationInput(id, request.ParticipantId, request.CourseEventId, request.StatusId, request.PaymentMethodId);
         var response = await service.UpdateCourseRegistrationAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -106,25 +88,4 @@ public static class CourseRegistrationsEndpoints
 
         return Results.Ok(response);
     }
-
-    private static CourseRegistrationStatus? MapStatus(int statusId)
-        => statusId switch
-        {
-            0 => CourseRegistrationStatus.Pending,
-            1 => CourseRegistrationStatus.Paid,
-            2 => CourseRegistrationStatus.Cancelled,
-            3 => CourseRegistrationStatus.Refunded,
-            < 0 => null,
-            _ => new CourseRegistrationStatus(statusId, $"Status {statusId}")
-        };
-
-    private static PaymentMethod? MapPaymentMethod(int paymentMethodId)
-        => paymentMethodId switch
-        {
-            1 => new PaymentMethod(1, "Card"),
-            2 => new PaymentMethod(2, "Invoice"),
-            3 => new PaymentMethod(3, "Cash"),
-            < 0 => null,
-            _ => new PaymentMethod(paymentMethodId, $"PaymentMethod {paymentMethodId}")
-        };
 }

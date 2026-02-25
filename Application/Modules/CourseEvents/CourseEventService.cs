@@ -4,17 +4,20 @@ using Backend.Domain.Modules.CourseEvents.Contracts;
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.CourseEventTypes.Contracts;
 using Backend.Domain.Modules.Courses.Contracts;
+using Backend.Domain.Modules.VenueTypes.Contracts;
 
 namespace Backend.Application.Modules.CourseEvents;
 
 public class CourseEventService(
     ICourseEventRepository courseEventRepository,
     ICourseRepository courseRepository,
-    ICourseEventTypeRepository courseEventTypeRepository) : ICourseEventService
+    ICourseEventTypeRepository courseEventTypeRepository,
+    IVenueTypeRepository venueTypeRepository) : ICourseEventService
 {
     private readonly ICourseEventRepository _courseEventRepository = courseEventRepository ?? throw new ArgumentNullException(nameof(courseEventRepository));
     private readonly ICourseRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
     private readonly ICourseEventTypeRepository _courseEventTypeRepository = courseEventTypeRepository ?? throw new ArgumentNullException(nameof(courseEventTypeRepository));
+    private readonly IVenueTypeRepository _venueTypeRepository = venueTypeRepository ?? throw new ArgumentNullException(nameof(venueTypeRepository));
 
     public async Task<CourseEventResult> CreateCourseEventAsync(CreateCourseEventInput courseEvent, CancellationToken cancellationToken = default)
     {
@@ -30,6 +33,39 @@ public class CourseEventService(
                 };
             }
 
+            var existingCourse = await _courseRepository.GetByIdAsync(courseEvent.CourseId, cancellationToken);
+            if (existingCourse == null)
+            {
+                return new CourseEventResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course with ID '{courseEvent.CourseId}' not found."
+                };
+            }
+
+            var existingCourseEventType = await _courseEventTypeRepository.GetByIdAsync(courseEvent.CourseEventTypeId, cancellationToken);
+            if (existingCourseEventType == null)
+            {
+                return new CourseEventResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Course event type with ID '{courseEvent.CourseEventTypeId}' not found."
+                };
+            }
+
+            var venueType = await _venueTypeRepository.GetByIdAsync(courseEvent.VenueTypeId, cancellationToken);
+            if (venueType == null)
+            {
+                return new CourseEventResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Venue type with ID '{courseEvent.VenueTypeId}' not found."
+                };
+            }
+
             var newCourseEvent = new CourseEvent(
                 Guid.NewGuid(),
                 courseEvent.CourseId,
@@ -37,29 +73,7 @@ public class CourseEventService(
                 courseEvent.Price,
                 courseEvent.Seats,
                 courseEvent.CourseEventTypeId,
-                courseEvent.VenueType);
-
-            var existingCourse = await _courseRepository.GetByIdAsync(newCourseEvent.CourseId, cancellationToken);
-            if (existingCourse == null)
-            {
-                return new CourseEventResult
-                {
-                    Success = false,
-                    StatusCode = 404,
-                    Message = $"Course with ID '{newCourseEvent.CourseId}' not found."
-                };
-            }
-
-            var existingCourseEventType = await _courseEventTypeRepository.GetByIdAsync(newCourseEvent.CourseEventTypeId, cancellationToken);
-            if (existingCourseEventType == null)
-            {
-                return new CourseEventResult
-                {
-                    Success = false,
-                    StatusCode = 404,
-                    Message = $"Course event type with ID '{newCourseEvent.CourseEventTypeId}' not found."
-                };
-            }
+                venueType);
 
             var result = await _courseEventRepository.AddAsync(newCourseEvent, cancellationToken);
 
@@ -256,13 +270,24 @@ public class CourseEventService(
                 };
             }
 
+            var venueType = await _venueTypeRepository.GetByIdAsync(courseEvent.VenueTypeId, cancellationToken);
+            if (venueType == null)
+            {
+                return new CourseEventResult
+                {
+                    Success = false,
+                    StatusCode = 404,
+                    Message = $"Venue type with ID '{courseEvent.VenueTypeId}' not found."
+                };
+            }
+
             existingCourseEvent.Update(
                 courseEvent.CourseId,
                 courseEvent.EventDate,
                 courseEvent.Price,
                 courseEvent.Seats,
                 courseEvent.CourseEventTypeId,
-                courseEvent.VenueType,
+                venueType,
                 existingCourseEventType);
 
             var updatedCourseEvent = await _courseEventRepository.UpdateAsync(existingCourseEvent.Id, existingCourseEvent, cancellationToken);
@@ -382,6 +407,7 @@ public class CourseEventService(
             };
         }
     }
+
 }
 
 
