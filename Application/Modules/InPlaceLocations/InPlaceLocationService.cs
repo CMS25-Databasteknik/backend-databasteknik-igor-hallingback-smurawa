@@ -260,6 +260,15 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 Message = ex.Message
             };
         }
+        catch (Exception ex) when (ex.GetType().Name == "DbUpdateException")
+        {
+            return new InPlaceLocationResult
+            {
+                Success = false,
+                StatusCode = 409,
+                Message = "Cannot update because the requested location reference is invalid."
+            };
+        }
         catch (Exception ex)
         {
             return new InPlaceLocationResult
