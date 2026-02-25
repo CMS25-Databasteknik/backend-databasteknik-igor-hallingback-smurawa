@@ -1,4 +1,5 @@
 using Backend.Application.Modules.VenueTypes;
+using Backend.Application.Modules.VenueTypes.Caching;
 using Backend.Domain.Modules.VenueTypes.Contracts;
 using Backend.Domain.Modules.VenueTypes.Models;
 using NSubstitute;
@@ -11,9 +12,12 @@ public class VenueTypeService_Tests
     public async Task GetAll_Should_Return_Items()
     {
         var repo = Substitute.For<IVenueTypeRepository>();
+        var cache = Substitute.For<IVenueTypeCache>();
+        cache.GetAllAsync(Arg.Any<Func<CancellationToken, Task<IReadOnlyList<VenueType>>>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<VenueType>>>>()(ci.Arg<CancellationToken>()));
         repo.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns([new VenueType(1, "InPerson"), new VenueType(2, "Online")]);
-        var service = new VenueTypeService(repo);
+        var service = new VenueTypeService(cache, repo);
 
         var result = await service.GetAllVenueTypesAsync();
 

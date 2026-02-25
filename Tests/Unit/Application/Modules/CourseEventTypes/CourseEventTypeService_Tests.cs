@@ -674,6 +674,36 @@ public class CourseEventTypeService_Tests
     }
 
     [Fact]
+    public async Task DeleteCourseEventTypeAsync_Should_Return_InternalServerError_When_Delete_Returns_False()
+    {
+        // Arrange
+        var mockRepo = Substitute.For<ICourseEventTypeRepository>();
+        var typeId = 1;
+        var existingType = new CourseEventType(typeId, "Online");
+
+        mockRepo.GetByIdAsync(typeId, Arg.Any<CancellationToken>())
+            .Returns(existingType);
+
+        mockRepo.IsInUseAsync(typeId, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        mockRepo.RemoveAsync(typeId, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var service = CreateService(mockRepo, out var mockCache);
+
+        // Act
+        var result = await service.DeleteCourseEventTypeAsync(typeId, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal(500, result.StatusCode);
+        Assert.False(result.Result);
+        Assert.Equal("Failed to delete course event type.", result.Message);
+        mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
+    }
+
+    [Fact]
     public async Task DeleteCourseEventTypeAsync_Should_Return_BadRequest_When_TypeId_Is_Zero()
     {
         // Arrange

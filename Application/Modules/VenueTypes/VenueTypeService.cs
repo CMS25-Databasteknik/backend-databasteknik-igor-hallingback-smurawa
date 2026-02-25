@@ -1,3 +1,4 @@
+using Backend.Application.Modules.VenueTypes.Caching;
 using Backend.Application.Modules.VenueTypes.Inputs;
 using Backend.Application.Modules.VenueTypes.Outputs;
 using Backend.Domain.Modules.VenueTypes.Contracts;
@@ -5,8 +6,9 @@ using Backend.Domain.Modules.VenueTypes.Models;
 
 namespace Backend.Application.Modules.VenueTypes;
 
-public sealed class VenueTypeService(IVenueTypeRepository repository) : IVenueTypeService
+public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository repository) : IVenueTypeService
 {
+    private readonly IVenueTypeCache _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     private readonly IVenueTypeRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     public async Task<VenueTypeResult> CreateVenueTypeAsync(CreateVenueTypeInput input, CancellationToken cancellationToken = default)
@@ -21,6 +23,8 @@ public sealed class VenueTypeService(IVenueTypeRepository repository) : IVenueTy
                 return new VenueTypeResult { Success = false, StatusCode = 400, Message = "A venue type with the same name already exists." };
 
             var created = await _repository.AddAsync(new VenueType(1, input.Name), cancellationToken);
+            _cache.ResetEntity(created);
+            _cache.SetEntity(created);
             return new VenueTypeResult { Success = true, StatusCode = 201, Result = created, Message = "Venue type created successfully." };
         }
         catch (ArgumentException ex)
@@ -37,13 +41,15 @@ public sealed class VenueTypeService(IVenueTypeRepository repository) : IVenueTy
     {
         try
         {
-            var result = await _repository.GetAllAsync(cancellationToken);
+            var venueTypes = await _cache.GetAllAsync(
+                token => _repository.GetAllAsync(token),
+                cancellationToken);
             return new VenueTypeListResult
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
-                Message = result.Any() ? $"Retrieved {result.Count} venue type(s) successfully." : "No venue types found."
+                Result = venueTypes,
+                Message = venueTypes.Any() ? $"Retrieved {venueTypes.Count} venue type(s) successfully." : "No venue types found."
             };
         }
         catch (Exception ex)
@@ -59,11 +65,14 @@ public sealed class VenueTypeService(IVenueTypeRepository repository) : IVenueTy
             if (id <= 0)
                 throw new ArgumentException("Id must be greater than zero.", nameof(id));
 
-            var result = await _repository.GetByIdAsync(id, cancellationToken);
-            if (result == null)
+            var venueType = await _cache.GetByIdAsync(
+                id,
+                token => _repository.GetByIdAsync(id, token),
+                cancellationToken);
+            if (venueType == null)
                 return new VenueTypeResult { Success = false, StatusCode = 404, Message = $"Venue type with ID '{id}' not found." };
 
-            return new VenueTypeResult { Success = true, StatusCode = 200, Result = result, Message = "Venue type retrieved successfully." };
+            return new VenueTypeResult { Success = true, StatusCode = 200, Result = venueType, Message = "Venue type retrieved successfully." };
         }
         catch (ArgumentException ex)
         {
@@ -82,11 +91,14 @@ public sealed class VenueTypeService(IVenueTypeRepository repository) : IVenueTy
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Name is required.", nameof(name));
 
-            var result = await _repository.GetByNameAsync(name, cancellationToken);
-            if (result == null)
+            var venueType = await _cache.GetByNameAsync(
+                name,
+                token => _repository.GetByNameAsync(name, token),
+                cancellationToken);
+            if (venueType == null)
                 return new VenueTypeResult { Success = false, StatusCode = 404, Message = $"Venue type with name '{name}' not found." };
 
-            return new VenueTypeResult { Success = true, StatusCode = 200, Result = result, Message = "Venue type retrieved successfully." };
+            return new VenueTypeResult { Success = true, StatusCode = 200, Result = venueType, Message = "Venue type retrieved successfully." };
         }
         catch (ArgumentException ex)
         {
@@ -105,16 +117,18 @@ public sealed class VenueTypeService(IVenueTypeRepository repository) : IVenueTy
             if (input == null)
                 return new VenueTypeResult { Success = false, StatusCode = 400, Message = "Venue type cannot be null." };
 
-            var existing = await _repository.GetByIdAsync(input.Id, cancellationToken);
-            if (existing == null)
+            var existingVenueType = await _repository.GetByIdAsync(input.Id, cancellationToken);
+            if (existingVenueType == null)
                 return new VenueTypeResult { Success = false, StatusCode = 404, Message = $"Venue type with ID '{input.Id}' not found." };
 
-            existing.Update(input.Name);
-            var updated = await _repository.UpdateAsync(existing.Id, existing, cancellationToken);
-            if (updated == null)
+            existingVenueType.Update(input.Name);
+            var updatedVenueType = await _repository.UpdateAsync(existingVenueType.Id, existingVenueType, cancellationToken);
+            if (updatedVenueType == null)
                 return new VenueTypeResult { Success = false, StatusCode = 500, Message = "Failed to update venue type." };
+            _cache.ResetEntity(existingVenueType);
+            _cache.SetEntity(updatedVenueType);
 
-            return new VenueTypeResult { Success = true, StatusCode = 200, Result = updated, Message = "Venue type updated successfully." };
+            return new VenueTypeResult { Success = true, StatusCode = 200, Result = updatedVenueType, Message = "Venue type updated successfully." };
         }
         catch (ArgumentException ex)
         {
@@ -133,15 +147,19 @@ public sealed class VenueTypeService(IVenueTypeRepository repository) : IVenueTy
             if (id <= 0)
                 throw new ArgumentException("Id must be greater than zero.", nameof(id));
 
-            var existing = await _repository.GetByIdAsync(id, cancellationToken);
-            if (existing == null)
+            var existingVenueType = await _repository.GetByIdAsync(id, cancellationToken);
+            if (existingVenueType == null)
                 return new VenueTypeDeleteResult { Success = false, StatusCode = 404, Result = false, Message = $"Venue type with ID '{id}' not found." };
 
             if (await _repository.IsInUseAsync(id, cancellationToken))
                 return new VenueTypeDeleteResult { Success = false, StatusCode = 409, Result = false, Message = $"Cannot delete venue type with ID '{id}' because it is in use." };
 
-            var deleted = await _repository.RemoveAsync(id, cancellationToken);
-            return new VenueTypeDeleteResult { Success = true, StatusCode = 200, Result = deleted, Message = "Venue type deleted successfully." };
+            var isDeleted = await _repository.RemoveAsync(id, cancellationToken);
+            if (!isDeleted)
+                return new VenueTypeDeleteResult { Success = false, StatusCode = 500, Result = false, Message = "Failed to delete venue type." };
+
+            _cache.ResetEntity(existingVenueType);
+            return new VenueTypeDeleteResult { Success = true, StatusCode = 200, Result = true, Message = "Venue type deleted successfully." };
         }
         catch (ArgumentException ex)
         {
