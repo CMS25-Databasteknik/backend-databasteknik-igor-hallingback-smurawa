@@ -755,7 +755,7 @@ public class InPlaceLocationService_Tests
         Assert.False(result.Success);
         Assert.Equal(409, result.StatusCode);
         Assert.Null(result.Result);
-        Assert.Contains("invalid or violates database constraints", result.Message);
+        Assert.Contains("requested location reference is invalid", result.Message);
     }
 
     #endregion
