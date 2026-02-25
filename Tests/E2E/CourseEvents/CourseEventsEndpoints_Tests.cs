@@ -8,9 +8,9 @@ using Backend.Domain.Modules.CourseRegistrations.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.Integration.Infrastructure;
+using Backend.Tests.Integration.Infrastructure;
 
-namespace Tests.E2E.CourseEvents;
+namespace Backend.Tests.E2E.CourseEvents;
 
 public sealed class CourseEventsEndpoints_Tests(CoursesDbOnelineApiFactory factory) : IClassFixture<CoursesDbOnelineApiFactory>
 {
@@ -145,3 +145,4 @@ public sealed class CourseEventsEndpoints_Tests(CoursesDbOnelineApiFactory facto
         Assert.False(payload.Result);
     }
 }
+

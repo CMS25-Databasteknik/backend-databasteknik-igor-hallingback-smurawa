@@ -6,7 +6,7 @@ using Backend.Application.Modules.Courses.Outputs;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Tests.E2E;
+namespace Backend.Tests.E2E;
 
 public sealed class CoursesApi_E2E_Tests(CoursesDbOnelineApiFactory factory) : IClassFixture<CoursesDbOnelineApiFactory>
 {
@@ -113,3 +113,4 @@ public sealed class CoursesApi_E2E_Tests(CoursesDbOnelineApiFactory factory) : I
         Assert.Null(existing);
     }
 }
+

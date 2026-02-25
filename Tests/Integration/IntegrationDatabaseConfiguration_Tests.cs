@@ -2,7 +2,7 @@ using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tests.Integration;
+namespace Backend.Tests.Integration;
 
 [Collection(SqliteInMemoryCollection.Name)]
 public sealed class IntegrationDatabaseConfiguration_Tests(SqliteInMemoryFixture fixture)
@@ -21,3 +21,4 @@ public sealed class IntegrationDatabaseConfiguration_Tests(SqliteInMemoryFixture
         Assert.Contains("Cache=Shared", sqliteConnection.ConnectionString, StringComparison.OrdinalIgnoreCase);
     }
 }
+

@@ -2,7 +2,7 @@ using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tests.Integration.Infrastructure;
+namespace Backend.Tests.Integration.Infrastructure;
 
 [Collection(SqliteInMemoryCollection.Name)]
 public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixture)
@@ -170,3 +170,4 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
         await Assert.ThrowsAsync<KeyNotFoundException>(() => repo.RemoveAsync(999_999, CancellationToken.None));
     }
 }
+

@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Tests.E2E;
+namespace Backend.Tests.E2E;
 
 public sealed class E2EDatabaseConfiguration_Tests(CoursesDbOnelineApiFactory factory) : IClassFixture<CoursesDbOnelineApiFactory>
 {
@@ -24,3 +24,4 @@ public sealed class E2EDatabaseConfiguration_Tests(CoursesDbOnelineApiFactory fa
         Assert.Contains("Cache=Shared", sqliteConnection.ConnectionString, StringComparison.OrdinalIgnoreCase);
     }
 }
+

@@ -2,7 +2,7 @@ using Backend.Infrastructure.Persistence.EFC.Context;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tests.Integration;
+namespace Backend.Tests.Integration;
 
 public sealed class SqliteInMemoryFixture : IAsyncLifetime
 {
@@ -78,3 +78,4 @@ public sealed class SqliteInMemoryCollection : ICollectionFixture<SqliteInMemory
 {
     public const string Name = "SqliteInMemory";
 }
+

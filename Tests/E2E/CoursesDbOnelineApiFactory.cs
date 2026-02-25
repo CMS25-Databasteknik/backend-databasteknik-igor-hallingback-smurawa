@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Tests.E2E;
+namespace Backend.Tests.E2E;
 
 public sealed class CoursesDbOnelineApiFactory : WebApplicationFactory<Program>
 {
@@ -63,3 +63,4 @@ public sealed class CoursesDbOnelineApiFactory : WebApplicationFactory<Program>
             """);
     }
 }
+
