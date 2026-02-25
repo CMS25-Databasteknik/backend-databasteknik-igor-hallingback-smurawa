@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Backend.Tests.E2E;
 
-public sealed class E2EDatabaseConfiguration_Tests(CoursesDbOnelineApiFactory factory) : IClassFixture<CoursesDbOnelineApiFactory>
+public sealed class E2EDatabaseConfiguration_Tests(CoursesOnlineDbApiFactory factory) : IClassFixture<CoursesOnlineDbApiFactory>
 {
-    private readonly CoursesDbOnelineApiFactory _factory = factory;
+    private readonly CoursesOnlineDbApiFactory _factory = factory;
 
     [Fact]
     public async Task E2E_Host_Uses_Sqlite_InMemory_Database()
