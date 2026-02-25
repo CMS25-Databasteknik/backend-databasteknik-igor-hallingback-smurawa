@@ -1,12 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Backend.Application.Modules.CourseEvents.Inputs;
 using Backend.Application.Modules.CourseEvents.Outputs;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.CourseRegistrations.Models;
-using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Presentation.API.Models.CourseEvent;
 using Microsoft.Extensions.DependencyInjection;
 using Backend.Tests.Integration.Infrastructure;
 
@@ -51,13 +50,15 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         }
 
         using var client = _factory.CreateClient();
-        var createInput = new CreateCourseEventInput(
-            courseId,
-            DateTime.UtcNow.AddDays(7),
-            499m,
-            20,
-            courseEventTypeId,
-            new VenueType(1, "InPerson"));
+        var createInput = new CreateCourseEventRequest
+        {
+            CourseId = courseId,
+            EventDate = DateTime.UtcNow.AddDays(7),
+            Price = 499m,
+            Seats = 20,
+            CourseEventTypeId = courseEventTypeId,
+            VenueTypeId = 1
+        };
 
         var createResponse = await client.PostAsJsonAsync("/api/course-events", createInput);
 
@@ -83,13 +84,15 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        var createInput = new CreateCourseEventInput(
-            Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(2),
-            99m,
-            10,
-            1,
-            new VenueType(1, "InPerson"));
+        var createInput = new CreateCourseEventRequest
+        {
+            CourseId = Guid.NewGuid(),
+            EventDate = DateTime.UtcNow.AddDays(2),
+            Price = 99m,
+            Seats = 10,
+            CourseEventTypeId = 1,
+            VenueTypeId = 1
+        };
 
         var response = await client.PostAsJsonAsync("/api/course-events", createInput);
         var payload = await response.Content.ReadFromJsonAsync<CourseEventResult>(_jsonOptions);

@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Backend.Application.Modules.CourseRegistrations.Outputs;
-using Backend.Domain.Modules.PaymentMethod.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Presentation.API.Models.CourseRegistration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,11 +48,13 @@ public sealed class CourseRegistrationsEndpoints_Tests(CoursesOnlineDbApiFactory
         }
 
         using var client = _factory.CreateClient();
-        var createRequest = new CreateCourseRegistrationRequest(
-            participantId,
-            courseEventId,
-            1,
-            new PaymentMethod(1, "Card"));
+        var createRequest = new CreateCourseRegistrationRequest
+        {
+            ParticipantId = participantId,
+            CourseEventId = courseEventId,
+            StatusId = 1,
+            PaymentMethodId = 1
+        };
 
         var createResponse = await client.PostAsJsonAsync("/api/course-registrations", createRequest);
 
@@ -78,11 +79,13 @@ public sealed class CourseRegistrationsEndpoints_Tests(CoursesOnlineDbApiFactory
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        var createRequest = new CreateCourseRegistrationRequest(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            -1,
-            new PaymentMethod(1, "Card"));
+        var createRequest = new CreateCourseRegistrationRequest
+        {
+            ParticipantId = Guid.NewGuid(),
+            CourseEventId = Guid.NewGuid(),
+            StatusId = -1,
+            PaymentMethodId = 1
+        };
 
         var response = await client.PostAsJsonAsync("/api/course-registrations", createRequest);
 
@@ -102,11 +105,13 @@ public sealed class CourseRegistrationsEndpoints_Tests(CoursesOnlineDbApiFactory
         }
 
         using var client = _factory.CreateClient();
-        var createRequest = new CreateCourseRegistrationRequest(
-            Guid.NewGuid(),
-            courseEventId,
-            1,
-            new PaymentMethod(1, "Card"));
+        var createRequest = new CreateCourseRegistrationRequest
+        {
+            ParticipantId = Guid.NewGuid(),
+            CourseEventId = courseEventId,
+            StatusId = 1,
+            PaymentMethodId = 1
+        };
 
         var response = await client.PostAsJsonAsync("/api/course-registrations", createRequest);
         var payload = await response.Content.ReadFromJsonAsync<CourseRegistrationResult>(_jsonOptions);

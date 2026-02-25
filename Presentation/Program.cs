@@ -1,7 +1,9 @@
 using Backend.Application.Extensions;
+using Backend.Application.Common;
 using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Presentation.API.Endpoints;
+using Microsoft.AspNetCore.Routing;
 
 namespace Backend.Presentation.API;
 
@@ -13,6 +15,7 @@ public partial class Program
 
         builder.Services.AddOpenApi();
         builder.Services.AddCors();
+        builder.Services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = false);
 
         builder.Services.AddMemoryCache();
 
@@ -20,6 +23,26 @@ public partial class Program
         builder.Services.AddApplication(builder.Configuration, builder.Environment);
 
         var app = builder.Build();
+
+        app.UseStatusCodePages(async statusCodeContext =>
+        {
+            var http = statusCodeContext.HttpContext;
+            var response = http.Response;
+
+            if (response.StatusCode == 400 && !response.HasStarted && (response.ContentLength ?? 0) == 0)
+            {
+                response.ContentType = "application/json";
+
+                var payload = new ResultBase
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Message = "Malformed JSON payload."
+                };
+
+                await response.WriteAsJsonAsync(payload);
+            }
+        });
 
         var isSqliteTestMode = string.Equals(
             Environment.GetEnvironmentVariable("DB_PROVIDER"),

@@ -1,5 +1,6 @@
 using Backend.Application.Modules.ParticipantContactTypes;
 using Backend.Application.Modules.ParticipantContactTypes.Inputs;
+using Backend.Presentation.API.Models.ParticipantContactType;
 
 namespace Backend.Presentation.API.Endpoints;
 
@@ -47,8 +48,9 @@ public static class ParticipantContactTypesEndpoints
         return Results.Ok(response);
     }
 
-    private static async Task<IResult> CreateParticipantContactType(CreateParticipantContactTypeInput input, IParticipantContactTypeService service, CancellationToken cancellationToken)
+    private static async Task<IResult> CreateParticipantContactType(CreateParticipantContactTypeRequest request, IParticipantContactTypeService service, CancellationToken cancellationToken)
     {
+        var input = new CreateParticipantContactTypeInput(request.Name);
         var response = await service.CreateParticipantContactTypeAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -56,9 +58,9 @@ public static class ParticipantContactTypesEndpoints
         return Results.Created($"/api/participant-contact-types/{response.Result?.Id}", response);
     }
 
-    private static async Task<IResult> UpdateParticipantContactType(int id, UpdateParticipantContactTypeInput input, IParticipantContactTypeService service, CancellationToken cancellationToken)
+    private static async Task<IResult> UpdateParticipantContactType(int id, UpdateParticipantContactTypeRequest request, IParticipantContactTypeService service, CancellationToken cancellationToken)
     {
-        var updateInput = new UpdateParticipantContactTypeInput(id, input.Name);
+        var updateInput = new UpdateParticipantContactTypeInput(id, request.Name);
         var response = await service.UpdateParticipantContactTypeAsync(updateInput, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
