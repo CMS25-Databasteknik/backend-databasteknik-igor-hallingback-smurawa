@@ -124,12 +124,12 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 };
             }
 
-            var result = await _cache.GetByIdAsync(
+            var courseEventType = await _cache.GetByIdAsync(
                 courseEventTypeId,
                 token => _courseEventTypeRepository.GetByIdAsync(courseEventTypeId, token),
                 cancellationToken);
 
-            if (result == null)
+            if (courseEventType == null)
             {
                 return new CourseEventTypeResult
                 {
@@ -143,7 +143,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = courseEventType,
                 Message = "Course event type retrieved successfully."
             };
         }
@@ -172,9 +172,9 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 };
             }
 
-            var result = await _courseEventTypeRepository.GetCourseEventTypeByTypeNameAsync(typeName, cancellationToken);
+            var courseEventType = await _courseEventTypeRepository.GetCourseEventTypeByTypeNameAsync(typeName, cancellationToken);
 
-            if (result == null)
+            if (courseEventType == null)
             {
                 return new CourseEventTypeResult
                 {
@@ -188,7 +188,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = courseEventType,
                 Message = "Course event type retrieved successfully."
             };
         }
@@ -313,14 +313,25 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 };
             }
 
-            var result = await _courseEventTypeRepository.RemoveAsync(courseEventTypeId, cancellationToken);
+            var isDeleted = await _courseEventTypeRepository.RemoveAsync(courseEventTypeId, cancellationToken);
+            if (!isDeleted)
+            {
+                return new CourseEventTypeDeleteResult
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to delete course event type.",
+                    Result = false
+                };
+            }
+
             _cache.ResetEntity(existingCourseEventType);
 
             return new CourseEventTypeDeleteResult
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
+                Result = true,
                 Message = "Course event type deleted successfully."
             };
         }

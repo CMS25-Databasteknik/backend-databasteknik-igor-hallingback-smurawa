@@ -1,4 +1,5 @@
 using Backend.Application.Modules.InstructorRoles;
+using Backend.Application.Modules.InstructorRoles.Caching;
 using Backend.Application.Modules.InstructorRoles.Inputs;
 using Backend.Domain.Modules.InstructorRoles.Contracts;
 using Backend.Domain.Modules.InstructorRoles.Models;
@@ -8,6 +9,16 @@ namespace Backend.Tests.Unit.Application.Modules.InstructorRoles;
 
 public class InstructorRoleService_Tests
 {
+    private static IInstructorRoleCache CreateCache()
+    {
+        var cache = Substitute.For<IInstructorRoleCache>();
+        cache.GetAllAsync(Arg.Any<Func<CancellationToken, Task<IReadOnlyList<InstructorRole>>>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<InstructorRole>>>>()(ci.Arg<CancellationToken>()));
+        cache.GetByIdAsync(Arg.Any<int>(), Arg.Any<Func<CancellationToken, Task<InstructorRole?>>>(), Arg.Any<CancellationToken>())
+            .Returns(ci => ci.Arg<Func<CancellationToken, Task<InstructorRole?>>>()(ci.Arg<CancellationToken>()));
+        return cache;
+    }
+
     private static IInstructorRoleRepository CreateRepo()
     {
         var repo = Substitute.For<IInstructorRoleRepository>();
@@ -27,8 +38,9 @@ public class InstructorRoleService_Tests
     [Fact]
     public async Task Create_Should_Return_201_When_Valid()
     {
+        var cache = CreateCache();
         var repo = CreateRepo();
-        var service = new InstructorRoleService(repo);
+        var service = new InstructorRoleService(cache, repo);
 
         var result = await service.CreateInstructorRoleAsync(new CreateInstructorRoleInput("Lead"));
 
@@ -40,8 +52,9 @@ public class InstructorRoleService_Tests
     [Fact]
     public async Task Create_Should_Return_400_When_Name_Invalid()
     {
+        var cache = CreateCache();
         var repo = CreateRepo();
-        var service = new InstructorRoleService(repo);
+        var service = new InstructorRoleService(cache, repo);
 
         var result = await service.CreateInstructorRoleAsync(new CreateInstructorRoleInput("   "));
 
@@ -52,8 +65,9 @@ public class InstructorRoleService_Tests
     [Fact]
     public async Task GetById_Should_Return_404_When_Not_Found()
     {
+        var cache = CreateCache();
         var repo = CreateRepo();
-        var service = new InstructorRoleService(repo);
+        var service = new InstructorRoleService(cache, repo);
 
         var result = await service.GetInstructorRoleByIdAsync(9);
 
@@ -64,8 +78,9 @@ public class InstructorRoleService_Tests
     [Fact]
     public async Task Update_Should_Return_404_When_Not_Found()
     {
+        var cache = CreateCache();
         var repo = CreateRepo();
-        var service = new InstructorRoleService(repo);
+        var service = new InstructorRoleService(cache, repo);
 
         var result = await service.UpdateInstructorRoleAsync(new UpdateInstructorRoleInput(9, "NewName"));
 
@@ -76,8 +91,9 @@ public class InstructorRoleService_Tests
     [Fact]
     public async Task Delete_Should_Return_200_When_Deleted()
     {
+        var cache = CreateCache();
         var repo = CreateRepo();
-        var service = new InstructorRoleService(repo);
+        var service = new InstructorRoleService(cache, repo);
 
         var result = await service.DeleteInstructorRoleAsync(1);
 
@@ -89,8 +105,9 @@ public class InstructorRoleService_Tests
     [Fact]
     public async Task Delete_Should_Return_404_When_NotFound()
     {
+        var cache = CreateCache();
         var repo = CreateRepo();
-        var service = new InstructorRoleService(repo);
+        var service = new InstructorRoleService(cache, repo);
 
         var result = await service.DeleteInstructorRoleAsync(9);
 

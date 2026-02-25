@@ -1,3 +1,4 @@
+using Backend.Application.Modules.InstructorRoles.Caching;
 using Backend.Application.Modules.InstructorRoles.Inputs;
 using Backend.Application.Modules.InstructorRoles.Outputs;
 using Backend.Domain.Modules.InstructorRoles.Contracts;
@@ -5,8 +6,9 @@ using Backend.Domain.Modules.InstructorRoles.Models;
 
 namespace Backend.Application.Modules.InstructorRoles;
 
-public class InstructorRoleService(IInstructorRoleRepository repository) : IInstructorRoleService
+public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRepository repository) : IInstructorRoleService
 {
+    private readonly IInstructorRoleCache _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     private readonly IInstructorRoleRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     public async Task<InstructorRoleResult> CreateInstructorRoleAsync(CreateInstructorRoleInput input, CancellationToken cancellationToken = default)
@@ -25,6 +27,8 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
 
             var role = new InstructorRole(input.RoleName);
             var created = await _repository.AddAsync(role, cancellationToken);
+            _cache.ResetEntity(created);
+            _cache.SetEntity(created);
 
             return new InstructorRoleResult
             {
@@ -58,7 +62,9 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
     {
         try
         {
-            var roles = await _repository.GetAllAsync(cancellationToken);
+            var roles = await _cache.GetAllAsync(
+                token => _repository.GetAllAsync(token),
+                cancellationToken);
             return new InstructorRoleListResult
             {
                 Success = true,
@@ -92,7 +98,10 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 };
             }
 
-            var role = await _repository.GetByIdAsync(id, cancellationToken);
+            var role = await _cache.GetByIdAsync(
+                id,
+                token => _repository.GetByIdAsync(id, token),
+                cancellationToken);
             if (role == null)
             {
                 return new InstructorRoleResult
@@ -169,6 +178,9 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 };
             }
 
+            _cache.ResetEntity(existingRole);
+            _cache.SetEntity(updatedInstructorRole);
+
             return new InstructorRoleResult
             {
                 Success = true,
@@ -212,8 +224,8 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                 };
             }
 
-            var result = await _repository.RemoveAsync(id, cancellationToken);
-            if (!result)
+            var existingRole = await _repository.GetByIdAsync(id, cancellationToken);
+            if (existingRole == null)
             {
                 return new InstructorRoleDeleteResult
                 {
@@ -223,6 +235,20 @@ public class InstructorRoleService(IInstructorRoleRepository repository) : IInst
                     Result = false
                 };
             }
+
+            var isDeleted = await _repository.RemoveAsync(id, cancellationToken);
+            if (!isDeleted)
+            {
+                return new InstructorRoleDeleteResult
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Message = "Failed to delete instructor role.",
+                    Result = false
+                };
+            }
+
+            _cache.ResetEntity(existingRole);
 
             return new InstructorRoleDeleteResult
             {

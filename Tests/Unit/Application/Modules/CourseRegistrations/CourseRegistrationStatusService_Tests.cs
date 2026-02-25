@@ -235,6 +235,23 @@ public class CourseRegistrationStatusService_Tests
     }
 
     [Fact]
+    public async Task Delete_Should_Return_500_When_Delete_Returns_False()
+    {
+        var service = CreateService(out var repo, out var cache);
+        repo.GetByIdAsync(1, Arg.Any<CancellationToken>()).Returns(new CourseRegistrationStatus(1, "Paid"));
+        repo.IsInUseAsync(1, Arg.Any<CancellationToken>()).Returns(false);
+        repo.RemoveAsync(1, Arg.Any<CancellationToken>()).Returns(false);
+
+        var result = await service.DeleteCourseRegistrationStatusAsync(1);
+
+        Assert.False(result.Success);
+        Assert.Equal(500, result.StatusCode);
+        Assert.False(result.Result);
+        Assert.Equal("Failed to delete course registration status.", result.Message);
+        cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
+    }
+
+    [Fact]
     public async Task Delete_Should_Return_500_When_Repository_Throws()
     {
         var service = CreateService(out var repo, out var cache);

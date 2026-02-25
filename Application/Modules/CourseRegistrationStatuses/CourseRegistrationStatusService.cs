@@ -37,15 +37,15 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 };
 
             var newStatus = new CourseRegistrationStatus(input.Name);
-            var result = await _repository.AddAsync(newStatus, cancellationToken);
-            _cache.ResetEntity(result);
-            _cache.SetEntity(result);
+            var createdStatus = await _repository.AddAsync(newStatus, cancellationToken);
+            _cache.ResetEntity(createdStatus);
+            _cache.SetEntity(createdStatus);
 
             return new CourseRegistrationStatusResult
             {
                 Success = true,
                 StatusCode = 201,
-                Result = result,
+                Result = createdStatus,
                 Message = "Course registration status created successfully."
             };
         }
@@ -73,7 +73,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
     {
         try
         {
-            var result = await _cache.GetAllAsync(
+            var statuses = await _cache.GetAllAsync(
                 token => _repository.GetAllAsync(token),
                 cancellationToken);
 
@@ -81,9 +81,9 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             {
                 Success = true,
                 StatusCode = 200,
-                Result = result,
-                Message = result.Any()
-                    ? $"Retrieved {result.Count} course registration status(es) successfully."
+                Result = statuses,
+                Message = statuses.Any()
+                    ? $"Retrieved {statuses.Count} course registration status(es) successfully."
                     : "No course registration statuses found."
             };
         }
@@ -297,13 +297,24 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             }
 
             var deleted = await _repository.RemoveAsync(id, cancellationToken);
+            if (!deleted)
+            {
+                return new CourseRegistrationStatusDeleteResult
+                {
+                    Success = false,
+                    StatusCode = 500,
+                    Result = false,
+                    Message = "Failed to delete course registration status."
+                };
+            }
+
             _cache.ResetEntity(existingStatus);
 
             return new CourseRegistrationStatusDeleteResult
             {
                 Success = true,
                 StatusCode = 200,
-                Result = deleted,
+                Result = true,
                 Message = "Course registration status deleted successfully."
             };
         }

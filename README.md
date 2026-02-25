@@ -148,11 +148,19 @@ Caching is implemented in the **Application layer** (not in repositories), using
 - Concrete cache implementations:
   - `Application/Modules/CourseEventTypes/Caching/CourseEventTypeCache.cs`
   - `Application/Modules/CourseRegistrationStatuses/Caching/CourseRegistrationStatusCache.cs`
+  - `Application/Modules/InstructorRoles/Caching/InstructorRoleCache.cs`
+  - `Application/Modules/PaymentMethods/Caching/PaymentMethodCache.cs`
+  - `Application/Modules/VenueTypes/Caching/VenueTypeCache.cs`
+  - `Application/Modules/ParticipantContactTypes/Caching/ParticipantContactTypeCache.cs`
 - Services that currently use cache:
   - `Application/Modules/CourseEventTypes/CourseEventTypeService.cs`
   - `Application/Modules/CourseRegistrationStatuses/CourseRegistrationStatusService.cs`
+  - `Application/Modules/InstructorRoles/InstructorRoleService.cs`
+  - `Application/Modules/PaymentMethods/PaymentMethodService.cs`
+  - `Application/Modules/VenueTypes/VenueTypeService.cs`
+  - `Application/Modules/ParticipantContactTypes/ParticipantContactTypeService.cs`
 
-The cache is primarily used for read operations (`get by id`, `get all`) and is invalidated/reset on writes.
+The cache is primarily used for read operations (`get by id`, `get all`, and where applicable `get by name`) and is invalidated/reset on writes.
 
 ### Connection String
 
