@@ -33,12 +33,7 @@ public partial class Program
             {
                 response.ContentType = "application/json";
 
-                var payload = new ResultBase
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Message = "Malformed JSON payload."
-                };
+                var payload = Result.Validation("Malformed JSON payload.");
 
                 await response.WriteAsJsonAsync(payload);
             }
@@ -67,4 +62,3 @@ public partial class Program
         app.Run();
     }
 }
-

@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.InstructorRoles;
 using Backend.Application.Modules.InstructorRoles.Caching;
 using Backend.Application.Modules.InstructorRoles.Inputs;
@@ -45,7 +46,7 @@ public class InstructorRoleService_Tests
         var result = await service.CreateInstructorRoleAsync(new CreateInstructorRoleInput("Lead"));
 
         Assert.True(result.Success);
-        Assert.Equal(201, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.Equal("Lead", result.Result?.RoleName);
     }
 
@@ -59,7 +60,7 @@ public class InstructorRoleService_Tests
         var result = await service.CreateInstructorRoleAsync(new CreateInstructorRoleInput("   "));
 
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
     }
 
     [Fact]
@@ -72,7 +73,7 @@ public class InstructorRoleService_Tests
         var result = await service.GetInstructorRoleByIdAsync(9);
 
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
     }
 
     [Fact]
@@ -85,7 +86,7 @@ public class InstructorRoleService_Tests
         var result = await service.UpdateInstructorRoleAsync(new UpdateInstructorRoleInput(9, "NewName"));
 
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
     }
 
     [Fact]
@@ -99,7 +100,7 @@ public class InstructorRoleService_Tests
 
         Assert.True(result.Success);
         Assert.True(result.Result);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
     }
 
     [Fact]
@@ -112,6 +113,7 @@ public class InstructorRoleService_Tests
         var result = await service.DeleteInstructorRoleAsync(9);
 
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
     }
 }
+

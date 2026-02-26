@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.Instructors.Inputs;
 using Backend.Application.Modules.Instructors.Outputs;
 using Backend.Domain.Modules.InstructorRoles.Contracts;
@@ -20,7 +21,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "Instructor cannot be null."
                 };
@@ -32,7 +33,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Result = null,
                     Message = $"Instructor role with ID '{instructor.InstructorRoleId}' not found."
                 };
@@ -45,8 +46,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorResult
             {
                 Success = true,
-                StatusCode = 201,
-                Result = result,
+                                Result = result,
                 Message = "Instructor created successfully."
             };
         }
@@ -55,7 +55,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorResult
             {
                 Success = false,
-                StatusCode = 404,
+                Error = ResultError.NotFound,
                 Result = null,
                 Message = ex.Message
             };
@@ -65,7 +65,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Result = null,
                 Message = ex.Message
             };
@@ -75,7 +75,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the instructor: {ex.Message}"
             };
@@ -94,16 +94,14 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 {
                     Success = true,
                     Result = instructors,
-                    StatusCode = 200,
-                    Message = "No instructors found."
+                                        Message = "No instructors found."
                 };
             }
 
             return new InstructorListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = instructors,
+                                Result = instructors,
                 Message = $"Retrieved {instructors.Count} instructor(s) successfully."
             };
         }
@@ -112,7 +110,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving instructors: {ex.Message}"
             };
         }
@@ -127,7 +125,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorDetailsResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Instructor ID cannot be empty."
                 };
             }
@@ -139,7 +137,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorDetailsResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Instructor with ID '{instructorId}' not found."
                 };
             }
@@ -153,8 +151,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorDetailsResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = details,
+                                Result = details,
                 Message = "Instructor retrieved successfully."
             };
         }
@@ -163,7 +160,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorDetailsResult
             {
                 Success = false,
-                StatusCode = 404,
+                Error = ResultError.NotFound,
                 Message = ex.Message
             };
         }
@@ -172,7 +169,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorDetailsResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the instructor: {ex.Message}"
             };
         }
@@ -187,7 +184,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Instructor cannot be null."
                 };
             }
@@ -197,7 +194,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Instructor ID cannot be empty."
                 };
             }
@@ -208,7 +205,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Instructor role with ID '{instructor.InstructorRoleId}' not found."
                 };
             }
@@ -219,7 +216,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Instructor with ID '{instructor.Id}' not found."
                 };
             }
@@ -233,7 +230,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to update instructor."
                 };
             }
@@ -241,8 +238,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = updatedInstructor,
+                                Result = updatedInstructor,
                 Message = "Instructor updated successfully."
             };
         }
@@ -251,7 +247,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -260,7 +256,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while updating the instructor: {ex.Message}"
             };
         }
@@ -275,7 +271,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorDeleteResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Instructor ID cannot be empty.",
                     Result = false
                 };
@@ -287,7 +283,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorDeleteResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Instructor with ID '{instructorId}' not found.",
                     Result = false
                 };
@@ -299,7 +295,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorDeleteResult
                 {
                     Success = false,
-                    StatusCode = 409,
+                    Error = ResultError.Conflict,
                     Message = $"Cannot delete instructor with ID '{instructorId}' because they are assigned to course events. Please remove the assignments first.",
                     Result = false
                 };
@@ -312,7 +308,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 return new InstructorDeleteResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to delete instructor.",
                     Result = false
                 };
@@ -321,8 +317,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorDeleteResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = result,
+                                Result = result,
                 Message = "Instructor deleted successfully."
             };
         }
@@ -331,7 +326,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorDeleteResult
             {
                 Success = false,
-                StatusCode = 404,
+                Error = ResultError.NotFound,
                 Message = ex.Message,
                 Result = false
             };
@@ -341,13 +336,11 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorDeleteResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while deleting the instructor: {ex.Message}",
                 Result = false
             };
         }
     }
 }
-
-
 

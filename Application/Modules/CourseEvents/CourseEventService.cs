@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.CourseEvents.Inputs;
 using Backend.Application.Modules.CourseEvents.Outputs;
 using Backend.Domain.Modules.CourseEvents.Contracts;
@@ -28,7 +29,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course event cannot be null."
                 };
             }
@@ -39,7 +40,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course with ID '{courseEvent.CourseId}' not found."
                 };
             }
@@ -50,7 +51,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course event type with ID '{courseEvent.CourseEventTypeId}' not found."
                 };
             }
@@ -61,7 +62,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Venue type with ID '{courseEvent.VenueTypeId}' not found."
                 };
             }
@@ -80,8 +81,7 @@ public class CourseEventService(
             return new CourseEventResult
             {
                 Success = true,
-                StatusCode = 201,
-                Result = result,
+                                Result = result,
                 Message = "Course event created successfully."
             };
         }
@@ -90,7 +90,7 @@ public class CourseEventService(
             return new CourseEventResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -99,7 +99,7 @@ public class CourseEventService(
             return new CourseEventResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while creating the course event: {ex.Message}"
             };
         }
@@ -114,8 +114,7 @@ public class CourseEventService(
             return new CourseEventListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = result,
+                                Result = result,
                 Message = result.Any()
                     ? $"Retrieved {result.Count} course event(s) successfully."
                     : "No course events found."
@@ -126,7 +125,7 @@ public class CourseEventService(
             return new CourseEventListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving course events: {ex.Message}"
             };
         }
@@ -141,7 +140,7 @@ public class CourseEventService(
                 return new CourseEventDetailsResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course event ID cannot be empty."
                 };
             }
@@ -152,7 +151,7 @@ public class CourseEventService(
                 return new CourseEventDetailsResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course event with ID '{courseEventId}' not found."
                 };
             }
@@ -170,8 +169,7 @@ public class CourseEventService(
             return new CourseEventDetailsResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = details,
+                                Result = details,
                 Message = "Course event retrieved successfully."
             };
         }
@@ -180,7 +178,7 @@ public class CourseEventService(
             return new CourseEventDetailsResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the course event: {ex.Message}"
             };
         }
@@ -195,7 +193,7 @@ public class CourseEventService(
                 return new CourseEventListResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course ID cannot be empty."
                 };
             }
@@ -205,8 +203,7 @@ public class CourseEventService(
             return new CourseEventListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = result,
+                                Result = result,
                 Message = result.Any()
                     ? $"Retrieved {result.Count} course event(s) successfully."
                     : "No course events found for this course."
@@ -217,7 +214,7 @@ public class CourseEventService(
             return new CourseEventListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving course events by course ID: {ex.Message}"
             };
         }
@@ -232,7 +229,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course event cannot be null."
                 };
             }
@@ -243,7 +240,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course event with ID '{courseEvent.Id}' not found."
                 };
             }
@@ -254,7 +251,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course with ID '{courseEvent.CourseId}' not found."
                 };
             }
@@ -265,7 +262,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course event type with ID '{courseEvent.CourseEventTypeId}' not found."
                 };
             }
@@ -276,7 +273,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Venue type with ID '{courseEvent.VenueTypeId}' not found."
                 };
             }
@@ -296,7 +293,7 @@ public class CourseEventService(
                 return new CourseEventResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to update course event."
                 };
             }
@@ -304,8 +301,7 @@ public class CourseEventService(
             return new CourseEventResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = updatedCourseEvent,
+                                Result = updatedCourseEvent,
                 Message = "Course event updated successfully."
             };
         }
@@ -314,7 +310,7 @@ public class CourseEventService(
             return new CourseEventResult
             {
                 Success = false,
-                StatusCode = 404,
+                Error = ResultError.NotFound,
                 Message = ex.Message
             };
         }
@@ -323,7 +319,7 @@ public class CourseEventService(
             return new CourseEventResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -332,7 +328,7 @@ public class CourseEventService(
             return new CourseEventResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while updating the course event: {ex.Message}"
             };
         }
@@ -347,7 +343,7 @@ public class CourseEventService(
                 return new CourseEventDeleteResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = false,
                     Message = "Course event ID cannot be empty."
                 };
@@ -359,7 +355,7 @@ public class CourseEventService(
                 return new CourseEventDeleteResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Result = false,
                     Message = $"Course event with ID '{courseEventId}' not found."
                 };
@@ -371,7 +367,7 @@ public class CourseEventService(
                 return new CourseEventDeleteResult
                 {
                     Success = false,
-                    StatusCode = 409,
+                    Error = ResultError.Conflict,
                     Result = false,
                     Message = $"Cannot delete course event with ID '{courseEventId}' because it has registrations."
                 };
@@ -381,8 +377,7 @@ public class CourseEventService(
             return new CourseEventDeleteResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = result,
+                                Result = result,
                 Message = "Course event deleted successfully."
             };
         }
@@ -391,7 +386,7 @@ public class CourseEventService(
             return new CourseEventDeleteResult
             {
                 Success = false,
-                StatusCode = 404,
+                Error = ResultError.NotFound,
                 Result = false,
                 Message = ex.Message
             };
@@ -401,7 +396,7 @@ public class CourseEventService(
             return new CourseEventDeleteResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Result = false,
                 Message = $"An error occurred while deleting the course event: {ex.Message}"
             };
@@ -409,5 +404,4 @@ public class CourseEventService(
     }
 
 }
-
 

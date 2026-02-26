@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -44,7 +45,7 @@ public sealed class InPlaceLocationsEndpoints_Tests(CoursesOnlineDbApiFactory fa
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(409, payload.StatusCode);
+        Assert.Equal(ResultError.Conflict, payload.Error);
     }
 }
 

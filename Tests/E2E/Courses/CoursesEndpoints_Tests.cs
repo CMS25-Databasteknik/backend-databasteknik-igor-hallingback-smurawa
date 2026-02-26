@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
@@ -46,7 +47,7 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(400, payload.StatusCode);
+        Assert.Equal(ResultError.Validation, payload.Error);
     }
 
     [Fact]
@@ -61,7 +62,7 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(404, payload.StatusCode);
+        Assert.Equal(ResultError.NotFound, payload.Error);
     }
 
     [Fact]
@@ -82,7 +83,7 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(400, payload.StatusCode);
+        Assert.Equal(ResultError.Validation, payload.Error);
     }
 
     [Fact]
@@ -103,7 +104,7 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(400, payload.StatusCode);
+        Assert.Equal(ResultError.Validation, payload.Error);
     }
 
     [Fact]
@@ -145,7 +146,7 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(404, payload.StatusCode);
+        Assert.Equal(ResultError.NotFound, payload.Error);
     }
 
     [Fact]
@@ -177,7 +178,7 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         Assert.Equal(HttpStatusCode.BadRequest, updateResponse.StatusCode);
         Assert.NotNull(updatePayload);
         Assert.False(updatePayload.Success);
-        Assert.Equal(400, updatePayload.StatusCode);
+        Assert.Equal(ResultError.Validation, updatePayload.Error);
     }
 
     [Fact]
@@ -192,7 +193,7 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(400, payload.StatusCode);
+        Assert.Equal(ResultError.Validation, payload.Error);
     }
 
     [Fact]
@@ -207,7 +208,7 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(404, payload.StatusCode);
+        Assert.Equal(ResultError.NotFound, payload.Error);
     }
 
     [Fact]
@@ -231,7 +232,7 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(409, payload.StatusCode);
+        Assert.Equal(ResultError.Conflict, payload.Error);
     }
 
     [Fact]

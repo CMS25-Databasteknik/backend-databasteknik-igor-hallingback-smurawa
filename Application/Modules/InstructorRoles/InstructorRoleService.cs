@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.InstructorRoles.Caching;
 using Backend.Application.Modules.InstructorRoles.Inputs;
 using Backend.Application.Modules.InstructorRoles.Outputs;
@@ -20,7 +21,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Role cannot be null."
                 };
             }
@@ -33,8 +34,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = true,
-                StatusCode = 201,
-                Result = created,
+                                Result = created,
                 Message = "Instructor role created successfully."
             };
         }
@@ -43,7 +43,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -52,7 +52,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while creating the instructor role: {ex.Message}"
             };
         }
@@ -68,8 +68,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = roles,
+                                Result = roles,
                 Message = roles.Any() ? "Instructor roles retrieved successfully." : "No instructor roles found."
             };
         }
@@ -78,7 +77,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving instructor roles: {ex.Message}"
             };
         }
@@ -93,7 +92,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Id must be greater than zero."
                 };
             }
@@ -107,7 +106,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Instructor role with ID '{id}' not found."
                 };
             }
@@ -115,8 +114,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = role,
+                                Result = role,
                 Message = "Instructor role retrieved successfully."
             };
         }
@@ -125,7 +123,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the instructor role: {ex.Message}"
             };
         }
@@ -140,7 +138,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Role cannot be null."
                 };
             }
@@ -150,7 +148,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Id must be greater than zero."
                 };
             }
@@ -161,7 +159,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Instructor role with ID '{input.Id}' not found."
                 };
             }
@@ -173,7 +171,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Instructor role with ID '{input.Id}' not found."
                 };
             }
@@ -184,8 +182,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = updatedInstructorRole,
+                                Result = updatedInstructorRole,
                 Message = "Instructor role updated successfully."
             };
         }
@@ -194,7 +191,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -203,7 +200,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while updating the instructor role: {ex.Message}"
             };
         }
@@ -218,7 +215,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleDeleteResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Id must be greater than zero.",
                     Result = false
                 };
@@ -230,7 +227,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleDeleteResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Instructor role with ID '{id}' not found.",
                     Result = false
                 };
@@ -242,7 +239,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return new InstructorRoleDeleteResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to delete instructor role.",
                     Result = false
                 };
@@ -253,8 +250,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleDeleteResult
             {
                 Success = true,
-                StatusCode = 200,
-                Message = "Instructor role deleted successfully.",
+                                Message = "Instructor role deleted successfully.",
                 Result = true
             };
         }
@@ -263,7 +259,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleDeleteResult
             {
                 Success = false,
-                StatusCode = 409,
+                Error = ResultError.Conflict,
                 Message = $"Cannot delete instructor role with ID '{id}' because it is in use.",
                 Result = false
             };
@@ -273,7 +269,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleDeleteResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while deleting the instructor role: {ex.Message}",
                 Result = false
             };

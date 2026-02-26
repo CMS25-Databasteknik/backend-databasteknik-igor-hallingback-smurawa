@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.ParticipantContactTypes;
 using Backend.Application.Modules.ParticipantContactTypes.Caching;
 using Backend.Domain.Modules.ParticipantContactTypes.Contracts;
@@ -22,8 +23,9 @@ public class ParticipantContactTypeService_Tests
         var result = await service.GetAllParticipantContactTypesAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(2, result.Result!.Count);
     }
 }
+

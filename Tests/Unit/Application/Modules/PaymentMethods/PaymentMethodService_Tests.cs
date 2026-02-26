@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.PaymentMethods;
 using Backend.Application.Modules.PaymentMethods.Caching;
 using Backend.Domain.Modules.PaymentMethod.Contracts;
@@ -22,8 +23,9 @@ public class PaymentMethodService_Tests
         var result = await service.GetAllPaymentMethodsAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(2, result.Result!.Count);
     }
 }
+

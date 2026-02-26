@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.CourseRegistrationStatuses.Caching;
 using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
 using Backend.Application.Modules.CourseRegistrationStatuses.Outputs;
@@ -20,7 +21,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course registration status cannot be null."
                 };
             }
@@ -31,7 +32,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "A status with the same name already exists."
                 };
@@ -44,8 +45,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = true,
-                StatusCode = 201,
-                Result = createdStatus,
+                                Result = createdStatus,
                 Message = "Course registration status created successfully."
             };
         }
@@ -54,7 +54,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -63,7 +63,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while creating the course registration status: {ex.Message}"
             };
         }
@@ -80,8 +80,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = statuses,
+                                Result = statuses,
                 Message = statuses.Any()
                     ? $"Retrieved {statuses.Count} course registration status(es) successfully."
                     : "No course registration statuses found."
@@ -92,7 +91,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving course registration statuses: {ex.Message}"
             };
         }
@@ -114,7 +113,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course registration status with ID '{id}' not found."
                 };
             }
@@ -122,8 +121,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = status,
+                                Result = status,
                 Message = "Course registration status retrieved successfully."
             };
         }
@@ -132,7 +130,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -141,7 +139,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the course registration status: {ex.Message}"
             };
         }
@@ -161,7 +159,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course registration status with name '{name}' not found."
                 };
             }
@@ -169,8 +167,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = status,
+                                Result = status,
                 Message = "Course registration status retrieved successfully."
             };
         }
@@ -179,7 +176,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -188,7 +185,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the course registration status: {ex.Message}"
             };
         }
@@ -203,7 +200,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course registration status cannot be null."
                 };
             }
@@ -214,7 +211,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course registration status with ID '{input.Id}' not found."
                 };
             }
@@ -227,7 +224,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to update course registration status."
                 };
             }
@@ -238,8 +235,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = updatedStatus,
+                                Result = updatedStatus,
                 Message = "Course registration status updated successfully."
             };
         }
@@ -248,7 +244,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -257,7 +253,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while updating the course registration status: {ex.Message}"
             };
         }
@@ -277,7 +273,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusDeleteResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Result = false,
                     Message = $"Course registration status with ID '{id}' not found."
                 };
@@ -290,7 +286,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusDeleteResult
                 {
                     Success = false,
-                    StatusCode = 409,
+                    Error = ResultError.Conflict,
                     Result = false,
                     Message = $"Cannot delete course registration status with ID '{id}' because it is in use."
                 };
@@ -302,7 +298,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 return new CourseRegistrationStatusDeleteResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Result = false,
                     Message = "Failed to delete course registration status."
                 };
@@ -313,8 +309,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusDeleteResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = true,
+                                Result = true,
                 Message = "Course registration status deleted successfully."
             };
         }
@@ -323,7 +318,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusDeleteResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Result = false,
                 Message = ex.Message
             };
@@ -333,7 +328,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusDeleteResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Result = false,
                 Message = $"An error occurred while deleting the course registration status: {ex.Message}"
             };

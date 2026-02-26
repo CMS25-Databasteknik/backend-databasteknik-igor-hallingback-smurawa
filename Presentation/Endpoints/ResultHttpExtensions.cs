@@ -4,18 +4,55 @@ namespace Backend.Presentation.API.Endpoints;
 
 public static class ResultHttpExtensions
 {
-    public static IResult ToHttpResult(this ResultBase response)
-    {
-        return response.StatusCode switch
+    public static IResult ToHttpResult(this Result result)
+        => result.ErrorType switch
         {
-            400 => Results.BadRequest(response),
-            401 => Results.Unauthorized(),
-            403 => Results.Forbid(),
-            404 => Results.NotFound(response),
-            409 => Results.Conflict(response),
-            422 => Results.UnprocessableEntity(response),
-            500 => Results.InternalServerError(response),
-            _ => Results.Json(response, statusCode: response.StatusCode is >= 400 and <= 599 ? response.StatusCode : 500)
+            ErrorTypes.NotFound => Results.NotFound(result.ErrorMessage),
+            ErrorTypes.Validation => Results.BadRequest(result.ErrorMessage),
+            ErrorTypes.Unauthorized => Results.Unauthorized(),
+            ErrorTypes.Forbidden => Results.Forbid(),
+            ErrorTypes.Conflict => Results.Conflict(result.ErrorMessage),
+            ErrorTypes.Unprocessable => Results.UnprocessableEntity(result.ErrorMessage),
+            ErrorTypes.Unexpected => Results.Problem(result.ErrorMessage),
+            _ => Results.Problem("An unknown error occurred.")
         };
-    }
+
+    public static IResult ToHttpResult<T>(this Result<T> result)
+        => result.ErrorType switch
+        {
+            ErrorTypes.NotFound => Results.NotFound(result.ErrorMessage),
+            ErrorTypes.Validation => Results.BadRequest(result.ErrorMessage),
+            ErrorTypes.Unauthorized => Results.Unauthorized(),
+            ErrorTypes.Forbidden => Results.Forbid(),
+            ErrorTypes.Conflict => Results.Conflict(result.ErrorMessage),
+            ErrorTypes.Unprocessable => Results.UnprocessableEntity(result.ErrorMessage),
+            ErrorTypes.Unexpected => Results.Problem(result.ErrorMessage),
+            _ => Results.Problem("An unknown error occurred.")
+        };
+
+    public static IResult ToHttpResult(this ResultBase result)
+        => result.ErrorType switch
+        {
+            ErrorTypes.NotFound => Results.NotFound(result),
+            ErrorTypes.Validation => Results.BadRequest(result),
+            ErrorTypes.Unauthorized => Results.Unauthorized(),
+            ErrorTypes.Forbidden => Results.Forbid(),
+            ErrorTypes.Conflict => Results.Conflict(result),
+            ErrorTypes.Unprocessable => Results.UnprocessableEntity(result),
+            ErrorTypes.Unexpected => Results.Problem(detail: result.ErrorMessage),
+            _ => Results.Problem("An unknown error occurred.")
+        };
+
+    public static IResult ToHttpResult<T>(this ResultCommon<T> result)
+        => result.ErrorType switch
+        {
+            ErrorTypes.NotFound => Results.NotFound(result),
+            ErrorTypes.Validation => Results.BadRequest(result),
+            ErrorTypes.Unauthorized => Results.Unauthorized(),
+            ErrorTypes.Forbidden => Results.Forbid(),
+            ErrorTypes.Conflict => Results.Conflict(result),
+            ErrorTypes.Unprocessable => Results.UnprocessableEntity(result),
+            ErrorTypes.Unexpected => Results.Problem(detail: result.ErrorMessage),
+            _ => Results.Problem("An unknown error occurred.")
+        };
 }

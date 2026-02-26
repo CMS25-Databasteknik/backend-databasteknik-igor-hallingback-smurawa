@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.CourseRegistrations.Inputs;
 using Backend.Application.Modules.CourseRegistrations.Outputs;
 using Backend.Domain.Modules.CourseEvents.Contracts;
@@ -33,7 +34,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "Course registration cannot be null."
                 };
@@ -44,7 +45,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "Participant ID cannot be empty."
                 };
@@ -55,7 +56,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "Course event ID cannot be empty."
                 };
@@ -67,7 +68,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Result = null,
                     Message = $"Participant with ID '{courseRegistration.ParticipantId}' not found."
                 };
@@ -79,7 +80,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Result = null,
                     Message = $"Course event with ID '{courseRegistration.CourseEventId}' not found."
                 };
@@ -91,7 +92,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Result = null,
                     Message = $"Course registration status with ID '{courseRegistration.StatusId}' not found."
                 };
@@ -103,7 +104,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Result = null,
                     Message = $"Payment method with ID '{courseRegistration.PaymentMethodId}' not found."
                 };
@@ -123,8 +124,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = true,
-                StatusCode = 201,
-                Result = result,
+                                Result = result,
                 Message = "Course registration created successfully."
             };
         }
@@ -133,7 +133,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Result = null,
                 Message = ex.Message
             };
@@ -143,7 +143,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the course registration: {ex.Message}"
             };
@@ -162,16 +162,14 @@ public class CourseRegistrationService(
                 {
                     Success = true,
                     Result = courseRegistrations,
-                    StatusCode = 200,
-                    Message = "No course registrations found."
+                                        Message = "No course registrations found."
                 };
             }
 
             return new CourseRegistrationListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = courseRegistrations,
+                                Result = courseRegistrations,
                 Message = $"Retrieved {courseRegistrations.Count} course registration(s) successfully."
             };
         }
@@ -180,7 +178,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving course registrations: {ex.Message}"
             };
         }
@@ -195,7 +193,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDetailsResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course registration ID cannot be empty."
                 };
             }
@@ -207,7 +205,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDetailsResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course registration with ID '{courseRegistrationId}' not found."
                 };
             }
@@ -235,8 +233,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationDetailsResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = details,
+                                Result = details,
                 Message = "Course registration retrieved successfully."
             };
         }
@@ -245,7 +242,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationDetailsResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the course registration: {ex.Message}"
             };
         }
@@ -260,7 +257,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationListResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Participant ID cannot be empty."
                 };
             }
@@ -273,16 +270,14 @@ public class CourseRegistrationService(
                 {
                     Success = true,
                     Result = courseRegistrations,
-                    StatusCode = 200,
-                    Message = "No course registrations found for this participant."
+                                        Message = "No course registrations found for this participant."
                 };
             }
 
             return new CourseRegistrationListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = courseRegistrations,
+                                Result = courseRegistrations,
                 Message = $"Retrieved {courseRegistrations.Count} course registration(s) for the participant successfully."
             };
         }
@@ -291,7 +286,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving course registrations: {ex.Message}"
             };
         }
@@ -306,7 +301,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationListResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course event ID cannot be empty."
                 };
             }
@@ -319,16 +314,14 @@ public class CourseRegistrationService(
                 {
                     Success = true,
                     Result = courseRegistrations,
-                    StatusCode = 200,
-                    Message = "No course registrations found for this course event."
+                                        Message = "No course registrations found for this course event."
                 };
             }
 
             return new CourseRegistrationListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = courseRegistrations,
+                                Result = courseRegistrations,
                 Message = $"Retrieved {courseRegistrations.Count} course registration(s) for the course event successfully."
             };
         }
@@ -337,7 +330,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving course registrations: {ex.Message}"
             };
         }
@@ -352,7 +345,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course registration cannot be null."
                 };
             }
@@ -362,7 +355,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course registration ID cannot be empty."
                 };
             }
@@ -372,7 +365,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Participant ID cannot be empty."
                 };
             }
@@ -382,7 +375,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course event ID cannot be empty."
                 };
             }
@@ -393,7 +386,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course registration with ID '{courseRegistration.Id}' not found."
                 };
             }
@@ -404,7 +397,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Participant with ID '{courseRegistration.ParticipantId}' not found."
                 };
             }
@@ -415,7 +408,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course event with ID '{courseRegistration.CourseEventId}' not found."
                 };
             }
@@ -426,7 +419,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course registration status with ID '{courseRegistration.StatusId}' not found."
                 };
             }
@@ -437,7 +430,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Payment method with ID '{courseRegistration.PaymentMethodId}' not found."
                 };
             }
@@ -457,7 +450,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to update course registration."
                 };
             }
@@ -465,8 +458,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = updatedCourseRegistration,
+                                Result = updatedCourseRegistration,
                 Message = "Course registration updated successfully."
             };
         }
@@ -475,7 +467,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                StatusCode = 409,
+                Error = ResultError.Conflict,
                 Message = "The course registration was modified by another user. Please refresh and try again."
             };
         }
@@ -484,7 +476,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -493,7 +485,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while updating the course registration: {ex.Message}"
             };
         }
@@ -508,7 +500,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDeleteResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course registration ID cannot be empty.",
                     Result = false
                 };
@@ -520,7 +512,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDeleteResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course registration with ID '{courseRegistrationId}' not found.",
                     Result = false
                 };
@@ -533,7 +525,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDeleteResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to delete course registration.",
                     Result = false
                 };
@@ -542,8 +534,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationDeleteResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = result,
+                                Result = result,
                 Message = "Course registration deleted successfully."
             };
         }
@@ -552,7 +543,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationDeleteResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while deleting the course registration: {ex.Message}",
                 Result = false
             };
@@ -560,6 +551,4 @@ public class CourseRegistrationService(
     }
 
 }
-
-
 

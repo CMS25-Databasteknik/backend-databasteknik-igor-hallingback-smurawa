@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.Participants.Inputs;
 using Backend.Application.Modules.Participants.Outputs;
 using Backend.Domain.Modules.ParticipantContactTypes.Contracts;
@@ -23,7 +24,7 @@ public class ParticipantService(
                 return new ParticipantResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "Participant cannot be null."
                 };
@@ -35,7 +36,7 @@ public class ParticipantService(
                 return new ParticipantResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Result = null,
                     Message = $"Participant contact type with ID '{participant.ContactTypeId}' not found."
                 };
@@ -55,8 +56,7 @@ public class ParticipantService(
             return new ParticipantResult
             {
                 Success = true,
-                StatusCode = 201,
-                Result = result,
+                                Result = result,
                 Message = "Participant created successfully."
             };
         }
@@ -65,7 +65,7 @@ public class ParticipantService(
             return new ParticipantResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Result = null,
                 Message = ex.Message
             };
@@ -75,7 +75,7 @@ public class ParticipantService(
             return new ParticipantResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the participant: {ex.Message}"
             };
@@ -94,16 +94,14 @@ public class ParticipantService(
                 {
                     Success = true,
                     Result = participants,
-                    StatusCode = 200,
-                    Message = "No participants found."
+                                        Message = "No participants found."
                 };
             }
 
             return new ParticipantListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = participants,
+                                Result = participants,
                 Message = $"Retrieved {participants.Count} participant(s) successfully."
             };
         }
@@ -112,7 +110,7 @@ public class ParticipantService(
             return new ParticipantListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving participants: {ex.Message}"
             };
         }
@@ -127,7 +125,7 @@ public class ParticipantService(
                 return new ParticipantDetailsResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Participant ID cannot be empty."
                 };
             }
@@ -139,7 +137,7 @@ public class ParticipantService(
                 return new ParticipantDetailsResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Participant with ID '{participantId}' not found."
                 };
             }
@@ -158,8 +156,7 @@ public class ParticipantService(
             return new ParticipantDetailsResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = details,
+                                Result = details,
                 Message = "Participant retrieved successfully."
             };
         }
@@ -168,7 +165,7 @@ public class ParticipantService(
             return new ParticipantDetailsResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the participant: {ex.Message}"
             };
         }
@@ -183,7 +180,7 @@ public class ParticipantService(
                 return new ParticipantResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Participant cannot be null."
                 };
             }
@@ -193,7 +190,7 @@ public class ParticipantService(
                 return new ParticipantResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Participant ID cannot be empty."
                 };
             }
@@ -204,7 +201,7 @@ public class ParticipantService(
                 return new ParticipantResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Participant with ID '{participant.Id}' not found."
                 };
             }
@@ -215,7 +212,7 @@ public class ParticipantService(
                 return new ParticipantResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Participant contact type with ID '{participant.ContactTypeId}' not found."
                 };
             }
@@ -235,7 +232,7 @@ public class ParticipantService(
                 return new ParticipantResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to update participant."
                 };
             }
@@ -243,8 +240,7 @@ public class ParticipantService(
             return new ParticipantResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = updatedParticipant,
+                                Result = updatedParticipant,
                 Message = "Participant updated successfully."
             };
         }
@@ -253,7 +249,7 @@ public class ParticipantService(
             return new ParticipantResult
             {
                 Success = false,
-                StatusCode = 409,
+                Error = ResultError.Conflict,
                 Message = "The participant was modified by another user. Please refresh and try again."
             };
         }
@@ -262,7 +258,7 @@ public class ParticipantService(
             return new ParticipantResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -271,7 +267,7 @@ public class ParticipantService(
             return new ParticipantResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while updating the participant: {ex.Message}"
             };
         }
@@ -286,7 +282,7 @@ public class ParticipantService(
                 return new ParticipantDeleteResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Participant ID cannot be empty.",
                     Result = false
                 };
@@ -298,7 +294,7 @@ public class ParticipantService(
                 return new ParticipantDeleteResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Participant with ID '{participantId}' not found.",
                     Result = false
                 };
@@ -310,7 +306,7 @@ public class ParticipantService(
                 return new ParticipantDeleteResult
                 {
                     Success = false,
-                    StatusCode = 409,
+                    Error = ResultError.Conflict,
                     Message = "Cannot delete participant because they have course registrations.",
                     Result = false
                 };
@@ -323,7 +319,7 @@ public class ParticipantService(
                 return new ParticipantDeleteResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to delete participant.",
                     Result = false
                 };
@@ -332,8 +328,7 @@ public class ParticipantService(
             return new ParticipantDeleteResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = result,
+                                Result = result,
                 Message = "Participant deleted successfully."
             };
         }
@@ -342,7 +337,7 @@ public class ParticipantService(
             return new ParticipantDeleteResult
             {
                 Success = false,
-                StatusCode = 404,
+                Error = ResultError.NotFound,
                 Message = ex.Message,
                 Result = false
             };
@@ -352,7 +347,7 @@ public class ParticipantService(
             return new ParticipantDeleteResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while deleting the participant: {ex.Message}",
                 Result = false
             };
@@ -360,5 +355,4 @@ public class ParticipantService(
     }
 
 }
-
 

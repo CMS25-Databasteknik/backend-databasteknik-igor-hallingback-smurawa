@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.Courses.Inputs;
 using Backend.Application.Modules.Courses.Outputs;
 using Backend.Domain.Modules.Courses.Contracts;
@@ -18,7 +19,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "Course cannot be null."
                 };
@@ -36,8 +37,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = true,
-                StatusCode = 201,
-                Result = newCourse,
+                                Result = newCourse,
                 Message = "Course created successfully."
             };
         }
@@ -46,7 +46,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Result = null,
                 Message = ex.Message
             };
@@ -56,7 +56,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the course: {ex.Message}"
             };
@@ -75,16 +75,14 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 {
                     Success = true,
                     Result = courses,
-                    StatusCode = 200,
-                    Message = "No courses found."
+                                        Message = "No courses found."
                 };
             }
 
             return new CourseListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = courses,
+                                Result = courses,
                 Message = $"Retrieved {courses.Count()} course(s) successfully."
             };
         }
@@ -93,7 +91,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving courses: {ex.Message}"
             };
         }
@@ -108,7 +106,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseWithEventsResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course ID cannot be empty."
                 };
             }
@@ -120,7 +118,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseWithEventsResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course with ID '{courseId}' not found."
                 };
             }
@@ -128,8 +126,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseWithEventsResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = result,
+                                Result = result,
                 Message = "Course retrieved successfully."
             };
         }
@@ -138,7 +135,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseWithEventsResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the course: {ex.Message}"
             };
         }
@@ -153,7 +150,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course cannot be null."
                 };
             }
@@ -163,7 +160,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course ID cannot be empty."
                 };
             }
@@ -174,7 +171,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course with ID '{course.Id}' not found."
                 };
             }
@@ -192,7 +189,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to update course."
                 };
             }
@@ -200,8 +197,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = updatedCourse,
+                                Result = updatedCourse,
                 Message = "Course updated successfully."
             };
         }
@@ -210,7 +206,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                StatusCode = 409,
+                Error = ResultError.Conflict,
                 Message = "The course was modified by another user. Please refresh and try again."
             };
         }
@@ -219,7 +215,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -228,7 +224,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while updating the course: {ex.Message}"
             };
         }
@@ -243,7 +239,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseDeleteResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course ID cannot be empty.",
                     Result = false
                 };
@@ -255,7 +251,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseDeleteResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course with ID '{courseId}' not found.",
                     Result = false
                 };
@@ -267,7 +263,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseDeleteResult
                 {
                     Success = false,
-                    StatusCode = 409,
+                    Error = ResultError.Conflict,
                     Message = $"Cannot delete course with ID '{courseId}' because it has associated course events. Please delete the course events first.",
                     Result = false
                 };
@@ -280,7 +276,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseDeleteResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to delete course.",
                     Result = false
                 };
@@ -289,8 +285,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseDeleteResult
             {
                 Success = true,
-                StatusCode = 200,
-                Message = "Course deleted successfully.",
+                                Message = "Course deleted successfully.",
                 Result = true
             };
         }
@@ -299,7 +294,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseDeleteResult
             {
                 Success = false,
-                StatusCode = 409,
+                Error = ResultError.Conflict,
                 Message = "Cannot delete course because it has associated course events. Please delete the course events first.",
                 Result = false
             };
@@ -309,12 +304,11 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseDeleteResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while deleting the course: {ex.Message}",
                 Result = false
             };
         }
     }
 }
-
 

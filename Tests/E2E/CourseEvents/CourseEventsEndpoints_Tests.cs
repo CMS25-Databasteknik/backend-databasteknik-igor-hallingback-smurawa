@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -100,7 +101,7 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(404, payload.StatusCode);
+        Assert.Equal(ResultError.NotFound, payload.Error);
     }
 
     [Fact]
@@ -115,7 +116,7 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(400, payload.StatusCode);
+        Assert.Equal(ResultError.Validation, payload.Error);
     }
 
     [Fact]
@@ -144,7 +145,7 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(409, payload.StatusCode);
+        Assert.Equal(ResultError.Conflict, payload.Error);
         Assert.False(payload.Result);
     }
 }
