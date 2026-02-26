@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.Courses.Outputs;
 using Backend.Domain.Modules.CourseEvents.Models;
 using Backend.Domain.Modules.Courses.Models;
@@ -14,7 +15,7 @@ public class CourseResult_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(0, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.Null(result.Message);
         Assert.Null(result.Result);
     }
@@ -43,14 +44,14 @@ public class CourseResult_Tests
         var result = new CourseResult
         {
             Success = true,
-            StatusCode = 200,
+            Error = ResultError.None,
             Message = "Course retrieved successfully",
             Result = course
         };
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.Equal("Course retrieved successfully", result.Message);
         Assert.NotNull(result.Result);
         Assert.Equal(course.Id, result.Result.Id);
@@ -63,14 +64,14 @@ public class CourseResult_Tests
         var result = new CourseResult
         {
             Success = false,
-            StatusCode = 404,
+            Error = ResultError.NotFound,
             Message = "Course not found",
             Result = null
         };
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         Assert.Equal("Course not found", result.Message);
         Assert.Null(result.Result);
     }
@@ -102,7 +103,7 @@ public class CourseWithEventsResult_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(0, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.Null(result.Message);
         Assert.Null(result.Result);
     }
@@ -133,14 +134,14 @@ public class CourseWithEventsResult_Tests
         var result = new CourseWithEventsResult
         {
             Success = true,
-            StatusCode = 200,
+            Error = ResultError.None,
             Message = "Course with events retrieved",
             Result = courseWithEvents
         };
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Empty(result.Result.Events);
     }
@@ -152,14 +153,14 @@ public class CourseWithEventsResult_Tests
         var result = new CourseWithEventsResult
         {
             Success = false,
-            StatusCode = 404,
+            Error = ResultError.NotFound,
             Message = "Course not found",
             Result = null
         };
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         Assert.Null(result.Result);
     }
 }
@@ -174,7 +175,7 @@ public class CourseListResult_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(0, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.Null(result.Message);
         Assert.Null(result.Result);
     }
@@ -211,14 +212,14 @@ public class CourseListResult_Tests
         var result = new CourseListResult
         {
             Success = true,
-            StatusCode = 200,
+            Error = ResultError.None,
             Message = "Retrieved 3 courses",
             Result = courses
         };
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(3, result.Result.Count());
     }
@@ -230,7 +231,7 @@ public class CourseListResult_Tests
         var result = new CourseListResult
         {
             Success = true,
-            StatusCode = 200,
+            Error = ResultError.None,
             Message = "No courses found",
             Result = new List<Course>()
         };
@@ -248,14 +249,14 @@ public class CourseListResult_Tests
         var result = new CourseListResult
         {
             Success = false,
-            StatusCode = 500,
+            Error = ResultError.Unexpected,
             Message = "Failed to retrieve courses",
             Result = null
         };
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.Null(result.Result);
     }
 
@@ -296,7 +297,7 @@ public class CourseDeleteResult_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(0, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.Null(result.Message);
         Assert.False(result.Result);
     }
@@ -308,14 +309,14 @@ public class CourseDeleteResult_Tests
         var result = new CourseDeleteResult
         {
             Success = true,
-            StatusCode = 200,
+            Error = ResultError.None,
             Message = "Course deleted successfully",
             Result = true
         };
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.Equal("Course deleted successfully", result.Message);
         Assert.True(result.Result);
     }
@@ -327,14 +328,14 @@ public class CourseDeleteResult_Tests
         var result = new CourseDeleteResult
         {
             Success = false,
-            StatusCode = 404,
+            Error = ResultError.NotFound,
             Message = "Course not found",
             Result = false
         };
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         Assert.Equal("Course not found", result.Message);
         Assert.False(result.Result);
     }
@@ -360,14 +361,15 @@ public class CourseDeleteResult_Tests
         var result = new CourseDeleteResult
         {
             Success = false,
-            StatusCode = 500,
+            Error = ResultError.Unexpected,
             Message = "Internal server error occurred",
             Result = false
         };
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.False(result.Result);
     }
 }
+

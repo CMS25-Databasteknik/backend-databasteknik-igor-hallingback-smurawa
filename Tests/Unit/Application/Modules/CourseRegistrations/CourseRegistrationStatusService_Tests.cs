@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.CourseRegistrationStatuses;
 using Backend.Application.Modules.CourseRegistrationStatuses.Caching;
 using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
@@ -36,7 +37,7 @@ public class CourseRegistrationStatusService_Tests
         CourseRegistrationStatusListResult result = await service.GetAllCourseRegistrationStatusesAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.Equal(2, result.Result?.Count());
         Assert.Equal("Retrieved 2 course registration status(es) successfully.", result.Message);
         await repo.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
@@ -55,7 +56,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.GetAllCourseRegistrationStatusesAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Empty(result.Result);
         Assert.Equal("No course registration statuses found.", result.Message);
@@ -71,7 +72,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.GetAllCourseRegistrationStatusesAsync();
 
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.Contains("db failure", result.Message);
     }
 
@@ -83,7 +84,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.GetCourseRegistrationStatusByIdAsync(-1);
 
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Contains("Id must be zero or positive", result.Message);
     }
 
@@ -96,7 +97,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.GetCourseRegistrationStatusByIdAsync(5);
 
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         await cache.Received(1).GetByIdAsync(
             5,
             Arg.Any<Func<CancellationToken, Task<CourseRegistrationStatus?>>>(),
@@ -112,7 +113,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.GetCourseRegistrationStatusByIdAsync(1);
 
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(1, result.Result.Id);
         Assert.Equal("Paid", result.Result.Name);
@@ -130,7 +131,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.GetCourseRegistrationStatusByNameAsync(" ");
 
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Contains("Name is required", result.Message);
     }
 
@@ -144,7 +145,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.GetCourseRegistrationStatusByNameAsync("Unknown");
 
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         await repo.Received(1).GetCourseRegistrationStatusByNameAsync("Unknown", Arg.Any<CancellationToken>());
     }
 
@@ -158,7 +159,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.GetCourseRegistrationStatusByNameAsync("Paid");
 
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(1, result.Result.Id);
         Assert.Equal("Paid", result.Result.Name);
@@ -175,7 +176,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.GetCourseRegistrationStatusByNameAsync("Paid");
 
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.Contains("An error occurred while retrieving the course registration status", result.Message);
         Assert.Contains("db failure", result.Message);
     }
@@ -188,7 +189,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.DeleteCourseRegistrationStatusAsync(-2);
 
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
     }
 
     [Fact]
@@ -200,7 +201,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.DeleteCourseRegistrationStatusAsync(3);
 
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
     }
 
@@ -214,7 +215,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.DeleteCourseRegistrationStatusAsync(1);
 
         Assert.False(result.Success);
-        Assert.Equal(409, result.StatusCode);
+        Assert.Equal(ResultError.Conflict, result.Error);
         cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
     }
 
@@ -229,7 +230,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.DeleteCourseRegistrationStatusAsync(1);
 
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.True(result.Result);
         cache.Received(1).ResetEntity(Arg.Is<CourseRegistrationStatus>(s => s.Id == 1));
     }
@@ -245,7 +246,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.DeleteCourseRegistrationStatusAsync(1);
 
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.False(result.Result);
         Assert.Equal("Failed to delete course registration status.", result.Message);
         cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
@@ -264,7 +265,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.DeleteCourseRegistrationStatusAsync(1);
 
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.False(result.Result);
         cache.DidNotReceive().SetEntity(Arg.Any<CourseRegistrationStatus>());
     }
@@ -277,7 +278,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.CreateCourseRegistrationStatusAsync(new CreateCourseRegistrationStatusInput("   "));
 
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
     }
 
     [Fact]
@@ -292,7 +293,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.CreateCourseRegistrationStatusAsync(new CreateCourseRegistrationStatusInput("New"));
 
         Assert.True(result.Success);
-        Assert.Equal(201, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(4, result.Result.Id);
         cache.Received(1).ResetEntity(Arg.Is<CourseRegistrationStatus>(s => s.Id == 4));
@@ -309,7 +310,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.CreateCourseRegistrationStatusAsync(new CreateCourseRegistrationStatusInput("Paid"));
 
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Equal("A status with the same name already exists.", result.Message);
         await repo.DidNotReceive().AddAsync(Arg.Any<CourseRegistrationStatus>(), Arg.Any<CancellationToken>());
         cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
@@ -330,7 +331,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.UpdateCourseRegistrationStatusAsync(new UpdateCourseRegistrationStatusInput(1, " "));
 
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
         cache.DidNotReceive().SetEntity(Arg.Any<CourseRegistrationStatus>());
     }
@@ -351,7 +352,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.UpdateCourseRegistrationStatusAsync(new UpdateCourseRegistrationStatusInput(1, "Paid"));
 
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal("Paid Updated", result.Result.Name);
         cache.Received(1).ResetEntity(Arg.Is<CourseRegistrationStatus>(s => s.Id == 1));
@@ -368,7 +369,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.UpdateCourseRegistrationStatusAsync(new UpdateCourseRegistrationStatusInput(99, "Paid"));
 
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         cache.DidNotReceive().ResetEntity(Arg.Any<CourseRegistrationStatus>());
         cache.DidNotReceive().SetEntity(Arg.Any<CourseRegistrationStatus>());
     }
@@ -385,7 +386,7 @@ public class CourseRegistrationStatusService_Tests
         var result = await service.UpdateCourseRegistrationStatusAsync(new UpdateCourseRegistrationStatusInput(1, "Paid Updated"));
 
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.Contains("An error occurred while updating the course registration status", result.Message);
         Assert.Contains("db failure", result.Message);
         cache.DidNotReceive().SetEntity(Arg.Any<CourseRegistrationStatus>());
@@ -401,3 +402,4 @@ public class CourseRegistrationStatusService_Tests
         Assert.Throws<ArgumentNullException>(() => new CourseRegistrationStatusService(cache, null!));
     }
 }
+

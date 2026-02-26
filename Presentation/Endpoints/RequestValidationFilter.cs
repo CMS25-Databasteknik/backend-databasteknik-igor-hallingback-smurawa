@@ -37,12 +37,8 @@ public static class RequestValidationFilter
                             .Select(result => result.ErrorMessage)
                             .Where(error => !string.IsNullOrWhiteSpace(error)));
 
-                    return Results.BadRequest(new ResultBase
-                    {
-                        Success = false,
-                        StatusCode = 400,
-                        Message = string.IsNullOrWhiteSpace(message) ? "Validation failed." : message
-                    });
+                    var errorMessage = string.IsNullOrWhiteSpace(message) ? "Validation failed." : message;
+                    return Results.BadRequest(Result.Validation(errorMessage));
                 }
             }
 

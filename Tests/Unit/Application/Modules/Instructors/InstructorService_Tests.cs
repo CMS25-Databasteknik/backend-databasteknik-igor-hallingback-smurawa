@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.Instructors;
 using Backend.Application.Modules.Instructors.Inputs;
 using Backend.Domain.Modules.InstructorRoles.Contracts;
@@ -42,7 +43,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(201, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal("Dr. John Doe", result.Result.Name);
         Assert.Equal("Instructor created successfully.", result.Message);
@@ -64,7 +65,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Null(result.Result);
         Assert.Equal("Instructor cannot be null.", result.Message);
 
@@ -84,7 +85,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -104,7 +105,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -127,7 +128,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while creating the instructor", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -155,7 +156,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(201, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(name, result.Result.Name);
     }
@@ -196,7 +197,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(3, result.Result.Count());
         Assert.Equal("Retrieved 3 instructor(s) successfully.", result.Message);
@@ -219,7 +220,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Empty(result.Result);
         Assert.Equal("No instructors found.", result.Message);
@@ -240,7 +241,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.Contains("An error occurred while retrieving instructors", result.Message);
         Assert.Contains("Database connection failed", result.Message);
     }
@@ -267,7 +268,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(instructorId, result.Result.Id);
         Assert.Equal("Dr. John Doe", result.Result.Name);
@@ -293,7 +294,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         Assert.Null(result.Result);
         Assert.Contains($"Instructor with ID '{instructorId}' not found", result.Message);
     }
@@ -310,7 +311,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Null(result.Result);
         Assert.Equal("Instructor ID cannot be empty.", result.Message);
 
@@ -334,7 +335,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while retrieving the instructor", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -367,7 +368,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal("Prof. John Doe", result.Result.Name);
         Assert.Equal("Instructor updated successfully.", result.Message);
@@ -390,7 +391,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Null(result.Result);
         Assert.Equal("Instructor cannot be null.", result.Message);
 
@@ -410,7 +411,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty", result.Message);
 
@@ -432,7 +433,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
     }
@@ -452,7 +453,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
     }
@@ -475,7 +476,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         Assert.Null(result.Result);
         Assert.Contains($"Instructor with ID '{instructorId}' not found", result.Message);
 
@@ -504,7 +505,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while updating the instructor", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -538,7 +539,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.True(result.Result);
         Assert.Equal("Instructor deleted successfully.", result.Message);
 
@@ -557,7 +558,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(ResultError.Validation, result.Error);
         Assert.False(result.Result);
         Assert.Equal("Instructor ID cannot be empty.", result.Message);
 
@@ -581,7 +582,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(ResultError.NotFound, result.Error);
         Assert.False(result.Result);
         Assert.Contains($"Instructor with ID '{instructorId}' not found", result.Message);
 
@@ -609,7 +610,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(409, result.StatusCode);
+        Assert.Equal(ResultError.Conflict, result.Error);
         Assert.False(result.Result);
         Assert.Contains("Cannot delete instructor", result.Message);
         Assert.Contains("assigned to course events", result.Message);
@@ -641,7 +642,7 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.False(result.Result);
         Assert.Contains("An error occurred while deleting the instructor", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -671,10 +672,11 @@ public class InstructorService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(500, result.StatusCode);
+        Assert.Equal(ResultError.Unexpected, result.Error);
         Assert.False(result.Result);
         Assert.Equal("Failed to delete instructor.", result.Message);
     }
 
     #endregion
 }
+

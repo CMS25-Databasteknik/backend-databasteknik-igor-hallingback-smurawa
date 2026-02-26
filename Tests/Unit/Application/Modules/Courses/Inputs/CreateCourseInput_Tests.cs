@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.Courses.Inputs;
 
 namespace Backend.Tests.Unit.Application.Modules.Courses.Inputs;
@@ -173,3 +174,4 @@ public class CreateCourseInput_Tests
         Assert.Equal(10, durationInDays);
     }
 }
+

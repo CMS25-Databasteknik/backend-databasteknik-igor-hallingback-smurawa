@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.CourseEventTypes.Caching;
 using Backend.Application.Modules.CourseEventTypes.Inputs;
 using Backend.Application.Modules.CourseEventTypes.Outputs;
@@ -20,7 +21,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "Course event type cannot be null."
                 };
@@ -32,7 +33,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "A typename with the same name already exists."
                 };
@@ -46,8 +47,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = true,
-                StatusCode = 201,
-                Result = createdCourseEventType,
+                                Result = createdCourseEventType,
                 Message = "Course event type created successfully."
             };
         }
@@ -56,7 +56,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -65,7 +65,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the course event type: {ex.Message}"
             };
@@ -86,16 +86,14 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 {
                     Success = true,
                     Result = courseEventTypes,
-                    StatusCode = 200,
-                    Message = "No course event types found."
+                                        Message = "No course event types found."
                 };
             }
 
             return new CourseEventTypeListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = courseEventTypes,
+                                Result = courseEventTypes,
                 Message = $"Retrieved {courseEventTypes.Count} course event type(s) successfully."
             };
         }
@@ -104,7 +102,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving course event types: {ex.Message}"
             };
         }
@@ -119,7 +117,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course event type ID must be greater than zero."
                 };
             }
@@ -134,7 +132,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course event type with ID '{courseEventTypeId}' not found."
                 };
             }
@@ -142,8 +140,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = courseEventType,
+                                Result = courseEventType,
                 Message = "Course event type retrieved successfully."
             };
         }
@@ -152,7 +149,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the course event type: {ex.Message}"
             };
         }
@@ -167,7 +164,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course event type name is required."
                 };
             }
@@ -179,7 +176,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course event type with name '{typeName}' not found."
                 };
             }
@@ -187,8 +184,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = courseEventType,
+                                Result = courseEventType,
                 Message = "Course event type retrieved successfully."
             };
         }
@@ -197,7 +193,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the course event type: {ex.Message}"
             };
         }
@@ -212,7 +208,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course event type cannot be null."
                 };
             }
@@ -224,7 +220,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course event type with ID '{courseEventType.Id}' not found."
                 };
             }
@@ -238,7 +234,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to update course event type."
                 };
             }
@@ -249,8 +245,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = updatedCourseEventType,
+                                Result = updatedCourseEventType,
                 Message = "Course event type updated successfully."
             };
         }
@@ -259,7 +254,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -268,7 +263,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while updating the course event type: {ex.Message}"
             };
         }
@@ -283,7 +278,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeDeleteResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Course event type ID must be greater than zero.",
                     Result = false
                 };
@@ -295,7 +290,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeDeleteResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"Course event type with ID '{courseEventTypeId}' not found.",
                     Result = false
                 };
@@ -307,7 +302,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeDeleteResult
                 {
                     Success = false,
-                    StatusCode = 409,
+                    Error = ResultError.Conflict,
                     Message = $"Cannot delete course event type with ID '{courseEventTypeId}' because it is being used by one or more course events.",
                     Result = false
                 };
@@ -319,7 +314,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return new CourseEventTypeDeleteResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to delete course event type.",
                     Result = false
                 };
@@ -330,8 +325,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeDeleteResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = true,
+                                Result = true,
                 Message = "Course event type deleted successfully."
             };
         }
@@ -340,7 +334,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeDeleteResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while deleting the course event type: {ex.Message}",
                 Result = false
             };

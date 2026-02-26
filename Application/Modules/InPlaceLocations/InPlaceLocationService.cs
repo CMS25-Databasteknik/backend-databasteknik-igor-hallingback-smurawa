@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.InPlaceLocations.Inputs;
 using Backend.Application.Modules.InPlaceLocations.Outputs;
 using Backend.Domain.Modules.InPlaceLocations.Contracts;
@@ -18,7 +19,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Result = null,
                     Message = "In-place location cannot be null."
                 };
@@ -36,8 +37,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = true,
-                StatusCode = 201,
-                Result = result,
+                                Result = result,
                 Message = "In-place location created successfully."
             };
         }
@@ -46,7 +46,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Result = null,
                 Message = ex.Message
             };
@@ -56,7 +56,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the in-place location: {ex.Message}"
             };
@@ -75,16 +75,14 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 {
                     Success = true,
                     Result = inPlaceLocations,
-                    StatusCode = 200,
-                    Message = "No in-place locations found."
+                                        Message = "No in-place locations found."
                 };
             }
 
             return new InPlaceLocationListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = inPlaceLocations,
+                                Result = inPlaceLocations,
                 Message = $"Retrieved {inPlaceLocations.Count} in-place location(s) successfully."
             };
         }
@@ -93,7 +91,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving in-place locations: {ex.Message}"
             };
         }
@@ -108,7 +106,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "In-place location ID must be greater than zero."
                 };
             }
@@ -120,7 +118,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"In-place location with ID '{inPlaceLocationId}' not found."
                 };
             }
@@ -128,8 +126,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = result,
+                                Result = result,
                 Message = "In-place location retrieved successfully."
             };
         }
@@ -138,7 +135,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving the in-place location: {ex.Message}"
             };
         }
@@ -153,7 +150,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationListResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "Location ID must be greater than zero."
                 };
             }
@@ -166,16 +163,14 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 {
                     Success = true,
                     Result = inPlaceLocations,
-                    StatusCode = 200,
-                    Message = "No in-place locations found for this location."
+                                        Message = "No in-place locations found for this location."
                 };
             }
 
             return new InPlaceLocationListResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = inPlaceLocations,
+                                Result = inPlaceLocations,
                 Message = $"Retrieved {inPlaceLocations.Count} in-place location(s) for the location successfully."
             };
         }
@@ -184,7 +179,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationListResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while retrieving in-place locations: {ex.Message}"
             };
         }
@@ -199,7 +194,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "In-place location cannot be null."
                 };
             }
@@ -209,7 +204,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "In-place location ID must be greater than zero."
                 };
             }
@@ -220,7 +215,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"In-place location with ID '{inPlaceLocation.Id}' not found."
                 };
             }
@@ -238,7 +233,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to update in-place location."
                 };
             }
@@ -246,8 +241,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = updatedInPlaceLocation,
+                                Result = updatedInPlaceLocation,
                 Message = "In-place location updated successfully."
             };
         }
@@ -256,7 +250,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                StatusCode = 400,
+                Error = ResultError.Validation,
                 Message = ex.Message
             };
         }
@@ -265,7 +259,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                StatusCode = 409,
+                Error = ResultError.Conflict,
                 Message = "Cannot update because the requested location reference is invalid."
             };
         }
@@ -274,7 +268,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while updating the in-place location: {ex.Message}"
             };
         }
@@ -289,7 +283,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationDeleteResult
                 {
                     Success = false,
-                    StatusCode = 400,
+                    Error = ResultError.Validation,
                     Message = "In-place location ID must be greater than zero.",
                     Result = false
                 };
@@ -301,7 +295,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationDeleteResult
                 {
                     Success = false,
-                    StatusCode = 404,
+                    Error = ResultError.NotFound,
                     Message = $"In-place location with ID '{inPlaceLocationId}' not found.",
                     Result = false
                 };
@@ -313,7 +307,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationDeleteResult
                 {
                     Success = false,
-                    StatusCode = 409,
+                    Error = ResultError.Conflict,
                     Message = $"Cannot delete in-place location with ID '{inPlaceLocationId}' because it is assigned to course events. Please remove the assignments first.",
                     Result = false
                 };
@@ -326,7 +320,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationDeleteResult
                 {
                     Success = false,
-                    StatusCode = 500,
+                    Error = ResultError.Unexpected,
                     Message = "Failed to delete in-place location.",
                     Result = false
                 };
@@ -335,8 +329,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationDeleteResult
             {
                 Success = true,
-                StatusCode = 200,
-                Result = result,
+                                Result = result,
                 Message = "In-place location deleted successfully."
             };
         }
@@ -345,7 +338,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationDeleteResult
             {
                 Success = false,
-                StatusCode = 500,
+                Error = ResultError.Unexpected,
                 Message = $"An error occurred while deleting the in-place location: {ex.Message}",
                 Result = false
             };

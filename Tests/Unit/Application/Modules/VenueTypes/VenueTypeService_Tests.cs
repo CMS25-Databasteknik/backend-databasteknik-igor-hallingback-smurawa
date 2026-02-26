@@ -1,3 +1,4 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.VenueTypes;
 using Backend.Application.Modules.VenueTypes.Caching;
 using Backend.Domain.Modules.VenueTypes.Contracts;
@@ -22,8 +23,9 @@ public class VenueTypeService_Tests
         var result = await service.GetAllVenueTypesAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(200, result.StatusCode);
+        Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(2, result.Result!.Count);
     }
 }
+
