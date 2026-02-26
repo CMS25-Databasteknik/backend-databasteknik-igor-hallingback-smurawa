@@ -45,8 +45,7 @@ public class InPlaceLocationRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.InPlaceLocations
             .AsNoTracking()
-            .OrderBy(ipl => ipl.LocationId)
-            .ThenBy(ipl => ipl.RoomNumber)
+            .OrderByDescending(ipl => ipl.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];

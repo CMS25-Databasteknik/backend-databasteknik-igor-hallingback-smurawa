@@ -156,6 +156,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
             .Include(cr => cr.CourseRegistrationStatus)
             .Include(cr => cr.PaymentMethod)
             .OrderByDescending(cr => cr.RegistrationDate)
+            .ThenByDescending(cr => cr.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];
@@ -180,6 +181,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
             .Include(cr => cr.PaymentMethod)
             .Where(cr => cr.ParticipantId == participantId)
             .OrderByDescending(cr => cr.RegistrationDate)
+            .ThenByDescending(cr => cr.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];
@@ -193,6 +195,7 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
             .Include(cr => cr.PaymentMethod)
             .Where(cr => cr.CourseEventId == courseEventId)
             .OrderByDescending(cr => cr.RegistrationDate)
+            .ThenByDescending(cr => cr.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];

@@ -45,8 +45,7 @@ public class LocationRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.Locations
             .AsNoTracking()
-            .OrderBy(l => l.City)
-            .ThenBy(l => l.StreetName)
+            .OrderByDescending(l => l.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];

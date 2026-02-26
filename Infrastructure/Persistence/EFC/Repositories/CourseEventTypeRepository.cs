@@ -43,7 +43,7 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.CourseEventTypes
             .AsNoTracking()
-            .OrderBy(cet => cet.Id)
+            .OrderByDescending(cet => cet.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];

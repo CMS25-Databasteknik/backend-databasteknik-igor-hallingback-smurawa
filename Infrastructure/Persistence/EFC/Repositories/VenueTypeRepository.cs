@@ -41,7 +41,7 @@ public sealed class VenueTypeRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.VenueTypes
             .AsNoTracking()
-            .OrderBy(vt => vt.Id)
+            .OrderByDescending(vt => vt.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];

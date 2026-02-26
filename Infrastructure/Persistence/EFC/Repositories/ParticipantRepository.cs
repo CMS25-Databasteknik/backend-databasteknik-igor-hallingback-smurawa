@@ -92,8 +92,8 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
         var entities = await _context.Participants
             .AsNoTracking()
             .Include(p => p.ContactType)
-            .OrderBy(p => p.LastName)
-            .ThenBy(p => p.FirstName)
+            .OrderByDescending(p => p.CreatedAtUtc)
+            .ThenByDescending(p => p.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];
