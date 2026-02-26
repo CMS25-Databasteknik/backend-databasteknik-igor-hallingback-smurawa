@@ -26,7 +26,7 @@ public static class LocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetLocationById(int id, ILocationService locationService, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public static class LocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> CreateLocation(CreateLocationRequest request, ILocationService locationService, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public static class LocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/locations/{response.Result?.Id}", response);
+        return response.ToCreatedResult($"/api/locations/{response.Result?.Id}");
     }
 
     private static async Task<IResult> UpdateLocation(int id, UpdateLocationRequest request, ILocationService locationService, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public static class LocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> DeleteLocation(int id, ILocationService locationService, CancellationToken cancellationToken)
@@ -64,6 +64,8 @@ public static class LocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 }
+
+

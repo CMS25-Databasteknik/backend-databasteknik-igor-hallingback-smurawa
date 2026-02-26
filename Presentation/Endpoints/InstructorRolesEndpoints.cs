@@ -23,7 +23,7 @@ public static class InstructorRolesEndpoints
     private static async Task<IResult> GetAllInstructorRoles(IInstructorRoleService roleService, CancellationToken cancellationToken)
     {
         var response = await roleService.GetAllInstructorRolesAsync(cancellationToken);
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetInstructorRoleById(int id, IInstructorRoleService roleService, CancellationToken cancellationToken)
@@ -32,7 +32,7 @@ public static class InstructorRolesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> CreateInstructorRole(CreateInstructorRoleRequest request, IInstructorRoleService roleService, CancellationToken cancellationToken)
@@ -42,7 +42,7 @@ public static class InstructorRolesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/instructor-roles/{response.Result?.Id}", response);
+        return response.ToCreatedResult($"/api/instructor-roles/{response.Result?.Id}");
     }
 
     private static async Task<IResult> UpdateInstructorRole(int id, UpdateInstructorRoleRequest request, IInstructorRoleService roleService, CancellationToken cancellationToken)
@@ -52,7 +52,7 @@ public static class InstructorRolesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> DeleteInstructorRole(int id, IInstructorRoleService roleService, CancellationToken cancellationToken)
@@ -61,6 +61,8 @@ public static class InstructorRolesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 }
+
+

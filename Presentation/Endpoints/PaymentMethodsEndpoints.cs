@@ -27,7 +27,7 @@ public static class PaymentMethodsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetPaymentMethodById(int id, IPaymentMethodService service, CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ public static class PaymentMethodsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetPaymentMethodByName(string name, IPaymentMethodService service, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public static class PaymentMethodsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> CreatePaymentMethod(CreatePaymentMethodRequest request, IPaymentMethodService service, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public static class PaymentMethodsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/payment-methods/{response.Result?.Id}", response);
+        return response.ToCreatedResult($"/api/payment-methods/{response.Result?.Id}");
     }
 
     private static async Task<IResult> UpdatePaymentMethod(int id, UpdatePaymentMethodRequest request, IPaymentMethodService service, CancellationToken cancellationToken)
@@ -65,7 +65,7 @@ public static class PaymentMethodsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> DeletePaymentMethod(int id, IPaymentMethodService service, CancellationToken cancellationToken)
@@ -74,6 +74,8 @@ public static class PaymentMethodsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 }
+
+

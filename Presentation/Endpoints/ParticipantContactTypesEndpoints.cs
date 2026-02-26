@@ -27,7 +27,7 @@ public static class ParticipantContactTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetParticipantContactTypeById(int id, IParticipantContactTypeService service, CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ public static class ParticipantContactTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetParticipantContactTypeByName(string name, IParticipantContactTypeService service, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public static class ParticipantContactTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> CreateParticipantContactType(CreateParticipantContactTypeRequest request, IParticipantContactTypeService service, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public static class ParticipantContactTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/participant-contact-types/{response.Result?.Id}", response);
+        return response.ToCreatedResult($"/api/participant-contact-types/{response.Result?.Id}");
     }
 
     private static async Task<IResult> UpdateParticipantContactType(int id, UpdateParticipantContactTypeRequest request, IParticipantContactTypeService service, CancellationToken cancellationToken)
@@ -65,7 +65,7 @@ public static class ParticipantContactTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> DeleteParticipantContactType(int id, IParticipantContactTypeService service, CancellationToken cancellationToken)
@@ -74,6 +74,8 @@ public static class ParticipantContactTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 }
+
+

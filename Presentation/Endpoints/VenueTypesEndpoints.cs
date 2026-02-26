@@ -27,7 +27,7 @@ public static class VenueTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetVenueTypeById(int id, IVenueTypeService service, CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ public static class VenueTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetVenueTypeByName(string name, IVenueTypeService service, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public static class VenueTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> CreateVenueType(CreateVenueTypeRequest request, IVenueTypeService service, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public static class VenueTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/venue-types/{response.Result?.Id}", response);
+        return response.ToCreatedResult($"/api/venue-types/{response.Result?.Id}");
     }
 
     private static async Task<IResult> UpdateVenueType(int id, UpdateVenueTypeRequest request, IVenueTypeService service, CancellationToken cancellationToken)
@@ -65,7 +65,7 @@ public static class VenueTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> DeleteVenueType(int id, IVenueTypeService service, CancellationToken cancellationToken)
@@ -74,6 +74,8 @@ public static class VenueTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 }
+
+
