@@ -30,7 +30,7 @@ public static class CourseRegistrationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetCourseRegistrationById(Guid id, ICourseRegistrationService service, CancellationToken cancellationToken)
@@ -39,7 +39,7 @@ public static class CourseRegistrationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetCourseRegistrationsByParticipantId(Guid participantId, ICourseRegistrationService service, CancellationToken cancellationToken)
@@ -48,7 +48,7 @@ public static class CourseRegistrationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> GetCourseRegistrationsByCourseEventId(Guid courseEventId, ICourseRegistrationService service, CancellationToken cancellationToken)
@@ -57,7 +57,7 @@ public static class CourseRegistrationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> CreateCourseRegistration(CreateCourseRegistrationRequest request, ICourseRegistrationService service, CancellationToken cancellationToken)
@@ -67,7 +67,7 @@ public static class CourseRegistrationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/course-registrations/{response.Result?.Id}", response);
+        return response.ToCreatedResult($"/api/course-registrations/{response.Result?.Id}");
     }
 
     private static async Task<IResult> UpdateCourseRegistration(Guid id, UpdateCourseRegistrationRequest request, ICourseRegistrationService service, CancellationToken cancellationToken)
@@ -77,7 +77,7 @@ public static class CourseRegistrationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 
     private static async Task<IResult> DeleteCourseRegistration(Guid id, ICourseRegistrationService service, CancellationToken cancellationToken)
@@ -86,6 +86,8 @@ public static class CourseRegistrationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response);
+        return Results.Ok(response.ToApiResponse());
     }
 }
+
+

@@ -1,9 +1,9 @@
-using Backend.Application.Common;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Backend.Application.Modules.InPlaceLocations.Outputs;
 using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Presentation.API.Models;
 using Backend.Presentation.API.Models.InPlaceLocation;
 using Backend.Tests.Integration.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,12 +40,12 @@ public sealed class InPlaceLocationsEndpoints_Tests(CoursesOnlineDbApiFactory fa
         };
 
         var response = await client.PutAsJsonAsync($"/api/in-place-locations/{inPlaceLocationId}", request);
-        var payload = await response.Content.ReadFromJsonAsync<InPlaceLocationResult>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ResultError.Conflict, payload.Error);
+        Assert.Equal("conflict", payload.Code);
     }
 }
 

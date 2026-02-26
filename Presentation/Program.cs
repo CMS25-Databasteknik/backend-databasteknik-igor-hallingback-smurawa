@@ -33,9 +33,14 @@ public partial class Program
             {
                 response.ContentType = "application/json";
 
-                var payload = Result.Validation("Malformed JSON payload.");
+                var payload = new ResultBase
+                {
+                    Success = false,
+                    Error = ResultError.Validation,
+                    Message = "Malformed JSON payload."
+                };
 
-                await response.WriteAsJsonAsync(payload);
+                await response.WriteAsJsonAsync(payload.ToApiResponse());
             }
         });
 
