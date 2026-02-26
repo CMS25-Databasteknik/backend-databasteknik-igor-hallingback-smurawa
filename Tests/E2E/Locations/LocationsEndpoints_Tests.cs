@@ -1,0 +1,164 @@
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using Backend.Application.Modules.Locations.Outputs;
+using Backend.Infrastructure.Persistence.EFC.Context;
+using Backend.Presentation.API.Models;
+using Backend.Presentation.API.Models.Location;
+using Backend.Tests.Integration.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Backend.Tests.E2E.Locations;
+
+public sealed class LocationsEndpoints_Tests(CoursesOnlineDbApiFactory factory) : IClassFixture<CoursesOnlineDbApiFactory>
+{
+    private readonly CoursesOnlineDbApiFactory _factory = factory;
+    private readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
+    [Fact]
+    public async Task GetAllLocations_ReturnsOk_WithEmptyList_AfterReset()
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/api/locations");
+        var payload = await response.Content.ReadFromJsonAsync<LocationListResult>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(payload);
+        Assert.True(payload.Success);
+        Assert.NotNull(payload.Result);
+        Assert.Empty(payload.Result);
+    }
+
+    [Fact]
+    public async Task CreateLocation_ThenGetById_ReturnsCreatedLocation()
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        var createRequest = new CreateLocationRequest
+        {
+            StreetName = "Main Street 1",
+            PostalCode = "12345",
+            City = "Stockholm"
+        };
+
+        var createResponse = await client.PostAsJsonAsync("/api/locations", createRequest);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        Assert.NotNull(createResponse.Headers.Location);
+
+        var createdLocationId = int.Parse(createResponse.Headers.Location!.OriginalString.Split('/')[^1]);
+        var getResponse = await client.GetAsync($"/api/locations/{createdLocationId}");
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<LocationResult>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+        Assert.NotNull(getPayload);
+        Assert.True(getPayload.Success);
+        Assert.NotNull(getPayload.Result);
+        Assert.Equal(createdLocationId, getPayload.Result.Id);
+        Assert.Equal("Main Street 1", getPayload.Result.StreetName);
+        Assert.Equal("12345", getPayload.Result.PostalCode);
+        Assert.Equal("Stockholm", getPayload.Result.City);
+    }
+
+    [Fact]
+    public async Task CreateLocation_ReturnsBadRequest_ForInvalidPayload()
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        using var content = new StringContent("{\"streetName\":123}", Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("/api/locations", content);
+        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.NotNull(payload);
+        Assert.False(payload.Success);
+        Assert.Equal("validation_error", payload.Code);
+    }
+
+    [Fact]
+    public async Task UpdateLocation_ReturnsNotFound_WhenLocationDoesNotExist()
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        var request = new UpdateLocationRequest
+        {
+            StreetName = "Unknown Street 99",
+            PostalCode = "54321",
+            City = "Uppsala"
+        };
+
+        var response = await client.PutAsJsonAsync("/api/locations/999999", request);
+        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.NotNull(payload);
+        Assert.False(payload.Success);
+        Assert.Equal("not_found", payload.Code);
+    }
+
+    [Fact]
+    public async Task DeleteLocation_ReturnsConflict_WhenLocationHasInPlaceLocations()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        int locationId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            var location = await RepositoryTestDataHelper.CreateLocationAsync(db);
+            _ = await RepositoryTestDataHelper.CreateInPlaceLocationAsync(db, location.Id);
+            locationId = location.Id;
+        }
+
+        using var client = _factory.CreateClient();
+        var response = await client.DeleteAsync($"/api/locations/{locationId}");
+        var payload = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        Assert.NotNull(payload);
+        Assert.False(payload.Success);
+        Assert.Equal("conflict", payload.Code);
+        Assert.False(payload.Result);
+    }
+
+    [Fact]
+    public async Task DeleteLocation_ReturnsOk_AndRemovesLocation()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        int locationId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            locationId = (await RepositoryTestDataHelper.CreateLocationAsync(db)).Id;
+        }
+
+        using var client = _factory.CreateClient();
+
+        var deleteResponse = await client.DeleteAsync($"/api/locations/{locationId}");
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ApiResponse<bool>>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+        Assert.NotNull(deletePayload);
+        Assert.True(deletePayload.Success);
+        Assert.True(deletePayload.Result);
+
+        var getResponse = await client.GetAsync($"/api/locations/{locationId}");
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        Assert.NotNull(getPayload);
+        Assert.False(getPayload.Success);
+        Assert.Equal("not_found", getPayload.Code);
+    }
+}
