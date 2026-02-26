@@ -137,6 +137,27 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task DeleteParticipantAsync_ShouldAlsoDeleteCourseRegistrations()
+    {
+        await using var context = fixture.CreateDbContext();
+        var participant = await RepositoryTestDataHelper.CreateParticipantAsync(context);
+        var courseEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
+        await RepositoryTestDataHelper.CreateCourseRegistrationAsync(
+            context,
+            participantId: participant.Id,
+            courseEventId: courseEvent.Id);
+        var repo = new ParticipantRepository(context);
+
+        var deleted = await repo.RemoveAsync(participant.Id, CancellationToken.None);
+
+        Assert.True(deleted);
+        var remainingRegistration = await context.CourseRegistrations
+            .AsNoTracking()
+            .AnyAsync(cr => cr.ParticipantId == participant.Id, CancellationToken.None);
+        Assert.False(remainingRegistration);
+    }
+
+    [Fact]
     public async Task GetParticipantByIdAsync_ShouldReturnContactType()
     {
         await using var context = fixture.CreateDbContext();

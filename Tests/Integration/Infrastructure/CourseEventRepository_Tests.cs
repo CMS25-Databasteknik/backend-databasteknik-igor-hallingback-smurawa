@@ -151,6 +151,37 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task DeleteCourseEventAsync_ShouldAlsoRemoveRelations()
+    {
+        await using var context = fixture.CreateDbContext();
+        var courseEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
+        var participant = await RepositoryTestDataHelper.CreateParticipantAsync(context);
+        await RepositoryTestDataHelper.CreateCourseRegistrationAsync(context, participantId: participant.Id, courseEventId: courseEvent.Id);
+        var instructor = await RepositoryTestDataHelper.CreateInstructorAsync(context);
+        await RepositoryTestDataHelper.LinkInstructorToCourseEventAsync(context, instructor.Id, courseEvent.Id);
+        var inPlace = await RepositoryTestDataHelper.CreateInPlaceLocationAsync(context);
+        await RepositoryTestDataHelper.LinkInPlaceLocationToCourseEventAsync(context, inPlace.Id, courseEvent.Id);
+
+        var repo = new CourseEventRepository(context);
+        var deleted = await repo.RemoveAsync(courseEvent.Id, CancellationToken.None);
+
+        Assert.True(deleted);
+        var registrations = await context.CourseRegistrations
+            .AsNoTracking()
+            .AnyAsync(cr => cr.CourseEventId == courseEvent.Id, CancellationToken.None);
+        var instructors = await context.CourseEventInstructors
+            .AsNoTracking()
+            .AnyAsync(cei => cei.CourseEventId == courseEvent.Id, CancellationToken.None);
+        var inPlaceLinks = await context.InPlaceEventLocations
+            .AsNoTracking()
+            .AnyAsync(ipl => ipl.CourseEventId == courseEvent.Id, CancellationToken.None);
+
+        Assert.False(registrations);
+        Assert.False(instructors);
+        Assert.False(inPlaceLinks);
+    }
+
+    [Fact]
     public async Task GetCourseEventByIdAsync_ShouldIncludeJoinedCourseEventType()
     {
         await using var context = fixture.CreateDbContext();
