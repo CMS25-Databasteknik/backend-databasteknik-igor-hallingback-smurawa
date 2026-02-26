@@ -48,7 +48,7 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
             return new PaymentMethodListResult
             {
                 Success = true,
-                                Result = paymentMethods,
+                Result = paymentMethods,
                 Message = paymentMethods.Any() ? $"Retrieved {paymentMethods.Count} payment method(s) successfully." : "No payment methods found."
             };
         }

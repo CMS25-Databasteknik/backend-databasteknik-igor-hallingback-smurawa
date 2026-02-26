@@ -82,7 +82,7 @@ public abstract class CacheEntityBase<TEntity, TId>(IMemoryCache cache) : ICache
 
     public async Task<IReadOnlyList<TEntity>> GetOrCreateAllAsync(Func<CancellationToken, Task<IReadOnlyList<TEntity>>> factory, CancellationToken ct)
     {
-        var result = await cache.GetOrCreateAsync(
+        var cachedEntities = await cache.GetOrCreateAsync(
             AllKey,
             async (entry, token) =>
             {
@@ -91,6 +91,6 @@ public abstract class CacheEntityBase<TEntity, TId>(IMemoryCache cache) : ICache
             },
             ct);
 
-        return result ?? [];
+        return cachedEntities ?? [];
     }
 }

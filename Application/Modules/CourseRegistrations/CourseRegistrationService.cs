@@ -119,12 +119,12 @@ public class CourseRegistrationService(
                 paymentMethod
             );
 
-            var result = await _courseRegistrationRepository.AddAsync(newCourseRegistration, cancellationToken);
+            var createdCourseRegistration = await _courseRegistrationRepository.AddAsync(newCourseRegistration, cancellationToken);
 
             return new CourseRegistrationResult
             {
                 Success = true,
-                                Result = result,
+                Result = createdCourseRegistration,
                 Message = "Course registration created successfully."
             };
         }
@@ -162,14 +162,14 @@ public class CourseRegistrationService(
                 {
                     Success = true,
                     Result = courseRegistrations,
-                                        Message = "No course registrations found."
+                    Message = "No course registrations found."
                 };
             }
 
             return new CourseRegistrationListResult
             {
                 Success = true,
-                                Result = courseRegistrations,
+                Result = courseRegistrations,
                 Message = $"Retrieved {courseRegistrations.Count} course registration(s) successfully."
             };
         }
@@ -198,9 +198,9 @@ public class CourseRegistrationService(
                 };
             }
 
-            var result = await _courseRegistrationRepository.GetByIdAsync(courseRegistrationId, cancellationToken);
+            var courseRegistration = await _courseRegistrationRepository.GetByIdAsync(courseRegistrationId, cancellationToken);
 
-            if (result == null)
+            if (courseRegistration == null)
             {
                 return new CourseRegistrationDetailsResult
                 {
@@ -210,30 +210,30 @@ public class CourseRegistrationService(
                 };
             }
 
-            var participant = await _participantRepository.GetByIdAsync(result.ParticipantId, cancellationToken);
+            var participant = await _participantRepository.GetByIdAsync(courseRegistration.ParticipantId, cancellationToken);
             var participantName = participant == null
-                ? result.ParticipantId.ToString()
+                ? courseRegistration.ParticipantId.ToString()
                 : $"{participant.FirstName} {participant.LastName}".Trim();
 
-            var courseEvent = await _courseEventRepository.GetByIdAsync(result.CourseEventId, cancellationToken);
+            var courseEvent = await _courseEventRepository.GetByIdAsync(courseRegistration.CourseEventId, cancellationToken);
 
             var details = new CourseRegistrationDetails(
-                result.Id,
+                courseRegistration.Id,
                 new RegistrationGuidLookupItem(
-                    result.ParticipantId,
+                    courseRegistration.ParticipantId,
                     participantName),
                 new RegistrationCourseEventItem(
-                    result.CourseEventId,
+                    courseRegistration.CourseEventId,
                     courseEvent?.EventDate),
-                result.RegistrationDate,
-                new RegistrationLookupItem(result.Status.Id, result.Status.Name),
-                new RegistrationLookupItem(result.PaymentMethod.Id, result.PaymentMethod.Name)
+                courseRegistration.RegistrationDate,
+                new RegistrationLookupItem(courseRegistration.Status.Id, courseRegistration.Status.Name),
+                new RegistrationLookupItem(courseRegistration.PaymentMethod.Id, courseRegistration.PaymentMethod.Name)
             );
 
             return new CourseRegistrationDetailsResult
             {
                 Success = true,
-                                Result = details,
+                Result = details,
                 Message = "Course registration retrieved successfully."
             };
         }
@@ -270,14 +270,14 @@ public class CourseRegistrationService(
                 {
                     Success = true,
                     Result = courseRegistrations,
-                                        Message = "No course registrations found for this participant."
+                    Message = "No course registrations found for this participant."
                 };
             }
 
             return new CourseRegistrationListResult
             {
                 Success = true,
-                                Result = courseRegistrations,
+                Result = courseRegistrations,
                 Message = $"Retrieved {courseRegistrations.Count} course registration(s) for the participant successfully."
             };
         }
@@ -314,14 +314,14 @@ public class CourseRegistrationService(
                 {
                     Success = true,
                     Result = courseRegistrations,
-                                        Message = "No course registrations found for this course event."
+                    Message = "No course registrations found for this course event."
                 };
             }
 
             return new CourseRegistrationListResult
             {
                 Success = true,
-                                Result = courseRegistrations,
+                Result = courseRegistrations,
                 Message = $"Retrieved {courseRegistrations.Count} course registration(s) for the course event successfully."
             };
         }
@@ -458,7 +458,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = true,
-                                Result = updatedCourseRegistration,
+                Result = updatedCourseRegistration,
                 Message = "Course registration updated successfully."
             };
         }
@@ -518,9 +518,9 @@ public class CourseRegistrationService(
                 };
             }
 
-            var result = await _courseRegistrationRepository.RemoveAsync(courseRegistrationId, cancellationToken);
+            var isDeleted = await _courseRegistrationRepository.RemoveAsync(courseRegistrationId, cancellationToken);
 
-            if (!result)
+            if (!isDeleted)
             {
                 return new CourseRegistrationDeleteResult
                 {
@@ -534,7 +534,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationDeleteResult
             {
                 Success = true,
-                                Result = result,
+                Result = isDeleted,
                 Message = "Course registration deleted successfully."
             };
         }

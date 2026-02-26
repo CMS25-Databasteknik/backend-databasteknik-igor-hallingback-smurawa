@@ -41,12 +41,12 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
 
             var newInstructor = new Instructor(Guid.NewGuid(), instructor.Name, role);
 
-            var result = await _instructorRepository.AddAsync(newInstructor, cancellationToken);
+            var createdInstructor = await _instructorRepository.AddAsync(newInstructor, cancellationToken);
 
             return new InstructorResult
             {
                 Success = true,
-                                Result = result,
+                Result = createdInstructor,
                 Message = "Instructor created successfully."
             };
         }
@@ -94,14 +94,14 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 {
                     Success = true,
                     Result = instructors,
-                                        Message = "No instructors found."
+                    Message = "No instructors found."
                 };
             }
 
             return new InstructorListResult
             {
                 Success = true,
-                                Result = instructors,
+                Result = instructors,
                 Message = $"Retrieved {instructors.Count} instructor(s) successfully."
             };
         }
@@ -130,9 +130,9 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var result = await _instructorRepository.GetByIdAsync(instructorId, cancellationToken);
+            var instructor = await _instructorRepository.GetByIdAsync(instructorId, cancellationToken);
 
-            if (result == null)
+            if (instructor == null)
             {
                 return new InstructorDetailsResult
                 {
@@ -143,15 +143,15 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             }
 
             var details = new InstructorDetails(
-                result.Id,
-                result.Name,
-                new InstructorLookupItem(result.Role.Id, result.Role.RoleName)
+                instructor.Id,
+                instructor.Name,
+                new InstructorLookupItem(instructor.Role.Id, instructor.Role.RoleName)
             );
 
             return new InstructorDetailsResult
             {
                 Success = true,
-                                Result = details,
+                Result = details,
                 Message = "Instructor retrieved successfully."
             };
         }
@@ -238,7 +238,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorResult
             {
                 Success = true,
-                                Result = updatedInstructor,
+                Result = updatedInstructor,
                 Message = "Instructor updated successfully."
             };
         }
@@ -301,9 +301,9 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var result = await _instructorRepository.RemoveAsync(instructorId, cancellationToken);
+            var isDeleted = await _instructorRepository.RemoveAsync(instructorId, cancellationToken);
 
-            if (!result)
+            if (!isDeleted)
             {
                 return new InstructorDeleteResult
                 {
@@ -317,7 +317,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             return new InstructorDeleteResult
             {
                 Success = true,
-                                Result = result,
+                Result = isDeleted,
                 Message = "Instructor deleted successfully."
             };
         }

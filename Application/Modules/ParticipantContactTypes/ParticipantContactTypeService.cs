@@ -48,7 +48,7 @@ public sealed class ParticipantContactTypeService(IParticipantContactTypeCache c
             return new ParticipantContactTypeListResult
             {
                 Success = true,
-                                Result = participantContactTypes,
+                Result = participantContactTypes,
                 Message = participantContactTypes.Any() ? $"Retrieved {participantContactTypes.Count} participant contact type(s) successfully." : "No participant contact types found."
             };
         }

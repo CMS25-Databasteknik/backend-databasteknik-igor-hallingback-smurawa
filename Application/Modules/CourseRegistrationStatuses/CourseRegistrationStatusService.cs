@@ -45,7 +45,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = true,
-                                Result = createdStatus,
+                Result = createdStatus,
                 Message = "Course registration status created successfully."
             };
         }
@@ -80,7 +80,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusListResult
             {
                 Success = true,
-                                Result = statuses,
+                Result = statuses,
                 Message = statuses.Any()
                     ? $"Retrieved {statuses.Count} course registration status(es) successfully."
                     : "No course registration statuses found."
@@ -121,7 +121,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = true,
-                                Result = status,
+                Result = status,
                 Message = "Course registration status retrieved successfully."
             };
         }
@@ -167,7 +167,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = true,
-                                Result = status,
+                Result = status,
                 Message = "Course registration status retrieved successfully."
             };
         }
@@ -235,7 +235,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusResult
             {
                 Success = true,
-                                Result = updatedStatus,
+                Result = updatedStatus,
                 Message = "Course registration status updated successfully."
             };
         }
@@ -309,7 +309,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
             return new CourseRegistrationStatusDeleteResult
             {
                 Success = true,
-                                Result = true,
+                Result = true,
                 Message = "Course registration status deleted successfully."
             };
         }

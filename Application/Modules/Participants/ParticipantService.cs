@@ -51,12 +51,12 @@ public class ParticipantService(
                 contactType
             );
 
-            var result = await _participantRepository.AddAsync(newParticipant, cancellationToken);
+            var createdParticipant = await _participantRepository.AddAsync(newParticipant, cancellationToken);
 
             return new ParticipantResult
             {
                 Success = true,
-                                Result = result,
+                Result = createdParticipant,
                 Message = "Participant created successfully."
             };
         }
@@ -94,14 +94,14 @@ public class ParticipantService(
                 {
                     Success = true,
                     Result = participants,
-                                        Message = "No participants found."
+                    Message = "No participants found."
                 };
             }
 
             return new ParticipantListResult
             {
                 Success = true,
-                                Result = participants,
+                Result = participants,
                 Message = $"Retrieved {participants.Count} participant(s) successfully."
             };
         }
@@ -156,7 +156,7 @@ public class ParticipantService(
             return new ParticipantDetailsResult
             {
                 Success = true,
-                                Result = details,
+                Result = details,
                 Message = "Participant retrieved successfully."
             };
         }
@@ -240,7 +240,7 @@ public class ParticipantService(
             return new ParticipantResult
             {
                 Success = true,
-                                Result = updatedParticipant,
+                Result = updatedParticipant,
                 Message = "Participant updated successfully."
             };
         }
@@ -312,9 +312,9 @@ public class ParticipantService(
                 };
             }
 
-            var result = await _participantRepository.RemoveAsync(participantId, cancellationToken);
+            var isDeleted = await _participantRepository.RemoveAsync(participantId, cancellationToken);
 
-            if (!result)
+            if (!isDeleted)
             {
                 return new ParticipantDeleteResult
                 {
@@ -328,7 +328,7 @@ public class ParticipantService(
             return new ParticipantDeleteResult
             {
                 Success = true,
-                                Result = result,
+                Result = isDeleted,
                 Message = "Participant deleted successfully."
             };
         }
