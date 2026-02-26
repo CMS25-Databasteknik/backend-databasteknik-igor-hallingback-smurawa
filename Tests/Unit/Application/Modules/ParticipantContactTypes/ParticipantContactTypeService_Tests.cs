@@ -1,6 +1,7 @@
 using Backend.Application.Common;
 using Backend.Application.Modules.ParticipantContactTypes;
 using Backend.Application.Modules.ParticipantContactTypes.Caching;
+using Backend.Application.Modules.ParticipantContactTypes.Inputs;
 using Backend.Domain.Modules.ParticipantContactTypes.Contracts;
 using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using NSubstitute;
@@ -26,6 +27,45 @@ public class ParticipantContactTypeService_Tests
         Assert.Equal(ResultError.None, result.Error);
         Assert.NotNull(result.Result);
         Assert.Equal(2, result.Result!.Count);
+    }
+
+    [Fact]
+    public async Task GetById_Should_Use_Cache_Without_Repo_Call()
+    {
+        var repo = Substitute.For<IParticipantContactTypeRepository>();
+        var cache = Substitute.For<IParticipantContactTypeCache>();
+        var cached = new ParticipantContactType(7, "Billing");
+        cache.GetByIdAsync(7, Arg.Any<Func<CancellationToken, Task<ParticipantContactType?>>>(), Arg.Any<CancellationToken>())
+            .Returns(cached);
+        var service = new ParticipantContactTypeService(cache, repo);
+
+        var result = await service.GetParticipantContactTypeByIdAsync(7, CancellationToken.None);
+
+        Assert.True(result.Success);
+        Assert.Equal(cached, result.Result);
+        await repo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Update_Should_Reset_And_Set_Cache()
+    {
+        var repo = Substitute.For<IParticipantContactTypeRepository>();
+        var cache = Substitute.For<IParticipantContactTypeCache>();
+        var existing = new ParticipantContactType(3, "Primary");
+        var updated = new ParticipantContactType(3, "Billing");
+
+        repo.GetByIdAsync(existing.Id, Arg.Any<CancellationToken>()).Returns(existing);
+        repo.UpdateAsync(existing.Id, Arg.Any<ParticipantContactType>(), Arg.Any<CancellationToken>())
+            .Returns(updated);
+
+        var service = new ParticipantContactTypeService(cache, repo);
+
+        var result = await service.UpdateParticipantContactTypeAsync(new UpdateParticipantContactTypeInput(existing.Id, "Billing"), CancellationToken.None);
+
+        Assert.True(result.Success);
+        Assert.Equal(updated, result.Result);
+        cache.Received(1).ResetEntity(existing);
+        cache.Received(1).SetEntity(updated);
     }
 }
 

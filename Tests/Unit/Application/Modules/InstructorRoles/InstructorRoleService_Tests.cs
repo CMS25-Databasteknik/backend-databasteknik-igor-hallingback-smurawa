@@ -115,5 +115,41 @@ public class InstructorRoleService_Tests
         Assert.False(result.Success);
         Assert.Equal(ResultError.NotFound, result.Error);
     }
+
+    [Fact]
+    public async Task GetById_Should_Return_From_Cache_Without_Repo()
+    {
+        var cache = CreateCache();
+        var repo = CreateRepo();
+        var cached = new InstructorRole(11, "CachedRole");
+        cache.GetByIdAsync(11, Arg.Any<Func<CancellationToken, Task<InstructorRole?>>>(), Arg.Any<CancellationToken>())
+            .Returns(cached);
+        var service = new InstructorRoleService(cache, repo);
+
+        var result = await service.GetInstructorRoleByIdAsync(11);
+
+        Assert.True(result.Success);
+        Assert.Equal(cached, result.Result);
+        await repo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Update_Should_Reset_And_Set_Cache()
+    {
+        var cache = CreateCache();
+        var repo = CreateRepo();
+        var existing = new InstructorRole(2, "Lead");
+        var updated = new InstructorRole(2, "Senior Lead");
+        repo.GetByIdAsync(existing.Id, Arg.Any<CancellationToken>()).Returns(existing);
+        repo.UpdateAsync(existing.Id, Arg.Any<InstructorRole>(), Arg.Any<CancellationToken>()).Returns(updated);
+        var service = new InstructorRoleService(cache, repo);
+
+        var result = await service.UpdateInstructorRoleAsync(new UpdateInstructorRoleInput(existing.Id, "Senior Lead"));
+
+        Assert.True(result.Success);
+        Assert.Equal(updated, result.Result);
+        cache.Received(1).ResetEntity(existing);
+        cache.Received(1).SetEntity(updated);
+    }
 }
 
