@@ -60,6 +60,29 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllCoursesAsync_ShouldReturnDescendingByCreatedAt()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRepository(context);
+        var first = await repo.AddAsync(new Course(Guid.NewGuid(), $"OrderA-{Guid.NewGuid():N}", "D1", 1), CancellationToken.None);
+        var second = await repo.AddAsync(new Course(Guid.NewGuid(), $"OrderB-{Guid.NewGuid():N}", "D2", 1), CancellationToken.None);
+
+        var firstEntity = await context.Courses.SingleAsync(x => x.Id == first.Id, CancellationToken.None);
+        var secondEntity = await context.Courses.SingleAsync(x => x.Id == second.Id, CancellationToken.None);
+        firstEntity.CreatedAtUtc = DateTime.UtcNow.AddMinutes(-2);
+        secondEntity.CreatedAtUtc = DateTime.UtcNow;
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var courses = await repo.GetAllAsync(CancellationToken.None);
+        var firstIndex = courses.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = courses.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task GetCourseByIdAsync_ShouldReturnCourseWithEvents()
     {
         await using var context = fixture.CreateDbContext();

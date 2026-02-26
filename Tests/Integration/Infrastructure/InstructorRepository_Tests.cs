@@ -55,6 +55,22 @@ public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllInstructorsAsync_ShouldReturnDescendingById()
+    {
+        await using var context = fixture.CreateDbContext();
+        _ = await RepositoryTestDataHelper.CreateInstructorAsync(context);
+        _ = await RepositoryTestDataHelper.CreateInstructorAsync(context);
+        var repo = new InstructorRepository(context);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+
+        for (var i = 1; i < all.Count; i++)
+        {
+            Assert.True(all[i - 1].Id.CompareTo(all[i].Id) >= 0);
+        }
+    }
+
+    [Fact]
     public async Task UpdateInstructorAsync_ShouldPersistChanges()
     {
         await using var context = fixture.CreateDbContext();

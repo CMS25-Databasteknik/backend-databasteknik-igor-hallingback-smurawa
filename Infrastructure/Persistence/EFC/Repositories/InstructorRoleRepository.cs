@@ -32,7 +32,7 @@ public class InstructorRoleRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.InstructorRoles
             .AsNoTracking()
-            .OrderBy(r => r.RoleName)
+            .OrderByDescending(r => r.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];

@@ -42,6 +42,23 @@ public class InstructorRoleRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllInstructorRolesAsync_ShouldReturnDescendingById()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new InstructorRoleRepository(context);
+        var first = await repo.AddAsync(new InstructorRole($"RoleA-{Guid.NewGuid():N}"), CancellationToken.None);
+        var second = await repo.AddAsync(new InstructorRole($"RoleB-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+        var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = all.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task UpdateInstructorRoleAsync_ShouldPersistChanges()
     {
         await using var context = fixture.CreateDbContext();

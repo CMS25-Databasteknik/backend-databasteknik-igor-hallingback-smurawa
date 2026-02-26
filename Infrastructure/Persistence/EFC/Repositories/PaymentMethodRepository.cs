@@ -41,7 +41,7 @@ public sealed class PaymentMethodRepository(CoursesOnlineDbContext context)
     {
         var entities = await _context.PaymentMethods
             .AsNoTracking()
-            .OrderBy(pm => pm.Id)
+            .OrderByDescending(pm => pm.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];

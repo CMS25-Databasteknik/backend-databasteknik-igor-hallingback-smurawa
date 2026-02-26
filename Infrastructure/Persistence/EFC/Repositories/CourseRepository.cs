@@ -70,6 +70,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             var entities = await _context.Courses
                 .AsNoTracking()
                 .OrderByDescending(c => c.CreatedAtUtc)
+                .ThenByDescending(c => c.Id)
                 .ToListAsync(cancellationToken);
 
             return [.. entities.Select(ToModel)];

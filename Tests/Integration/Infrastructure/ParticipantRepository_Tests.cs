@@ -63,6 +63,29 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllParticipantsAsync_ShouldReturnDescendingByCreatedAt()
+    {
+        await using var context = fixture.CreateDbContext();
+        var first = await RepositoryTestDataHelper.CreateParticipantAsync(context);
+        var second = await RepositoryTestDataHelper.CreateParticipantAsync(context);
+        var repo = new ParticipantRepository(context);
+
+        var firstEntity = await context.Participants.SingleAsync(x => x.Id == first.Id, CancellationToken.None);
+        var secondEntity = await context.Participants.SingleAsync(x => x.Id == second.Id, CancellationToken.None);
+        firstEntity.CreatedAtUtc = DateTime.UtcNow.AddMinutes(-2);
+        secondEntity.CreatedAtUtc = DateTime.UtcNow;
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+        var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = all.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task UpdateParticipantAsync_ShouldPersistChanges()
     {
         await using var context = fixture.CreateDbContext();

@@ -35,6 +35,44 @@ public sealed class InPlaceLocationsEndpoints_Tests(CoursesOnlineDbApiFactory fa
     }
 
     [Fact]
+    public async Task GetAllInPlaceLocations_ReturnsNewestFirst_ByIdDescending()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        int locationId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            locationId = (await RepositoryTestDataHelper.CreateLocationAsync(db)).Id;
+        }
+
+        using var client = _factory.CreateClient();
+        var firstCreate = await client.PostAsJsonAsync("/api/in-place-locations", new CreateInPlaceLocationRequest
+        {
+            LocationId = locationId,
+            RoomNumber = 301,
+            Seats = 20
+        });
+        var firstId = int.Parse(firstCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        var secondCreate = await client.PostAsJsonAsync("/api/in-place-locations", new CreateInPlaceLocationRequest
+        {
+            LocationId = locationId,
+            RoomNumber = 302,
+            Seats = 30
+        });
+        var secondId = int.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        var response = await client.GetAsync("/api/in-place-locations");
+        var payload = await response.Content.ReadFromJsonAsync<InPlaceLocationListResult>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(payload?.Result);
+        Assert.Equal(secondId, payload.Result[0].Id);
+        Assert.Equal(firstId, payload.Result[1].Id);
+    }
+
+    [Fact]
     public async Task CreateInPlaceLocation_ThenGetById_ReturnsCreatedInPlaceLocation()
     {
         await _factory.ResetAndSeedDataAsync();

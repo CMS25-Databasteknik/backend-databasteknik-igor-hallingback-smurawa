@@ -36,6 +36,66 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
     }
 
     [Fact]
+    public async Task GetAllParticipants_ReturnsNewestFirst_ByCreatedAtDescending()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        int contactTypeId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            contactTypeId = await db.ParticipantContactTypes.AsNoTracking().Select(x => x.Id).FirstAsync();
+        }
+
+        using var client = _factory.CreateClient();
+        var firstCreate = await client.PostAsJsonAsync("/api/participants", new CreateParticipantRequest
+        {
+            FirstName = "First",
+            LastName = "Order",
+            Email = $"first-order-{Guid.NewGuid():N}@example.com",
+            PhoneNumber = "111111111",
+            ContactTypeId = contactTypeId
+        });
+        var firstId = Guid.Parse(firstCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        var secondCreate = await client.PostAsJsonAsync("/api/participants", new CreateParticipantRequest
+        {
+            FirstName = "Second",
+            LastName = "Order",
+            Email = $"second-order-{Guid.NewGuid():N}@example.com",
+            PhoneNumber = "222222222",
+            ContactTypeId = contactTypeId
+        });
+        var secondId = Guid.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            var firstEntity = await db.Participants.FindAsync(firstId);
+            var secondEntity = await db.Participants.FindAsync(secondId);
+            Assert.NotNull(firstEntity);
+            Assert.NotNull(secondEntity);
+            firstEntity!.CreatedAtUtc = DateTime.UtcNow.AddMinutes(-2);
+            secondEntity!.CreatedAtUtc = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+        }
+
+        var response = await client.GetAsync("/api/participants");
+        var payload = await response.Content.ReadFromJsonAsync<ParticipantListResult>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(payload);
+        Assert.NotNull(payload.Result);
+
+        var firstIndex = payload.Result.ToList().FindIndex(x => x.Id == firstId);
+        var secondIndex = payload.Result.ToList().FindIndex(x => x.Id == secondId);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task CreateParticipant_ThenGetById_ReturnsCreatedParticipant()
     {
         await _factory.ResetAndSeedDataAsync();

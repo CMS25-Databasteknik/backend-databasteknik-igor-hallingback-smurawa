@@ -42,7 +42,7 @@ public sealed class CourseRegistrationStatusRepository(
     {
         var entities = await _context.CourseRegistrationStatuses
             .AsNoTracking()
-            .OrderBy(s => s.Id)
+            .OrderByDescending(s => s.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];

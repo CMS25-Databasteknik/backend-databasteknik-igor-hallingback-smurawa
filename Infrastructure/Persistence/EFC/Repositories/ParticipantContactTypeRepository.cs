@@ -41,7 +41,7 @@ public sealed class ParticipantContactTypeRepository(CoursesOnlineDbContext cont
     {
         var entities = await _context.ParticipantContactTypes
             .AsNoTracking()
-            .OrderBy(pct => pct.Id)
+            .OrderByDescending(pct => pct.Id)
             .ToListAsync(cancellationToken);
 
         return [.. entities.Select(ToModel)];

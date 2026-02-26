@@ -46,6 +46,23 @@ public class LocationRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllLocationsAsync_ShouldReturnDescendingById()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new LocationRepository(context);
+        var first = await repo.AddAsync(new Location(0, $"StreetA-{Guid.NewGuid():N}", "11111", "A"), CancellationToken.None);
+        var second = await repo.AddAsync(new Location(0, $"StreetB-{Guid.NewGuid():N}", "22222", "B"), CancellationToken.None);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+        var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = all.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task UpdateLocationAsync_ShouldPersistChanges()
     {
         await using var context = fixture.CreateDbContext();

@@ -35,6 +35,48 @@ public sealed class InstructorsEndpoints_Tests(CoursesOnlineDbApiFactory factory
     }
 
     [Fact]
+    public async Task GetAllInstructors_ReturnsDescending_ById()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        int instructorRoleId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            instructorRoleId = (await RepositoryTestDataHelper.CreateInstructorRoleAsync(db)).Id;
+        }
+
+        using var client = _factory.CreateClient();
+        _ = await client.PostAsJsonAsync("/api/instructors", new CreateInstructorRequest
+        {
+            Name = $"Order-A-{Guid.NewGuid():N}",
+            InstructorRoleId = instructorRoleId
+        });
+        _ = await client.PostAsJsonAsync("/api/instructors", new CreateInstructorRequest
+        {
+            Name = $"Order-B-{Guid.NewGuid():N}",
+            InstructorRoleId = instructorRoleId
+        });
+
+        var response = await client.GetAsync("/api/instructors");
+        var payload = await response.Content.ReadFromJsonAsync<JsonDocument>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(payload);
+        var ids = payload.RootElement
+            .GetProperty("result")
+            .EnumerateArray()
+            .Select(item => item.GetProperty("id").GetGuid())
+            .ToList();
+        Assert.True(ids.Count >= 2);
+
+        for (var i = 1; i < ids.Count; i++)
+        {
+            Assert.True(ids[i - 1].CompareTo(ids[i]) >= 0);
+        }
+    }
+
+    [Fact]
     public async Task CreateInstructor_ThenGetById_ReturnsCreatedInstructor()
     {
         await _factory.ResetAndSeedDataAsync();

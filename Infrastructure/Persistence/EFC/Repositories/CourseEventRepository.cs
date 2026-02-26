@@ -117,6 +117,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 .Include(ce => ce.CourseEventType)
                 .Include(ce => ce.VenueType)
                 .OrderByDescending(ce => ce.CreatedAtUtc)
+                .ThenByDescending(ce => ce.Id)
                 .ToListAsync(cancellationToken);
 
             return [.. entities.Select(ToModel)];
