@@ -32,12 +32,12 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 inPlaceLocation.Seats
             );
 
-            var result = await _inPlaceLocationRepository.AddAsync(newInPlaceLocation, cancellationToken);
+            var createdInPlaceLocation = await _inPlaceLocationRepository.AddAsync(newInPlaceLocation, cancellationToken);
 
             return new InPlaceLocationResult
             {
                 Success = true,
-                                Result = result,
+                Result = createdInPlaceLocation,
                 Message = "In-place location created successfully."
             };
         }
@@ -75,14 +75,14 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 {
                     Success = true,
                     Result = inPlaceLocations,
-                                        Message = "No in-place locations found."
+                    Message = "No in-place locations found."
                 };
             }
 
             return new InPlaceLocationListResult
             {
                 Success = true,
-                                Result = inPlaceLocations,
+                Result = inPlaceLocations,
                 Message = $"Retrieved {inPlaceLocations.Count} in-place location(s) successfully."
             };
         }
@@ -111,9 +111,9 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            var result = await _inPlaceLocationRepository.GetByIdAsync(inPlaceLocationId, cancellationToken);
+            var inPlaceLocation = await _inPlaceLocationRepository.GetByIdAsync(inPlaceLocationId, cancellationToken);
 
-            if (result == null)
+            if (inPlaceLocation == null)
             {
                 return new InPlaceLocationResult
                 {
@@ -126,7 +126,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = true,
-                                Result = result,
+                Result = inPlaceLocation,
                 Message = "In-place location retrieved successfully."
             };
         }
@@ -163,14 +163,14 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 {
                     Success = true,
                     Result = inPlaceLocations,
-                                        Message = "No in-place locations found for this location."
+                    Message = "No in-place locations found for this location."
                 };
             }
 
             return new InPlaceLocationListResult
             {
                 Success = true,
-                                Result = inPlaceLocations,
+                Result = inPlaceLocations,
                 Message = $"Retrieved {inPlaceLocations.Count} in-place location(s) for the location successfully."
             };
         }
@@ -241,7 +241,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = true,
-                                Result = updatedInPlaceLocation,
+                Result = updatedInPlaceLocation,
                 Message = "In-place location updated successfully."
             };
         }
@@ -313,9 +313,9 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            var result = await _inPlaceLocationRepository.RemoveAsync(inPlaceLocationId, cancellationToken);
+            var isDeleted = await _inPlaceLocationRepository.RemoveAsync(inPlaceLocationId, cancellationToken);
 
-            if (!result)
+            if (!isDeleted)
             {
                 return new InPlaceLocationDeleteResult
                 {
@@ -329,7 +329,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationDeleteResult
             {
                 Success = true,
-                                Result = result,
+                Result = isDeleted,
                 Message = "In-place location deleted successfully."
             };
         }

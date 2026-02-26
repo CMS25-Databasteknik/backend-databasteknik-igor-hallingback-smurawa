@@ -76,12 +76,12 @@ public class CourseEventService(
                 courseEvent.CourseEventTypeId,
                 venueType);
 
-            var result = await _courseEventRepository.AddAsync(newCourseEvent, cancellationToken);
+            var createdCourseEvent = await _courseEventRepository.AddAsync(newCourseEvent, cancellationToken);
 
             return new CourseEventResult
             {
                 Success = true,
-                                Result = result,
+                Result = createdCourseEvent,
                 Message = "Course event created successfully."
             };
         }
@@ -109,14 +109,14 @@ public class CourseEventService(
     {
         try
         {
-            var result = await _courseEventRepository.GetAllAsync(cancellationToken);
+            var courseEvents = await _courseEventRepository.GetAllAsync(cancellationToken);
 
             return new CourseEventListResult
             {
                 Success = true,
-                                Result = result,
-                Message = result.Any()
-                    ? $"Retrieved {result.Count} course event(s) successfully."
+                Result = courseEvents,
+                Message = courseEvents.Any()
+                    ? $"Retrieved {courseEvents.Count} course event(s) successfully."
                     : "No course events found."
             };
         }
@@ -145,8 +145,8 @@ public class CourseEventService(
                 };
             }
 
-            var result = await _courseEventRepository.GetByIdAsync(courseEventId, cancellationToken);
-            if (result == null)
+            var courseEvent = await _courseEventRepository.GetByIdAsync(courseEventId, cancellationToken);
+            if (courseEvent == null)
             {
                 return new CourseEventDetailsResult
                 {
@@ -157,19 +157,19 @@ public class CourseEventService(
             }
 
             var details = new CourseEventDetails(
-                result.Id,
-                result.CourseId,
-                result.EventDate,
-                result.Price,
-                result.Seats,
-                new CourseEventLookupItem(result.CourseEventType.Id, result.CourseEventType.TypeName),
-                new CourseEventLookupItem(result.VenueTypeId, result.VenueType.Name)
+                courseEvent.Id,
+                courseEvent.CourseId,
+                courseEvent.EventDate,
+                courseEvent.Price,
+                courseEvent.Seats,
+                new CourseEventLookupItem(courseEvent.CourseEventType.Id, courseEvent.CourseEventType.TypeName),
+                new CourseEventLookupItem(courseEvent.VenueTypeId, courseEvent.VenueType.Name)
             );
 
             return new CourseEventDetailsResult
             {
                 Success = true,
-                                Result = details,
+                Result = details,
                 Message = "Course event retrieved successfully."
             };
         }
@@ -198,14 +198,14 @@ public class CourseEventService(
                 };
             }
 
-            var result = await _courseEventRepository.GetCourseEventsByCourseIdAsync(courseId, cancellationToken);
+            var courseEvents = await _courseEventRepository.GetCourseEventsByCourseIdAsync(courseId, cancellationToken);
 
             return new CourseEventListResult
             {
                 Success = true,
-                                Result = result,
-                Message = result.Any()
-                    ? $"Retrieved {result.Count} course event(s) successfully."
+                Result = courseEvents,
+                Message = courseEvents.Any()
+                    ? $"Retrieved {courseEvents.Count} course event(s) successfully."
                     : "No course events found for this course."
             };
         }
@@ -301,7 +301,7 @@ public class CourseEventService(
             return new CourseEventResult
             {
                 Success = true,
-                                Result = updatedCourseEvent,
+                Result = updatedCourseEvent,
                 Message = "Course event updated successfully."
             };
         }
@@ -373,11 +373,11 @@ public class CourseEventService(
                 };
             }
 
-            var result = await _courseEventRepository.RemoveAsync(courseEventId, cancellationToken);
+            var isDeleted = await _courseEventRepository.RemoveAsync(courseEventId, cancellationToken);
             return new CourseEventDeleteResult
             {
                 Success = true,
-                                Result = result,
+                Result = isDeleted,
                 Message = "Course event deleted successfully."
             };
         }

@@ -32,12 +32,12 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 location.City
             );
 
-            var result = await _locationRepository.AddAsync(newLocation, cancellationToken);
+            var createdLocation = await _locationRepository.AddAsync(newLocation, cancellationToken);
 
             return new LocationResult
             {
                 Success = true,
-                                Result = result,
+                Result = createdLocation,
                 Message = "Location created successfully."
             };
         }
@@ -75,14 +75,14 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 {
                     Success = true,
                     Result = locations,
-                                        Message = "No locations found."
+                    Message = "No locations found."
                 };
             }
 
             return new LocationListResult
             {
                 Success = true,
-                                Result = locations,
+                Result = locations,
                 Message = $"Retrieved {locations.Count} location(s) successfully."
             };
         }
@@ -126,7 +126,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationResult
             {
                 Success = true,
-                                Result = existingLocation,
+                Result = existingLocation,
                 Message = "Location retrieved successfully."
             };
         }
@@ -197,7 +197,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationResult
             {
                 Success = true,
-                                Result = updatedLocation,
+                Result = updatedLocation,
                 Message = "Location updated successfully."
             };
         }
@@ -260,9 +260,9 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            var result = await _locationRepository.RemoveAsync(locationId, cancellationToken);
+            var isDeleted = await _locationRepository.RemoveAsync(locationId, cancellationToken);
 
-            if (!result)
+            if (!isDeleted)
             {
                 return new LocationDeleteResult
                 {
@@ -276,7 +276,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationDeleteResult
             {
                 Success = true,
-                                Result = result,
+                Result = isDeleted,
                 Message = "Location deleted successfully."
             };
         }

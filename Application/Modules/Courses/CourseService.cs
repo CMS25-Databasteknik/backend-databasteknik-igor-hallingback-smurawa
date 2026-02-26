@@ -37,7 +37,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = true,
-                                Result = newCourse,
+                Result = newCourse,
                 Message = "Course created successfully."
             };
         }
@@ -75,14 +75,14 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 {
                     Success = true,
                     Result = courses,
-                                        Message = "No courses found."
+                    Message = "No courses found."
                 };
             }
 
             return new CourseListResult
             {
                 Success = true,
-                                Result = courses,
+                Result = courses,
                 Message = $"Retrieved {courses.Count()} course(s) successfully."
             };
         }
@@ -111,9 +111,9 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var result = await _courseRepository.GetByIdWithEventsAsync(courseId, cancellationToken);
+            var courseWithEvents = await _courseRepository.GetByIdWithEventsAsync(courseId, cancellationToken);
 
-            if (result == null)
+            if (courseWithEvents == null)
             {
                 return new CourseWithEventsResult
                 {
@@ -126,7 +126,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseWithEventsResult
             {
                 Success = true,
-                                Result = result,
+                Result = courseWithEvents,
                 Message = "Course retrieved successfully."
             };
         }
@@ -197,7 +197,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = true,
-                                Result = updatedCourse,
+                Result = updatedCourse,
                 Message = "Course updated successfully."
             };
         }
@@ -269,9 +269,9 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var result = await _courseRepository.RemoveAsync(courseId, cancellationToken);
+            var isDeleted = await _courseRepository.RemoveAsync(courseId, cancellationToken);
 
-            if (!result)
+            if (!isDeleted)
             {
                 return new CourseDeleteResult
                 {
@@ -285,7 +285,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseDeleteResult
             {
                 Success = true,
-                                Message = "Course deleted successfully.",
+                Message = "Course deleted successfully.",
                 Result = true
             };
         }

@@ -34,7 +34,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = true,
-                                Result = created,
+                Result = created,
                 Message = "Instructor role created successfully."
             };
         }
@@ -68,7 +68,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleListResult
             {
                 Success = true,
-                                Result = roles,
+                Result = roles,
                 Message = roles.Any() ? "Instructor roles retrieved successfully." : "No instructor roles found."
             };
         }
@@ -114,7 +114,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = true,
-                                Result = role,
+                Result = role,
                 Message = "Instructor role retrieved successfully."
             };
         }
@@ -182,7 +182,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleResult
             {
                 Success = true,
-                                Result = updatedInstructorRole,
+                Result = updatedInstructorRole,
                 Message = "Instructor role updated successfully."
             };
         }
@@ -250,7 +250,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
             return new InstructorRoleDeleteResult
             {
                 Success = true,
-                                Message = "Instructor role deleted successfully.",
+                Message = "Instructor role deleted successfully.",
                 Result = true
             };
         }

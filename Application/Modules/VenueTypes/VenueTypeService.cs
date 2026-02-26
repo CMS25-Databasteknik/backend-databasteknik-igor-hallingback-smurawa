@@ -48,7 +48,7 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
             return new VenueTypeListResult
             {
                 Success = true,
-                                Result = venueTypes,
+                Result = venueTypes,
                 Message = venueTypes.Any() ? $"Retrieved {venueTypes.Count} venue type(s) successfully." : "No venue types found."
             };
         }

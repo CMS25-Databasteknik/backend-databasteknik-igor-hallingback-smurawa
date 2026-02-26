@@ -47,7 +47,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = true,
-                                Result = createdCourseEventType,
+                Result = createdCourseEventType,
                 Message = "Course event type created successfully."
             };
         }
@@ -86,14 +86,14 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 {
                     Success = true,
                     Result = courseEventTypes,
-                                        Message = "No course event types found."
+                    Message = "No course event types found."
                 };
             }
 
             return new CourseEventTypeListResult
             {
                 Success = true,
-                                Result = courseEventTypes,
+                Result = courseEventTypes,
                 Message = $"Retrieved {courseEventTypes.Count} course event type(s) successfully."
             };
         }
@@ -140,7 +140,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = true,
-                                Result = courseEventType,
+                Result = courseEventType,
                 Message = "Course event type retrieved successfully."
             };
         }
@@ -184,7 +184,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = true,
-                                Result = courseEventType,
+                Result = courseEventType,
                 Message = "Course event type retrieved successfully."
             };
         }
@@ -245,7 +245,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeResult
             {
                 Success = true,
-                                Result = updatedCourseEventType,
+                Result = updatedCourseEventType,
                 Message = "Course event type updated successfully."
             };
         }
@@ -325,7 +325,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
             return new CourseEventTypeDeleteResult
             {
                 Success = true,
-                                Result = true,
+                Result = true,
                 Message = "Course event type deleted successfully."
             };
         }
