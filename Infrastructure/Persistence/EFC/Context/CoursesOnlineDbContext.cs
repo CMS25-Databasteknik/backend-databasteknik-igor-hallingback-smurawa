@@ -18,6 +18,8 @@ public sealed class CoursesOnlineDbContext(DbContextOptions<CoursesOnlineDbConte
     public DbSet<PaymentMethodEntity> PaymentMethods => Set<PaymentMethodEntity>();
     public DbSet<ParticipantContactTypeEntity> ParticipantContactTypes => Set<ParticipantContactTypeEntity>();
     public DbSet<VenueTypeEntity> VenueTypes => Set<VenueTypeEntity>();
+    public DbSet<CourseEventInstructorEntity> CourseEventInstructors => Set<CourseEventInstructorEntity>();
+    public DbSet<InPlaceEventLocationEntity> InPlaceEventLocations => Set<InPlaceEventLocationEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

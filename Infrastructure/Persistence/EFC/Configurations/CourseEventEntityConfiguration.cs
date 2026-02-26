@@ -86,27 +86,24 @@ public sealed class CourseEventEntityConfiguration : IEntityTypeConfiguration<Co
 
         e.HasMany(ce => ce.Instructors)
             .WithMany(i => i.CourseEvents)
-            .UsingEntity<Dictionary<string, object>>(
-                "CourseEventInstructors",
-                i => i.HasOne<InstructorEntity>().WithMany().HasForeignKey("InstructorId").OnDelete(DeleteBehavior.Cascade),
-                ce => ce.HasOne<CourseEventEntity>().WithMany().HasForeignKey("CourseEventId").OnDelete(DeleteBehavior.Cascade),
+            .UsingEntity<CourseEventInstructorEntity>(
+                cei => cei.HasOne(ci => ci.Instructor).WithMany().HasForeignKey(ci => ci.InstructorId).OnDelete(DeleteBehavior.Cascade),
+                cei => cei.HasOne(ci => ci.CourseEvent).WithMany().HasForeignKey(ci => ci.CourseEventId).OnDelete(DeleteBehavior.Cascade),
                 j =>
                 {
-                    j.HasKey("CourseEventId", "InstructorId");
+                    j.HasKey(ci => new { ci.CourseEventId, ci.InstructorId });
                     j.ToTable("CourseEventInstructors");
                 });
 
         e.HasMany(ce => ce.InPlaceLocations)
             .WithMany(ipl => ipl.CourseEvents)
-            .UsingEntity<Dictionary<string, object>>(
-                "InPlaceEventLocations",
-                ipl => ipl.HasOne<InPlaceLocationEntity>().WithMany().HasForeignKey("InPlaceLocationId").OnDelete(DeleteBehavior.Cascade),
-                ce => ce.HasOne<CourseEventEntity>().WithMany().HasForeignKey("CourseEventId").OnDelete(DeleteBehavior.Cascade),
+            .UsingEntity<InPlaceEventLocationEntity>(
+                ipl => ipl.HasOne(ip => ip.InPlaceLocation).WithMany().HasForeignKey(ip => ip.InPlaceLocationId).OnDelete(DeleteBehavior.Cascade),
+                ce => ce.HasOne(ip => ip.CourseEvent).WithMany().HasForeignKey(ip => ip.CourseEventId).OnDelete(DeleteBehavior.Cascade),
                 j =>
                 {
-                    j.HasKey("CourseEventId", "InPlaceLocationId");
+                    j.HasKey(ip => new { ip.CourseEventId, ip.InPlaceLocationId });
                     j.ToTable("InPlaceEventLocations");
                 });
     }
 }
-
