@@ -32,6 +32,23 @@ public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixtur
     }
 
     [Fact]
+    public async Task GetAllParticipantContactTypesAsync_ShouldReturnDescendingById()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new ParticipantContactTypeRepository(context);
+        var first = await repo.AddAsync(new ParticipantContactType(1, $"ContactA-{Guid.NewGuid():N}"), CancellationToken.None);
+        var second = await repo.AddAsync(new ParticipantContactType(1, $"ContactB-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+        var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = all.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task IsInUseAsync_ShouldReturnTrue_WhenReferencedByParticipant()
     {
         await using var context = fixture.CreateDbContext();

@@ -37,6 +37,37 @@ public sealed class LocationsEndpoints_Tests(CoursesOnlineDbApiFactory factory) 
     }
 
     [Fact]
+    public async Task GetAllLocations_ReturnsNewestFirst_ByIdDescending()
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        var firstCreate = await client.PostAsJsonAsync("/api/locations", new CreateLocationRequest
+        {
+            StreetName = "Order Street 1",
+            PostalCode = "10001",
+            City = "CityA"
+        });
+        var firstId = int.Parse(firstCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        var secondCreate = await client.PostAsJsonAsync("/api/locations", new CreateLocationRequest
+        {
+            StreetName = "Order Street 2",
+            PostalCode = "10002",
+            City = "CityB"
+        });
+        var secondId = int.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        var response = await client.GetAsync("/api/locations");
+        var payload = await response.Content.ReadFromJsonAsync<LocationListResult>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(payload?.Result);
+        Assert.Equal(secondId, payload.Result[0].Id);
+        Assert.Equal(firstId, payload.Result[1].Id);
+    }
+
+    [Fact]
     public async Task CreateLocation_ThenGetById_ReturnsCreatedLocation()
     {
         await _factory.ResetAndSeedDataAsync();

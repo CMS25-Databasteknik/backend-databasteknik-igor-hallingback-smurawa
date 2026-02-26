@@ -58,8 +58,6 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         });
         var firstId = Guid.Parse(firstCreate.Headers.Location!.OriginalString.Split('/')[^1]);
 
-        await Task.Delay(TimeSpan.FromSeconds(1.1));
-
         var secondCreate = await client.PostAsJsonAsync("/api/participants", new CreateParticipantRequest
         {
             FirstName = "Second",
@@ -69,6 +67,18 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
             ContactTypeId = contactTypeId
         });
         var secondId = Guid.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            var firstEntity = await db.Participants.FindAsync(firstId);
+            var secondEntity = await db.Participants.FindAsync(secondId);
+            Assert.NotNull(firstEntity);
+            Assert.NotNull(secondEntity);
+            firstEntity!.CreatedAtUtc = DateTime.UtcNow.AddMinutes(-2);
+            secondEntity!.CreatedAtUtc = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+        }
 
         var response = await client.GetAsync("/api/participants");
         var payload = await response.Content.ReadFromJsonAsync<ParticipantListResult>(_jsonOptions);

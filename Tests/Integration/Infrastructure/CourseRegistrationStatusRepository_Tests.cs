@@ -43,6 +43,20 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
     }
 
     [Fact]
+    public async Task GetAllCourseRegistrationStatusesAsync_ShouldReturnDescendingById()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseRegistrationStatusRepository(context);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+
+        for (var i = 1; i < all.Count; i++)
+        {
+            Assert.True(all[i - 1].Id >= all[i].Id);
+        }
+    }
+
+    [Fact]
     public async Task GetCourseRegistrationStatusByIdAsync_ShouldReturnStatus()
     {
         await using var context = fixture.CreateDbContext();

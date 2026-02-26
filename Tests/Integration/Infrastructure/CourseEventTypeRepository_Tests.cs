@@ -48,6 +48,24 @@ public class CourseEventTypeRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllCourseEventTypesAsync_ShouldReturnDescendingById()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new CourseEventTypeRepository(context);
+        var first = await repo.AddAsync(new CourseEventType($"TypeA-{Guid.NewGuid():N}"), CancellationToken.None);
+        var second = await repo.AddAsync(new CourseEventType($"TypeB-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+
+        var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = all.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task UpdateCourseEventTypeAsync_ShouldPersistNewTypeName()
     {
         await using var context = fixture.CreateDbContext();

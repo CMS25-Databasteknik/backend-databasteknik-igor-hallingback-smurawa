@@ -37,6 +37,73 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
     }
 
     [Fact]
+    public async Task GetAllCourseEvents_ReturnsNewestFirst_ByCreatedAtDescending()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        Guid courseId;
+        int courseEventTypeId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            courseId = (await RepositoryTestDataHelper.CreateCourseAsync(db)).Id;
+            courseEventTypeId = (await RepositoryTestDataHelper.CreateCourseEventTypeAsync(db)).Id;
+        }
+
+        using var client = _factory.CreateClient();
+        var firstCreate = await client.PostAsJsonAsync("/api/course-events", new CreateCourseEventRequest
+        {
+            CourseId = courseId,
+            EventDate = DateTime.UtcNow.AddDays(10),
+            Price = 100m,
+            Seats = 10,
+            CourseEventTypeId = courseEventTypeId,
+            VenueTypeId = 1
+        });
+        var firstId = Guid.Parse(firstCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        var secondCreate = await client.PostAsJsonAsync("/api/course-events", new CreateCourseEventRequest
+        {
+            CourseId = courseId,
+            EventDate = DateTime.UtcNow.AddDays(11),
+            Price = 200m,
+            Seats = 20,
+            CourseEventTypeId = courseEventTypeId,
+            VenueTypeId = 1
+        });
+        var secondId = Guid.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            var firstEntity = await db.CourseEvents.FindAsync(firstId);
+            var secondEntity = await db.CourseEvents.FindAsync(secondId);
+            Assert.NotNull(firstEntity);
+            Assert.NotNull(secondEntity);
+            firstEntity!.CreatedAtUtc = DateTime.UtcNow.AddMinutes(-2);
+            secondEntity!.CreatedAtUtc = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+        }
+
+        var response = await client.GetAsync("/api/course-events");
+        var payload = await response.Content.ReadFromJsonAsync<JsonDocument>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(payload);
+        var ids = payload.RootElement
+            .GetProperty("result")
+            .EnumerateArray()
+            .Select(item => item.GetProperty("id").GetGuid())
+            .ToList();
+        var firstIndex = ids.FindIndex(x => x == firstId);
+        var secondIndex = ids.FindIndex(x => x == secondId);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task CreateCourseEvent_ThenGetById_ReturnsCreatedEvent()
     {
         await _factory.ResetAndSeedDataAsync();

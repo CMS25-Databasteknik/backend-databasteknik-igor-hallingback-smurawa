@@ -48,6 +48,23 @@ public class InPlaceLocationRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllInPlaceLocationsAsync_ShouldReturnDescendingById()
+    {
+        await using var context = fixture.CreateDbContext();
+        var first = await RepositoryTestDataHelper.CreateInPlaceLocationAsync(context);
+        var second = await RepositoryTestDataHelper.CreateInPlaceLocationAsync(context);
+        var repo = new InPlaceLocationRepository(context);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+        var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = all.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task UpdateInPlaceLocationAsync_ShouldPersistChanges()
     {
         await using var context = fixture.CreateDbContext();

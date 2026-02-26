@@ -36,6 +36,56 @@ public sealed class CoursesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : 
     }
 
     [Fact]
+    public async Task GetCourses_ReturnsNewestFirst_ByCreatedAtDescending()
+    {
+        await _factory.ResetAndSeedDataAsync();
+        using var client = _factory.CreateClient();
+
+        var firstCreate = await client.PostAsJsonAsync("/api/courses", new CreateCourseRequest
+        {
+            Title = $"Order-A-{Guid.NewGuid():N}",
+            Description = "Order test",
+            DurationInDays = 2
+        });
+        var firstPayload = await firstCreate.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
+        Assert.NotNull(firstPayload?.Result);
+
+        var secondCreate = await client.PostAsJsonAsync("/api/courses", new CreateCourseRequest
+        {
+            Title = $"Order-B-{Guid.NewGuid():N}",
+            Description = "Order test",
+            DurationInDays = 2
+        });
+        var secondPayload = await secondCreate.Content.ReadFromJsonAsync<CourseResult>(_jsonOptions);
+        Assert.NotNull(secondPayload?.Result);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            var firstEntity = await db.Courses.FindAsync(firstPayload.Result.Id);
+            var secondEntity = await db.Courses.FindAsync(secondPayload.Result.Id);
+            Assert.NotNull(firstEntity);
+            Assert.NotNull(secondEntity);
+            firstEntity!.CreatedAtUtc = DateTime.UtcNow.AddMinutes(-2);
+            secondEntity!.CreatedAtUtc = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+        }
+
+        var response = await client.GetAsync("/api/courses");
+        var payload = await response.Content.ReadFromJsonAsync<CourseListResult>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(payload?.Result);
+
+        var firstIndex = payload.Result.ToList().FindIndex(x => x.Id == firstPayload.Result.Id);
+        var secondIndex = payload.Result.ToList().FindIndex(x => x.Id == secondPayload.Result.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task GetCourseById_ReturnsBadRequest_ForEmptyGuid()
     {
         await _factory.ResetAndSeedDataAsync();

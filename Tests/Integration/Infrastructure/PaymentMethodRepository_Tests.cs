@@ -33,6 +33,23 @@ public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllPaymentMethodsAsync_ShouldReturnDescendingById()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new PaymentMethodRepository(context);
+        var first = await repo.AddAsync(new PaymentMethodModel(0, $"MethodA-{Guid.NewGuid():N}"), CancellationToken.None);
+        var second = await repo.AddAsync(new PaymentMethodModel(0, $"MethodB-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+        var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = all.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task IsInUseAsync_ShouldReturnTrue_WhenReferencedByCourseRegistration()
     {
         await using var context = fixture.CreateDbContext();

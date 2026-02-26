@@ -32,6 +32,23 @@ public class VenueTypeRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllVenueTypesAsync_ShouldReturnDescendingById()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new VenueTypeRepository(context);
+        var first = await repo.AddAsync(new VenueType(1, $"VenueA-{Guid.NewGuid():N}"), CancellationToken.None);
+        var second = await repo.AddAsync(new VenueType(1, $"VenueB-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+        var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = all.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task IsInUseAsync_ShouldReturnTrue_WhenReferencedByCourseEvent()
     {
         await using var context = fixture.CreateDbContext();

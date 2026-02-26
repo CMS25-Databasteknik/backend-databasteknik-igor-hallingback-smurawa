@@ -96,6 +96,50 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task GetAllCourseRegistrationsAsync_ShouldReturnDescendingByRegistrationDate()
+    {
+        await using var context = fixture.CreateDbContext();
+        var participant = await RepositoryTestDataHelper.CreateParticipantAsync(context);
+        var secondParticipant = await RepositoryTestDataHelper.CreateParticipantAsync(context);
+        var courseEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
+        var repo = new CourseRegistrationRepository(context);
+
+        var first = await repo.AddAsync(
+            new CourseRegistration(
+                Guid.NewGuid(),
+                participant.Id,
+                courseEvent.Id,
+                DateTime.UtcNow.AddMinutes(-5),
+                CourseRegistrationStatus.Pending,
+                new PaymentMethod(1, "Card")),
+            CancellationToken.None);
+
+        var second = await repo.AddAsync(
+            new CourseRegistration(
+                Guid.NewGuid(),
+                secondParticipant.Id,
+                courseEvent.Id,
+                DateTime.UtcNow,
+                CourseRegistrationStatus.Pending,
+                new PaymentMethod(1, "Card")),
+            CancellationToken.None);
+
+        var firstEntity = await context.CourseRegistrations.SingleAsync(x => x.Id == first.Id, CancellationToken.None);
+        var secondEntity = await context.CourseRegistrations.SingleAsync(x => x.Id == second.Id, CancellationToken.None);
+        firstEntity.RegistrationDate = DateTime.UtcNow.AddMinutes(-2);
+        secondEntity.RegistrationDate = DateTime.UtcNow;
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var all = await repo.GetAllAsync(CancellationToken.None);
+        var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
+        var secondIndex = all.ToList().FindIndex(x => x.Id == second.Id);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task GetCourseRegistrationsByParticipantIdAsync_ShouldReturnParticipantRegistrations()
     {
         await using var context = fixture.CreateDbContext();

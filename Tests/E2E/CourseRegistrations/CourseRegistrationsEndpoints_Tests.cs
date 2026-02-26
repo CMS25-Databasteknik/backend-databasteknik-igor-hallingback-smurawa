@@ -35,6 +35,72 @@ public sealed class CourseRegistrationsEndpoints_Tests(CoursesOnlineDbApiFactory
     }
 
     [Fact]
+    public async Task GetAllCourseRegistrations_ReturnsNewestFirst_ByRegistrationDateDescending()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        Guid participantId;
+        Guid secondParticipantId;
+        Guid courseEventId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            participantId = (await RepositoryTestDataHelper.CreateParticipantAsync(db)).Id;
+            secondParticipantId = (await RepositoryTestDataHelper.CreateParticipantAsync(db)).Id;
+            courseEventId = (await RepositoryTestDataHelper.CreateCourseEventAsync(db, seats: 10)).Id;
+        }
+
+        using var client = _factory.CreateClient();
+        var firstCreate = await client.PostAsJsonAsync("/api/course-registrations", new CreateCourseRegistrationRequest
+        {
+            ParticipantId = participantId,
+            CourseEventId = courseEventId,
+            StatusId = 1,
+            PaymentMethodId = 1
+        });
+        var firstId = Guid.Parse(firstCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        var secondCreate = await client.PostAsJsonAsync("/api/course-registrations", new CreateCourseRegistrationRequest
+        {
+            ParticipantId = secondParticipantId,
+            CourseEventId = courseEventId,
+            StatusId = 1,
+            PaymentMethodId = 1
+        });
+        var secondId = Guid.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            var firstEntity = await db.CourseRegistrations.FindAsync(firstId);
+            var secondEntity = await db.CourseRegistrations.FindAsync(secondId);
+            Assert.NotNull(firstEntity);
+            Assert.NotNull(secondEntity);
+            firstEntity!.RegistrationDate = DateTime.UtcNow.AddMinutes(-2);
+            secondEntity!.RegistrationDate = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+        }
+
+        var response = await client.GetAsync("/api/course-registrations");
+        var payload = await response.Content.ReadFromJsonAsync<JsonDocument>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(payload);
+        var ids = payload.RootElement
+            .GetProperty("result")
+            .EnumerateArray()
+            .Select(item => item.GetProperty("id").GetGuid())
+            .ToList();
+
+        var firstIndex = ids.FindIndex(x => x == firstId);
+        var secondIndex = ids.FindIndex(x => x == secondId);
+
+        Assert.True(firstIndex >= 0);
+        Assert.True(secondIndex >= 0);
+        Assert.True(secondIndex < firstIndex);
+    }
+
+    [Fact]
     public async Task CreateCourseRegistration_ThenGetById_ReturnsCreatedRegistration()
     {
         await _factory.ResetAndSeedDataAsync();
