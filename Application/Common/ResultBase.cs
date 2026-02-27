@@ -1,59 +1,53 @@
 namespace Backend.Application.Common;
 
-public enum ResultError
+public record Result(
+    bool Success,
+    ErrorTypes? ErrorType = null,
+    string? ErrorMessage = null,
+    string? Message = null)
 {
-    None = 0,
-    Validation = 1,
-    Unauthorized = 2,
-    Forbidden = 3,
-    NotFound = 4,
-    Conflict = 5,
-    Unprocessable = 6,
-    Unexpected = 7
+    public static Result Ok() => new(true);
+
+    public static Result BadRequest(string message) => new(false, ErrorTypes.Validation, message, message);
+    public static Result Validation(string message) => new(false, ErrorTypes.Validation, message, message);
+    public static Result Unauthorized(string message) => new(false, ErrorTypes.Unauthorized, message, message);
+    public static Result Forbidden(string message) => new(false, ErrorTypes.Forbidden, message, message);
+    public static Result NotFound(string message) => new(false, ErrorTypes.NotFound, message, message);
+    public static Result Conflict(string message) => new(false, ErrorTypes.Conflict, message, message);
+    public static Result Unprocessable(string message) => new(false, ErrorTypes.Unprocessable, message, message);
+    public static Result Error(string message = "An unexpected error occurred.") => new(false, ErrorTypes.Unexpected, message, message);
 }
 
-public class ResultBase
+public record Result<T>(
+    bool Success,
+    T? Value = default,
+    ErrorTypes? ErrorType = null,
+    string? ErrorMessage = null,
+    string? Message = null) : Result(Success, ErrorType, ErrorMessage, Message)
 {
-    public bool Success { get; set; }
-    public ErrorTypes? ErrorType { get; set; }
-    public string? ErrorMessage { get; set; }
+    public static Result<T> Ok(T value) => new(true, value);
 
-    public ResultError Error
-    {
-        get => ErrorType switch
-        {
-            null => ResultError.None,
-            ErrorTypes.NotFound => ResultError.NotFound,
-            ErrorTypes.Conflict => ResultError.Conflict,
-            ErrorTypes.Validation => ResultError.Validation,
-            ErrorTypes.Unauthorized => ResultError.Unauthorized,
-            ErrorTypes.Forbidden => ResultError.Forbidden,
-            ErrorTypes.Unprocessable => ResultError.Unprocessable,
-            _ => ResultError.Unexpected
-        };
-
-        set => ErrorType = value switch
-        {
-            ResultError.None => null,
-            ResultError.NotFound => ErrorTypes.NotFound,
-            ResultError.Conflict => ErrorTypes.Conflict,
-            ResultError.Validation => ErrorTypes.Validation,
-            ResultError.Unauthorized => ErrorTypes.Unauthorized,
-            ResultError.Forbidden => ErrorTypes.Forbidden,
-            ResultError.Unprocessable => ErrorTypes.Unprocessable,
-            _ => ErrorTypes.Unexpected
-        };
-    }
-
-    public string? Message
-    {
-        get => ErrorMessage;
-        set => ErrorMessage = value;
-    }
+    public new static Result<T> BadRequest(string message) => new(false, default, ErrorTypes.Validation, message, message);
+    public new static Result<T> Validation(string message) => new(false, default, ErrorTypes.Validation, message, message);
+    public new static Result<T> Unauthorized(string message) => new(false, default, ErrorTypes.Unauthorized, message, message);
+    public new static Result<T> Forbidden(string message) => new(false, default, ErrorTypes.Forbidden, message, message);
+    public new static Result<T> NotFound(string message) => new(false, default, ErrorTypes.NotFound, message, message);
+    public new static Result<T> Conflict(string message) => new(false, default, ErrorTypes.Conflict, message, message);
+    public new static Result<T> Unprocessable(string message) => new(false, default, ErrorTypes.Unprocessable, message, message);
+    public new static Result<T> Error(string message = "An unexpected error occurred.") => new(false, default, ErrorTypes.Unexpected, message, message);
 }
 
-public abstract class ResultCommon<T> : ResultBase
-{
-    public T? Result { get; set; }
-}
+// Backwards-compatible aliases to ease transition
+public record ResultBase(
+    bool Success = false,
+    ErrorTypes? ErrorType = null,
+    string? ErrorMessage = null,
+    string? Message = null) : Result(Success, ErrorType, ErrorMessage, Message);
 
+public record ResultCommon<T>(
+    bool Success = false,
+    T? Result = default,
+    ErrorTypes? ErrorType = null,
+    string? ErrorMessage = null,
+    string? Message = null)
+    : Result<T>(Success, Result, ErrorType, ErrorMessage, Message);

@@ -40,7 +40,7 @@ public partial class Program
                     Message = "Malformed JSON payload."
                 };
 
-                await response.WriteAsJsonAsync(payload.ToApiResponse());
+                await response.WriteAsJsonAsync(payload);
             }
         });
 

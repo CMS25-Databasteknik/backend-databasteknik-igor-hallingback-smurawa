@@ -26,7 +26,7 @@ public static class ParticipantsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetParticipantById(Guid id, IParticipantService participantService, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public static class ParticipantsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> CreateParticipant(CreateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public static class ParticipantsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return response.ToCreatedResult($"/api/participants/{response.Result?.Id}");
+        return Results.Created($"/api/participants/{response.Result?.Id}", response);
     }
 
     private static async Task<IResult> UpdateParticipant(Guid id, UpdateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public static class ParticipantsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> DeleteParticipant(Guid id, IParticipantService participantService, CancellationToken cancellationToken)
@@ -64,8 +64,9 @@ public static class ParticipantsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 }
+
 
 

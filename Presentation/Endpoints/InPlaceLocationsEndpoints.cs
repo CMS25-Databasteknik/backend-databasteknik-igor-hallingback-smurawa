@@ -28,7 +28,7 @@ public static class InPlaceLocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetInPlaceLocationById(int id, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
@@ -37,7 +37,7 @@ public static class InPlaceLocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetInPlaceLocationsByLocationId(int locationId, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ public static class InPlaceLocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> CreateInPlaceLocation(CreateInPlaceLocationRequest request, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
@@ -56,7 +56,7 @@ public static class InPlaceLocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return response.ToCreatedResult($"/api/in-place-locations/{response.Result?.Id}");
+        return Results.Created($"/api/in-place-locations/{response.Result?.Id}", response);
     }
 
     private static async Task<IResult> UpdateInPlaceLocation(int id, UpdateInPlaceLocationRequest request, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
@@ -66,7 +66,7 @@ public static class InPlaceLocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> DeleteInPlaceLocation(int id, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
@@ -75,8 +75,9 @@ public static class InPlaceLocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 }
+
 
 

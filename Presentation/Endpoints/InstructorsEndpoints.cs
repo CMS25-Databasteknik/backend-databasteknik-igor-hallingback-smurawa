@@ -26,7 +26,7 @@ public static class InstructorsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetInstructorById(Guid id, IInstructorService instructorService, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public static class InstructorsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> CreateInstructor(CreateInstructorRequest request, IInstructorService instructorService, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public static class InstructorsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return response.ToCreatedResult($"/api/instructors/{response.Result?.Id}");
+        return Results.Created($"/api/instructors/{response.Result?.Id}", response);
     }
 
     private static async Task<IResult> UpdateInstructor(Guid id, UpdateInstructorRequest request, IInstructorService instructorService, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public static class InstructorsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> DeleteInstructor(Guid id, IInstructorService instructorService, CancellationToken cancellationToken)
@@ -64,8 +64,9 @@ public static class InstructorsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 }
+
 
 
