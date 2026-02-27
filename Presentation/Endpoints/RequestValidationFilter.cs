@@ -41,7 +41,8 @@ public static class RequestValidationFilter
                     return new ResultBase
                     {
                         Success = false,
-                        Error = ResultError.Validation,
+                        ErrorType = ErrorTypes.Validation,
+                        ErrorMessage = errorMessage,
                         Message = errorMessage
                     }.ToHttpResult();
                 }

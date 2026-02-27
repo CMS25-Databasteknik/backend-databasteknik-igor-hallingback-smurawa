@@ -1,4 +1,4 @@
-﻿namespace Backend.Infrastructure.Persistence.Entities
+namespace Backend.Infrastructure.Persistence.Entities
 {
     public class CourseEntity
     {

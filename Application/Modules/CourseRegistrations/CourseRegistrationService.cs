@@ -34,7 +34,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Result = null,
                     Message = "Course registration cannot be null."
                 };
@@ -45,7 +45,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Result = null,
                     Message = "Participant ID cannot be empty."
                 };
@@ -56,7 +56,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Result = null,
                     Message = "Course event ID cannot be empty."
                 };
@@ -68,7 +68,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Result = null,
                     Message = $"Participant with ID '{courseRegistration.ParticipantId}' not found."
                 };
@@ -80,7 +80,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Result = null,
                     Message = $"Course event with ID '{courseRegistration.CourseEventId}' not found."
                 };
@@ -92,7 +92,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Result = null,
                     Message = $"Course registration status with ID '{courseRegistration.StatusId}' not found."
                 };
@@ -104,7 +104,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Result = null,
                     Message = $"Payment method with ID '{courseRegistration.PaymentMethodId}' not found."
                 };
@@ -133,7 +133,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                Error = ResultError.Validation,
+                ErrorType = ErrorTypes.Validation,
                 Result = null,
                 Message = ex.Message
             };
@@ -143,7 +143,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the course registration: {ex.Message}"
             };
@@ -178,7 +178,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationListResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving course registrations: {ex.Message}"
             };
         }
@@ -193,7 +193,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDetailsResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course registration ID cannot be empty."
                 };
             }
@@ -205,7 +205,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDetailsResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Course registration with ID '{courseRegistrationId}' not found."
                 };
             }
@@ -242,7 +242,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationDetailsResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving the course registration: {ex.Message}"
             };
         }
@@ -257,7 +257,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationListResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Participant ID cannot be empty."
                 };
             }
@@ -286,7 +286,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationListResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving course registrations: {ex.Message}"
             };
         }
@@ -301,7 +301,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationListResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course event ID cannot be empty."
                 };
             }
@@ -330,7 +330,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationListResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving course registrations: {ex.Message}"
             };
         }
@@ -345,7 +345,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course registration cannot be null."
                 };
             }
@@ -355,7 +355,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course registration ID cannot be empty."
                 };
             }
@@ -365,7 +365,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Participant ID cannot be empty."
                 };
             }
@@ -375,7 +375,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course event ID cannot be empty."
                 };
             }
@@ -386,7 +386,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Course registration with ID '{courseRegistration.Id}' not found."
                 };
             }
@@ -397,7 +397,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Participant with ID '{courseRegistration.ParticipantId}' not found."
                 };
             }
@@ -408,7 +408,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Course event with ID '{courseRegistration.CourseEventId}' not found."
                 };
             }
@@ -419,7 +419,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Course registration status with ID '{courseRegistration.StatusId}' not found."
                 };
             }
@@ -430,7 +430,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Payment method with ID '{courseRegistration.PaymentMethodId}' not found."
                 };
             }
@@ -450,7 +450,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationResult
                 {
                     Success = false,
-                    Error = ResultError.Unexpected,
+                    ErrorType = ErrorTypes.Unexpected,
                     Message = "Failed to update course registration."
                 };
             }
@@ -467,7 +467,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                Error = ResultError.Conflict,
+                ErrorType = ErrorTypes.Conflict,
                 Message = "The course registration was modified by another user. Please refresh and try again."
             };
         }
@@ -476,7 +476,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                Error = ResultError.Validation,
+                ErrorType = ErrorTypes.Validation,
                 Message = ex.Message
             };
         }
@@ -485,7 +485,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while updating the course registration: {ex.Message}"
             };
         }
@@ -500,7 +500,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course registration ID cannot be empty.",
                     Result = false
                 };
@@ -512,7 +512,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Course registration with ID '{courseRegistrationId}' not found.",
                     Result = false
                 };
@@ -525,7 +525,7 @@ public class CourseRegistrationService(
                 return new CourseRegistrationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Unexpected,
+                    ErrorType = ErrorTypes.Unexpected,
                     Message = "Failed to delete course registration.",
                     Result = false
                 };
@@ -543,7 +543,7 @@ public class CourseRegistrationService(
             return new CourseRegistrationDeleteResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while deleting the course registration: {ex.Message}",
                 Result = false
             };

@@ -19,7 +19,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Result = null,
                     Message = "Location cannot be null."
                 };
@@ -46,7 +46,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationResult
             {
                 Success = false,
-                Error = ResultError.Validation,
+                ErrorType = ErrorTypes.Validation,
                 Result = null,
                 Message = ex.Message
             };
@@ -56,7 +56,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the location: {ex.Message}"
             };
@@ -91,7 +91,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationListResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving locations: {ex.Message}"
             };
         }
@@ -106,7 +106,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Location ID must be greater than zero."
                 };
             }
@@ -118,7 +118,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Location with ID '{locationId}' not found."
                 };
             }
@@ -135,7 +135,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving the location: {ex.Message}"
             };
         }
@@ -150,7 +150,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Location cannot be null."
                 };
             }
@@ -160,7 +160,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Location ID must be greater than zero."
                 };
             }
@@ -171,7 +171,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Location with ID '{location.Id}' not found."
                 };
             }
@@ -189,7 +189,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationResult
                 {
                     Success = false,
-                    Error = ResultError.Unexpected,
+                    ErrorType = ErrorTypes.Unexpected,
                     Message = "Failed to update location."
                 };
             }
@@ -206,7 +206,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationResult
             {
                 Success = false,
-                Error = ResultError.Validation,
+                ErrorType = ErrorTypes.Validation,
                 Message = ex.Message
             };
         }
@@ -215,7 +215,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while updating the location: {ex.Message}"
             };
         }
@@ -230,7 +230,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Location ID must be greater than zero.",
                     Result = false
                 };
@@ -242,7 +242,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Location with ID '{locationId}' not found.",
                     Result = false
                 };
@@ -254,7 +254,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Conflict,
+                    ErrorType = ErrorTypes.Conflict,
                     Message = $"Cannot delete location with ID '{locationId}' because it has in-place locations. Please delete the in-place locations first.",
                     Result = false
                 };
@@ -267,7 +267,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 return new LocationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Unexpected,
+                    ErrorType = ErrorTypes.Unexpected,
                     Message = "Failed to delete location.",
                     Result = false
                 };
@@ -285,7 +285,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
             return new LocationDeleteResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while deleting the location: {ex.Message}",
                 Result = false
             };

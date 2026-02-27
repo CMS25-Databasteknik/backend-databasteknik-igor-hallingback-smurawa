@@ -19,7 +19,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Result = null,
                     Message = "Course cannot be null."
                 };
@@ -46,7 +46,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                Error = ResultError.Validation,
+                ErrorType = ErrorTypes.Validation,
                 Result = null,
                 Message = ex.Message
             };
@@ -56,7 +56,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the course: {ex.Message}"
             };
@@ -91,7 +91,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseListResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving courses: {ex.Message}"
             };
         }
@@ -106,7 +106,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseWithEventsResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course ID cannot be empty."
                 };
             }
@@ -118,7 +118,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseWithEventsResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Course with ID '{courseId}' not found."
                 };
             }
@@ -135,7 +135,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseWithEventsResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving the course: {ex.Message}"
             };
         }
@@ -150,7 +150,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course cannot be null."
                 };
             }
@@ -160,7 +160,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course ID cannot be empty."
                 };
             }
@@ -171,7 +171,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Course with ID '{course.Id}' not found."
                 };
             }
@@ -189,7 +189,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseResult
                 {
                     Success = false,
-                    Error = ResultError.Unexpected,
+                    ErrorType = ErrorTypes.Unexpected,
                     Message = "Failed to update course."
                 };
             }
@@ -206,7 +206,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                Error = ResultError.Conflict,
+                ErrorType = ErrorTypes.Conflict,
                 Message = "The course was modified by another user. Please refresh and try again."
             };
         }
@@ -215,7 +215,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                Error = ResultError.Validation,
+                ErrorType = ErrorTypes.Validation,
                 Message = ex.Message
             };
         }
@@ -224,7 +224,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while updating the course: {ex.Message}"
             };
         }
@@ -239,7 +239,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Course ID cannot be empty.",
                     Result = false
                 };
@@ -251,7 +251,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"Course with ID '{courseId}' not found.",
                     Result = false
                 };
@@ -263,7 +263,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Conflict,
+                    ErrorType = ErrorTypes.Conflict,
                     Message = $"Cannot delete course with ID '{courseId}' because it has associated course events. Please delete the course events first.",
                     Result = false
                 };
@@ -276,7 +276,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 return new CourseDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Unexpected,
+                    ErrorType = ErrorTypes.Unexpected,
                     Message = "Failed to delete course.",
                     Result = false
                 };
@@ -294,7 +294,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseDeleteResult
             {
                 Success = false,
-                Error = ResultError.Conflict,
+                ErrorType = ErrorTypes.Conflict,
                 Message = "Cannot delete course because it has associated course events. Please delete the course events first.",
                 Result = false
             };
@@ -304,7 +304,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
             return new CourseDeleteResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while deleting the course: {ex.Message}",
                 Result = false
             };

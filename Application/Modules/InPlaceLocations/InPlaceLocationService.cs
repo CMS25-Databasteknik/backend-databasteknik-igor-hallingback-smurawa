@@ -19,7 +19,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Result = null,
                     Message = "In-place location cannot be null."
                 };
@@ -46,7 +46,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                Error = ResultError.Validation,
+                ErrorType = ErrorTypes.Validation,
                 Result = null,
                 Message = ex.Message
             };
@@ -56,7 +56,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Result = null,
                 Message = $"An error occurred while creating the in-place location: {ex.Message}"
             };
@@ -91,7 +91,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationListResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving in-place locations: {ex.Message}"
             };
         }
@@ -106,7 +106,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "In-place location ID must be greater than zero."
                 };
             }
@@ -118,7 +118,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"In-place location with ID '{inPlaceLocationId}' not found."
                 };
             }
@@ -135,7 +135,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving the in-place location: {ex.Message}"
             };
         }
@@ -150,7 +150,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationListResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "Location ID must be greater than zero."
                 };
             }
@@ -179,7 +179,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationListResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while retrieving in-place locations: {ex.Message}"
             };
         }
@@ -194,7 +194,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "In-place location cannot be null."
                 };
             }
@@ -204,7 +204,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "In-place location ID must be greater than zero."
                 };
             }
@@ -215,7 +215,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"In-place location with ID '{inPlaceLocation.Id}' not found."
                 };
             }
@@ -233,7 +233,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationResult
                 {
                     Success = false,
-                    Error = ResultError.Unexpected,
+                    ErrorType = ErrorTypes.Unexpected,
                     Message = "Failed to update in-place location."
                 };
             }
@@ -250,7 +250,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                Error = ResultError.Validation,
+                ErrorType = ErrorTypes.Validation,
                 Message = ex.Message
             };
         }
@@ -259,7 +259,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                Error = ResultError.Conflict,
+                ErrorType = ErrorTypes.Conflict,
                 Message = "Cannot update because the requested location reference is invalid."
             };
         }
@@ -268,7 +268,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while updating the in-place location: {ex.Message}"
             };
         }
@@ -283,7 +283,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Validation,
+                    ErrorType = ErrorTypes.Validation,
                     Message = "In-place location ID must be greater than zero.",
                     Result = false
                 };
@@ -295,7 +295,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.NotFound,
+                    ErrorType = ErrorTypes.NotFound,
                     Message = $"In-place location with ID '{inPlaceLocationId}' not found.",
                     Result = false
                 };
@@ -307,7 +307,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Conflict,
+                    ErrorType = ErrorTypes.Conflict,
                     Message = $"Cannot delete in-place location with ID '{inPlaceLocationId}' because it is assigned to course events. Please remove the assignments first.",
                     Result = false
                 };
@@ -320,7 +320,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 return new InPlaceLocationDeleteResult
                 {
                     Success = false,
-                    Error = ResultError.Unexpected,
+                    ErrorType = ErrorTypes.Unexpected,
                     Message = "Failed to delete in-place location.",
                     Result = false
                 };
@@ -338,7 +338,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
             return new InPlaceLocationDeleteResult
             {
                 Success = false,
-                Error = ResultError.Unexpected,
+                ErrorType = ErrorTypes.Unexpected,
                 Message = $"An error occurred while deleting the in-place location: {ex.Message}",
                 Result = false
             };

@@ -48,7 +48,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal("John", result.Result.FirstName);
         Assert.Equal("Doe", result.Result.LastName);
@@ -73,7 +73,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Participant cannot be null.", result.Message);
 
@@ -93,7 +93,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -113,7 +113,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -133,7 +133,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -153,7 +153,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -173,7 +173,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -193,7 +193,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -213,7 +213,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -233,7 +233,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -256,7 +256,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while creating the participant", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -284,7 +284,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(firstName, result.Result.FirstName);
         Assert.Equal(lastName, result.Result.LastName);
@@ -325,7 +325,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(3, result.Result.Count());
         Assert.Equal("Retrieved 3 participant(s) successfully.", result.Message);
@@ -348,7 +348,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Empty(result.Result);
         Assert.Equal("No participants found.", result.Message);
@@ -369,7 +369,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Contains("An error occurred while retrieving participants", result.Message);
         Assert.Contains("Database connection failed", result.Message);
     }
@@ -396,7 +396,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(participantId, result.Result.Id);
         Assert.Equal("John", result.Result.FirstName);
@@ -422,7 +422,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.NotFound, result.Error);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains($"Participant with ID '{participantId}' not found", result.Message);
     }
@@ -439,7 +439,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Participant ID cannot be empty.", result.Message);
 
@@ -463,7 +463,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while retrieving the participant", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -496,7 +496,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal("Smith", result.Result.LastName);
         Assert.Equal("john.smith@example.com", result.Result.Email);
@@ -520,7 +520,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Participant cannot be null.", result.Message);
 
@@ -540,7 +540,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Participant ID cannot be empty.", result.Message);
 
@@ -562,7 +562,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
     }
@@ -582,7 +582,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
     }
@@ -602,7 +602,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
     }
@@ -622,7 +622,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
     }
@@ -645,7 +645,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.NotFound, result.Error);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains($"Participant with ID '{participantId}' not found", result.Message);
 
@@ -674,7 +674,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Conflict, result.Error);
+        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("The participant was modified by another user. Please refresh and try again.", result.Message);
     }
@@ -701,7 +701,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while updating the participant", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -735,7 +735,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.True(result.Result);
         Assert.Equal("Participant deleted successfully.", result.Message);
 
@@ -754,7 +754,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.False(result.Result);
         Assert.Equal("Participant ID cannot be empty.", result.Message);
 
@@ -778,7 +778,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.NotFound, result.Error);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
         Assert.False(result.Result);
         Assert.Contains($"Participant with ID '{participantId}' not found", result.Message);
 
@@ -806,7 +806,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Conflict, result.Error);
+        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
         Assert.False(result.Result);
         Assert.Contains("Cannot delete participant", result.Message);
         Assert.Contains("they have course registrations", result.Message);
@@ -838,7 +838,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.False(result.Result);
         Assert.Contains("An error occurred while deleting the participant", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -868,7 +868,7 @@ public class ParticipantService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.False(result.Result);
         Assert.Equal("Failed to delete participant.", result.Message);
     }

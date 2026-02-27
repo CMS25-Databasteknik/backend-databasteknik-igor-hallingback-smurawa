@@ -24,7 +24,7 @@ public class PaymentMethodService_Tests
         var result = await service.GetAllPaymentMethodsAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(2, result.Result!.Count);
     }

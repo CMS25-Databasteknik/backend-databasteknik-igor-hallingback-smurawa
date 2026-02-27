@@ -3,6 +3,7 @@ using Backend.Application.Common;
 using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Presentation.API.Endpoints;
+using Backend.Presentation.API.Models;
 using Microsoft.AspNetCore.Routing;
 
 namespace Backend.Presentation.API;
@@ -29,18 +30,20 @@ public partial class Program
             var http = statusCodeContext.HttpContext;
             var response = http.Response;
 
-            if (response.StatusCode == 400 && !response.HasStarted && (response.ContentLength ?? 0) == 0)
+            if (!response.HasStarted && (response.ContentLength ?? 0) == 0)
             {
                 response.ContentType = "application/json";
-
-                var payload = new ResultBase
+                var payload = response.StatusCode switch
                 {
-                    Success = false,
-                    Error = ResultError.Validation,
-                    Message = "Malformed JSON payload."
+                    StatusCodes.Status400BadRequest => new ApiResponse(false, null, "Malformed JSON payload.", "validation_error"),
+                    StatusCodes.Status404NotFound => new ApiResponse(false, null, "Resource not found.", "not_found"),
+                    StatusCodes.Status409Conflict => new ApiResponse(false, null, "Conflict.", "conflict"),
+                    StatusCodes.Status422UnprocessableEntity => new ApiResponse(false, null, "Unprocessable entity.", "unprocessable_entity"),
+                    _ => null
                 };
 
-                await response.WriteAsJsonAsync(payload);
+                if (payload is not null)
+                    await response.WriteAsJsonAsync(payload);
             }
         });
 

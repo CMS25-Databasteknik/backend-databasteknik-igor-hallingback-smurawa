@@ -10,7 +10,7 @@ public class ResultBase_Tests
         var result = new TestResultBase();
 
         Assert.False(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.Null(result.Message);
     }
 
@@ -20,12 +20,12 @@ public class ResultBase_Tests
         var result = new TestResultBase
         {
             Success = false,
-            Error = ResultError.Validation,
+            ErrorType = ErrorTypes.Validation,
             Message = "Validation failed"
         };
 
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Equal("Validation failed", result.Message);
     }
 
@@ -48,7 +48,7 @@ public class ResultBaseGeneric_Tests
         var result = new TestResultBaseGeneric();
 
         Assert.False(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.Null(result.Message);
         Assert.Null(result.Result);
     }
@@ -67,13 +67,13 @@ public class ResultBaseGeneric_Tests
         var result = new TestResultBaseGeneric
         {
             Success = true,
-            Error = ResultError.None,
+            ErrorType = ErrorTypes.None,
             Message = "ok",
             Result = "payload"
         };
 
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.Equal("ok", result.Message);
         Assert.Equal("payload", result.Result);
     }
