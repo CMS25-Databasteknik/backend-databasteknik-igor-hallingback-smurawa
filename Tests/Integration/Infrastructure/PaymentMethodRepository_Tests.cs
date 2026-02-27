@@ -50,6 +50,22 @@ public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task UpdatePaymentMethodAsync_ShouldPersistChanges()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new PaymentMethodRepository(context);
+        var created = await repo.AddAsync(new PaymentMethodModel(0, $"Method-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var updated = await repo.UpdateAsync(created.Id, new PaymentMethodModel(created.Id, "Updated"), CancellationToken.None);
+
+        Assert.NotNull(updated);
+        Assert.Equal("Updated", updated!.Name);
+
+        var persisted = await context.PaymentMethods.AsNoTracking().SingleAsync(x => x.Id == created.Id, CancellationToken.None);
+        Assert.Equal("Updated", persisted.Name);
+    }
+
+    [Fact]
     public async Task IsInUseAsync_ShouldReturnTrue_WhenReferencedByCourseRegistration()
     {
         await using var context = fixture.CreateDbContext();
@@ -74,6 +90,23 @@ public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
         var inUse = await paymentMethodRepo.IsInUseAsync(paymentMethod.Id, CancellationToken.None);
 
         Assert.True(inUse);
+    }
+
+    [Fact]
+    public async Task DeletePaymentMethodAsync_ShouldRemovePaymentMethod()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new PaymentMethodRepository(context);
+        var created = await repo.AddAsync(new PaymentMethodModel(0, $"Method-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var removed = await repo.RemoveAsync(created.Id, CancellationToken.None);
+        var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
+
+        Assert.True(removed);
+        Assert.Null(byId);
+
+        var exists = await context.PaymentMethods.AnyAsync(x => x.Id == created.Id, CancellationToken.None);
+        Assert.False(exists);
     }
 }
 

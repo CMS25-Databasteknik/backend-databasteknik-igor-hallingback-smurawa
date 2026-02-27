@@ -327,6 +327,72 @@ public class CourseEventService_Tests
         Assert.Equal(ErrorTypes.Validation, result.ErrorType);
     }
 
+    [Fact]
+    public async Task Delete_Should_Return_404_When_Event_Not_Found()
+    {
+        var eventRepo = Substitute.For<ICourseEventRepository>();
+        eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((CourseEvent?)null);
+
+        var service = CreateService(eventRepo);
+        var result = await service.DeleteCourseEventAsync(Guid.NewGuid());
+
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
+        await eventRepo.DidNotReceive().HasRegistrationsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Delete_Should_Return_409_When_Event_Has_Registrations()
+    {
+        var eventRepo = Substitute.For<ICourseEventRepository>();
+        var eventId = Guid.NewGuid();
+        eventRepo.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
+            .Returns(new CourseEvent(eventId, Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 100, 10, 1, new VenueType(1, "InPerson")));
+        eventRepo.HasRegistrationsAsync(eventId, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        var service = CreateService(eventRepo);
+        var result = await service.DeleteCourseEventAsync(eventId);
+
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
+        await eventRepo.DidNotReceive().RemoveAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Delete_Should_Return_200_When_Deleted()
+    {
+        var eventRepo = Substitute.For<ICourseEventRepository>();
+        var eventId = Guid.NewGuid();
+        eventRepo.GetByIdAsync(eventId, Arg.Any<CancellationToken>())
+            .Returns(new CourseEvent(eventId, Guid.NewGuid(), DateTime.UtcNow.AddDays(2), 50, 5, 1, new VenueType(1, "InPerson")));
+        eventRepo.HasRegistrationsAsync(eventId, Arg.Any<CancellationToken>())
+            .Returns(false);
+        eventRepo.RemoveAsync(eventId, Arg.Any<CancellationToken>()).Returns(true);
+
+        var service = CreateService(eventRepo);
+        var result = await service.DeleteCourseEventAsync(eventId);
+
+        Assert.True(result.Success);
+        Assert.True(result.Result);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
+    }
+
+    [Fact]
+    public async Task Delete_Should_Return_500_When_Repository_Throws()
+    {
+        var eventRepo = Substitute.For<ICourseEventRepository>();
+        eventRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns<Task<CourseEvent?>>(_ => throw new InvalidOperationException("boom"));
+
+        var service = CreateService(eventRepo);
+        var result = await service.DeleteCourseEventAsync(Guid.NewGuid());
+
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
+    }
+
     #endregion
 }
 

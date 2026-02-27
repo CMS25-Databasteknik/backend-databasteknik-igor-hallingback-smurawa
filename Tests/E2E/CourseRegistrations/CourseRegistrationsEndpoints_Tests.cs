@@ -218,5 +218,42 @@ public sealed class CourseRegistrationsEndpoints_Tests(CoursesOnlineDbApiFactory
         Assert.False(payload.Success);
         Assert.Equal(ErrorTypes.NotFound, payload.ErrorType);
     }
+
+    [Fact]
+    public async Task DeleteCourseRegistration_ReturnsOk_AndRemovesRegistration()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        Guid registrationId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            var participant = await RepositoryTestDataHelper.CreateParticipantAsync(db);
+            var courseEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(db, seats: 5);
+            var registration = await RepositoryTestDataHelper.CreateCourseRegistrationAsync(
+                db,
+                participantId: participant.Id,
+                courseEventId: courseEvent.Id);
+            registrationId = registration.Id;
+        }
+
+        using var client = _factory.CreateClient();
+
+        var deleteResponse = await client.DeleteAsync($"/api/course-registrations/{registrationId}");
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+        Assert.NotNull(deletePayload);
+        Assert.True(deletePayload.Success);
+        Assert.True(deletePayload.Result);
+
+        var getResponse = await client.GetAsync($"/api/course-registrations/{registrationId}");
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        Assert.NotNull(getPayload);
+        Assert.False(getPayload.Success);
+        Assert.Equal(ErrorTypes.NotFound, getPayload.ErrorType);
+    }
 }
 

@@ -215,5 +215,36 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);
         Assert.False(payload.Result);
     }
+
+    [Fact]
+    public async Task DeleteCourseEvent_ReturnsOk_AndRemovesCourseEvent()
+    {
+        await _factory.ResetAndSeedDataAsync();
+
+        Guid eventId;
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
+            eventId = (await RepositoryTestDataHelper.CreateCourseEventAsync(db, seats: 15)).Id;
+        }
+
+        using var client = _factory.CreateClient();
+
+        var deleteResponse = await client.DeleteAsync($"/api/course-events/{eventId}");
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+        Assert.NotNull(deletePayload);
+        Assert.True(deletePayload.Success);
+        Assert.True(deletePayload.Result);
+
+        var getResponse = await client.GetAsync($"/api/course-events/{eventId}");
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        Assert.NotNull(getPayload);
+        Assert.False(getPayload.Success);
+        Assert.Equal(ErrorTypes.NotFound, getPayload.ErrorType);
+    }
 }
 
