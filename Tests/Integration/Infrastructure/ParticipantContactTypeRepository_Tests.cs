@@ -49,6 +49,22 @@ public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixtur
     }
 
     [Fact]
+    public async Task UpdateParticipantContactTypeAsync_ShouldPersistChanges()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new ParticipantContactTypeRepository(context);
+        var created = await repo.AddAsync(new ParticipantContactType(1, $"Contact-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var updated = await repo.UpdateAsync(created.Id, new ParticipantContactType(created.Id, "Updated"), CancellationToken.None);
+
+        Assert.NotNull(updated);
+        Assert.Equal("Updated", updated!.Name);
+
+        var persisted = await context.ParticipantContactTypes.AsNoTracking().SingleAsync(x => x.Id == created.Id, CancellationToken.None);
+        Assert.Equal("Updated", persisted.Name);
+    }
+
+    [Fact]
     public async Task IsInUseAsync_ShouldReturnTrue_WhenReferencedByParticipant()
     {
         await using var context = fixture.CreateDbContext();
@@ -71,6 +87,23 @@ public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixtur
         var inUse = await contactTypeRepo.IsInUseAsync(contactType.Id, CancellationToken.None);
 
         Assert.True(inUse);
+    }
+
+    [Fact]
+    public async Task DeleteParticipantContactTypeAsync_ShouldRemoveContactType()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new ParticipantContactTypeRepository(context);
+        var created = await repo.AddAsync(new ParticipantContactType(1, $"Contact-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var removed = await repo.RemoveAsync(created.Id, CancellationToken.None);
+        var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
+
+        Assert.True(removed);
+        Assert.Null(byId);
+
+        var exists = await context.ParticipantContactTypes.AnyAsync(x => x.Id == created.Id, CancellationToken.None);
+        Assert.False(exists);
     }
 }
 

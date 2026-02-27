@@ -49,6 +49,22 @@ public class VenueTypeRepository_Tests(SqliteInMemoryFixture fixture)
     }
 
     [Fact]
+    public async Task UpdateVenueTypeAsync_ShouldPersistChanges()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new VenueTypeRepository(context);
+        var created = await repo.AddAsync(new VenueType(1, $"Venue-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var updated = await repo.UpdateAsync(created.Id, new VenueType(created.Id, "Hybrid"), CancellationToken.None);
+
+        Assert.NotNull(updated);
+        Assert.Equal("Hybrid", updated!.Name);
+
+        var persisted = await context.VenueTypes.AsNoTracking().SingleAsync(x => x.Id == created.Id, CancellationToken.None);
+        Assert.Equal("Hybrid", persisted.Name);
+    }
+
+    [Fact]
     public async Task IsInUseAsync_ShouldReturnTrue_WhenReferencedByCourseEvent()
     {
         await using var context = fixture.CreateDbContext();
@@ -74,6 +90,23 @@ public class VenueTypeRepository_Tests(SqliteInMemoryFixture fixture)
         var inUse = await venueTypeRepo.IsInUseAsync(venueType.Id, CancellationToken.None);
 
         Assert.True(inUse);
+    }
+
+    [Fact]
+    public async Task DeleteVenueTypeAsync_ShouldRemoveVenueType()
+    {
+        await using var context = fixture.CreateDbContext();
+        var repo = new VenueTypeRepository(context);
+        var created = await repo.AddAsync(new VenueType(1, $"Venue-{Guid.NewGuid():N}"), CancellationToken.None);
+
+        var removed = await repo.RemoveAsync(created.Id, CancellationToken.None);
+        var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
+
+        Assert.True(removed);
+        Assert.Null(byId);
+
+        var exists = await context.VenueTypes.AnyAsync(x => x.Id == created.Id, CancellationToken.None);
+        Assert.False(exists);
     }
 }
 
