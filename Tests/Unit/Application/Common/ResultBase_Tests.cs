@@ -1,4 +1,5 @@
 using Backend.Application.Common;
+using System.Text.Json;
 
 namespace Backend.Tests.Unit.Application.Common;
 
@@ -98,6 +99,34 @@ public class ResultBaseGeneric_Tests
         Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.Equal("ok", result.Message);
         Assert.Equal("payload", result.Result);
+    }
+
+    [Fact]
+    public void Serialization_Should_Include_All_Fields_Even_When_Null()
+    {
+        var result = new TestResultBaseGeneric
+        {
+            Success = true,
+            ErrorType = ErrorTypes.None,
+            Message = null,
+            Result = null
+        };
+
+        var json = JsonSerializer.Serialize(result);
+        using var doc = JsonDocument.Parse(json);
+        var root = doc.RootElement;
+
+        Assert.True(root.TryGetProperty("Success", out var successProp));
+        Assert.True(successProp.GetBoolean());
+
+        Assert.True(root.TryGetProperty("ErrorType", out var errorTypeProp));
+        Assert.Equal(JsonValueKind.Number, errorTypeProp.ValueKind);
+
+        Assert.True(root.TryGetProperty("Message", out var messageProp));
+        Assert.Equal(JsonValueKind.Null, messageProp.ValueKind);
+
+        Assert.True(root.TryGetProperty("Result", out var resultProp));
+        Assert.Equal(JsonValueKind.Null, resultProp.ValueKind);
     }
 
     private sealed record TestResultBaseGeneric : ResultBase<string>;
