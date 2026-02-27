@@ -1,53 +1,52 @@
 namespace Backend.Application.Common;
 
-public record Result(
-    bool Success,
-    ErrorTypes? ErrorType = null,
-    string? ErrorMessage = null,
-    string? Message = null)
+public enum ResultError
 {
-    public static Result Ok() => new(true);
-
-    public static Result BadRequest(string message) => new(false, ErrorTypes.Validation, message, message);
-    public static Result Validation(string message) => new(false, ErrorTypes.Validation, message, message);
-    public static Result Unauthorized(string message) => new(false, ErrorTypes.Unauthorized, message, message);
-    public static Result Forbidden(string message) => new(false, ErrorTypes.Forbidden, message, message);
-    public static Result NotFound(string message) => new(false, ErrorTypes.NotFound, message, message);
-    public static Result Conflict(string message) => new(false, ErrorTypes.Conflict, message, message);
-    public static Result Unprocessable(string message) => new(false, ErrorTypes.Unprocessable, message, message);
-    public static Result Error(string message = "An unexpected error occurred.") => new(false, ErrorTypes.Unexpected, message, message);
+    None,
+    Validation,
+    Unauthorized,
+    Forbidden,
+    NotFound,
+    Conflict,
+    Unprocessable,
+    Unexpected
 }
 
-public record Result<T>(
-    bool Success,
-    T? Value = default,
-    ErrorTypes? ErrorType = null,
-    string? ErrorMessage = null,
-    string? Message = null) : Result(Success, ErrorType, ErrorMessage, Message)
-{
-    public static Result<T> Ok(T value) => new(true, value);
-
-    public new static Result<T> BadRequest(string message) => new(false, default, ErrorTypes.Validation, message, message);
-    public new static Result<T> Validation(string message) => new(false, default, ErrorTypes.Validation, message, message);
-    public new static Result<T> Unauthorized(string message) => new(false, default, ErrorTypes.Unauthorized, message, message);
-    public new static Result<T> Forbidden(string message) => new(false, default, ErrorTypes.Forbidden, message, message);
-    public new static Result<T> NotFound(string message) => new(false, default, ErrorTypes.NotFound, message, message);
-    public new static Result<T> Conflict(string message) => new(false, default, ErrorTypes.Conflict, message, message);
-    public new static Result<T> Unprocessable(string message) => new(false, default, ErrorTypes.Unprocessable, message, message);
-    public new static Result<T> Error(string message = "An unexpected error occurred.") => new(false, default, ErrorTypes.Unexpected, message, message);
-}
-
-// Backwards-compatible aliases to ease transition
 public record ResultBase(
     bool Success = false,
-    ErrorTypes? ErrorType = null,
-    string? ErrorMessage = null,
-    string? Message = null) : Result(Success, ErrorType, ErrorMessage, Message);
-
-public record ResultCommon<T>(
-    bool Success = false,
-    T? Result = default,
+    ResultError Error = ResultError.None,
     ErrorTypes? ErrorType = null,
     string? ErrorMessage = null,
     string? Message = null)
-    : Result<T>(Success, Result, ErrorType, ErrorMessage, Message);
+{
+    public static ResultBase Ok(string? message = null) => new(true, ResultError.None, null, null, message);
+
+    public static ResultBase BadRequest(string message) => new(false, ResultError.Validation, ErrorTypes.Validation, message, message);
+    public static ResultBase Unauthorized(string message) => new(false, ResultError.Unauthorized, ErrorTypes.Unauthorized, message, message);
+    public static ResultBase Forbidden(string message) => new(false, ResultError.Forbidden, ErrorTypes.Forbidden, message, message);
+    public static ResultBase NotFound(string message) => new(false, ResultError.NotFound, ErrorTypes.NotFound, message, message);
+    public static ResultBase Conflict(string message) => new(false, ResultError.Conflict, ErrorTypes.Conflict, message, message);
+    public static ResultBase Unprocessable(string message) => new(false, ResultError.Unprocessable, ErrorTypes.Unprocessable, message, message);
+    public static ResultBase Unexpected(string message = "An unexpected error occurred.") => new(false, ResultError.Unexpected, ErrorTypes.Unexpected, message, message);
+}
+
+public record ResultBase<T>(
+    bool Success = false,
+    T? Result = default,
+    ResultError Error = ResultError.None,
+    ErrorTypes? ErrorType = null,
+    string? ErrorMessage = null,
+    string? Message = null)
+    : ResultBase(Success, Error, ErrorType, ErrorMessage, Message)
+{
+    public static ResultBase<T> Ok(T value, string? message = null) => new(true, value, ResultError.None, null, null, message);
+
+    public new static ResultBase<T> BadRequest(string message) => new(false, default, ResultError.Validation, ErrorTypes.Validation, message, message);
+    public new static ResultBase<T> Unauthorized(string message) => new(false, default, ResultError.Unauthorized, ErrorTypes.Unauthorized, message, message);
+    public new static ResultBase<T> Forbidden(string message) => new(false, default, ResultError.Forbidden, ErrorTypes.Forbidden, message, message);
+    public new static ResultBase<T> NotFound(string message) => new(false, default, ResultError.NotFound, ErrorTypes.NotFound, message, message);
+    public new static ResultBase<T> Conflict(string message) => new(false, default, ResultError.Conflict, ErrorTypes.Conflict, message, message);
+    public new static ResultBase<T> Unprocessable(string message) => new(false, default, ResultError.Unprocessable, ErrorTypes.Unprocessable, message, message);
+    public new static ResultBase<T> Unexpected(string message = "An unexpected error occurred.") => new(false, default, ResultError.Unexpected, ErrorTypes.Unexpected, message, message);
+}
+

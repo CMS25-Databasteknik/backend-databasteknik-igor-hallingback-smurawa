@@ -37,15 +37,15 @@ public class ResultBase_Tests
         Assert.Null(result.Message);
     }
 
-    private sealed class TestResultBase : ResultBase;
+    private sealed record TestResultBase : ResultBase;
 }
 
-public class ResultCommon_Tests
+public class ResultBaseGeneric_Tests
 {
     [Fact]
     public void Constructor_Should_Initialize_With_Default_Values()
     {
-        var result = new TestResultCommon();
+        var result = new TestResultBaseGeneric();
 
         Assert.False(result.Success);
         Assert.Equal(ResultError.None, result.Error);
@@ -56,7 +56,7 @@ public class ResultCommon_Tests
     [Fact]
     public void Result_Should_Be_Settable()
     {
-        var result = new TestResultCommon { Result = "Test" };
+        var result = new TestResultBaseGeneric { Result = "Test" };
 
         Assert.Equal("Test", result.Result);
     }
@@ -64,7 +64,7 @@ public class ResultCommon_Tests
     [Fact]
     public void Should_Inherit_Base_Properties()
     {
-        var result = new TestResultCommon
+        var result = new TestResultBaseGeneric
         {
             Success = true,
             Error = ResultError.None,
@@ -78,5 +78,5 @@ public class ResultCommon_Tests
         Assert.Equal("payload", result.Result);
     }
 
-    private sealed class TestResultCommon : ResultCommon<string>;
+    private sealed record TestResultBaseGeneric : ResultBase<string>;
 }

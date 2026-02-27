@@ -3,14 +3,14 @@ using Backend.Domain.Modules.Locations.Models;
 
 namespace Backend.Application.Modules.Locations.Outputs;
 
-public sealed class LocationResult : ResultCommon<Location>
+public sealed record LocationResult : ResultBase<Location>
 {
 }
 
-public sealed class LocationListResult : ResultCommon<IReadOnlyList<Location>>
+public sealed record LocationListResult : ResultBase<IReadOnlyList<Location>>
 {
 }
 
-public sealed class LocationDeleteResult : ResultCommon<bool>
+public sealed record LocationDeleteResult : ResultBase<bool>
 {
 }

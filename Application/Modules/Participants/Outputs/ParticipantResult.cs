@@ -14,19 +14,19 @@ public sealed record ParticipantDetails(
     ParticipantLookupItem ContactType
 );
 
-public sealed class ParticipantResult : ResultCommon<Participant>
+public sealed record ParticipantResult : ResultBase<Participant>
 {
 }
 
-public sealed class ParticipantDetailsResult : ResultCommon<ParticipantDetails>
+public sealed record ParticipantDetailsResult : ResultBase<ParticipantDetails>
 {
 }
 
-public sealed class ParticipantListResult : ResultCommon<IReadOnlyList<Participant>>
+public sealed record ParticipantListResult : ResultBase<IReadOnlyList<Participant>>
 {
 }
 
-public sealed class ParticipantDeleteResult : ResultCommon<bool>
+public sealed record ParticipantDeleteResult : ResultBase<bool>
 {
 }
 

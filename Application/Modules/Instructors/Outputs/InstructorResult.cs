@@ -11,19 +11,19 @@ public sealed record InstructorDetails(
     InstructorLookupItem InstructorRole
 );
 
-public sealed class InstructorResult : ResultCommon<Instructor>
+public sealed record InstructorResult : ResultBase<Instructor>
 {
 }
 
-public sealed class InstructorDetailsResult : ResultCommon<InstructorDetails>
+public sealed record InstructorDetailsResult : ResultBase<InstructorDetails>
 {
 }
 
-public sealed class InstructorListResult : ResultCommon<IReadOnlyList<Instructor>>
+public sealed record InstructorListResult : ResultBase<IReadOnlyList<Instructor>>
 {
 }
 
-public sealed class InstructorDeleteResult : ResultCommon<bool>
+public sealed record InstructorDeleteResult : ResultBase<bool>
 {
 }
 

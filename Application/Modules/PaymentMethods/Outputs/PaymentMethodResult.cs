@@ -3,14 +3,14 @@ using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMe
 
 namespace Backend.Application.Modules.PaymentMethods.Outputs;
 
-public sealed class PaymentMethodResult : ResultCommon<PaymentMethodModel>
+public sealed record PaymentMethodResult : ResultBase<PaymentMethodModel>
 {
 }
 
-public sealed class PaymentMethodListResult : ResultCommon<IReadOnlyList<PaymentMethodModel>>
+public sealed record PaymentMethodListResult : ResultBase<IReadOnlyList<PaymentMethodModel>>
 {
 }
 
-public sealed class PaymentMethodDeleteResult : ResultCommon<bool>
+public sealed record PaymentMethodDeleteResult : ResultBase<bool>
 {
 }

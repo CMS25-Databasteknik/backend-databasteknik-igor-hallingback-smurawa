@@ -17,7 +17,7 @@ public static class ResultHttpExtensions
             _ => Results.Problem("An unknown error occurred.")
         };
 
-    public static IResult ToHttpResult<T>(this ResultCommon<T> result)
+    public static IResult ToHttpResult<T>(this ResultBase<T> result)
         => result.ErrorType switch
         {
             ErrorTypes.NotFound => Results.NotFound(result.ErrorMessage),

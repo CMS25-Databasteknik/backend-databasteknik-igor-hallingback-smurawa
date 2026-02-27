@@ -3,14 +3,14 @@ using Backend.Domain.Modules.CourseEventTypes.Models;
 
 namespace Backend.Application.Modules.CourseEventTypes.Outputs;
 
-public sealed class CourseEventTypeResult : ResultCommon<CourseEventType>
+public sealed record CourseEventTypeResult : ResultBase<CourseEventType>
 {
 }
 
-public sealed class CourseEventTypeListResult : ResultCommon<IReadOnlyList<CourseEventType>>
+public sealed record CourseEventTypeListResult : ResultBase<IReadOnlyList<CourseEventType>>
 {
 }
 
-public sealed class CourseEventTypeDeleteResult : ResultCommon<bool>
+public sealed record CourseEventTypeDeleteResult : ResultBase<bool>
 {
 }
