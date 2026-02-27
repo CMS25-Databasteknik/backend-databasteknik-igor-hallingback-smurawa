@@ -223,8 +223,9 @@ The cache is primarily used for read operations (`get by id`, `get all`, and whe
    ```
 
 6. **Access the API**
-   - The API will be available at `https://localhost:<port>`
-   - OpenAPI documentation: `https://localhost:<port>/openapi/v1.json`
+   - HTTPS endpoint: `https://localhost:7118`
+   - HTTP endpoint: `http://localhost:5400`
+   - OpenAPI documentation: `https://localhost:7118/openapi/v1.json`
 
 ### Running Tests
 
