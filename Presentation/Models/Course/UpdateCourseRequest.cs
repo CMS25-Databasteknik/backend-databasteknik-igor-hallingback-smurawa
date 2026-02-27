@@ -5,10 +5,10 @@ namespace Backend.Presentation.API.Models.Course;
 public sealed record UpdateCourseRequest
 {
     [Required]
-    public string Title { get; init; }
+    public string Title { get; init; } = string.Empty;
 
     [Required]
-    public string Description { get; init; }
+    public string Description { get; init; } = string.Empty;
 
     [Range(1, int.MaxValue)]
     public int DurationInDays { get; init; }

@@ -10,7 +10,7 @@ public static class ResultHttpExtensions
             ErrorTypes.NotFound => Results.NotFound(result),
             ErrorTypes.Validation => Results.BadRequest(result),
             ErrorTypes.Conflict => Results.Conflict(result),
-            ErrorTypes.Unexpected => Results.Problem(result.ErrorMessage),
+            ErrorTypes.Unexpected => Results.Problem(result.Message),
             _ => Results.Problem("An unknown error occurred.")
         };
 
@@ -20,7 +20,7 @@ public static class ResultHttpExtensions
             ErrorTypes.NotFound => Results.NotFound(result),
             ErrorTypes.Validation => Results.BadRequest(result),
             ErrorTypes.Conflict => Results.Conflict(result),
-            ErrorTypes.Unexpected => Results.Problem(result.ErrorMessage),
+            ErrorTypes.Unexpected => Results.Problem(result.Message),
             _ => Results.Problem("An unknown error occurred.")
         };
 }

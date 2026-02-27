@@ -42,7 +42,6 @@ public static class RequestValidationFilter
                     {
                         Success = false,
                         ErrorType = ErrorTypes.Validation,
-                        ErrorMessage = errorMessage,
                         Message = errorMessage
                     }.ToHttpResult();
                 }
