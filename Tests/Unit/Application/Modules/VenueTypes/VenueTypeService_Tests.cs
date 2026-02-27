@@ -25,7 +25,7 @@ public class VenueTypeService_Tests
         var result = await service.GetAllVenueTypesAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(2, result.Result!.Count);
     }

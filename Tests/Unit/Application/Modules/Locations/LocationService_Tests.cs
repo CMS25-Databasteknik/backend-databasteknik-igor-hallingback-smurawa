@@ -29,7 +29,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal("Kungsgatan 12", result.Result.StreetName);
         Assert.Equal("111 43", result.Result.PostalCode);
@@ -53,7 +53,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Location cannot be null.", result.Message);
 
@@ -73,7 +73,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -93,7 +93,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -113,7 +113,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -133,7 +133,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -153,7 +153,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -173,7 +173,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
 
@@ -196,7 +196,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while creating the location", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -224,7 +224,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(streetName, result.Result.StreetName);
         Assert.Equal(postalCode, result.Result.PostalCode);
@@ -264,7 +264,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(3, result.Result.Count());
         Assert.Equal("Retrieved 3 location(s) successfully.", result.Message);
@@ -287,7 +287,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Empty(result.Result);
         Assert.Equal("No locations found.", result.Message);
@@ -308,7 +308,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Contains("An error occurred while retrieving locations", result.Message);
         Assert.Contains("Database connection failed", result.Message);
     }
@@ -335,7 +335,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(locationId, result.Result.Id);
         Assert.Equal("Kungsgatan 12", result.Result.StreetName);
@@ -361,7 +361,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.NotFound, result.Error);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains($"Location with ID '{locationId}' not found", result.Message);
     }
@@ -378,7 +378,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Location ID must be greater than zero.", result.Message);
 
@@ -397,7 +397,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Location ID must be greater than zero.", result.Message);
 
@@ -421,7 +421,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while retrieving the location", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -454,7 +454,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal("Kungsgatan 15", result.Result.StreetName);
         Assert.Equal("Location updated successfully.", result.Message);
@@ -477,7 +477,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Location cannot be null.", result.Message);
 
@@ -497,7 +497,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Location ID must be greater than zero.", result.Message);
 
@@ -519,7 +519,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
     }
@@ -539,7 +539,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
     }
@@ -559,7 +559,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("cannot be empty or whitespace", result.Message);
     }
@@ -582,7 +582,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.NotFound, result.Error);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains($"Location with ID '{locationId}' not found", result.Message);
 
@@ -611,7 +611,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while updating the location", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -645,7 +645,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.True(result.Result);
         Assert.Equal("Location deleted successfully.", result.Message);
 
@@ -664,7 +664,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.False(result.Result);
         Assert.Equal("Location ID must be greater than zero.", result.Message);
 
@@ -683,7 +683,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.False(result.Result);
         Assert.Equal("Location ID must be greater than zero.", result.Message);
 
@@ -707,7 +707,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.NotFound, result.Error);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
         Assert.False(result.Result);
         Assert.Contains($"Location with ID '{locationId}' not found", result.Message);
 
@@ -735,7 +735,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Conflict, result.Error);
+        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
         Assert.False(result.Result);
         Assert.Contains("Cannot delete location", result.Message);
         Assert.Contains("has in-place locations", result.Message);
@@ -767,7 +767,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.False(result.Result);
         Assert.Contains("An error occurred while deleting the location", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -797,7 +797,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.False(result.Result);
         Assert.Equal("Failed to delete location.", result.Message);
     }

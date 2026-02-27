@@ -28,7 +28,7 @@ public static class CourseEventsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetCourseEventById(Guid id, ICourseEventService service, CancellationToken cancellationToken)
@@ -37,7 +37,7 @@ public static class CourseEventsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetCourseEventsByCourseId(Guid courseId, ICourseEventService service, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ public static class CourseEventsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> CreateCourseEvent(CreateCourseEventRequest request, ICourseEventService service, CancellationToken cancellationToken)
@@ -56,7 +56,7 @@ public static class CourseEventsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return response.ToCreatedResult($"/api/course-events/{response.Result?.Id}");
+        return Results.Created($"/api/course-events/{response.Result?.Id}", response);
     }
 
     private static async Task<IResult> UpdateCourseEvent(Guid id, UpdateCourseEventRequest request, ICourseEventService service, CancellationToken cancellationToken)
@@ -66,7 +66,7 @@ public static class CourseEventsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> DeleteCourseEvent(Guid id, ICourseEventService service, CancellationToken cancellationToken)
@@ -75,8 +75,9 @@ public static class CourseEventsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 }
+
 
 

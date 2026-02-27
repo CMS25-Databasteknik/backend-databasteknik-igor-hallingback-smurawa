@@ -5,18 +5,18 @@ namespace Backend.Presentation.API.Models.Participant;
 public sealed record CreateParticipantRequest
 {
     [Required]
-    public required string FirstName { get; init; }
+    public string FirstName { get; init; }
 
     [Required]
-    public required string LastName { get; init; }
+    public string LastName { get; init; }
 
     [Required]
     [EmailAddress]
-    public required string Email { get; init; }
+    public string Email { get; init; }
 
     [Required]
-    public required string PhoneNumber { get; init; }
+    public string PhoneNumber { get; init; }
 
     [Range(1, int.MaxValue)]
-    public required int ContactTypeId { get; init; }
+    public int ContactTypeId { get; init; }
 }

@@ -29,18 +29,20 @@ public partial class Program
             var http = statusCodeContext.HttpContext;
             var response = http.Response;
 
-            if (response.StatusCode == 400 && !response.HasStarted && (response.ContentLength ?? 0) == 0)
+            if (!response.HasStarted && (response.ContentLength ?? 0) == 0)
             {
                 response.ContentType = "application/json";
-
-                var payload = new ResultBase
+                var payload = response.StatusCode switch
                 {
-                    Success = false,
-                    Error = ResultError.Validation,
-                    Message = "Malformed JSON payload."
+                    StatusCodes.Status400BadRequest => new ResultBase(false, ErrorTypes.Validation, "Malformed JSON payload.", "Malformed JSON payload."),
+                    StatusCodes.Status404NotFound => new ResultBase(false, ErrorTypes.NotFound, "Resource not found.", "Resource not found."),
+                    StatusCodes.Status409Conflict => new ResultBase(false, ErrorTypes.Conflict, "Conflict.", "Conflict."),
+                    StatusCodes.Status422UnprocessableEntity => new ResultBase(false, ErrorTypes.Unprocessable, "Unprocessable entity.", "Unprocessable entity."),
+                    _ => null
                 };
 
-                await response.WriteAsJsonAsync(payload.ToApiResponse());
+                if (payload is not null)
+                    await response.WriteAsJsonAsync(payload);
             }
         });
 

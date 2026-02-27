@@ -1,4 +1,4 @@
-﻿namespace Backend.Application.Modules.Courses.Inputs;
+namespace Backend.Application.Modules.Courses.Inputs;
 
 public sealed record UpdateCourseInput
 (

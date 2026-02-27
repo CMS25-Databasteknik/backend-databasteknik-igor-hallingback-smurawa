@@ -17,11 +17,11 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         try
         {
             if (input == null)
-                return new VenueTypeResult { Success = false, Error = ResultError.Validation, Message = "Venue type cannot be null." };
+                return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "Venue type cannot be null." };
 
             var existing = await _repository.GetByNameAsync(input.Name, cancellationToken);
             if (existing is not null)
-                return new VenueTypeResult { Success = false, Error = ResultError.Validation, Message = "A venue type with the same name already exists." };
+                return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "A venue type with the same name already exists." };
 
             var created = await _repository.AddAsync(new VenueType(1, input.Name), cancellationToken);
             _cache.ResetEntity(created);
@@ -30,11 +30,11 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         }
         catch (ArgumentException ex)
         {
-            return new VenueTypeResult { Success = false, Error = ResultError.Validation, Message = ex.Message };
+            return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
         }
         catch (Exception ex)
         {
-            return new VenueTypeResult { Success = false, Error = ResultError.Unexpected, Message = $"An error occurred while creating the venue type: {ex.Message}" };
+            return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while creating the venue type: {ex.Message}" };
         }
     }
 
@@ -54,7 +54,7 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         }
         catch (Exception ex)
         {
-            return new VenueTypeListResult { Success = false, Error = ResultError.Unexpected, Message = $"An error occurred while retrieving venue types: {ex.Message}" };
+            return new VenueTypeListResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while retrieving venue types: {ex.Message}" };
         }
     }
 
@@ -70,17 +70,17 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
                 token => _repository.GetByIdAsync(id, token),
                 cancellationToken);
             if (venueType == null)
-                return new VenueTypeResult { Success = false, Error = ResultError.NotFound, Message = $"Venue type with ID '{id}' not found." };
+                return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.NotFound, Message = $"Venue type with ID '{id}' not found." };
 
             return new VenueTypeResult { Success = true, Result = venueType, Message = "Venue type retrieved successfully." };
         }
         catch (ArgumentException ex)
         {
-            return new VenueTypeResult { Success = false, Error = ResultError.Validation, Message = ex.Message };
+            return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
         }
         catch (Exception ex)
         {
-            return new VenueTypeResult { Success = false, Error = ResultError.Unexpected, Message = $"An error occurred while retrieving the venue type: {ex.Message}" };
+            return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while retrieving the venue type: {ex.Message}" };
         }
     }
 
@@ -96,17 +96,17 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
                 token => _repository.GetByNameAsync(name, token),
                 cancellationToken);
             if (venueType == null)
-                return new VenueTypeResult { Success = false, Error = ResultError.NotFound, Message = $"Venue type with name '{name}' not found." };
+                return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.NotFound, Message = $"Venue type with name '{name}' not found." };
 
             return new VenueTypeResult { Success = true, Result = venueType, Message = "Venue type retrieved successfully." };
         }
         catch (ArgumentException ex)
         {
-            return new VenueTypeResult { Success = false, Error = ResultError.Validation, Message = ex.Message };
+            return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
         }
         catch (Exception ex)
         {
-            return new VenueTypeResult { Success = false, Error = ResultError.Unexpected, Message = $"An error occurred while retrieving the venue type: {ex.Message}" };
+            return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while retrieving the venue type: {ex.Message}" };
         }
     }
 
@@ -115,16 +115,16 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         try
         {
             if (input == null)
-                return new VenueTypeResult { Success = false, Error = ResultError.Validation, Message = "Venue type cannot be null." };
+                return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "Venue type cannot be null." };
 
             var existingVenueType = await _repository.GetByIdAsync(input.Id, cancellationToken);
             if (existingVenueType == null)
-                return new VenueTypeResult { Success = false, Error = ResultError.NotFound, Message = $"Venue type with ID '{input.Id}' not found." };
+                return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.NotFound, Message = $"Venue type with ID '{input.Id}' not found." };
 
             existingVenueType.Update(input.Name);
             var updatedVenueType = await _repository.UpdateAsync(existingVenueType.Id, existingVenueType, cancellationToken);
             if (updatedVenueType == null)
-                return new VenueTypeResult { Success = false, Error = ResultError.Unexpected, Message = "Failed to update venue type." };
+                return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = "Failed to update venue type." };
             _cache.ResetEntity(existingVenueType);
             _cache.SetEntity(updatedVenueType);
 
@@ -132,11 +132,11 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         }
         catch (ArgumentException ex)
         {
-            return new VenueTypeResult { Success = false, Error = ResultError.Validation, Message = ex.Message };
+            return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
         }
         catch (Exception ex)
         {
-            return new VenueTypeResult { Success = false, Error = ResultError.Unexpected, Message = $"An error occurred while updating the venue type: {ex.Message}" };
+            return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while updating the venue type: {ex.Message}" };
         }
     }
 
@@ -149,25 +149,25 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
 
             var existingVenueType = await _repository.GetByIdAsync(id, cancellationToken);
             if (existingVenueType == null)
-                return new VenueTypeDeleteResult { Success = false, Error = ResultError.NotFound, Result = false, Message = $"Venue type with ID '{id}' not found." };
+                return new VenueTypeDeleteResult { Success = false, ErrorType = ErrorTypes.NotFound, Result = false, Message = $"Venue type with ID '{id}' not found." };
 
             if (await _repository.IsInUseAsync(id, cancellationToken))
-                return new VenueTypeDeleteResult { Success = false, Error = ResultError.Conflict, Result = false, Message = $"Cannot delete venue type with ID '{id}' because it is in use." };
+                return new VenueTypeDeleteResult { Success = false, ErrorType = ErrorTypes.Conflict, Result = false, Message = $"Cannot delete venue type with ID '{id}' because it is in use." };
 
             var isDeleted = await _repository.RemoveAsync(id, cancellationToken);
             if (!isDeleted)
-                return new VenueTypeDeleteResult { Success = false, Error = ResultError.Unexpected, Result = false, Message = "Failed to delete venue type." };
+                return new VenueTypeDeleteResult { Success = false, ErrorType = ErrorTypes.Unexpected, Result = false, Message = "Failed to delete venue type." };
 
             _cache.ResetEntity(existingVenueType);
             return new VenueTypeDeleteResult { Success = true, Result = true, Message = "Venue type deleted successfully." };
         }
         catch (ArgumentException ex)
         {
-            return new VenueTypeDeleteResult { Success = false, Error = ResultError.Validation, Result = false, Message = ex.Message };
+            return new VenueTypeDeleteResult { Success = false, ErrorType = ErrorTypes.Validation, Result = false, Message = ex.Message };
         }
         catch (Exception ex)
         {
-            return new VenueTypeDeleteResult { Success = false, Error = ResultError.Unexpected, Result = false, Message = $"An error occurred while deleting the venue type: {ex.Message}" };
+            return new VenueTypeDeleteResult { Success = false, ErrorType = ErrorTypes.Unexpected, Result = false, Message = $"An error occurred while deleting the venue type: {ex.Message}" };
         }
     }
 }

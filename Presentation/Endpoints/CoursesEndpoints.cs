@@ -26,7 +26,7 @@ public static class CoursesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetCourseById(Guid id, ICourseService courseService, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public static class CoursesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> CreateCourse(CreateCourseRequest request, ICourseService courseService, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public static class CoursesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return response.ToCreatedResult($"/api/courses/{response.Result?.Id}");
+        return Results.Created($"/api/courses/{response.Result?.Id}", response);
     }
 
     private static async Task<IResult> UpdateCourse(Guid id, UpdateCourseRequest request, ICourseService courseService, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public static class CoursesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> DeleteCourse(Guid id, ICourseService courseService, CancellationToken cancellationToken)
@@ -64,8 +64,9 @@ public static class CoursesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 }
+
 
 

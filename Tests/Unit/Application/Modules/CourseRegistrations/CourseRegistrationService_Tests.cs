@@ -91,7 +91,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(participantId, result.Result.ParticipantId);
         Assert.Equal(courseEventId, result.Result.CourseEventId);
@@ -115,7 +115,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Course registration cannot be null.", result.Message);
 
@@ -135,7 +135,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("Participant ID cannot be empty", result.Message);
 
@@ -155,7 +155,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("Course event ID cannot be empty", result.Message);
 
@@ -178,7 +178,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while creating the course registration", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -211,7 +211,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(status, result.Result.Status);
         Assert.Equal(payment, result.Result.PaymentMethod);
@@ -250,7 +250,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(3, result.Result.Count());
         Assert.Equal("Retrieved 3 course registration(s) successfully.", result.Message);
@@ -273,7 +273,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Empty(result.Result);
         Assert.Equal("No course registrations found.", result.Message);
@@ -294,7 +294,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Contains("An error occurred while retrieving course registrations", result.Message);
         Assert.Contains("Database connection failed", result.Message);
     }
@@ -321,7 +321,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(registrationId, result.Result.Id);
         Assert.Equal("Course registration retrieved successfully.", result.Message);
@@ -346,7 +346,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.NotFound, result.Error);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains($"Course registration with ID '{registrationId}' not found", result.Message);
     }
@@ -363,7 +363,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("ID cannot be empty", result.Message);
 
@@ -387,7 +387,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while retrieving the course registration", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -419,7 +419,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(2, result.Result.Count());
         Assert.Equal("Retrieved 2 course registration(s) for the participant successfully.", result.Message);
@@ -444,7 +444,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Empty(result.Result);
         Assert.Equal("No course registrations found for this participant.", result.Message);
@@ -462,7 +462,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Contains("Participant ID cannot be empty", result.Message);
 
         await mockRepo.DidNotReceive().GetCourseRegistrationsByParticipantIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
@@ -485,7 +485,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Contains("An error occurred while retrieving course registrations", result.Message);
         Assert.Contains("Database error", result.Message);
     }
@@ -516,7 +516,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(2, result.Result.Count());
         Assert.Equal("Retrieved 2 course registration(s) for the course event successfully.", result.Message);
@@ -541,7 +541,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Empty(result.Result);
         Assert.Equal("No course registrations found for this course event.", result.Message);
@@ -559,7 +559,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Contains("Course event ID cannot be empty", result.Message);
 
         await mockRepo.DidNotReceive().GetCourseRegistrationsByCourseEventIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
@@ -582,7 +582,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Contains("An error occurred while retrieving course registrations", result.Message);
         Assert.Contains("Database error", result.Message);
     }
@@ -616,7 +616,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal(CourseRegistrationStatus.Paid, result.Result.Status);
         Assert.Equal("Course registration updated successfully.", result.Message);
@@ -639,7 +639,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("Course registration cannot be null.", result.Message);
 
@@ -659,7 +659,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("ID cannot be empty", result.Message);
 
@@ -679,7 +679,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("Participant ID cannot be empty", result.Message);
     }
@@ -697,7 +697,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("Course event ID cannot be empty", result.Message);
     }
@@ -720,7 +720,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.NotFound, result.Error);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains($"Course registration with ID '{registrationId}' not found", result.Message);
 
@@ -749,7 +749,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Conflict, result.Error);
+        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Equal("The course registration was modified by another user. Please refresh and try again.", result.Message);
     }
@@ -776,7 +776,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while updating the course registration", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -807,7 +807,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ResultError.None, result.Error);
+        Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.True(result.Result);
         Assert.Equal("Course registration deleted successfully.", result.Message);
 
@@ -826,7 +826,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Validation, result.Error);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
         Assert.False(result.Result);
         Assert.Equal("Course registration ID cannot be empty.", result.Message);
 
@@ -850,7 +850,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.NotFound, result.Error);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
         Assert.False(result.Result);
         Assert.Contains($"Course registration with ID '{registrationId}' not found", result.Message);
 
@@ -878,7 +878,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.False(result.Result);
         Assert.Contains("An error occurred while deleting the course registration", result.Message);
         Assert.Contains("Database error", result.Message);
@@ -905,7 +905,7 @@ public class CourseRegistrationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ResultError.Unexpected, result.Error);
+        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
         Assert.False(result.Result);
         Assert.Equal("Failed to delete course registration.", result.Message);
     }

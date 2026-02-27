@@ -1,4 +1,4 @@
-﻿namespace Backend.Domain.Modules.Courses.Models;
+namespace Backend.Domain.Modules.Courses.Models;
 
 public sealed class Course
 {

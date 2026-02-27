@@ -3,14 +3,14 @@ using Backend.Domain.Modules.ParticipantContactTypes.Models;
 
 namespace Backend.Application.Modules.ParticipantContactTypes.Outputs;
 
-public sealed class ParticipantContactTypeResult : ResultCommon<ParticipantContactType>
+public sealed record ParticipantContactTypeResult : ResultBase<ParticipantContactType>
 {
 }
 
-public sealed class ParticipantContactTypeListResult : ResultCommon<IReadOnlyList<ParticipantContactType>>
+public sealed record ParticipantContactTypeListResult : ResultBase<IReadOnlyList<ParticipantContactType>>
 {
 }
 
-public sealed class ParticipantContactTypeDeleteResult : ResultCommon<bool>
+public sealed record ParticipantContactTypeDeleteResult : ResultBase<bool>
 {
 }

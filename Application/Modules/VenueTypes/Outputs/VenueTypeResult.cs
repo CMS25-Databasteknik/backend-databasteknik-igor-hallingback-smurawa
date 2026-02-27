@@ -3,14 +3,14 @@ using Backend.Domain.Modules.VenueTypes.Models;
 
 namespace Backend.Application.Modules.VenueTypes.Outputs;
 
-public sealed class VenueTypeResult : ResultCommon<VenueType>
+public sealed record VenueTypeResult : ResultBase<VenueType>
 {
 }
 
-public sealed class VenueTypeListResult : ResultCommon<IReadOnlyList<VenueType>>
+public sealed record VenueTypeListResult : ResultBase<IReadOnlyList<VenueType>>
 {
 }
 
-public sealed class VenueTypeDeleteResult : ResultCommon<bool>
+public sealed record VenueTypeDeleteResult : ResultBase<bool>
 {
 }

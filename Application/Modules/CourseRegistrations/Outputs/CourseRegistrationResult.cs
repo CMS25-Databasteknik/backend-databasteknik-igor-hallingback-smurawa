@@ -18,18 +18,18 @@ public sealed record CourseRegistrationDetails(
     RegistrationLookupItem PaymentMethod
 );
 
-public sealed class CourseRegistrationResult : ResultCommon<CourseRegistration>
+public sealed record CourseRegistrationResult : ResultBase<CourseRegistration>
 {
 }
 
-public sealed class CourseRegistrationDetailsResult : ResultCommon<CourseRegistrationDetails>
+public sealed record CourseRegistrationDetailsResult : ResultBase<CourseRegistrationDetails>
 {
 }
 
-public sealed class CourseRegistrationListResult : ResultCommon<IReadOnlyList<CourseRegistration>>
+public sealed record CourseRegistrationListResult : ResultBase<IReadOnlyList<CourseRegistration>>
 {
 }
 
-public sealed class CourseRegistrationDeleteResult : ResultCommon<bool>
+public sealed record CourseRegistrationDeleteResult : ResultBase<bool>
 {
 }

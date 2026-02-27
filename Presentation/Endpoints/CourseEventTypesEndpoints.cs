@@ -26,7 +26,7 @@ public static class CourseEventTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetCourseEventTypeById(int id, ICourseEventTypeService service, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public static class CourseEventTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> CreateCourseEventType(CreateCourseEventTypeRequest request, ICourseEventTypeService service, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public static class CourseEventTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return response.ToCreatedResult($"/api/course-event-types/{response.Result?.Id}");
+        return Results.Created($"/api/course-event-types/{response.Result?.Id}", response);
     }
 
     private static async Task<IResult> UpdateCourseEventType(int id, UpdateCourseEventTypeRequest request, ICourseEventTypeService service, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public static class CourseEventTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> DeleteCourseEventType(int id, ICourseEventTypeService service, CancellationToken cancellationToken)
@@ -64,8 +64,9 @@ public static class CourseEventTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 }
+
 
 

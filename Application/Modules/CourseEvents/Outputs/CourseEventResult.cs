@@ -15,19 +15,19 @@ public sealed record CourseEventDetails(
     CourseEventLookupItem VenueType
 );
 
-public sealed class CourseEventResult : ResultCommon<CourseEvent>
+public sealed record CourseEventResult : ResultBase<CourseEvent>
 {
 }
 
-public sealed class CourseEventDetailsResult : ResultCommon<CourseEventDetails>
+public sealed record CourseEventDetailsResult : ResultBase<CourseEventDetails>
 {
 }
 
-public sealed class CourseEventListResult : ResultCommon<IReadOnlyList<CourseEvent>>
+public sealed record CourseEventListResult : ResultBase<IReadOnlyList<CourseEvent>>
 {
 }
 
-public sealed class CourseEventDeleteResult : ResultCommon<bool>
+public sealed record CourseEventDeleteResult : ResultBase<bool>
 {
 }
 

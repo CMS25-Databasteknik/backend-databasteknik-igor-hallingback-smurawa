@@ -1,59 +1,50 @@
 namespace Backend.Application.Common;
 
-public enum ResultError
+public enum ErrorTypes
 {
-    None = 0,
-    Validation = 1,
-    Unauthorized = 2,
-    Forbidden = 3,
-    NotFound = 4,
-    Conflict = 5,
-    Unprocessable = 6,
-    Unexpected = 7
+    None,
+    Validation,
+    Unauthorized,
+    Forbidden,
+    NotFound,
+    Conflict,
+    Unprocessable,
+    Unexpected
 }
 
-public class ResultBase
+public record ResultBase(
+    bool Success = false,
+    ErrorTypes ErrorType = ErrorTypes.None,
+    string? ErrorMessage = null,
+    string? Message = null)
 {
-    public bool Success { get; set; }
-    public ErrorTypes? ErrorType { get; set; }
-    public string? ErrorMessage { get; set; }
+    public static ResultBase Ok(string? message = null) => new(true, ErrorTypes.None, null, message);
 
-    public ResultError Error
-    {
-        get => ErrorType switch
-        {
-            null => ResultError.None,
-            ErrorTypes.NotFound => ResultError.NotFound,
-            ErrorTypes.Conflict => ResultError.Conflict,
-            ErrorTypes.Validation => ResultError.Validation,
-            ErrorTypes.Unauthorized => ResultError.Unauthorized,
-            ErrorTypes.Forbidden => ResultError.Forbidden,
-            ErrorTypes.Unprocessable => ResultError.Unprocessable,
-            _ => ResultError.Unexpected
-        };
-
-        set => ErrorType = value switch
-        {
-            ResultError.None => null,
-            ResultError.NotFound => ErrorTypes.NotFound,
-            ResultError.Conflict => ErrorTypes.Conflict,
-            ResultError.Validation => ErrorTypes.Validation,
-            ResultError.Unauthorized => ErrorTypes.Unauthorized,
-            ResultError.Forbidden => ErrorTypes.Forbidden,
-            ResultError.Unprocessable => ErrorTypes.Unprocessable,
-            _ => ErrorTypes.Unexpected
-        };
-    }
-
-    public string? Message
-    {
-        get => ErrorMessage;
-        set => ErrorMessage = value;
-    }
+    public static ResultBase BadRequest(string message) => new(false, ErrorTypes.Validation, message, message);
+    public static ResultBase Unauthorized(string message) => new(false, ErrorTypes.Unauthorized, message, message);
+    public static ResultBase Forbidden(string message) => new(false, ErrorTypes.Forbidden, message, message);
+    public static ResultBase NotFound(string message) => new(false, ErrorTypes.NotFound, message, message);
+    public static ResultBase Conflict(string message) => new(false, ErrorTypes.Conflict, message, message);
+    public static ResultBase Unprocessable(string message) => new(false, ErrorTypes.Unprocessable, message, message);
+    public static ResultBase Unexpected(string message = "An unexpected error occurred.") => new(false, ErrorTypes.Unexpected, message, message);
 }
 
-public abstract class ResultCommon<T> : ResultBase
+public record ResultBase<T>(
+    bool Success = false,
+    T? Result = default,
+    ErrorTypes ErrorType = ErrorTypes.None,
+    string? ErrorMessage = null,
+    string? Message = null)
+    : ResultBase(Success, ErrorType, ErrorMessage, Message)
 {
-    public T? Result { get; set; }
+    public static ResultBase<T> Ok(T value, string? message = null) => new(true, value, ErrorTypes.None, null, message);
+
+    public new static ResultBase<T> BadRequest(string message) => new(false, default, ErrorTypes.Validation, message, message);
+    public new static ResultBase<T> Unauthorized(string message) => new(false, default, ErrorTypes.Unauthorized, message, message);
+    public new static ResultBase<T> Forbidden(string message) => new(false, default, ErrorTypes.Forbidden, message, message);
+    public new static ResultBase<T> NotFound(string message) => new(false, default, ErrorTypes.NotFound, message, message);
+    public new static ResultBase<T> Conflict(string message) => new(false, default, ErrorTypes.Conflict, message, message);
+    public new static ResultBase<T> Unprocessable(string message) => new(false, default, ErrorTypes.Unprocessable, message, message);
+    public new static ResultBase<T> Unexpected(string message = "An unexpected error occurred.") => new(false, default, ErrorTypes.Unexpected, message, message);
 }
 

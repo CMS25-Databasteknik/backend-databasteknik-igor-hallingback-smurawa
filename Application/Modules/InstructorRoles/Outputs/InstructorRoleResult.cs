@@ -3,14 +3,14 @@ using Backend.Domain.Modules.InstructorRoles.Models;
 
 namespace Backend.Application.Modules.InstructorRoles.Outputs;
 
-public sealed class InstructorRoleResult : ResultCommon<InstructorRole>
+public sealed record InstructorRoleResult : ResultBase<InstructorRole>
 {
 }
 
-public sealed class InstructorRoleListResult : ResultCommon<IReadOnlyList<InstructorRole>>
+public sealed record InstructorRoleListResult : ResultBase<IReadOnlyList<InstructorRole>>
 {
 }
 
-public sealed class InstructorRoleDeleteResult : ResultCommon<bool>
+public sealed record InstructorRoleDeleteResult : ResultBase<bool>
 {
 }

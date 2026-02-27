@@ -26,7 +26,7 @@ public static class CourseRegistrationStatusesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetCourseRegistrationStatusById(int id, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public static class CourseRegistrationStatusesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> CreateCourseRegistrationStatus(CreateCourseRegistrationStatusRequest request, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public static class CourseRegistrationStatusesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return response.ToCreatedResult($"/api/course-registration-statuses/{response.Result?.Id}");
+        return Results.Created($"/api/course-registration-statuses/{response.Result?.Id}", response);
     }
 
     private static async Task<IResult> UpdateCourseRegistrationStatus(int id, UpdateCourseRegistrationStatusRequest request, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public static class CourseRegistrationStatusesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> DeleteCourseRegistrationStatus(int id, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
@@ -64,8 +64,9 @@ public static class CourseRegistrationStatusesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Ok(response.ToApiResponse());
+        return Results.Ok(response);
     }
 }
+
 
 
