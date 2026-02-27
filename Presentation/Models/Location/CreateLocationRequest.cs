@@ -5,11 +5,11 @@ namespace Backend.Presentation.API.Models.Location;
 public sealed record CreateLocationRequest
 {
     [Required]
-    public required string StreetName { get; init; }
+    public string StreetName { get; init; }
 
     [Required]
-    public required string PostalCode { get; init; }
+    public string PostalCode { get; init; }
 
     [Required]
-    public required string City { get; init; }
+    public string City { get; init; }
 }

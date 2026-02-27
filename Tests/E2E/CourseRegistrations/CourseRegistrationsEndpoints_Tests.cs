@@ -4,7 +4,7 @@ using System.Text.Json;
 using Backend.Application.Modules.CourseRegistrations.Outputs;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Presentation.API.Models.CourseRegistration;
-using Backend.Presentation.API.Models;
+using Backend.Application.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Backend.Tests.Integration.Infrastructure;
 
@@ -181,12 +181,12 @@ public sealed class CourseRegistrationsEndpoints_Tests(CoursesOnlineDbApiFactory
         };
 
         var response = await client.PostAsJsonAsync("/api/course-registrations", createRequest);
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal("not_found", payload.Code);
+        Assert.Equal(ErrorTypes.NotFound, payload.ErrorType);
     }
 
     [Fact]
@@ -196,12 +196,12 @@ public sealed class CourseRegistrationsEndpoints_Tests(CoursesOnlineDbApiFactory
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync($"/api/course-registrations/{Guid.Empty}");
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal("validation_error", payload.Code);
+        Assert.Equal(ErrorTypes.Validation, payload.ErrorType);
     }
 
     [Fact]
@@ -211,12 +211,12 @@ public sealed class CourseRegistrationsEndpoints_Tests(CoursesOnlineDbApiFactory
         using var client = _factory.CreateClient();
 
         var response = await client.DeleteAsync($"/api/course-registrations/{Guid.NewGuid()}");
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal("not_found", payload.Code);
+        Assert.Equal(ErrorTypes.NotFound, payload.ErrorType);
     }
 }
 

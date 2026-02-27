@@ -5,5 +5,5 @@ namespace Backend.Presentation.API.Models.CourseEventType;
 public sealed record UpdateCourseEventTypeRequest
 {
     [Required]
-    public required string TypeName { get; init; }
+    public string TypeName { get; init; }
 }

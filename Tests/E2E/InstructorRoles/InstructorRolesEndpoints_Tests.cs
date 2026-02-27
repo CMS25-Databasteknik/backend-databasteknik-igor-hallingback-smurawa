@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Backend.Infrastructure.Persistence.EFC.Context;
-using Backend.Presentation.API.Models;
+using Backend.Application.Common;
 using Backend.Presentation.API.Models.InstructorRole;
 using Backend.Tests.Integration.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +28,7 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/instructor-roles");
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse<IReadOnlyList<InstructorRoleDto>>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase<IReadOnlyList<InstructorRoleDto>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload);
@@ -55,7 +55,7 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
         var secondId = int.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
 
         var response = await client.GetAsync("/api/instructor-roles");
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse<IReadOnlyList<InstructorRoleDto>>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase<IReadOnlyList<InstructorRoleDto>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload?.Result);
@@ -80,7 +80,7 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
 
         var createdId = int.Parse(createResponse.Headers.Location!.OriginalString.Split('/')[^1]);
         var getResponse = await client.GetAsync($"/api/instructor-roles/{createdId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ApiResponse<InstructorRoleDto>>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase<InstructorRoleDto>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(getPayload?.Result);
@@ -97,12 +97,11 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
 
         using var content = new StringContent("{\"roleName\":123}", Encoding.UTF8, "application/json");
         var response = await client.PostAsync("/api/instructor-roles", content);
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal("validation_error", payload.Code);
     }
 
     [Fact]
@@ -112,12 +111,12 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/instructor-roles/0");
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal("validation_error", payload.Code);
+        Assert.Equal(ErrorTypes.Validation, payload.ErrorType);
     }
 
     [Fact]
@@ -135,12 +134,12 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
 
         using var client = _factory.CreateClient();
         var response = await client.DeleteAsync($"/api/instructor-roles/{roleId}");
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal("conflict", payload.Code);
+        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);
         Assert.False(payload.Result);
     }
 
@@ -163,7 +162,7 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
 
         using var verificationClient = _factory.CreateClient();
         var deleteResponse = await verificationClient.DeleteAsync($"/api/instructor-roles/{roleId}");
-        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ApiResponse<bool>>(_jsonOptions);
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         Assert.NotNull(deletePayload);
@@ -171,11 +170,11 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
         Assert.True(deletePayload.Result);
 
         var getResponse = await verificationClient.GetAsync($"/api/instructor-roles/{roleId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         Assert.NotNull(getPayload);
         Assert.False(getPayload.Success);
-        Assert.Equal("not_found", getPayload.Code);
+        Assert.Equal(ErrorTypes.NotFound, getPayload.ErrorType);
     }
 }

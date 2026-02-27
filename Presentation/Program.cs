@@ -3,7 +3,6 @@ using Backend.Application.Common;
 using Backend.Infrastructure.Extensions;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Presentation.API.Endpoints;
-using Backend.Presentation.API.Models;
 using Microsoft.AspNetCore.Routing;
 
 namespace Backend.Presentation.API;
@@ -35,10 +34,10 @@ public partial class Program
                 response.ContentType = "application/json";
                 var payload = response.StatusCode switch
                 {
-                    StatusCodes.Status400BadRequest => new ApiResponse(false, null, "Malformed JSON payload.", "validation_error"),
-                    StatusCodes.Status404NotFound => new ApiResponse(false, null, "Resource not found.", "not_found"),
-                    StatusCodes.Status409Conflict => new ApiResponse(false, null, "Conflict.", "conflict"),
-                    StatusCodes.Status422UnprocessableEntity => new ApiResponse(false, null, "Unprocessable entity.", "unprocessable_entity"),
+                    StatusCodes.Status400BadRequest => new ResultBase(false, ErrorTypes.Validation, "Malformed JSON payload.", "Malformed JSON payload."),
+                    StatusCodes.Status404NotFound => new ResultBase(false, ErrorTypes.NotFound, "Resource not found.", "Resource not found."),
+                    StatusCodes.Status409Conflict => new ResultBase(false, ErrorTypes.Conflict, "Conflict.", "Conflict."),
+                    StatusCodes.Status422UnprocessableEntity => new ResultBase(false, ErrorTypes.Unprocessable, "Unprocessable entity.", "Unprocessable entity."),
                     _ => null
                 };
 

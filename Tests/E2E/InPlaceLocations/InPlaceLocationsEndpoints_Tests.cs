@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Backend.Application.Modules.InPlaceLocations.Outputs;
 using Backend.Infrastructure.Persistence.EFC.Context;
-using Backend.Presentation.API.Models;
+using Backend.Application.Common;
 using Backend.Presentation.API.Models.InPlaceLocation;
 using Backend.Tests.Integration.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -118,12 +118,12 @@ public sealed class InPlaceLocationsEndpoints_Tests(CoursesOnlineDbApiFactory fa
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/in-place-locations/0");
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal("validation_error", payload.Code);
+        Assert.Equal(ErrorTypes.Validation, payload.ErrorType);
     }
 
     [Fact]
@@ -148,12 +148,12 @@ public sealed class InPlaceLocationsEndpoints_Tests(CoursesOnlineDbApiFactory fa
         };
 
         var response = await client.PutAsJsonAsync($"/api/in-place-locations/{inPlaceLocationId}", request);
-        var payload = await response.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal("conflict", payload.Code);
+        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public sealed class InPlaceLocationsEndpoints_Tests(CoursesOnlineDbApiFactory fa
         using var client = _factory.CreateClient();
 
         var deleteResponse = await client.DeleteAsync($"/api/in-place-locations/{inPlaceLocationId}");
-        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ApiResponse<bool>>(_jsonOptions);
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         Assert.NotNull(deletePayload);
@@ -179,11 +179,11 @@ public sealed class InPlaceLocationsEndpoints_Tests(CoursesOnlineDbApiFactory fa
         Assert.True(deletePayload.Result);
 
         var getResponse = await client.GetAsync($"/api/in-place-locations/{inPlaceLocationId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ApiResponse>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         Assert.NotNull(getPayload);
         Assert.False(getPayload.Success);
-        Assert.Equal("not_found", getPayload.Code);
+        Assert.Equal(ErrorTypes.NotFound, getPayload.ErrorType);
     }
 }

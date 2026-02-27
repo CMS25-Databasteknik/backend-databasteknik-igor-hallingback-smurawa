@@ -5,11 +5,11 @@ namespace Backend.Presentation.API.Models.InPlaceLocation;
 public sealed record UpdateInPlaceLocationRequest
 {
     [Range(1, int.MaxValue)]
-    public required int LocationId { get; init; }
+    public int LocationId { get; init; }
 
     [Range(1, int.MaxValue)]
-    public required int RoomNumber { get; init; }
+    public int RoomNumber { get; init; }
 
     [Range(1, int.MaxValue)]
-    public required int Seats { get; init; }
+    public int Seats { get; init; }
 }

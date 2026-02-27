@@ -5,8 +5,8 @@ namespace Backend.Presentation.API.Models.Instructor;
 public sealed record UpdateInstructorRequest
 {
     [Required]
-    public required string Name { get; init; }
+    public string Name { get; init; }
 
     [Range(1, int.MaxValue)]
-    public required int InstructorRoleId { get; init; }
+    public int InstructorRoleId { get; init; }
 }
