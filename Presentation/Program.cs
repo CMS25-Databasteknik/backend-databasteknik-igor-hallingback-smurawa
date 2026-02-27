@@ -34,10 +34,30 @@ public partial class Program
                 response.ContentType = "application/json";
                 var payload = response.StatusCode switch
                 {
-                    StatusCodes.Status400BadRequest => new ResultBase(false, ErrorTypes.Validation, "Malformed JSON payload.", "Malformed JSON payload."),
-                    StatusCodes.Status404NotFound => new ResultBase(false, ErrorTypes.NotFound, "Resource not found.", "Resource not found."),
-                    StatusCodes.Status409Conflict => new ResultBase(false, ErrorTypes.Conflict, "Conflict.", "Conflict."),
-                    StatusCodes.Status422UnprocessableEntity => new ResultBase(false, ErrorTypes.Unprocessable, "Unprocessable entity.", "Unprocessable entity."),
+                    StatusCodes.Status400BadRequest => new ResultBase
+                    {
+                        Success = false,
+                        ErrorType = ErrorTypes.Validation,
+                        Message = "Malformed JSON payload."
+                    },
+                    StatusCodes.Status404NotFound => new ResultBase
+                    {
+                        Success = false,
+                        ErrorType = ErrorTypes.NotFound,
+                        Message = "Resource not found."
+                    },
+                    StatusCodes.Status409Conflict => new ResultBase
+                    {
+                        Success = false,
+                        ErrorType = ErrorTypes.Conflict,
+                        Message = "Conflict."
+                    },
+                    StatusCodes.Status422UnprocessableEntity => new ResultBase
+                    {
+                        Success = false,
+                        ErrorType = ErrorTypes.Unprocessable,
+                        Message = "Unprocessable entity."
+                    },
                     _ => null
                 };
 

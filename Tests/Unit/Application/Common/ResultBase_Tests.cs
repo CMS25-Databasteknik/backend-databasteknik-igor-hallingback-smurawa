@@ -7,7 +7,12 @@ public class ResultBase_Tests
     [Fact]
     public void Constructor_Should_Initialize_With_Default_Values()
     {
-        var result = new TestResultBase();
+        var result = new TestResultBase
+        {
+            Success = false,
+            ErrorType = ErrorTypes.None,
+            Message = null
+        };
 
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.None, result.ErrorType);
@@ -32,7 +37,12 @@ public class ResultBase_Tests
     [Fact]
     public void Message_Should_Accept_Null()
     {
-        var result = new TestResultBase { Message = null };
+        var result = new TestResultBase
+        {
+            Success = false,
+            ErrorType = ErrorTypes.None,
+            Message = null
+        };
 
         Assert.Null(result.Message);
     }
@@ -45,7 +55,13 @@ public class ResultBaseGeneric_Tests
     [Fact]
     public void Constructor_Should_Initialize_With_Default_Values()
     {
-        var result = new TestResultBaseGeneric();
+        var result = new TestResultBaseGeneric
+        {
+            Success = false,
+            ErrorType = ErrorTypes.None,
+            Message = null,
+            Result = null
+        };
 
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.None, result.ErrorType);
@@ -56,7 +72,13 @@ public class ResultBaseGeneric_Tests
     [Fact]
     public void Result_Should_Be_Settable()
     {
-        var result = new TestResultBaseGeneric { Result = "Test" };
+        var result = new TestResultBaseGeneric
+        {
+            Success = false,
+            ErrorType = ErrorTypes.None,
+            Message = null,
+            Result = "Test"
+        };
 
         Assert.Equal("Test", result.Result);
     }
