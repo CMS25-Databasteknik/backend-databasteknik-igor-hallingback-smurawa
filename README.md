@@ -223,8 +223,9 @@ The cache is primarily used for read operations (`get by id`, `get all`, and whe
    ```
 
 6. **Access the API**
-   - API base URL: `https://localhost:7118` (see `launchSettings.json` for local ports)
-   - OpenAPI docs: `<base-url>/openapi/v1.json`
+   - API base URL (default profile): `https://localhost:7118` (also serves `http://localhost:5400`)
+   - OpenAPI docs: `https://localhost:7118/openapi/v1.json`
+   - Frontend `.env.development` defaults to the HTTPS API base `https://localhost:7118/api`. Switch it to `http://localhost:5400/api` if you choose the HTTP-only profile.
 
 ### Running Tests
 
