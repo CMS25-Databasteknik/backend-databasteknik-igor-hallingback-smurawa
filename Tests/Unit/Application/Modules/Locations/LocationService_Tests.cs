@@ -16,13 +16,13 @@ public class LocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
-        var expectedLocation = new Location(1, "Kungsgatan 12", "111 43", "Stockholm");
+        var expectedLocation = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>())
             .Returns(expectedLocation);
 
         var service = new LocationService(mockRepo);
-        var input = new CreateLocationInput("Kungsgatan 12", "111 43", "Stockholm");
+        var input = new CreateLocationInput("Kungsgatan 12", "11143", "Stockholm");
 
         // Act
         var result = await service.CreateLocationAsync(input, CancellationToken.None);
@@ -32,12 +32,12 @@ public class LocationService_Tests
         Assert.Equal(ErrorTypes.None, result.ErrorType);
         Assert.NotNull(result.Result);
         Assert.Equal("Kungsgatan 12", result.Result.StreetName);
-        Assert.Equal("111 43", result.Result.PostalCode);
+        Assert.Equal("11143", result.Result.PostalCode);
         Assert.Equal("Stockholm", result.Result.City);
         Assert.Equal("Location created successfully.", result.Message);
 
         await mockRepo.Received(1).AddAsync(
-            Arg.Is<Location>(l => l.StreetName == "Kungsgatan 12" && l.PostalCode == "111 43" && l.City == "Stockholm"),
+            Arg.Is<Location>(l => l.StreetName == "Kungsgatan 12" && l.PostalCode == "11143" && l.City == "Stockholm"),
             Arg.Any<CancellationToken>());
     }
 
@@ -66,7 +66,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var service = new LocationService(mockRepo);
-        var input = new CreateLocationInput("", "111 43", "Stockholm");
+        var input = new CreateLocationInput("", "11143", "Stockholm");
 
         // Act
         var result = await service.CreateLocationAsync(input, CancellationToken.None);
@@ -86,7 +86,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var service = new LocationService(mockRepo);
-        var input = new CreateLocationInput("   ", "111 43", "Stockholm");
+        var input = new CreateLocationInput("   ", "11143", "Stockholm");
 
         // Act
         var result = await service.CreateLocationAsync(input, CancellationToken.None);
@@ -146,7 +146,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var service = new LocationService(mockRepo);
-        var input = new CreateLocationInput("Kungsgatan 12", "111 43", "");
+        var input = new CreateLocationInput("Kungsgatan 12", "11143", "");
 
         // Act
         var result = await service.CreateLocationAsync(input, CancellationToken.None);
@@ -166,7 +166,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var service = new LocationService(mockRepo);
-        var input = new CreateLocationInput("Kungsgatan 12", "111 43", "   ");
+        var input = new CreateLocationInput("Kungsgatan 12", "11143", "   ");
 
         // Act
         var result = await service.CreateLocationAsync(input, CancellationToken.None);
@@ -189,7 +189,7 @@ public class LocationService_Tests
             .Returns(Task.FromException<Location>(new Exception("Database error")));
 
         var service = new LocationService(mockRepo);
-        var input = new CreateLocationInput("Kungsgatan 12", "111 43", "Stockholm");
+        var input = new CreateLocationInput("Kungsgatan 12", "11143", "Stockholm");
 
         // Act
         var result = await service.CreateLocationAsync(input, CancellationToken.None);
@@ -203,9 +203,9 @@ public class LocationService_Tests
     }
 
     [Theory]
-    [InlineData("Drottninggatan 1", "111 21", "Stockholm")]
-    [InlineData("Storgatan 5", "411 38", "Göteborg")]
-    [InlineData("Vasagatan 10", "211 20", "Malmö")]
+    [InlineData("Drottninggatan 1", "11121", "Stockholm")]
+    [InlineData("Storgatan 5", "41138", "Göteborg")]
+    [InlineData("Vasagatan 10", "21120", "Malmö")]
     public async Task CreateLocationAsync_Should_Create_Location_With_Various_Valid_Inputs(
         string streetName, string postalCode, string city)
     {
@@ -232,6 +232,26 @@ public class LocationService_Tests
     }
 
     [Fact]
+    public async Task CreateLocationAsync_Should_Return_BadRequest_When_PostalCode_Has_Invalid_Format()
+    {
+        // Arrange
+        var mockRepo = Substitute.For<ILocationRepository>();
+        var service = new LocationService(mockRepo);
+        var input = new CreateLocationInput("Kungsgatan 12", "12 345", "Stockholm");
+
+        // Act
+        var result = await service.CreateLocationAsync(input, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Null(result.Result);
+        Assert.Contains("Postal code must consist of exactly 5 digits with no spaces", result.Message);
+
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public void LocationService_Constructor_Should_Throw_When_Repository_Is_Null()
     {
         // Act & Assert
@@ -249,9 +269,9 @@ public class LocationService_Tests
         var mockRepo = Substitute.For<ILocationRepository>();
         var locations = new List<Location>
         {
-            new Location(1, "Kungsgatan 12", "111 43", "Stockholm"),
-            new Location(2, "Storgatan 5", "411 38", "Göteborg"),
-            new Location(3, "Vasagatan 10", "211 20", "Malmö")
+            new Location(1, "Kungsgatan 12", "11143", "Stockholm"),
+            new Location(2, "Storgatan 5", "41138", "Göteborg"),
+            new Location(3, "Vasagatan 10", "21120", "Malmö")
         };
 
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
@@ -323,7 +343,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var location = new Location(locationId, "Kungsgatan 12", "111 43", "Stockholm");
+        var location = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(location);
@@ -437,8 +457,8 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "111 43", "Stockholm");
-        var updatedLocation = new Location(locationId, "Kungsgatan 15", "111 43", "Stockholm");
+        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
+        var updatedLocation = new Location(locationId, "Kungsgatan 15", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -447,7 +467,7 @@ public class LocationService_Tests
             .Returns(updatedLocation);
 
         var service = new LocationService(mockRepo);
-        var input = new UpdateLocationInput(locationId, "Kungsgatan 15", "111 43", "Stockholm");
+        var input = new UpdateLocationInput(locationId, "Kungsgatan 15", "11143", "Stockholm");
 
         // Act
         var result = await service.UpdateLocationAsync(input, CancellationToken.None);
@@ -490,7 +510,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var service = new LocationService(mockRepo);
-        var input = new UpdateLocationInput(0, "Kungsgatan 12", "111 43", "Stockholm");
+        var input = new UpdateLocationInput(0, "Kungsgatan 12", "11143", "Stockholm");
 
         // Act
         var result = await service.UpdateLocationAsync(input, CancellationToken.None);
@@ -510,9 +530,9 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new Location(1, "Old Street", "111 11", "City"));
+            .Returns(new Location(1, "Old Street", "11111", "City"));
         var service = new LocationService(mockRepo);
-        var input = new UpdateLocationInput(1, "", "111 43", "Stockholm");
+        var input = new UpdateLocationInput(1, "", "11143", "Stockholm");
 
         // Act
         var result = await service.UpdateLocationAsync(input, CancellationToken.None);
@@ -530,7 +550,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new Location(1, "Old Street", "111 11", "City"));
+            .Returns(new Location(1, "Old Street", "11111", "City"));
         var service = new LocationService(mockRepo);
         var input = new UpdateLocationInput(1, "Kungsgatan 12", "", "Stockholm");
 
@@ -550,9 +570,9 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new Location(1, "Old Street", "111 11", "City"));
+            .Returns(new Location(1, "Old Street", "11111", "City"));
         var service = new LocationService(mockRepo);
-        var input = new UpdateLocationInput(1, "Kungsgatan 12", "111 43", "");
+        var input = new UpdateLocationInput(1, "Kungsgatan 12", "11143", "");
 
         // Act
         var result = await service.UpdateLocationAsync(input, CancellationToken.None);
@@ -575,7 +595,7 @@ public class LocationService_Tests
             .Returns((Location)null!);
 
         var service = new LocationService(mockRepo);
-        var input = new UpdateLocationInput(locationId, "Kungsgatan 12", "111 43", "Stockholm");
+        var input = new UpdateLocationInput(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         // Act
         var result = await service.UpdateLocationAsync(input, CancellationToken.None);
@@ -595,7 +615,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "111 43", "Stockholm");
+        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -604,7 +624,7 @@ public class LocationService_Tests
             .Returns(Task.FromException<Location?>(new Exception("Database error")));
 
         var service = new LocationService(mockRepo);
-        var input = new UpdateLocationInput(locationId, "Kungsgatan 15", "111 43", "Stockholm");
+        var input = new UpdateLocationInput(locationId, "Kungsgatan 15", "11143", "Stockholm");
 
         // Act
         var result = await service.UpdateLocationAsync(input, CancellationToken.None);
@@ -617,6 +637,29 @@ public class LocationService_Tests
         Assert.Contains("Database error", result.Message);
     }
 
+    [Fact]
+    public async Task UpdateLocationAsync_Should_Return_BadRequest_When_PostalCode_Has_Invalid_Format()
+    {
+        // Arrange
+        var mockRepo = Substitute.For<ILocationRepository>();
+        mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new Location(1, "Old Street", "11111", "City"));
+
+        var service = new LocationService(mockRepo);
+        var input = new UpdateLocationInput(1, "Kungsgatan 12", "123 45", "Stockholm");
+
+        // Act
+        var result = await service.UpdateLocationAsync(input, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Null(result.Result);
+        Assert.Contains("Postal code must consist of exactly 5 digits with no spaces", result.Message);
+
+        await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<Location>(), Arg.Any<CancellationToken>());
+    }
+
     #endregion
 
     #region DeleteLocationAsync Tests
@@ -627,7 +670,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "111 43", "Stockholm");
+        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -720,7 +763,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "111 43", "Stockholm");
+        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -749,7 +792,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "111 43", "Stockholm");
+        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -779,7 +822,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "111 43", "Stockholm");
+        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);

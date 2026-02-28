@@ -10,7 +10,7 @@ public class Location_Tests
         // Arrange
         var id = 1;
         var streetName = "Kungsgatan 12";
-        var postalCode = "111 43";
+        var postalCode = "11143";
         var city = "Stockholm";
 
         // Act
@@ -30,7 +30,7 @@ public class Location_Tests
         // Arrange
         var id = -1;
         var streetName = "Kungsgatan 12";
-        var postalCode = "111 43";
+        var postalCode = "11143";
         var city = "Stockholm";
 
         // Act & Assert
@@ -47,7 +47,7 @@ public class Location_Tests
         // Arrange
         var id = 0;
         var streetName = "Kungsgatan 12";
-        var postalCode = "111 43";
+        var postalCode = "11143";
         var city = "Stockholm";
 
         // Act
@@ -63,7 +63,7 @@ public class Location_Tests
         // Arrange
         var id = 1;
         string streetName = null!;
-        var postalCode = "111 43";
+        var postalCode = "11143";
         var city = "Stockholm";
 
         // Act & Assert
@@ -80,7 +80,7 @@ public class Location_Tests
         // Arrange
         var id = 1;
         var streetName = "";
-        var postalCode = "111 43";
+        var postalCode = "11143";
         var city = "Stockholm";
 
         // Act & Assert
@@ -97,7 +97,7 @@ public class Location_Tests
         // Arrange
         var id = 1;
         var streetName = "   ";
-        var postalCode = "111 43";
+        var postalCode = "11143";
         var city = "Stockholm";
 
         // Act & Assert
@@ -165,7 +165,7 @@ public class Location_Tests
         // Arrange
         var id = 1;
         var streetName = "Kungsgatan 12";
-        var postalCode = "111 43";
+        var postalCode = "11143";
         string city = null!;
 
         // Act & Assert
@@ -182,7 +182,7 @@ public class Location_Tests
         // Arrange
         var id = 1;
         var streetName = "Kungsgatan 12";
-        var postalCode = "111 43";
+        var postalCode = "11143";
         var city = "";
 
         // Act & Assert
@@ -199,7 +199,7 @@ public class Location_Tests
         // Arrange
         var id = 1;
         var streetName = "Kungsgatan 12";
-        var postalCode = "111 43";
+        var postalCode = "11143";
         var city = "   ";
 
         // Act & Assert
@@ -211,10 +211,10 @@ public class Location_Tests
     }
 
     [Theory]
-    [InlineData(1, "Kungsgatan 12", "111 43", "Stockholm")]
-    [InlineData(2, "Drottninggatan 1", "111 21", "Stockholm")]
-    [InlineData(3, "Storgatan 5", "411 38", "Göteborg")]
-    [InlineData(4, "Vasagatan 10", "211 20", "Malmö")]
+    [InlineData(1, "Kungsgatan 12", "11143", "Stockholm")]
+    [InlineData(2, "Drottninggatan 1", "11121", "Stockholm")]
+    [InlineData(3, "Storgatan 5", "41138", "Göteborg")]
+    [InlineData(4, "Vasagatan 10", "21120", "Malmö")]
     public void Constructor_Should_Create_Location_With_Various_Valid_Parameters(
         int id, string streetName, string postalCode, string city)
     {
@@ -232,12 +232,12 @@ public class Location_Tests
     public void Properties_Should_Be_Initialized_Correctly()
     {
         // Arrange & Act
-        var location = new Location(1, "Kungsgatan 12", "111 43", "Stockholm");
+        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal(1, location.Id);
         Assert.Equal("Kungsgatan 12", location.StreetName);
-        Assert.Equal("111 43", location.PostalCode);
+        Assert.Equal("11143", location.PostalCode);
         Assert.Equal("Stockholm", location.City);
     }
 
@@ -245,8 +245,8 @@ public class Location_Tests
     public void Two_Locations_With_Same_Values_Should_Have_Same_Property_Values()
     {
         // Arrange
-        var location1 = new Location(1, "Kungsgatan 12", "111 43", "Stockholm");
-        var location2 = new Location(1, "Kungsgatan 12", "111 43", "Stockholm");
+        var location1 = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
+        var location2 = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal(location1.Id, location2.Id);
@@ -261,7 +261,7 @@ public class Location_Tests
         // Arrange
         var id = 1;
         var streetName = "Very Long Street Name With Multiple Words And Numbers 123";
-        var postalCode = "111 43";
+        var postalCode = "11143";
         var city = "Stockholm";
 
         // Act
@@ -277,7 +277,7 @@ public class Location_Tests
         // Arrange
         var id = 1;
         var streetName = "Drottninggatan 1";
-        var postalCode = "111 21";
+        var postalCode = "11121";
         var city = "Göteborg";
 
         // Act
@@ -291,7 +291,7 @@ public class Location_Tests
     public void Id_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var location = new Location(1, "Kungsgatan 12", "111 43", "Stockholm");
+        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal(1, location.Id);
@@ -304,7 +304,7 @@ public class Location_Tests
     public void StreetName_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var location = new Location(1, "Kungsgatan 12", "111 43", "Stockholm");
+        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal("Kungsgatan 12", location.StreetName);
@@ -316,10 +316,10 @@ public class Location_Tests
     public void PostalCode_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var location = new Location(1, "Kungsgatan 12", "111 43", "Stockholm");
+        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
-        Assert.Equal("111 43", location.PostalCode);
+        Assert.Equal("11143", location.PostalCode);
         var initialPostalCode = location.PostalCode;
         Assert.Equal(initialPostalCode, location.PostalCode);
     }
@@ -328,7 +328,7 @@ public class Location_Tests
     public void City_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var location = new Location(1, "Kungsgatan 12", "111 43", "Stockholm");
+        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal("Stockholm", location.City);
@@ -339,21 +339,38 @@ public class Location_Tests
     [Fact]
     public void Update_Should_Change_Values_When_Input_Is_Valid()
     {
-        var location = new Location(1, "Old Street", "111 11", "Old City");
+        var location = new Location(1, "Old Street", "11111", "Old City");
 
-        location.Update("New Street", "222 22", "New City");
+        location.Update("New Street", "22222", "New City");
 
         Assert.Equal("New Street", location.StreetName);
-        Assert.Equal("222 22", location.PostalCode);
+        Assert.Equal("22222", location.PostalCode);
         Assert.Equal("New City", location.City);
     }
 
     [Fact]
     public void Update_Should_Throw_ArgumentException_When_City_Is_Whitespace()
     {
-        var location = new Location(1, "Old Street", "111 11", "Old City");
+        var location = new Location(1, "Old Street", "11111", "Old City");
 
-        var ex = Assert.Throws<ArgumentException>(() => location.Update("New Street", "222 22", "   "));
+        var ex = Assert.Throws<ArgumentException>(() => location.Update("New Street", "22222", "   "));
         Assert.Equal("city", ex.ParamName);
+    }
+
+    [Fact]
+    public void Constructor_Should_Throw_ArgumentException_When_PostalCode_Has_Invalid_Format()
+    {
+        // Arrange
+        var id = 1;
+        var streetName = "Kungsgatan 12";
+        var postalCode = "12 345";
+        var city = "Stockholm";
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() =>
+            new Location(id, streetName, postalCode, city));
+
+        Assert.Equal("postalCode", exception.ParamName);
+        Assert.Contains("Postal code must consist of exactly 5 digits with no spaces", exception.Message);
     }
 }

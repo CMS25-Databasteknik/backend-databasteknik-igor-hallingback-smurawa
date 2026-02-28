@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace Backend.Domain.Modules.Locations.Models;
 
 public sealed class Location
@@ -28,6 +30,12 @@ public sealed class Location
 
         if (string.IsNullOrWhiteSpace(postalCode))
             throw new ArgumentException("Postal code cannot be empty or whitespace.", nameof(postalCode));
+
+
+        if (!Regex.IsMatch(postalCode.Trim(), @"^\d{5}$"))
+            throw new ArgumentException(
+                "Postal code must consist of exactly 5 digits with no spaces",
+                nameof(postalCode));
 
         if (string.IsNullOrWhiteSpace(city))
             throw new ArgumentException("City cannot be empty or whitespace.", nameof(city));
