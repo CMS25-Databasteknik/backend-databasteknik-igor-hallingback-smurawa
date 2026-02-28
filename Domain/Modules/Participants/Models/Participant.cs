@@ -1,4 +1,5 @@
 using Backend.Domain.Modules.ParticipantContactTypes.Models;
+using System.Text.RegularExpressions;
 
 namespace Backend.Domain.Modules.Participants.Models;
 
@@ -51,6 +52,14 @@ public sealed class Participant
 
         if (string.IsNullOrWhiteSpace(email))
             throw new ArgumentException("Email cannot be empty or whitespace.", nameof(email));
+
+        if (!Regex.IsMatch(
+        email.Trim(),
+        @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$",
+        RegexOptions.CultureInvariant))
+        {
+            throw new ArgumentException("Email format is invalid. Expected format: user@domain.com", nameof(email));
+        }
 
         if (string.IsNullOrWhiteSpace(phoneNumber))
             throw new ArgumentException("Phone number cannot be empty or whitespace.", nameof(phoneNumber));
