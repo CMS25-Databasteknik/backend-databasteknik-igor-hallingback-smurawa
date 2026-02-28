@@ -115,9 +115,9 @@ namespace Infrastructure.Persistence.EFC.Migrations
                     SET IDENTITY_INSERT Locations ON;
                     INSERT INTO Locations (Id, StreetName, PostalCode, City)
                     VALUES
-                    (1, 'Drottninggatan 95', '113 60', 'Stockholm'),
-                    (2, 'Kungsgatan 12', '411 19', 'Gothenburg'),
-                    (3, 'Stortorget 7', '211 34', 'Malmo');
+                    (1, 'Drottninggatan 95', '11360', 'Stockholm'),
+                    (2, 'Kungsgatan 12', '41119', 'Gothenburg'),
+                    (3, 'Stortorget 7', '21134', 'Malmo');
                     SET IDENTITY_INSERT Locations OFF;
                 END
                 """);
