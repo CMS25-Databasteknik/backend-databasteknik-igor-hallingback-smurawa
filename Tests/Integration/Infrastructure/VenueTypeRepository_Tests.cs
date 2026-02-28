@@ -55,13 +55,14 @@ public class VenueTypeRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new VenueTypeRepository(context);
         var created = await repo.AddAsync(new VenueType(1, $"Venue-{Guid.NewGuid():N}"), CancellationToken.None);
 
-        var updated = await repo.UpdateAsync(created.Id, new VenueType(created.Id, "Hybrid"), CancellationToken.None);
+        var newName = $"Hybrid-{Guid.NewGuid():N}";
+        var updated = await repo.UpdateAsync(created.Id, new VenueType(created.Id, newName), CancellationToken.None);
 
         Assert.NotNull(updated);
-        Assert.Equal("Hybrid", updated!.Name);
+        Assert.Equal(newName, updated!.Name);
 
         var persisted = await context.VenueTypes.AsNoTracking().SingleAsync(x => x.Id == created.Id, CancellationToken.None);
-        Assert.Equal("Hybrid", persisted.Name);
+        Assert.Equal(newName, persisted.Name);
     }
 
     [Fact]
