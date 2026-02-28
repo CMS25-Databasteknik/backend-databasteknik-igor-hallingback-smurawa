@@ -1,5 +1,5 @@
-using Backend.Domain.Modules.Participants.Models;
 using Backend.Domain.Modules.ParticipantContactTypes.Models;
+using Backend.Domain.Modules.Participants.Models;
 
 namespace Backend.Tests.Unit.Domain.Modules.Participants.Models;
 
@@ -482,5 +482,25 @@ public class Participant_Tests
             participant.Update("Jane", "Smith", "", "+46709876543", new ParticipantContactType(1, "Primary")));
 
         Assert.Equal("email", exception.ParamName);
+    }
+
+    [Theory]
+    [InlineData("john.doe")]
+    [InlineData("john.doe@")]
+    [InlineData("@example.com")]
+    [InlineData("john.doe@example")]
+    [InlineData("john.doe@example.")]
+    [InlineData("john doe@example.com")]
+    public void Constructor_Should_Throw_ArgumentException_When_Email_Format_Is_Invalid(string invalidEmail)
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        // Act & Assert
+        var exception = Assert.Throws<ArgumentException>(() =>
+            new Participant(id, "John", "Doe", invalidEmail, "+46701234567"));
+
+        Assert.Equal("email", exception.ParamName);
+        Assert.Contains("Email", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -292,6 +292,33 @@ public class ParticipantService_Tests
         Assert.Equal(phoneNumber, result.Result.PhoneNumber);
     }
 
+    [Theory]
+    [InlineData("john.doe")]
+    [InlineData("john.doe@")]
+    [InlineData("@example.com")]
+    [InlineData("john.doe@example")]
+    [InlineData("john.doe@example.")]
+    [InlineData("john doe@example.com")]
+    public async Task CreateParticipantAsync_Should_Return_BadRequest_When_Email_Format_Is_Invalid(string invalidEmail)
+    {
+        // Arrange
+        var mockRepo = Substitute.For<IParticipantRepository>();
+        var service = CreateService(mockRepo);
+        var input = new CreateParticipantInput("John", "Doe", invalidEmail, "+46701234567", 1);
+
+        // Act
+        var result = await service.CreateParticipantAsync(input, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Null(result.Result);
+        Assert.Contains("Email", result.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("invalid", result.Message, StringComparison.OrdinalIgnoreCase);
+
+        await mockRepo.DidNotReceive().AddAsync(Arg.Any<Participant>(), Arg.Any<CancellationToken>());
+    }
+
     [Fact]
     public void ParticipantService_Constructor_Should_Throw_When_Repository_Is_Null()
     {
@@ -705,6 +732,39 @@ public class ParticipantService_Tests
         Assert.Null(result.Result);
         Assert.Contains("An error occurred while updating the participant", result.Message);
         Assert.Contains("Database error", result.Message);
+    }
+
+    [Theory]
+    [InlineData("john.doe")]
+    [InlineData("john.doe@")]
+    [InlineData("@example.com")]
+    [InlineData("john.doe@example")]
+    [InlineData("john.doe@example.")]
+    [InlineData("john doe@example.com")]
+    public async Task UpdateParticipantAsync_Should_Return_BadRequest_When_Email_Format_Is_Invalid(string invalidEmail)
+    {
+        // Arrange
+        var mockRepo = Substitute.For<IParticipantRepository>();
+        var participantId = Guid.NewGuid();
+        var existingParticipant = new Participant(participantId, "John", "Doe", "john.doe@example.com", "+46701234567");
+
+        mockRepo.GetByIdAsync(participantId, Arg.Any<CancellationToken>())
+            .Returns(existingParticipant);
+
+        var service = CreateService(mockRepo);
+        var input = new UpdateParticipantInput(participantId, "John", "Doe", invalidEmail, "+46701234567", 1);
+
+        // Act
+        var result = await service.UpdateParticipantAsync(input, CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Null(result.Result);
+        Assert.Contains("Email", result.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("invalid", result.Message, StringComparison.OrdinalIgnoreCase);
+
+        await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<Participant>(), Arg.Any<CancellationToken>());
     }
 
     #endregion
