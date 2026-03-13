@@ -3,12 +3,12 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using Backend.Application.Modules.Locations.Outputs;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Application.Common;
 using Backend.Presentation.API.Models.Location;
 using Backend.Tests.Integration.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Backend.Domain.Modules.Locations.Models;
 
 namespace Backend.Tests.E2E.Locations;
 
@@ -27,13 +27,13 @@ public sealed class LocationsEndpoints_Tests(CoursesOnlineDbApiFactory factory) 
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/locations");
-        var payload = await response.Content.ReadFromJsonAsync<LocationListResult>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result<IReadOnlyList<Location>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload);
         Assert.True(payload.Success);
-        Assert.NotNull(payload.Result);
-        Assert.Empty(payload.Result);
+        Assert.NotNull(payload.Value);
+        Assert.Empty(payload.Value);
     }
 
     [Fact]
@@ -59,12 +59,12 @@ public sealed class LocationsEndpoints_Tests(CoursesOnlineDbApiFactory factory) 
         var secondId = int.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
 
         var response = await client.GetAsync("/api/locations");
-        var payload = await response.Content.ReadFromJsonAsync<LocationListResult>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result<IReadOnlyList<Location>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(payload?.Result);
-        Assert.Equal(secondId, payload.Result[0].Id);
-        Assert.Equal(firstId, payload.Result[1].Id);
+        Assert.NotNull(payload?.Value);
+        Assert.Equal(secondId, payload.Value[0].Id);
+        Assert.Equal(firstId, payload.Value[1].Id);
     }
 
     [Fact]
@@ -87,16 +87,16 @@ public sealed class LocationsEndpoints_Tests(CoursesOnlineDbApiFactory factory) 
 
         var createdLocationId = int.Parse(createResponse.Headers.Location!.OriginalString.Split('/')[^1]);
         var getResponse = await client.GetAsync($"/api/locations/{createdLocationId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<LocationResult>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result<Location>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(getPayload);
         Assert.True(getPayload.Success);
-        Assert.NotNull(getPayload.Result);
-        Assert.Equal(createdLocationId, getPayload.Result.Id);
-        Assert.Equal("Main Street 1", getPayload.Result.StreetName);
-        Assert.Equal("12345", getPayload.Result.PostalCode);
-        Assert.Equal("Stockholm", getPayload.Result.City);
+        Assert.NotNull(getPayload.Value);
+        Assert.Equal(createdLocationId, getPayload.Value.Id);
+        Assert.Equal("Main Street 1", getPayload.Value.StreetName);
+        Assert.Equal("12345", getPayload.Value.PostalCode);
+        Assert.Equal("Stockholm", getPayload.Value.City);
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public sealed class LocationsEndpoints_Tests(CoursesOnlineDbApiFactory factory) 
 
         using var content = new StringContent("{\"streetName\":123}", Encoding.UTF8, "application/json");
         var response = await client.PostAsync("/api/locations", content);
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
@@ -128,7 +128,7 @@ public sealed class LocationsEndpoints_Tests(CoursesOnlineDbApiFactory factory) 
         };
 
         var response = await client.PutAsJsonAsync("/api/locations/999999", request);
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
@@ -152,14 +152,12 @@ public sealed class LocationsEndpoints_Tests(CoursesOnlineDbApiFactory factory) 
 
         using var client = _factory.CreateClient();
         var response = await client.DeleteAsync($"/api/locations/{locationId}");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);
-        Assert.False(payload.Result);
-    }
+        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);    }
 
     [Fact]
     public async Task DeleteLocation_ReturnsOk_AndRemovesLocation()
@@ -176,15 +174,13 @@ public sealed class LocationsEndpoints_Tests(CoursesOnlineDbApiFactory factory) 
         using var client = _factory.CreateClient();
 
         var deleteResponse = await client.DeleteAsync($"/api/locations/{locationId}");
-        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         Assert.NotNull(deletePayload);
-        Assert.True(deletePayload.Success);
-        Assert.True(deletePayload.Result);
-
+        Assert.True(deletePayload.Success);
         var getResponse = await client.GetAsync($"/api/locations/{locationId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         Assert.NotNull(getPayload);

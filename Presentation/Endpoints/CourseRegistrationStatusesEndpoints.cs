@@ -45,7 +45,7 @@ public static class CourseRegistrationStatusesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/course-registration-statuses/{response.Result?.Id}", response);
+        return Results.Created($"/api/course-registration-statuses/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateCourseRegistrationStatus(int id, UpdateCourseRegistrationStatusRequest request, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)

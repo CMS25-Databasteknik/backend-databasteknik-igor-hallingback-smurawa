@@ -25,9 +25,9 @@ public class VenueTypeService_Tests
         var result = await service.GetAllVenueTypesAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(2, result.Result!.Count);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(2, result.Value!.Count);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class VenueTypeService_Tests
         var result = await service.GetVenueTypeByIdAsync(3, CancellationToken.None);
 
         Assert.True(result.Success);
-        Assert.Equal(cached, result.Result);
+        Assert.Equal(cached, result.Value);
         await repo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
@@ -70,7 +70,7 @@ public class VenueTypeService_Tests
         var result = await service.UpdateVenueTypeAsync(new UpdateVenueTypeInput(existing.Id, "Remote"), CancellationToken.None);
 
         Assert.True(result.Success);
-        Assert.Equal(updated, result.Result);
+        Assert.Equal(updated, result.Value);
         cache.Received(1).ResetEntity(existing);
         cache.Received(1).SetEntity(updated);
     }

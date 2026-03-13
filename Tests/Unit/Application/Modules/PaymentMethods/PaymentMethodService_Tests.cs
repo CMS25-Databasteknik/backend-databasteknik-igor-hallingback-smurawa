@@ -24,9 +24,9 @@ public class PaymentMethodService_Tests
         var result = await service.GetAllPaymentMethodsAsync();
 
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(2, result.Result!.Count);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(2, result.Value!.Count);
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class PaymentMethodService_Tests
         var result = await service.GetPaymentMethodByIdAsync(5, CancellationToken.None);
 
         Assert.True(result.Success);
-        Assert.Equal(cached, result.Result);
+        Assert.Equal(cached, result.Value);
         await repo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
@@ -63,7 +63,7 @@ public class PaymentMethodService_Tests
         var result = await service.UpdatePaymentMethodAsync(new UpdatePaymentMethodInput(existing.Id, "Invoice"), CancellationToken.None);
 
         Assert.True(result.Success);
-        Assert.Equal(updated, result.Result);
+        Assert.Equal(updated, result.Value);
         cache.Received(1).ResetEntity(existing);
         cache.Received(1).SetEntity(updated);
     }

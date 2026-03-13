@@ -29,12 +29,11 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(1, result.Result.LocationId);
-        Assert.Equal(101, result.Result.RoomNumber);
-        Assert.Equal(30, result.Result.Seats);
-        Assert.Equal("In-place location created successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(1, result.Value.LocationId);
+        Assert.Equal(101, result.Value.RoomNumber);
+        Assert.Equal(30, result.Value.Seats);
 
         await mockRepo.Received(1).AddAsync(
             Arg.Is<InPlaceLocation>(ipl => ipl.LocationId == 1 && ipl.RoomNumber == 101 && ipl.Seats == 30),
@@ -53,9 +52,8 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("In-place location cannot be null.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -73,9 +71,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -93,9 +91,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -113,9 +111,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -133,9 +131,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -153,9 +151,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -173,9 +171,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -196,10 +194,10 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while creating the in-place location", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while creating the in-place location", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     [Theory]
@@ -224,11 +222,11 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(locationId, result.Result.LocationId);
-        Assert.Equal(roomNumber, result.Result.RoomNumber);
-        Assert.Equal(seats, result.Result.Seats);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(locationId, result.Value.LocationId);
+        Assert.Equal(roomNumber, result.Value.RoomNumber);
+        Assert.Equal(seats, result.Value.Seats);
     }
 
     [Fact]
@@ -264,10 +262,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(3, result.Result.Count());
-        Assert.Equal("Retrieved 3 in-place location(s) successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(3, result.Value.Count());
 
         await mockRepo.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
@@ -287,10 +284,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Empty(result.Result);
-        Assert.Equal("No in-place locations found.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Empty(result.Value);
     }
 
     [Fact]
@@ -308,9 +304,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Contains("An error occurred while retrieving in-place locations", result.Message);
-        Assert.Contains("Database connection failed", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Contains("An error occurred while retrieving in-place locations", result.ErrorMessage);
+        Assert.Contains("Database connection failed", result.ErrorMessage);
     }
 
     #endregion
@@ -335,11 +331,10 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(inPlaceLocationId, result.Result.Id);
-        Assert.Equal(101, result.Result.RoomNumber);
-        Assert.Equal("In-place location retrieved successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(inPlaceLocationId, result.Value.Id);
+        Assert.Equal(101, result.Value.RoomNumber);
 
         await mockRepo.Received(1).GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>());
     }
@@ -362,8 +357,8 @@ public class InPlaceLocationService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains($"In-place location with ID '{inPlaceLocationId}' not found", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains($"In-place location with ID '{inPlaceLocationId}' not found", result.ErrorMessage);
     }
 
     [Fact]
@@ -378,9 +373,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -397,9 +392,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -421,10 +416,10 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while retrieving the in-place location", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while retrieving the in-place location", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     #endregion
@@ -453,10 +448,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(2, result.Result.Count());
-        Assert.Equal("Retrieved 2 in-place location(s) for the location successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(2, result.Value.Count());
 
         await mockRepo.Received(1).GetInPlaceLocationsByLocationIdAsync(locationId, Arg.Any<CancellationToken>());
     }
@@ -478,10 +472,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Empty(result.Result);
-        Assert.Equal("No in-place locations found for this location.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Empty(result.Value);
     }
 
     [Fact]
@@ -496,8 +489,8 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().GetInPlaceLocationsByLocationIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -514,8 +507,8 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().GetInPlaceLocationsByLocationIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -537,9 +530,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Contains("An error occurred while retrieving in-place locations", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Contains("An error occurred while retrieving in-place locations", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     #endregion
@@ -569,10 +562,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(35, result.Result.Seats);
-        Assert.Equal("In-place location updated successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(35, result.Value.Seats);
 
         await mockRepo.Received(1).UpdateAsync(
             Arg.Is<int>(id => id == inPlaceLocationId),
@@ -592,9 +584,8 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("In-place location cannot be null.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -612,9 +603,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -634,9 +625,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
     }
 
     [Fact]
@@ -654,9 +645,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
     }
 
     [Fact]
@@ -674,9 +665,9 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
     }
 
     [Fact]
@@ -698,8 +689,8 @@ public class InPlaceLocationService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains($"In-place location with ID '{inPlaceLocationId}' not found", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains($"In-place location with ID '{inPlaceLocationId}' not found", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>());
     }
@@ -726,10 +717,10 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while updating the in-place location", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while updating the in-place location", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     [Fact]
@@ -755,8 +746,8 @@ public class InPlaceLocationService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("requested location reference is invalid", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains("requested location reference is invalid", result.ErrorMessage);
     }
 
     #endregion
@@ -787,10 +778,7 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.True(result.Result);
-        Assert.Equal("In-place location deleted successfully.", result.Message);
-
+        Assert.Null(result.ErrorType);
         await mockRepo.Received(1).RemoveAsync(inPlaceLocationId, Arg.Any<CancellationToken>());
     }
 
@@ -806,9 +794,7 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -825,9 +811,7 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -849,9 +833,7 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains($"In-place location with ID '{inPlaceLocationId}' not found", result.Message);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);        Assert.Contains($"In-place location with ID '{inPlaceLocationId}' not found", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -877,10 +859,8 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains("Cannot delete in-place location", result.Message);
-        Assert.Contains("assigned to course events", result.Message);
+        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);        Assert.Contains("Cannot delete in-place location", result.ErrorMessage);
+        Assert.Contains("assigned to course events", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -909,10 +889,8 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains("An error occurred while deleting the in-place location", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);        Assert.Contains("An error occurred while deleting the in-place location", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     [Fact]
@@ -939,10 +917,7 @@ public class InPlaceLocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Equal("Failed to delete in-place location.", result.Message);
-    }
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);    }
 
     #endregion
 

@@ -56,7 +56,7 @@ public static class InPlaceLocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/in-place-locations/{response.Result?.Id}", response);
+        return Results.Created($"/api/in-place-locations/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateInPlaceLocation(int id, UpdateInPlaceLocationRequest request, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)

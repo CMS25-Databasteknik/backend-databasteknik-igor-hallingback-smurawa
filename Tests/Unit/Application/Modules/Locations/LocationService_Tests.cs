@@ -29,12 +29,11 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal("Kungsgatan 12", result.Result.StreetName);
-        Assert.Equal("11143", result.Result.PostalCode);
-        Assert.Equal("Stockholm", result.Result.City);
-        Assert.Equal("Location created successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal("Kungsgatan 12", result.Value.StreetName);
+        Assert.Equal("11143", result.Value.PostalCode);
+        Assert.Equal("Stockholm", result.Value.City);
 
         await mockRepo.Received(1).AddAsync(
             Arg.Is<Location>(l => l.StreetName == "Kungsgatan 12" && l.PostalCode == "11143" && l.City == "Stockholm"),
@@ -53,9 +52,8 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Location cannot be null.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -73,9 +71,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -93,9 +91,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -113,9 +111,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -133,9 +131,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -153,9 +151,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -173,9 +171,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -196,10 +194,10 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while creating the location", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while creating the location", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     [Theory]
@@ -224,11 +222,11 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(streetName, result.Result.StreetName);
-        Assert.Equal(postalCode, result.Result.PostalCode);
-        Assert.Equal(city, result.Result.City);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(streetName, result.Value.StreetName);
+        Assert.Equal(postalCode, result.Value.PostalCode);
+        Assert.Equal(city, result.Value.City);
     }
 
     [Fact]
@@ -244,9 +242,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("Postal code must consist of exactly 5 digits with no spaces", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("Postal code must consist of exactly 5 digits with no spaces", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -284,10 +282,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(3, result.Result.Count());
-        Assert.Equal("Retrieved 3 location(s) successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(3, result.Value.Count());
 
         await mockRepo.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
@@ -307,10 +304,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Empty(result.Result);
-        Assert.Equal("No locations found.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Empty(result.Value);
     }
 
     [Fact]
@@ -328,9 +324,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Contains("An error occurred while retrieving locations", result.Message);
-        Assert.Contains("Database connection failed", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Contains("An error occurred while retrieving locations", result.ErrorMessage);
+        Assert.Contains("Database connection failed", result.ErrorMessage);
     }
 
     #endregion
@@ -355,11 +351,10 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(locationId, result.Result.Id);
-        Assert.Equal("Kungsgatan 12", result.Result.StreetName);
-        Assert.Equal("Location retrieved successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(locationId, result.Value.Id);
+        Assert.Equal("Kungsgatan 12", result.Value.StreetName);
 
         await mockRepo.Received(1).GetByIdAsync(locationId, Arg.Any<CancellationToken>());
     }
@@ -382,8 +377,8 @@ public class LocationService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains($"Location with ID '{locationId}' not found", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains($"Location with ID '{locationId}' not found", result.ErrorMessage);
     }
 
     [Fact]
@@ -398,9 +393,8 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -417,9 +411,8 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -441,10 +434,10 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while retrieving the location", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while retrieving the location", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     #endregion
@@ -474,10 +467,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal("Kungsgatan 15", result.Result.StreetName);
-        Assert.Equal("Location updated successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal("Kungsgatan 15", result.Value.StreetName);
 
         await mockRepo.Received(1).UpdateAsync(
             Arg.Is<int>(id => id == locationId),
@@ -497,9 +489,8 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Location cannot be null.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -517,9 +508,8 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -539,9 +529,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
     }
 
     [Fact]
@@ -559,9 +549,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
     }
 
     [Fact]
@@ -579,9 +569,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
     }
 
     [Fact]
@@ -603,8 +593,8 @@ public class LocationService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains($"Location with ID '{locationId}' not found", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains($"Location with ID '{locationId}' not found", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -631,10 +621,10 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while updating the location", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while updating the location", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     [Fact]
@@ -653,9 +643,9 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("Postal code must consist of exactly 5 digits with no spaces", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("Postal code must consist of exactly 5 digits with no spaces", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<Location>(), Arg.Any<CancellationToken>());
     }
@@ -688,10 +678,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.True(result.Result);
-        Assert.Equal("Location deleted successfully.", result.Message);
-
+        Assert.Null(result.ErrorType);
         await mockRepo.Received(1).RemoveAsync(locationId, Arg.Any<CancellationToken>());
     }
 
@@ -707,10 +694,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
-
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
@@ -726,10 +710,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Equal("Location ID must be greater than zero.", result.Message);
-
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
@@ -750,9 +731,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains($"Location with ID '{locationId}' not found", result.Message);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);        Assert.Contains($"Location with ID '{locationId}' not found", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -778,10 +757,8 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains("Cannot delete location", result.Message);
-        Assert.Contains("has in-place locations", result.Message);
+        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);        Assert.Contains("Cannot delete location", result.ErrorMessage);
+        Assert.Contains("has in-place locations", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -810,10 +787,8 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains("An error occurred while deleting the location", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);        Assert.Contains("An error occurred while deleting the location", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     [Fact]
@@ -840,10 +815,7 @@ public class LocationService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Equal("Failed to delete location.", result.Message);
-    }
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);    }
 
     #endregion
 }

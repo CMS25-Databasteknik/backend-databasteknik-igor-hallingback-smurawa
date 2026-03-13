@@ -28,12 +28,12 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/course-event-types");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase<IReadOnlyList<CourseEventTypeDto>>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result<IReadOnlyList<CourseEventTypeDto>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload);
         Assert.True(payload.Success);
-        Assert.NotNull(payload.Result);
+        Assert.NotNull(payload.Value);
     }
 
     [Fact]
@@ -55,12 +55,12 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
         var secondId = int.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
 
         var response = await client.GetAsync("/api/course-event-types");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase<IReadOnlyList<CourseEventTypeDto>>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result<IReadOnlyList<CourseEventTypeDto>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(payload?.Result);
-        Assert.Equal(secondId, payload.Result[0].Id);
-        Assert.Equal(firstId, payload.Result[1].Id);
+        Assert.NotNull(payload?.Value);
+        Assert.Equal(secondId, payload.Value[0].Id);
+        Assert.Equal(firstId, payload.Value[1].Id);
     }
 
     [Fact]
@@ -81,14 +81,14 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
 
         var createdId = int.Parse(createResponse.Headers.Location!.OriginalString.Split('/')[^1]);
         var getResponse = await client.GetAsync($"/api/course-event-types/{createdId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase<CourseEventTypeDto>>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result<CourseEventTypeDto>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(getPayload);
         Assert.True(getPayload.Success);
-        Assert.NotNull(getPayload.Result);
-        Assert.Equal(createdId, getPayload.Result.Id);
-        Assert.Equal(createRequest.TypeName, getPayload.Result.TypeName);
+        Assert.NotNull(getPayload.Value);
+        Assert.Equal(createdId, getPayload.Value.Id);
+        Assert.Equal(createRequest.TypeName, getPayload.Value.TypeName);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
 
         using var content = new StringContent("{\"typeName\":123}", Encoding.UTF8, "application/json");
         var response = await client.PostAsync("/api/course-event-types", content);
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
@@ -113,12 +113,12 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/course-event-types/0");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ErrorTypes.Validation, payload.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, payload.ErrorType);
     }
 
     [Fact]
@@ -136,14 +136,12 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
 
         using var client = _factory.CreateClient();
         var response = await client.DeleteAsync($"/api/course-event-types/{eventTypeId}");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);
-        Assert.False(payload.Result);
-    }
+        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);    }
 
     [Fact]
     public async Task DeleteCourseEventType_ReturnsOk_AndRemovesType()
@@ -165,15 +163,13 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
         using var verificationClient = _factory.CreateClient();
 
         var deleteResponse = await verificationClient.DeleteAsync($"/api/course-event-types/{eventTypeId}");
-        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         Assert.NotNull(deletePayload);
-        Assert.True(deletePayload.Success);
-        Assert.True(deletePayload.Result);
-
+        Assert.True(deletePayload.Success);
         var getResponse = await verificationClient.GetAsync($"/api/course-event-types/{eventTypeId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         Assert.NotNull(getPayload);

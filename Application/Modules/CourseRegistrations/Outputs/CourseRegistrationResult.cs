@@ -1,6 +1,3 @@
-using Backend.Application.Common;
-using Backend.Domain.Modules.CourseRegistrations.Models;
-
 namespace Backend.Application.Modules.CourseRegistrations.Outputs;
 
 public sealed record RegistrationLookupItem(int Id, string Name);
@@ -17,19 +14,3 @@ public sealed record CourseRegistrationDetails(
     RegistrationLookupItem Status,
     RegistrationLookupItem PaymentMethod
 );
-
-public sealed record CourseRegistrationResult : ResultBase<CourseRegistration>
-{
-}
-
-public sealed record CourseRegistrationDetailsResult : ResultBase<CourseRegistrationDetails>
-{
-}
-
-public sealed record CourseRegistrationListResult : ResultBase<IReadOnlyList<CourseRegistration>>
-{
-}
-
-public sealed record CourseRegistrationDeleteResult : ResultBase<bool>
-{
-}

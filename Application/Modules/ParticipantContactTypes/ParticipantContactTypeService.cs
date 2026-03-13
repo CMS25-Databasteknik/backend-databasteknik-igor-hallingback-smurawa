@@ -1,7 +1,7 @@
 using Backend.Application.Common;
 using Backend.Application.Modules.ParticipantContactTypes.Caching;
 using Backend.Application.Modules.ParticipantContactTypes.Inputs;
-using Backend.Application.Modules.ParticipantContactTypes.Outputs;
+
 using Backend.Domain.Modules.ParticipantContactTypes.Contracts;
 using Backend.Domain.Modules.ParticipantContactTypes.Models;
 
@@ -12,53 +12,48 @@ public sealed class ParticipantContactTypeService(IParticipantContactTypeCache c
     private readonly IParticipantContactTypeCache _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     private readonly IParticipantContactTypeRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-    public async Task<ParticipantContactTypeResult> CreateParticipantContactTypeAsync(CreateParticipantContactTypeInput input, CancellationToken cancellationToken = default)
+    public async Task<Result<ParticipantContactType>> CreateParticipantContactTypeAsync(CreateParticipantContactTypeInput input, CancellationToken cancellationToken = default)
     {
         try
         {
             if (input == null)
-                return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "Participant contact type cannot be null." };
+                return Result<ParticipantContactType>.BadRequest("Participant contact type cannot be null.");
 
             var existing = await _repository.GetByNameAsync(input.Name, cancellationToken);
             if (existing is not null)
-                return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "A participant contact type with the same name already exists." };
+                return Result<ParticipantContactType>.BadRequest("A participant contact type with the same name already exists.");
 
             var created = await _repository.AddAsync(ParticipantContactType.Create(input.Name), cancellationToken);
             _cache.ResetEntity(created);
             _cache.SetEntity(created);
-            return new ParticipantContactTypeResult { Success = true, Result = created, Message = "Participant contact type created successfully." };
+            return Result<ParticipantContactType>.Ok(created);
         }
         catch (ArgumentException ex)
         {
-            return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
+            return Result<ParticipantContactType>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while creating the participant contact type: {ex.Message}" };
+            return Result<ParticipantContactType>.Error($"An error occurred while creating the participant contact type: {ex.Message}");
         }
     }
 
-    public async Task<ParticipantContactTypeListResult> GetAllParticipantContactTypesAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<ParticipantContactType>>> GetAllParticipantContactTypesAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             var participantContactTypes = await _cache.GetAllAsync(
                 token => _repository.GetAllAsync(token),
                 cancellationToken);
-            return new ParticipantContactTypeListResult
-            {
-                Success = true,
-                Result = participantContactTypes,
-                Message = participantContactTypes.Any() ? $"Retrieved {participantContactTypes.Count} participant contact type(s) successfully." : "No participant contact types found."
-            };
+            return Result<IReadOnlyList<ParticipantContactType>>.Ok(participantContactTypes);
         }
         catch (Exception ex)
         {
-            return new ParticipantContactTypeListResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while retrieving participant contact types: {ex.Message}" };
+            return Result<IReadOnlyList<ParticipantContactType>>.Error($"An error occurred while retrieving participant contact types: {ex.Message}");
         }
     }
 
-    public async Task<ParticipantContactTypeResult> GetParticipantContactTypeByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<ParticipantContactType>> GetParticipantContactTypeByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -70,21 +65,21 @@ public sealed class ParticipantContactTypeService(IParticipantContactTypeCache c
                 token => _repository.GetByIdAsync(id, token),
                 cancellationToken);
             if (participantContactType == null)
-                return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.NotFound, Message = $"Participant contact type with ID '{id}' not found." };
+                return Result<ParticipantContactType>.NotFound($"Participant contact type with ID '{id}' not found.");
 
-            return new ParticipantContactTypeResult { Success = true, Result = participantContactType, Message = "Participant contact type retrieved successfully." };
+            return Result<ParticipantContactType>.Ok(participantContactType);
         }
         catch (ArgumentException ex)
         {
-            return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
+            return Result<ParticipantContactType>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while retrieving the participant contact type: {ex.Message}" };
+            return Result<ParticipantContactType>.Error($"An error occurred while retrieving the participant contact type: {ex.Message}");
         }
     }
 
-    public async Task<ParticipantContactTypeResult> GetParticipantContactTypeByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<Result<ParticipantContactType>> GetParticipantContactTypeByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -96,51 +91,51 @@ public sealed class ParticipantContactTypeService(IParticipantContactTypeCache c
                 token => _repository.GetByNameAsync(name, token),
                 cancellationToken);
             if (participantContactType == null)
-                return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.NotFound, Message = $"Participant contact type with name '{name}' not found." };
+                return Result<ParticipantContactType>.NotFound($"Participant contact type with name '{name}' not found.");
 
-            return new ParticipantContactTypeResult { Success = true, Result = participantContactType, Message = "Participant contact type retrieved successfully." };
+            return Result<ParticipantContactType>.Ok(participantContactType);
         }
         catch (ArgumentException ex)
         {
-            return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
+            return Result<ParticipantContactType>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while retrieving the participant contact type: {ex.Message}" };
+            return Result<ParticipantContactType>.Error($"An error occurred while retrieving the participant contact type: {ex.Message}");
         }
     }
 
-    public async Task<ParticipantContactTypeResult> UpdateParticipantContactTypeAsync(UpdateParticipantContactTypeInput input, CancellationToken cancellationToken = default)
+    public async Task<Result<ParticipantContactType>> UpdateParticipantContactTypeAsync(UpdateParticipantContactTypeInput input, CancellationToken cancellationToken = default)
     {
         try
         {
             if (input == null)
-                return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "Participant contact type cannot be null." };
+                return Result<ParticipantContactType>.BadRequest("Participant contact type cannot be null.");
 
             var existingParticipantContactType = await _repository.GetByIdAsync(input.Id, cancellationToken);
             if (existingParticipantContactType == null)
-                return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.NotFound, Message = $"Participant contact type with ID '{input.Id}' not found." };
+                return Result<ParticipantContactType>.NotFound($"Participant contact type with ID '{input.Id}' not found.");
 
             existingParticipantContactType.Update(input.Name);
             var updatedParticipantContactType = await _repository.UpdateAsync(existingParticipantContactType.Id, existingParticipantContactType, cancellationToken);
             if (updatedParticipantContactType == null)
-                return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = "Failed to update participant contact type." };
+                return Result<ParticipantContactType>.Error("Failed to update participant contact type.");
             _cache.ResetEntity(existingParticipantContactType);
             _cache.SetEntity(updatedParticipantContactType);
 
-            return new ParticipantContactTypeResult { Success = true, Result = updatedParticipantContactType, Message = "Participant contact type updated successfully." };
+            return Result<ParticipantContactType>.Ok(updatedParticipantContactType);
         }
         catch (ArgumentException ex)
         {
-            return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
+            return Result<ParticipantContactType>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while updating the participant contact type: {ex.Message}" };
+            return Result<ParticipantContactType>.Error($"An error occurred while updating the participant contact type: {ex.Message}");
         }
     }
 
-    public async Task<ParticipantContactTypeDeleteResult> DeleteParticipantContactTypeAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteParticipantContactTypeAsync(int id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -149,25 +144,25 @@ public sealed class ParticipantContactTypeService(IParticipantContactTypeCache c
 
             var existingParticipantContactType = await _repository.GetByIdAsync(id, cancellationToken);
             if (existingParticipantContactType == null)
-                return new ParticipantContactTypeDeleteResult { Success = false, ErrorType = ErrorTypes.NotFound, Result = false, Message = $"Participant contact type with ID '{id}' not found." };
+                return Result<bool>.NotFound($"Participant contact type with ID '{id}' not found.");
 
             if (await _repository.IsInUseAsync(id, cancellationToken))
-                return new ParticipantContactTypeDeleteResult { Success = false, ErrorType = ErrorTypes.Conflict, Result = false, Message = $"Cannot delete participant contact type with ID '{id}' because it is in use." };
+                return Result<bool>.Conflict($"Cannot delete participant contact type with ID '{id}' because it is in use.");
 
             var isDeleted = await _repository.RemoveAsync(id, cancellationToken);
             if (!isDeleted)
-                return new ParticipantContactTypeDeleteResult { Success = false, ErrorType = ErrorTypes.Unexpected, Result = false, Message = "Failed to delete participant contact type." };
+                return Result<bool>.Error("Failed to delete participant contact type.");
 
             _cache.ResetEntity(existingParticipantContactType);
-            return new ParticipantContactTypeDeleteResult { Success = true, Result = true, Message = "Participant contact type deleted successfully." };
+            return Result<bool>.Ok(true);
         }
         catch (ArgumentException ex)
         {
-            return new ParticipantContactTypeDeleteResult { Success = false, ErrorType = ErrorTypes.Validation, Result = false, Message = ex.Message };
+            return Result<bool>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new ParticipantContactTypeDeleteResult { Success = false, ErrorType = ErrorTypes.Unexpected, Result = false, Message = $"An error occurred while deleting the participant contact type: {ex.Message}" };
+            return Result<bool>.Error($"An error occurred while deleting the participant contact type: {ex.Message}");
         }
     }
 }

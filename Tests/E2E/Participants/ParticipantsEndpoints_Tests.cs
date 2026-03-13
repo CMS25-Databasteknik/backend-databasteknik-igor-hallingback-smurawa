@@ -8,6 +8,7 @@ using Backend.Presentation.API.Models.Participant;
 using Backend.Tests.Integration.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Backend.Domain.Modules.Participants.Models;
 
 namespace Backend.Tests.E2E.Participants;
 
@@ -26,13 +27,13 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/participants");
-        var payload = await response.Content.ReadFromJsonAsync<ParticipantListResult>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result<IReadOnlyList<Participant>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload);
         Assert.True(payload.Success);
-        Assert.NotNull(payload.Result);
-        Assert.Empty(payload.Result);
+        Assert.NotNull(payload.Value);
+        Assert.Empty(payload.Value);
     }
 
     [Fact]
@@ -81,14 +82,14 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         }
 
         var response = await client.GetAsync("/api/participants");
-        var payload = await response.Content.ReadFromJsonAsync<ParticipantListResult>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result<IReadOnlyList<Participant>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload);
-        Assert.NotNull(payload.Result);
+        Assert.NotNull(payload.Value);
 
-        var firstIndex = payload.Result.ToList().FindIndex(x => x.Id == firstId);
-        var secondIndex = payload.Result.ToList().FindIndex(x => x.Id == secondId);
+        var firstIndex = payload.Value.ToList().FindIndex(x => x.Id == firstId);
+        var secondIndex = payload.Value.ToList().FindIndex(x => x.Id == secondId);
 
         Assert.True(firstIndex >= 0);
         Assert.True(secondIndex >= 0);
@@ -124,16 +125,16 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
 
         var createdParticipantId = Guid.Parse(createResponse.Headers.Location!.OriginalString.Split('/')[^1]);
         var getResponse = await client.GetAsync($"/api/participants/{createdParticipantId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ParticipantDetailsResult>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result<ParticipantDetails>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(getPayload);
         Assert.True(getPayload.Success);
-        Assert.NotNull(getPayload.Result);
-        Assert.Equal(createdParticipantId, getPayload.Result.Id);
-        Assert.Equal("Ada", getPayload.Result.FirstName);
-        Assert.Equal("Lovelace", getPayload.Result.LastName);
-        Assert.Equal(contactTypeId, getPayload.Result.ContactType.Id);
+        Assert.NotNull(getPayload.Value);
+        Assert.Equal(createdParticipantId, getPayload.Value.Id);
+        Assert.Equal("Ada", getPayload.Value.FirstName);
+        Assert.Equal("Lovelace", getPayload.Value.LastName);
+        Assert.Equal(contactTypeId, getPayload.Value.ContactType.Id);
     }
 
     [Fact]
@@ -152,7 +153,7 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         };
 
         var response = await client.PostAsJsonAsync("/api/participants", createRequest);
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
@@ -167,12 +168,12 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync($"/api/participants/{Guid.Empty}");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ErrorTypes.Validation, payload.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, payload.ErrorType);
     }
 
     [Fact]
@@ -195,14 +196,12 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
 
         using var client = _factory.CreateClient();
         var response = await client.DeleteAsync($"/api/participants/{participantId}");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);
-        Assert.False(payload.Result);
-    }
+        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);    }
 
     [Fact]
     public async Task DeleteParticipant_ReturnsOk_AndRemovesParticipant()
@@ -219,15 +218,13 @@ public sealed class ParticipantsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         using var client = _factory.CreateClient();
 
         var deleteResponse = await client.DeleteAsync($"/api/participants/{participantId}");
-        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         Assert.NotNull(deletePayload);
-        Assert.True(deletePayload.Success);
-        Assert.True(deletePayload.Result);
-
+        Assert.True(deletePayload.Success);
         var getResponse = await client.GetAsync($"/api/participants/{participantId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         Assert.NotNull(getPayload);

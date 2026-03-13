@@ -12,77 +12,42 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
     private readonly IInstructorRepository _instructorRepository = instructorRepository ?? throw new ArgumentNullException(nameof(instructorRepository));
     private readonly IInstructorRoleRepository _instructorRoleRepository = instructorRoleRepository ?? throw new ArgumentNullException(nameof(instructorRoleRepository));
 
-    public async Task<InstructorResult> CreateInstructorAsync(CreateInstructorInput instructor, CancellationToken cancellationToken = default)
+    public async Task<Result<Instructor>> CreateInstructorAsync(CreateInstructorInput instructor, CancellationToken cancellationToken = default)
     {
         try
         {
             if (instructor == null)
             {
-                return new InstructorResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Result = null,
-                    Message = "Instructor cannot be null."
-                };
+                return Result<Instructor>.BadRequest("Instructor cannot be null.");
             }
 
             var role = await _instructorRoleRepository.GetByIdAsync(instructor.InstructorRoleId, cancellationToken);
             if (role == null)
             {
-                return new InstructorResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Result = null,
-                    Message = $"Instructor role with ID '{instructor.InstructorRoleId}' not found."
-                };
+                return Result<Instructor>.NotFound($"Instructor role with ID '{instructor.InstructorRoleId}' not found.");
             }
 
             var newInstructor = Instructor.Create(instructor.Name, role);
 
             var createdInstructor = await _instructorRepository.AddAsync(newInstructor, cancellationToken);
 
-            return new InstructorResult
-            {
-                Success = true,
-                Result = createdInstructor,
-                Message = "Instructor created successfully."
-            };
+            return Result<Instructor>.Ok(createdInstructor);
         }
         catch (KeyNotFoundException ex)
         {
-            return new InstructorResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.NotFound,
-                Result = null,
-                Message = ex.Message
-            };
+            return Result<Instructor>.NotFound(ex.Message);
         }
         catch (ArgumentException ex)
         {
-            return new InstructorResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Result = null,
-                Message = ex.Message
-            };
+            return Result<Instructor>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new InstructorResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Result = null,
-                Message = $"An error occurred while creating the instructor: {ex.Message}"
-            };
+            return Result<Instructor>.Error($"An error occurred while creating the instructor: {ex.Message}");
         }
     }
 
-    public async Task<InstructorListResult> GetAllInstructorsAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<Instructor>>> GetAllInstructorsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -90,56 +55,31 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
 
             if (!instructors.Any())
             {
-                return new InstructorListResult
-                {
-                    Success = true,
-                    Result = instructors,
-                    Message = "No instructors found."
-                };
+                return Result<IReadOnlyList<Instructor>>.Ok(instructors);
             }
 
-            return new InstructorListResult
-            {
-                Success = true,
-                Result = instructors,
-                Message = $"Retrieved {instructors.Count} instructor(s) successfully."
-            };
+            return Result<IReadOnlyList<Instructor>>.Ok(instructors);
         }
         catch (Exception ex)
         {
-            return new InstructorListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving instructors: {ex.Message}"
-            };
+            return Result<IReadOnlyList<Instructor>>.Error($"An error occurred while retrieving instructors: {ex.Message}");
         }
     }
 
-    public async Task<InstructorDetailsResult> GetInstructorByIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
+    public async Task<Result<InstructorDetails>> GetInstructorByIdAsync(Guid instructorId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (instructorId == Guid.Empty)
             {
-                return new InstructorDetailsResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Instructor ID cannot be empty."
-                };
+                return Result<InstructorDetails>.BadRequest("Instructor ID cannot be empty.");
             }
 
             var instructor = await _instructorRepository.GetByIdAsync(instructorId, cancellationToken);
 
             if (instructor == null)
             {
-                return new InstructorDetailsResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Instructor with ID '{instructorId}' not found."
-                };
+                return Result<InstructorDetails>.NotFound($"Instructor with ID '{instructorId}' not found.");
             }
 
             var details = new InstructorDetails(
@@ -148,77 +88,42 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 new InstructorLookupItem(instructor.Role.Id, instructor.Role.RoleName)
             );
 
-            return new InstructorDetailsResult
-            {
-                Success = true,
-                Result = details,
-                Message = "Instructor retrieved successfully."
-            };
+            return Result<InstructorDetails>.Ok(details);
         }
         catch (KeyNotFoundException ex)
         {
-            return new InstructorDetailsResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.NotFound,
-                Message = ex.Message
-            };
+            return Result<InstructorDetails>.NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            return new InstructorDetailsResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving the instructor: {ex.Message}"
-            };
+            return Result<InstructorDetails>.Error($"An error occurred while retrieving the instructor: {ex.Message}");
         }
     }
 
-    public async Task<InstructorResult> UpdateInstructorAsync(UpdateInstructorInput instructor, CancellationToken cancellationToken = default)
+    public async Task<Result<Instructor>> UpdateInstructorAsync(UpdateInstructorInput instructor, CancellationToken cancellationToken = default)
     {
         try
         {
             if (instructor == null)
             {
-                return new InstructorResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Instructor cannot be null."
-                };
+                return Result<Instructor>.BadRequest("Instructor cannot be null.");
             }
 
             if (instructor.Id == Guid.Empty)
             {
-                return new InstructorResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Instructor ID cannot be empty."
-                };
+                return Result<Instructor>.BadRequest("Instructor ID cannot be empty.");
             }
 
             var role = await _instructorRoleRepository.GetByIdAsync(instructor.InstructorRoleId, cancellationToken);
             if (role == null)
             {
-                return new InstructorResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Instructor role with ID '{instructor.InstructorRoleId}' not found."
-                };
+                return Result<Instructor>.NotFound($"Instructor role with ID '{instructor.InstructorRoleId}' not found.");
             }
 
             var existingInstructor = await _instructorRepository.GetByIdAsync(instructor.Id, cancellationToken);
             if (existingInstructor == null)
             {
-                return new InstructorResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Instructor with ID '{instructor.Id}' not found."
-                };
+                return Result<Instructor>.NotFound($"Instructor with ID '{instructor.Id}' not found.");
             }
 
             existingInstructor.Update(instructor.Name, role);
@@ -227,119 +132,58 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
 
             if (updatedInstructor == null)
             {
-                return new InstructorResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to update instructor."
-                };
+                return Result<Instructor>.Error("Failed to update instructor.");
             }
 
-            return new InstructorResult
-            {
-                Success = true,
-                Result = updatedInstructor,
-                Message = "Instructor updated successfully."
-            };
+            return Result<Instructor>.Ok(updatedInstructor);
         }
         catch (ArgumentException ex)
         {
-            return new InstructorResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<Instructor>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new InstructorResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while updating the instructor: {ex.Message}"
-            };
+            return Result<Instructor>.Error($"An error occurred while updating the instructor: {ex.Message}");
         }
     }
 
-    public async Task<InstructorDeleteResult> DeleteInstructorAsync(Guid instructorId, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteInstructorAsync(Guid instructorId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (instructorId == Guid.Empty)
             {
-                return new InstructorDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Instructor ID cannot be empty.",
-                    Result = false
-                };
+                return Result<bool>.BadRequest("Instructor ID cannot be empty.");
             }
 
             var existingInstructor = await _instructorRepository.GetByIdAsync(instructorId, cancellationToken);
             if (existingInstructor == null)
             {
-                return new InstructorDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Instructor with ID '{instructorId}' not found.",
-                    Result = false
-                };
+                return Result<bool>.NotFound($"Instructor with ID '{instructorId}' not found.");
             }
 
             var hasCourseEvents = await _instructorRepository.HasCourseEventsAsync(instructorId, cancellationToken);
             if (hasCourseEvents)
             {
-                return new InstructorDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Conflict,
-                    Message = $"Cannot delete instructor with ID '{instructorId}' because they are assigned to course events. Please remove the assignments first.",
-                    Result = false
-                };
+                return Result<bool>.Conflict($"Cannot delete instructor with ID '{instructorId}' because they are assigned to course events. Please remove the assignments first.");
             }
 
             var isDeleted = await _instructorRepository.RemoveAsync(instructorId, cancellationToken);
 
             if (!isDeleted)
             {
-                return new InstructorDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to delete instructor.",
-                    Result = false
-                };
+                return Result<bool>.Error("Failed to delete instructor.");
             }
 
-            return new InstructorDeleteResult
-            {
-                Success = true,
-                Result = isDeleted,
-                Message = "Instructor deleted successfully."
-            };
+            return Result<bool>.Ok(true);
         }
         catch (KeyNotFoundException ex)
         {
-            return new InstructorDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.NotFound,
-                Message = ex.Message,
-                Result = false
-            };
+            return Result<bool>.NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            return new InstructorDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while deleting the instructor: {ex.Message}",
-                Result = false
-            };
+            return Result<bool>.Error($"An error occurred while deleting the instructor: {ex.Message}");
         }
     }
 }

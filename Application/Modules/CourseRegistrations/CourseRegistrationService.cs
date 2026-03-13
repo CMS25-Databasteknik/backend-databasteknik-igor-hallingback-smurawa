@@ -25,89 +25,47 @@ public class CourseRegistrationService(
     private readonly ICourseRegistrationStatusRepository _statusRepository = statusRepository ?? throw new ArgumentNullException(nameof(statusRepository));
     private readonly IPaymentMethodRepository _paymentMethodRepository = paymentMethodRepository ?? throw new ArgumentNullException(nameof(paymentMethodRepository));
 
-    public async Task<CourseRegistrationResult> CreateCourseRegistrationAsync(CreateCourseRegistrationInput courseRegistration, CancellationToken cancellationToken = default)
+    public async Task<Result<CourseRegistration>> CreateCourseRegistrationAsync(CreateCourseRegistrationInput courseRegistration, CancellationToken cancellationToken = default)
     {
         try
         {
             if (courseRegistration == null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Result = null,
-                    Message = "Course registration cannot be null."
-                };
+                return Result<CourseRegistration>.BadRequest("Course registration cannot be null.");
             }
 
             if (courseRegistration.ParticipantId == Guid.Empty)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Result = null,
-                    Message = "Participant ID cannot be empty."
-                };
+                return Result<CourseRegistration>.BadRequest("Participant ID cannot be empty.");
             }
 
             if (courseRegistration.CourseEventId == Guid.Empty)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Result = null,
-                    Message = "Course event ID cannot be empty."
-                };
+                return Result<CourseRegistration>.BadRequest("Course event ID cannot be empty.");
             }
 
             var participant = await _participantRepository.GetByIdAsync(courseRegistration.ParticipantId, cancellationToken);
             if (participant is null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Result = null,
-                    Message = $"Participant with ID '{courseRegistration.ParticipantId}' not found."
-                };
+                return Result<CourseRegistration>.NotFound($"Participant with ID '{courseRegistration.ParticipantId}' not found.");
             }
 
             var courseEvent = await _courseEventRepository.GetByIdAsync(courseRegistration.CourseEventId, cancellationToken);
             if (courseEvent is null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Result = null,
-                    Message = $"Course event with ID '{courseRegistration.CourseEventId}' not found."
-                };
+                return Result<CourseRegistration>.NotFound($"Course event with ID '{courseRegistration.CourseEventId}' not found.");
             }
 
             var status = await _statusRepository.GetByIdAsync(courseRegistration.StatusId, cancellationToken);
             if (status is null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Result = null,
-                    Message = $"Course registration status with ID '{courseRegistration.StatusId}' not found."
-                };
+                return Result<CourseRegistration>.NotFound($"Course registration status with ID '{courseRegistration.StatusId}' not found.");
             }
 
             var paymentMethod = await _paymentMethodRepository.GetByIdAsync(courseRegistration.PaymentMethodId, cancellationToken);
             if (paymentMethod is null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Result = null,
-                    Message = $"Payment method with ID '{courseRegistration.PaymentMethodId}' not found."
-                };
+                return Result<CourseRegistration>.NotFound($"Payment method with ID '{courseRegistration.PaymentMethodId}' not found.");
             }
 
             var newCourseRegistration = CourseRegistration.Create(
@@ -120,36 +78,19 @@ public class CourseRegistrationService(
 
             var createdCourseRegistration = await _courseRegistrationRepository.AddAsync(newCourseRegistration, cancellationToken);
 
-            return new CourseRegistrationResult
-            {
-                Success = true,
-                Result = createdCourseRegistration,
-                Message = "Course registration created successfully."
-            };
+            return Result<CourseRegistration>.Ok(createdCourseRegistration);
         }
         catch (ArgumentException ex)
         {
-            return new CourseRegistrationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Result = null,
-                Message = ex.Message
-            };
+            return Result<CourseRegistration>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Result = null,
-                Message = $"An error occurred while creating the course registration: {ex.Message}"
-            };
+            return Result<CourseRegistration>.Error($"An error occurred while creating the course registration: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationListResult> GetAllCourseRegistrationsAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<CourseRegistration>>> GetAllCourseRegistrationsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -157,56 +98,31 @@ public class CourseRegistrationService(
 
             if (!courseRegistrations.Any())
             {
-                return new CourseRegistrationListResult
-                {
-                    Success = true,
-                    Result = courseRegistrations,
-                    Message = "No course registrations found."
-                };
+                return Result<IReadOnlyList<CourseRegistration>>.Ok(courseRegistrations);
             }
 
-            return new CourseRegistrationListResult
-            {
-                Success = true,
-                Result = courseRegistrations,
-                Message = $"Retrieved {courseRegistrations.Count} course registration(s) successfully."
-            };
+            return Result<IReadOnlyList<CourseRegistration>>.Ok(courseRegistrations);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving course registrations: {ex.Message}"
-            };
+            return Result<IReadOnlyList<CourseRegistration>>.Error($"An error occurred while retrieving course registrations: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationDetailsResult> GetCourseRegistrationByIdAsync(Guid courseRegistrationId, CancellationToken cancellationToken = default)
+    public async Task<Result<CourseRegistrationDetails>> GetCourseRegistrationByIdAsync(Guid courseRegistrationId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (courseRegistrationId == Guid.Empty)
             {
-                return new CourseRegistrationDetailsResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course registration ID cannot be empty."
-                };
+                return Result<CourseRegistrationDetails>.BadRequest("Course registration ID cannot be empty.");
             }
 
             var courseRegistration = await _courseRegistrationRepository.GetByIdAsync(courseRegistrationId, cancellationToken);
 
             if (courseRegistration == null)
             {
-                return new CourseRegistrationDetailsResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course registration with ID '{courseRegistrationId}' not found."
-                };
+                return Result<CourseRegistrationDetails>.NotFound($"Course registration with ID '{courseRegistrationId}' not found.");
             }
 
             var participant = await _participantRepository.GetByIdAsync(courseRegistration.ParticipantId, cancellationToken);
@@ -229,209 +145,114 @@ public class CourseRegistrationService(
                 new RegistrationLookupItem(courseRegistration.PaymentMethod.Id, courseRegistration.PaymentMethod.Name)
             );
 
-            return new CourseRegistrationDetailsResult
-            {
-                Success = true,
-                Result = details,
-                Message = "Course registration retrieved successfully."
-            };
+            return Result<CourseRegistrationDetails>.Ok(details);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationDetailsResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving the course registration: {ex.Message}"
-            };
+            return Result<CourseRegistrationDetails>.Error($"An error occurred while retrieving the course registration: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationListResult> GetCourseRegistrationsByParticipantIdAsync(Guid participantId, CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<CourseRegistration>>> GetCourseRegistrationsByParticipantIdAsync(Guid participantId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (participantId == Guid.Empty)
             {
-                return new CourseRegistrationListResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Participant ID cannot be empty."
-                };
+                return Result<IReadOnlyList<CourseRegistration>>.BadRequest("Participant ID cannot be empty.");
             }
 
             var courseRegistrations = await _courseRegistrationRepository.GetCourseRegistrationsByParticipantIdAsync(participantId, cancellationToken);
 
             if (!courseRegistrations.Any())
             {
-                return new CourseRegistrationListResult
-                {
-                    Success = true,
-                    Result = courseRegistrations,
-                    Message = "No course registrations found for this participant."
-                };
+                return Result<IReadOnlyList<CourseRegistration>>.Ok(courseRegistrations);
             }
 
-            return new CourseRegistrationListResult
-            {
-                Success = true,
-                Result = courseRegistrations,
-                Message = $"Retrieved {courseRegistrations.Count} course registration(s) for the participant successfully."
-            };
+            return Result<IReadOnlyList<CourseRegistration>>.Ok(courseRegistrations);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving course registrations: {ex.Message}"
-            };
+            return Result<IReadOnlyList<CourseRegistration>>.Error($"An error occurred while retrieving course registrations: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationListResult> GetCourseRegistrationsByCourseEventIdAsync(Guid courseEventId, CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<CourseRegistration>>> GetCourseRegistrationsByCourseEventIdAsync(Guid courseEventId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (courseEventId == Guid.Empty)
             {
-                return new CourseRegistrationListResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course event ID cannot be empty."
-                };
+                return Result<IReadOnlyList<CourseRegistration>>.BadRequest("Course event ID cannot be empty.");
             }
 
             var courseRegistrations = await _courseRegistrationRepository.GetCourseRegistrationsByCourseEventIdAsync(courseEventId, cancellationToken);
 
             if (!courseRegistrations.Any())
             {
-                return new CourseRegistrationListResult
-                {
-                    Success = true,
-                    Result = courseRegistrations,
-                    Message = "No course registrations found for this course event."
-                };
+                return Result<IReadOnlyList<CourseRegistration>>.Ok(courseRegistrations);
             }
 
-            return new CourseRegistrationListResult
-            {
-                Success = true,
-                Result = courseRegistrations,
-                Message = $"Retrieved {courseRegistrations.Count} course registration(s) for the course event successfully."
-            };
+            return Result<IReadOnlyList<CourseRegistration>>.Ok(courseRegistrations);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving course registrations: {ex.Message}"
-            };
+            return Result<IReadOnlyList<CourseRegistration>>.Error($"An error occurred while retrieving course registrations: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationResult> UpdateCourseRegistrationAsync(UpdateCourseRegistrationInput courseRegistration, CancellationToken cancellationToken = default)
+    public async Task<Result<CourseRegistration>> UpdateCourseRegistrationAsync(UpdateCourseRegistrationInput courseRegistration, CancellationToken cancellationToken = default)
     {
         try
         {
             if (courseRegistration == null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course registration cannot be null."
-                };
+                return Result<CourseRegistration>.BadRequest("Course registration cannot be null.");
             }
 
             if (courseRegistration.Id == Guid.Empty)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course registration ID cannot be empty."
-                };
+                return Result<CourseRegistration>.BadRequest("Course registration ID cannot be empty.");
             }
 
             if (courseRegistration.ParticipantId == Guid.Empty)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Participant ID cannot be empty."
-                };
+                return Result<CourseRegistration>.BadRequest("Participant ID cannot be empty.");
             }
 
             if (courseRegistration.CourseEventId == Guid.Empty)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course event ID cannot be empty."
-                };
+                return Result<CourseRegistration>.BadRequest("Course event ID cannot be empty.");
             }
 
             var existingCourseRegistration = await _courseRegistrationRepository.GetByIdAsync(courseRegistration.Id, cancellationToken);
             if (existingCourseRegistration == null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course registration with ID '{courseRegistration.Id}' not found."
-                };
+                return Result<CourseRegistration>.NotFound($"Course registration with ID '{courseRegistration.Id}' not found.");
             }
 
             var participant = await _participantRepository.GetByIdAsync(courseRegistration.ParticipantId, cancellationToken);
             if (participant is null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Participant with ID '{courseRegistration.ParticipantId}' not found."
-                };
+                return Result<CourseRegistration>.NotFound($"Participant with ID '{courseRegistration.ParticipantId}' not found.");
             }
 
             var courseEvent = await _courseEventRepository.GetByIdAsync(courseRegistration.CourseEventId, cancellationToken);
             if (courseEvent is null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course event with ID '{courseRegistration.CourseEventId}' not found."
-                };
+                return Result<CourseRegistration>.NotFound($"Course event with ID '{courseRegistration.CourseEventId}' not found.");
             }
 
             var status = await _statusRepository.GetByIdAsync(courseRegistration.StatusId, cancellationToken);
             if (status is null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course registration status with ID '{courseRegistration.StatusId}' not found."
-                };
+                return Result<CourseRegistration>.NotFound($"Course registration status with ID '{courseRegistration.StatusId}' not found.");
             }
 
             var paymentMethod = await _paymentMethodRepository.GetByIdAsync(courseRegistration.PaymentMethodId, cancellationToken);
             if (paymentMethod is null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Payment method with ID '{courseRegistration.PaymentMethodId}' not found."
-                };
+                return Result<CourseRegistration>.NotFound($"Payment method with ID '{courseRegistration.PaymentMethodId}' not found.");
             }
 
             existingCourseRegistration.Update(
@@ -446,106 +267,52 @@ public class CourseRegistrationService(
 
             if (updatedCourseRegistration == null)
             {
-                return new CourseRegistrationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to update course registration."
-                };
+                return Result<CourseRegistration>.Error("Failed to update course registration.");
             }
 
-            return new CourseRegistrationResult
-            {
-                Success = true,
-                Result = updatedCourseRegistration,
-                Message = "Course registration updated successfully."
-            };
+            return Result<CourseRegistration>.Ok(updatedCourseRegistration);
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("modified by another user"))
         {
-            return new CourseRegistrationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Conflict,
-                Message = "The course registration was modified by another user. Please refresh and try again."
-            };
+            return Result<CourseRegistration>.Conflict("The course registration was modified by another user. Please refresh and try again.");
         }
         catch (ArgumentException ex)
         {
-            return new CourseRegistrationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<CourseRegistration>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while updating the course registration: {ex.Message}"
-            };
+            return Result<CourseRegistration>.Error($"An error occurred while updating the course registration: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationDeleteResult> DeleteCourseRegistrationAsync(Guid courseRegistrationId, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteCourseRegistrationAsync(Guid courseRegistrationId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (courseRegistrationId == Guid.Empty)
             {
-                return new CourseRegistrationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course registration ID cannot be empty.",
-                    Result = false
-                };
+                return Result<bool>.BadRequest("Course registration ID cannot be empty.");
             }
 
             var existingCourseRegistration = await _courseRegistrationRepository.GetByIdAsync(courseRegistrationId, cancellationToken);
             if (existingCourseRegistration == null)
             {
-                return new CourseRegistrationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course registration with ID '{courseRegistrationId}' not found.",
-                    Result = false
-                };
+                return Result<bool>.NotFound($"Course registration with ID '{courseRegistrationId}' not found.");
             }
 
             var isDeleted = await _courseRegistrationRepository.RemoveAsync(courseRegistrationId, cancellationToken);
 
             if (!isDeleted)
             {
-                return new CourseRegistrationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to delete course registration.",
-                    Result = false
-                };
+                return Result<bool>.Error("Failed to delete course registration.");
             }
 
-            return new CourseRegistrationDeleteResult
-            {
-                Success = true,
-                Result = isDeleted,
-                Message = "Course registration deleted successfully."
-            };
+            return Result<bool>.Ok(true);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while deleting the course registration: {ex.Message}",
-                Result = false
-            };
+            return Result<bool>.Error($"An error occurred while deleting the course registration: {ex.Message}");
         }
     }
 

@@ -45,7 +45,7 @@ public static class InstructorsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/instructors/{response.Result?.Id}", response);
+        return Results.Created($"/api/instructors/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateInstructor(Guid id, UpdateInstructorRequest request, IInstructorService instructorService, CancellationToken cancellationToken)

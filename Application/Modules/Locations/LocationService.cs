@@ -1,6 +1,6 @@
 using Backend.Application.Common;
 using Backend.Application.Modules.Locations.Inputs;
-using Backend.Application.Modules.Locations.Outputs;
+
 using Backend.Domain.Modules.Locations.Contracts;
 using Backend.Domain.Modules.Locations.Models;
 
@@ -10,19 +10,13 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
 {
     private readonly ILocationRepository _locationRepository = locationRepository ?? throw new ArgumentNullException(nameof(locationRepository));
 
-    public async Task<LocationResult> CreateLocationAsync(CreateLocationInput location, CancellationToken cancellationToken = default)
+    public async Task<Result<Location>> CreateLocationAsync(CreateLocationInput location, CancellationToken cancellationToken = default)
     {
         try
         {
             if (location == null)
             {
-                return new LocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Result = null,
-                    Message = "Location cannot be null."
-                };
+                return Result<Location>.BadRequest("Location cannot be null.");
             }
 
             var newLocation = Location.Create(
@@ -33,36 +27,19 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
 
             var createdLocation = await _locationRepository.AddAsync(newLocation, cancellationToken);
 
-            return new LocationResult
-            {
-                Success = true,
-                Result = createdLocation,
-                Message = "Location created successfully."
-            };
+            return Result<Location>.Ok(createdLocation);
         }
         catch (ArgumentException ex)
         {
-            return new LocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Result = null,
-                Message = ex.Message
-            };
+            return Result<Location>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new LocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Result = null,
-                Message = $"An error occurred while creating the location: {ex.Message}"
-            };
+            return Result<Location>.Error($"An error occurred while creating the location: {ex.Message}");
         }
     }
 
-    public async Task<LocationListResult> GetAllLocationsAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<Location>>> GetAllLocationsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -70,109 +47,59 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
 
             if (!locations.Any())
             {
-                return new LocationListResult
-                {
-                    Success = true,
-                    Result = locations,
-                    Message = "No locations found."
-                };
+                return Result<IReadOnlyList<Location>>.Ok(locations);
             }
 
-            return new LocationListResult
-            {
-                Success = true,
-                Result = locations,
-                Message = $"Retrieved {locations.Count} location(s) successfully."
-            };
+            return Result<IReadOnlyList<Location>>.Ok(locations);
         }
         catch (Exception ex)
         {
-            return new LocationListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving locations: {ex.Message}"
-            };
+            return Result<IReadOnlyList<Location>>.Error($"An error occurred while retrieving locations: {ex.Message}");
         }
     }
 
-    public async Task<LocationResult> GetLocationByIdAsync(int locationId, CancellationToken cancellationToken = default)
+    public async Task<Result<Location>> GetLocationByIdAsync(int locationId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (locationId <= 0)
             {
-                return new LocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Location ID must be greater than zero."
-                };
+                return Result<Location>.BadRequest("Location ID must be greater than zero.");
             }
 
             var existingLocation = await _locationRepository.GetByIdAsync(locationId, cancellationToken);
 
             if (existingLocation == null)
             {
-                return new LocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Location with ID '{locationId}' not found."
-                };
+                return Result<Location>.NotFound($"Location with ID '{locationId}' not found.");
             }
 
-            return new LocationResult
-            {
-                Success = true,
-                Result = existingLocation,
-                Message = "Location retrieved successfully."
-            };
+            return Result<Location>.Ok(existingLocation);
         }
         catch (Exception ex)
         {
-            return new LocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving the location: {ex.Message}"
-            };
+            return Result<Location>.Error($"An error occurred while retrieving the location: {ex.Message}");
         }
     }
 
-    public async Task<LocationResult> UpdateLocationAsync(UpdateLocationInput location, CancellationToken cancellationToken = default)
+    public async Task<Result<Location>> UpdateLocationAsync(UpdateLocationInput location, CancellationToken cancellationToken = default)
     {
         try
         {
             if (location == null)
             {
-                return new LocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Location cannot be null."
-                };
+                return Result<Location>.BadRequest("Location cannot be null.");
             }
 
             if (location.Id <= 0)
             {
-                return new LocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Location ID must be greater than zero."
-                };
+                return Result<Location>.BadRequest("Location ID must be greater than zero.");
             }
 
             var existingLocation = await _locationRepository.GetByIdAsync(location.Id, cancellationToken);
             if (existingLocation == null)
             {
-                return new LocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Location with ID '{location.Id}' not found."
-                };
+                return Result<Location>.NotFound($"Location with ID '{location.Id}' not found.");
             }
 
             existingLocation.Update(
@@ -185,109 +112,54 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
 
             if (updatedLocation == null)
             {
-                return new LocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to update location."
-                };
+                return Result<Location>.Error("Failed to update location.");
             }
 
-            return new LocationResult
-            {
-                Success = true,
-                Result = updatedLocation,
-                Message = "Location updated successfully."
-            };
+            return Result<Location>.Ok(updatedLocation);
         }
         catch (ArgumentException ex)
         {
-            return new LocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<Location>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new LocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while updating the location: {ex.Message}"
-            };
+            return Result<Location>.Error($"An error occurred while updating the location: {ex.Message}");
         }
     }
 
-    public async Task<LocationDeleteResult> DeleteLocationAsync(int locationId, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteLocationAsync(int locationId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (locationId <= 0)
             {
-                return new LocationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Location ID must be greater than zero.",
-                    Result = false
-                };
+                return Result<bool>.BadRequest("Location ID must be greater than zero.");
             }
 
             var existingLocation = await _locationRepository.GetByIdAsync(locationId, cancellationToken);
             if (existingLocation == null)
             {
-                return new LocationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Location with ID '{locationId}' not found.",
-                    Result = false
-                };
+                return Result<bool>.NotFound($"Location with ID '{locationId}' not found.");
             }
 
             var hasInPlaceLocations = await _locationRepository.HasInPlaceLocationsAsync(locationId, cancellationToken);
             if (hasInPlaceLocations)
             {
-                return new LocationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Conflict,
-                    Message = $"Cannot delete location with ID '{locationId}' because it has in-place locations. Please delete the in-place locations first.",
-                    Result = false
-                };
+                return Result<bool>.Conflict($"Cannot delete location with ID '{locationId}' because it has in-place locations. Please delete the in-place locations first.");
             }
 
             var isDeleted = await _locationRepository.RemoveAsync(locationId, cancellationToken);
 
             if (!isDeleted)
             {
-                return new LocationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to delete location.",
-                    Result = false
-                };
+                return Result<bool>.Error("Failed to delete location.");
             }
 
-            return new LocationDeleteResult
-            {
-                Success = true,
-                Result = isDeleted,
-                Message = "Location deleted successfully."
-            };
+            return Result<bool>.Ok(true);
         }
         catch (Exception ex)
         {
-            return new LocationDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while deleting the location: {ex.Message}",
-                Result = false
-            };
+            return Result<bool>.Error($"An error occurred while deleting the location: {ex.Message}");
         }
     }
 }

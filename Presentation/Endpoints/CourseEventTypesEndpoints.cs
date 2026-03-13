@@ -45,7 +45,7 @@ public static class CourseEventTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/course-event-types/{response.Result?.Id}", response);
+        return Results.Created($"/api/course-event-types/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateCourseEventType(int id, UpdateCourseEventTypeRequest request, ICourseEventTypeService service, CancellationToken cancellationToken)

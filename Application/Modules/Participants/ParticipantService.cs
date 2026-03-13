@@ -15,31 +15,19 @@ public class ParticipantService(
     private readonly IParticipantRepository _participantRepository = participantRepository ?? throw new ArgumentNullException(nameof(participantRepository));
     private readonly IParticipantContactTypeRepository _participantContactTypeRepository = participantContactTypeRepository ?? throw new ArgumentNullException(nameof(participantContactTypeRepository));
 
-    public async Task<ParticipantResult> CreateParticipantAsync(CreateParticipantInput participant, CancellationToken cancellationToken = default)
+    public async Task<Result<Participant>> CreateParticipantAsync(CreateParticipantInput participant, CancellationToken cancellationToken = default)
     {
         try
         {
             if (participant == null)
             {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Result = null,
-                    Message = "Participant cannot be null."
-                };
+                return Result<Participant>.BadRequest("Participant cannot be null.");
             }
 
             var contactType = await _participantContactTypeRepository.GetByIdAsync(participant.ContactTypeId, cancellationToken);
             if (contactType == null)
             {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Result = null,
-                    Message = $"Participant contact type with ID '{participant.ContactTypeId}' not found."
-                };
+                return Result<Participant>.NotFound($"Participant contact type with ID '{participant.ContactTypeId}' not found.");
             }
 
             var newParticipant = Participant.Create(
@@ -52,36 +40,19 @@ public class ParticipantService(
 
             var createdParticipant = await _participantRepository.AddAsync(newParticipant, cancellationToken);
 
-            return new ParticipantResult
-            {
-                Success = true,
-                Result = createdParticipant,
-                Message = "Participant created successfully."
-            };
+            return Result<Participant>.Ok(createdParticipant);
         }
         catch (ArgumentException ex)
         {
-            return new ParticipantResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Result = null,
-                Message = ex.Message
-            };
+            return Result<Participant>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new ParticipantResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Result = null,
-                Message = $"An error occurred while creating the participant: {ex.Message}"
-            };
+            return Result<Participant>.Error($"An error occurred while creating the participant: {ex.Message}");
         }
     }
 
-    public async Task<ParticipantListResult> GetAllParticipantsAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<Participant>>> GetAllParticipantsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -89,56 +60,31 @@ public class ParticipantService(
 
             if (!participants.Any())
             {
-                return new ParticipantListResult
-                {
-                    Success = true,
-                    Result = participants,
-                    Message = "No participants found."
-                };
+                return Result<IReadOnlyList<Participant>>.Ok(participants);
             }
 
-            return new ParticipantListResult
-            {
-                Success = true,
-                Result = participants,
-                Message = $"Retrieved {participants.Count} participant(s) successfully."
-            };
+            return Result<IReadOnlyList<Participant>>.Ok(participants);
         }
         catch (Exception ex)
         {
-            return new ParticipantListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving participants: {ex.Message}"
-            };
+            return Result<IReadOnlyList<Participant>>.Error($"An error occurred while retrieving participants: {ex.Message}");
         }
     }
 
-    public async Task<ParticipantDetailsResult> GetParticipantByIdAsync(Guid participantId, CancellationToken cancellationToken = default)
+    public async Task<Result<ParticipantDetails>> GetParticipantByIdAsync(Guid participantId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (participantId == Guid.Empty)
             {
-                return new ParticipantDetailsResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Participant ID cannot be empty."
-                };
+                return Result<ParticipantDetails>.BadRequest("Participant ID cannot be empty.");
             }
 
             var existingParticipant = await _participantRepository.GetByIdAsync(participantId, cancellationToken);
 
             if (existingParticipant == null)
             {
-                return new ParticipantDetailsResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Participant with ID '{participantId}' not found."
-                };
+                return Result<ParticipantDetails>.NotFound($"Participant with ID '{participantId}' not found.");
             }
 
             var details = new ParticipantDetails(
@@ -152,68 +98,38 @@ public class ParticipantService(
                     existingParticipant.ContactType.Name)
             );
 
-            return new ParticipantDetailsResult
-            {
-                Success = true,
-                Result = details,
-                Message = "Participant retrieved successfully."
-            };
+            return Result<ParticipantDetails>.Ok(details);
         }
         catch (Exception ex)
         {
-            return new ParticipantDetailsResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving the participant: {ex.Message}"
-            };
+            return Result<ParticipantDetails>.Error($"An error occurred while retrieving the participant: {ex.Message}");
         }
     }
 
-    public async Task<ParticipantResult> UpdateParticipantAsync(UpdateParticipantInput participant, CancellationToken cancellationToken = default)
+    public async Task<Result<Participant>> UpdateParticipantAsync(UpdateParticipantInput participant, CancellationToken cancellationToken = default)
     {
         try
         {
             if (participant == null)
             {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Participant cannot be null."
-                };
+                return Result<Participant>.BadRequest("Participant cannot be null.");
             }
 
             if (participant.Id == Guid.Empty)
             {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Participant ID cannot be empty."
-                };
+                return Result<Participant>.BadRequest("Participant ID cannot be empty.");
             }
 
             var existingParticipant = await _participantRepository.GetByIdAsync(participant.Id, cancellationToken);
             if (existingParticipant == null)
             {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Participant with ID '{participant.Id}' not found."
-                };
+                return Result<Participant>.NotFound($"Participant with ID '{participant.Id}' not found.");
             }
 
             var contactType = await _participantContactTypeRepository.GetByIdAsync(participant.ContactTypeId, cancellationToken);
             if (contactType == null)
             {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Participant contact type with ID '{participant.ContactTypeId}' not found."
-                };
+                return Result<Participant>.NotFound($"Participant contact type with ID '{participant.ContactTypeId}' not found.");
             }
 
             existingParticipant.Update(
@@ -228,128 +144,62 @@ public class ParticipantService(
 
             if (updatedParticipant == null)
             {
-                return new ParticipantResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to update participant."
-                };
+                return Result<Participant>.Error("Failed to update participant.");
             }
 
-            return new ParticipantResult
-            {
-                Success = true,
-                Result = updatedParticipant,
-                Message = "Participant updated successfully."
-            };
+            return Result<Participant>.Ok(updatedParticipant);
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("modified by another user"))
         {
-            return new ParticipantResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Conflict,
-                Message = "The participant was modified by another user. Please refresh and try again."
-            };
+            return Result<Participant>.Conflict("The participant was modified by another user. Please refresh and try again.");
         }
         catch (ArgumentException ex)
         {
-            return new ParticipantResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<Participant>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new ParticipantResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while updating the participant: {ex.Message}"
-            };
+            return Result<Participant>.Error($"An error occurred while updating the participant: {ex.Message}");
         }
     }
 
-    public async Task<ParticipantDeleteResult> DeleteParticipantAsync(Guid participantId, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteParticipantAsync(Guid participantId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (participantId == Guid.Empty)
             {
-                return new ParticipantDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Participant ID cannot be empty.",
-                    Result = false
-                };
+                return Result<bool>.BadRequest("Participant ID cannot be empty.");
             }
 
             var existingParticipant = await _participantRepository.GetByIdAsync(participantId, cancellationToken);
             if (existingParticipant == null)
             {
-                return new ParticipantDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Participant with ID '{participantId}' not found.",
-                    Result = false
-                };
+                return Result<bool>.NotFound($"Participant with ID '{participantId}' not found.");
             }
 
             var hasRegistrations = await _participantRepository.HasRegistrationsAsync(participantId, cancellationToken);
             if (hasRegistrations)
             {
-                return new ParticipantDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Conflict,
-                    Message = "Cannot delete participant because they have course registrations.",
-                    Result = false
-                };
+                return Result<bool>.Conflict("Cannot delete participant because they have course registrations.");
             }
 
             var isDeleted = await _participantRepository.RemoveAsync(participantId, cancellationToken);
 
             if (!isDeleted)
             {
-                return new ParticipantDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to delete participant.",
-                    Result = false
-                };
+                return Result<bool>.Error("Failed to delete participant.");
             }
 
-            return new ParticipantDeleteResult
-            {
-                Success = true,
-                Result = isDeleted,
-                Message = "Participant deleted successfully."
-            };
+            return Result<bool>.Ok(true);
         }
         catch (KeyNotFoundException ex)
         {
-            return new ParticipantDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.NotFound,
-                Message = ex.Message,
-                Result = false
-            };
+            return Result<bool>.NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            return new ParticipantDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while deleting the participant: {ex.Message}",
-                Result = false
-            };
+            return Result<bool>.Error($"An error occurred while deleting the participant: {ex.Message}");
         }
     }
 

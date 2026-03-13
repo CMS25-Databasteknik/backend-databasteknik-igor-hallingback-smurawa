@@ -1,14 +1,15 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.CourseEventTypes.Inputs;
-using Backend.Application.Modules.CourseEventTypes.Outputs;
+using Backend.Domain.Modules.CourseEventTypes.Models;
 
 namespace Backend.Application.Modules.CourseEventTypes;
 
 public interface ICourseEventTypeService
 {
-    Task<CourseEventTypeResult> CreateCourseEventTypeAsync(CreateCourseEventTypeInput courseEventType, CancellationToken cancellationToken = default);
-    Task<CourseEventTypeListResult> GetAllCourseEventTypesAsync(CancellationToken cancellationToken = default);
-    Task<CourseEventTypeResult> GetCourseEventTypeByIdAsync(int courseEventTypeId, CancellationToken cancellationToken = default);
-    Task<CourseEventTypeResult> GetCourseEventTypeByTypeNameAsync(string typeName, CancellationToken cancellationToken = default);
-    Task<CourseEventTypeResult> UpdateCourseEventTypeAsync(UpdateCourseEventTypeInput courseEventType, CancellationToken cancellationToken = default);
-    Task<CourseEventTypeDeleteResult> DeleteCourseEventTypeAsync(int courseEventTypeId, CancellationToken cancellationToken = default);
+    Task<Result<CourseEventType>> CreateCourseEventTypeAsync(CreateCourseEventTypeInput courseEventType, CancellationToken cancellationToken = default);
+    Task<Result<IReadOnlyList<CourseEventType>>> GetAllCourseEventTypesAsync(CancellationToken cancellationToken = default);
+    Task<Result<CourseEventType>> GetCourseEventTypeByIdAsync(int courseEventTypeId, CancellationToken cancellationToken = default);
+    Task<Result<CourseEventType>> GetCourseEventTypeByTypeNameAsync(string typeName, CancellationToken cancellationToken = default);
+    Task<Result<CourseEventType>> UpdateCourseEventTypeAsync(UpdateCourseEventTypeInput courseEventType, CancellationToken cancellationToken = default);
+    Task<Result<bool>> DeleteCourseEventTypeAsync(int courseEventTypeId, CancellationToken cancellationToken = default);
 }

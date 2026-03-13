@@ -55,7 +55,7 @@ public static class VenueTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/venue-types/{response.Result?.Id}", response);
+        return Results.Created($"/api/venue-types/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateVenueType(int id, UpdateVenueTypeRequest request, IVenueTypeService service, CancellationToken cancellationToken)

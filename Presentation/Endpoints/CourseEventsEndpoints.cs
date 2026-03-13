@@ -56,7 +56,7 @@ public static class CourseEventsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/course-events/{response.Result?.Id}", response);
+        return Results.Created($"/api/course-events/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateCourseEvent(Guid id, UpdateCourseEventRequest request, ICourseEventService service, CancellationToken cancellationToken)

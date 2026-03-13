@@ -4,23 +4,36 @@ namespace Backend.Presentation.API.Endpoints;
 
 public static class ResultHttpExtensions
 {
-    public static IResult ToHttpResult(this ResultBase result)
-        => result.ErrorType switch
+    public static IResult ToHttpResult(this Result result)
+    {
+        if (result.Success) return Results.Ok(result);
+        return result.ErrorType switch
         {
             ErrorTypes.NotFound => Results.NotFound(result),
-            ErrorTypes.Validation => Results.BadRequest(result),
+            ErrorTypes.BadRequest => Results.BadRequest(result),
             ErrorTypes.Conflict => Results.Conflict(result),
-            ErrorTypes.Unexpected => Results.Problem(result.Message),
+            ErrorTypes.Unprocessable => Results.UnprocessableEntity(result),
+            ErrorTypes.Unauthorized => Results.Unauthorized(),
+            ErrorTypes.Forbidden => Results.Forbid(),
+            ErrorTypes.Error => Results.Problem(result.ErrorMessage),
             _ => Results.Problem("An unknown error occurred.")
         };
+    }
 
-    public static IResult ToHttpResult<T>(this ResultBase<T> result)
-        => result.ErrorType switch
+    public static IResult ToHttpResult<T>(this Result<T> result)
+    {
+        if (result.Success) return Results.Ok(result);
+        return result.ErrorType switch
         {
             ErrorTypes.NotFound => Results.NotFound(result),
-            ErrorTypes.Validation => Results.BadRequest(result),
+            ErrorTypes.BadRequest => Results.BadRequest(result),
             ErrorTypes.Conflict => Results.Conflict(result),
-            ErrorTypes.Unexpected => Results.Problem(result.Message),
+            ErrorTypes.Unprocessable => Results.UnprocessableEntity(result),
+            ErrorTypes.Unauthorized => Results.Unauthorized(),
+            ErrorTypes.Forbidden => Results.Forbid(),
+            ErrorTypes.Error => Results.Problem(result.ErrorMessage),
             _ => Results.Problem("An unknown error occurred.")
         };
+    }
 }
+

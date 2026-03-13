@@ -67,7 +67,7 @@ public static class CourseRegistrationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/course-registrations/{response.Result?.Id}", response);
+        return Results.Created($"/api/course-registrations/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateCourseRegistration(Guid id, UpdateCourseRegistrationRequest request, ICourseRegistrationService service, CancellationToken cancellationToken)

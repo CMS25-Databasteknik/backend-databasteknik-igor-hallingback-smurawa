@@ -28,12 +28,11 @@ public class CourseService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal("Test Course", result.Result.Title);
-        Assert.Equal("Test Description", result.Result.Description);
-        Assert.Equal(5, result.Result.DurationInDays);
-        Assert.Equal("Course created successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal("Test Course", result.Value.Title);
+        Assert.Equal("Test Description", result.Value.Description);
+        Assert.Equal(5, result.Value.DurationInDays);
 
         await mockRepo.Received(1).AddAsync(
             Arg.Is<Course>(c => c.Title == "Test Course" && c.Description == "Test Description" && c.DurationInDays == 5),
@@ -52,9 +51,8 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Course cannot be null.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -72,9 +70,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -92,9 +90,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -112,9 +110,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -132,9 +130,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -152,9 +150,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -172,9 +170,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -195,10 +193,10 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while creating the course", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while creating the course", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     [Theory]
@@ -223,11 +221,11 @@ public class CourseService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(title, result.Result.Title);
-        Assert.Equal(description, result.Result.Description);
-        Assert.Equal(duration, result.Result.DurationInDays);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(title, result.Value.Title);
+        Assert.Equal(description, result.Value.Description);
+        Assert.Equal(duration, result.Value.DurationInDays);
     }
 
     [Fact]
@@ -291,10 +289,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(3, result.Result.Count());
-        Assert.Equal("Retrieved 3 course(s) successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(3, result.Value.Count());
 
         await mockRepo.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
     }
@@ -314,10 +311,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Empty(result.Result);
-        Assert.Equal("No courses found.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Empty(result.Value);
     }
 
     [Fact]
@@ -335,9 +331,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Contains("An error occurred while retrieving courses", result.Message);
-        Assert.Contains("Database connection failed", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Contains("An error occurred while retrieving courses", result.ErrorMessage);
+        Assert.Contains("Database connection failed", result.ErrorMessage);
     }
 
     #endregion
@@ -363,11 +359,10 @@ public class CourseService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(courseId, result.Result.Course.Id);
-        Assert.Equal("Test Course", result.Result.Course.Title);
-        Assert.Equal("Course retrieved successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(courseId, result.Value.Course.Id);
+        Assert.Equal("Test Course", result.Value.Course.Title);
 
         await mockRepo.Received(1).GetByIdWithEventsAsync(courseId, Arg.Any<CancellationToken>());
     }
@@ -390,8 +385,8 @@ public class CourseService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains($"Course with ID '{courseId}' not found", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains($"Course with ID '{courseId}' not found", result.ErrorMessage);
     }
 
     [Fact]
@@ -406,9 +401,8 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Course ID cannot be empty.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().GetByIdWithEventsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
@@ -430,10 +424,10 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while retrieving the course", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while retrieving the course", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     #endregion
@@ -464,12 +458,11 @@ public class CourseService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal("Updated Title", result.Result.Title);
-        Assert.Equal("Updated Description", result.Result.Description);
-        Assert.Equal(10, result.Result.DurationInDays);
-        Assert.Equal("Course updated successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal("Updated Title", result.Value.Title);
+        Assert.Equal("Updated Description", result.Value.Description);
+        Assert.Equal(10, result.Value.DurationInDays);
 
         await mockRepo.Received(1).UpdateAsync(
             Arg.Is<Guid>(id => id == courseId),
@@ -489,9 +482,8 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Course cannot be null.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -509,9 +501,8 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Course ID cannot be empty.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
@@ -531,9 +522,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
     }
 
     [Fact]
@@ -551,9 +542,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("cannot be empty or whitespace", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("cannot be empty or whitespace", result.ErrorMessage);
     }
 
     [Fact]
@@ -571,9 +562,9 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("greater than zero", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("greater than zero", result.ErrorMessage);
     }
 
     [Fact]
@@ -595,8 +586,8 @@ public class CourseService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains($"Course with ID '{courseId}' not found", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains($"Course with ID '{courseId}' not found", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<Course>(), Arg.Any<CancellationToken>());
     }
@@ -625,8 +616,7 @@ public class CourseService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("The course was modified by another user. Please refresh and try again.", result.Message);
+        Assert.Null(result.Value);
     }
 
     [Fact]
@@ -652,10 +642,10 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while updating the course", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while updating the course", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     #endregion
@@ -687,10 +677,7 @@ public class CourseService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.True(result.Result);
-        Assert.Equal("Course deleted successfully.", result.Message);
-
+        Assert.Null(result.ErrorType);
         await mockRepo.Received(1).RemoveAsync(courseId, Arg.Any<CancellationToken>());
     }
 
@@ -706,10 +693,7 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Equal("Course ID cannot be empty.", result.Message);
-
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 
@@ -730,9 +714,7 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains($"Course with ID '{courseId}' not found", result.Message);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);        Assert.Contains($"Course with ID '{courseId}' not found", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
@@ -759,10 +741,8 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains("Cannot delete course", result.Message);
-        Assert.Contains("has associated course events", result.Message);
+        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);        Assert.Contains("Cannot delete course", result.ErrorMessage);
+        Assert.Contains("has associated course events", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
@@ -792,10 +772,8 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains("An error occurred while deleting the course", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);        Assert.Contains("An error occurred while deleting the course", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     [Fact]
@@ -823,10 +801,7 @@ public class CourseService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Equal("Failed to delete course.", result.Message);
-    }
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);    }
 
     #endregion
 }

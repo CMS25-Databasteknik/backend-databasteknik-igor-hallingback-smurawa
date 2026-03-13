@@ -55,7 +55,7 @@ public static class PaymentMethodsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/payment-methods/{response.Result?.Id}", response);
+        return Results.Created($"/api/payment-methods/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdatePaymentMethod(int id, UpdatePaymentMethodRequest request, IPaymentMethodService service, CancellationToken cancellationToken)

@@ -7,6 +7,7 @@ using Backend.Application.Common;
 using Backend.Presentation.API.Models.Instructor;
 using Backend.Tests.Integration.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Backend.Domain.Modules.Instructors.Models;
 
 namespace Backend.Tests.E2E.Instructors;
 
@@ -25,13 +26,13 @@ public sealed class InstructorsEndpoints_Tests(CoursesOnlineDbApiFactory factory
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/instructors");
-        var payload = await response.Content.ReadFromJsonAsync<InstructorListResult>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result<IReadOnlyList<Instructor>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload);
         Assert.True(payload.Success);
-        Assert.NotNull(payload.Result);
-        Assert.Empty(payload.Result);
+        Assert.NotNull(payload.Value);
+        Assert.Empty(payload.Value);
     }
 
     [Fact]
@@ -64,7 +65,7 @@ public sealed class InstructorsEndpoints_Tests(CoursesOnlineDbApiFactory factory
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload);
         var ids = payload.RootElement
-            .GetProperty("result")
+            .GetProperty("value")
             .EnumerateArray()
             .Select(item => item.GetProperty("id").GetGuid())
             .ToList();
@@ -102,15 +103,15 @@ public sealed class InstructorsEndpoints_Tests(CoursesOnlineDbApiFactory factory
 
         var createdInstructorId = Guid.Parse(createResponse.Headers.Location!.OriginalString.Split('/')[^1]);
         var getResponse = await client.GetAsync($"/api/instructors/{createdInstructorId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<InstructorDetailsResult>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result<InstructorDetails>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(getPayload);
         Assert.True(getPayload.Success);
-        Assert.NotNull(getPayload.Result);
-        Assert.Equal(createdInstructorId, getPayload.Result.Id);
-        Assert.Equal("Donald Knuth", getPayload.Result.Name);
-        Assert.Equal(instructorRoleId, getPayload.Result.InstructorRole.Id);
+        Assert.NotNull(getPayload.Value);
+        Assert.Equal(createdInstructorId, getPayload.Value.Id);
+        Assert.Equal("Donald Knuth", getPayload.Value.Name);
+        Assert.Equal(instructorRoleId, getPayload.Value.InstructorRole.Id);
     }
 
     [Fact]
@@ -126,7 +127,7 @@ public sealed class InstructorsEndpoints_Tests(CoursesOnlineDbApiFactory factory
         };
 
         var response = await client.PostAsJsonAsync("/api/instructors", createRequest);
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
@@ -141,12 +142,12 @@ public sealed class InstructorsEndpoints_Tests(CoursesOnlineDbApiFactory factory
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync($"/api/instructors/{Guid.Empty}");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ErrorTypes.Validation, payload.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, payload.ErrorType);
     }
 
     [Fact]
@@ -166,14 +167,12 @@ public sealed class InstructorsEndpoints_Tests(CoursesOnlineDbApiFactory factory
 
         using var client = _factory.CreateClient();
         var response = await client.DeleteAsync($"/api/instructors/{instructorId}");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);
-        Assert.False(payload.Result);
-    }
+        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);    }
 
     [Fact]
     public async Task DeleteInstructor_ReturnsOk_AndRemovesInstructor()
@@ -190,15 +189,13 @@ public sealed class InstructorsEndpoints_Tests(CoursesOnlineDbApiFactory factory
         using var client = _factory.CreateClient();
 
         var deleteResponse = await client.DeleteAsync($"/api/instructors/{instructorId}");
-        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         Assert.NotNull(deletePayload);
-        Assert.True(deletePayload.Success);
-        Assert.True(deletePayload.Result);
-
+        Assert.True(deletePayload.Success);
         var getResponse = await client.GetAsync($"/api/instructors/{instructorId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         Assert.NotNull(getPayload);

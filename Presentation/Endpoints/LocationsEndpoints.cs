@@ -45,7 +45,7 @@ public static class LocationsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/locations/{response.Result?.Id}", response);
+        return Results.Created($"/api/locations/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateLocation(int id, UpdateLocationRequest request, ILocationService locationService, CancellationToken cancellationToken)

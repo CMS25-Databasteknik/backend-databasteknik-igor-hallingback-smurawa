@@ -1,6 +1,6 @@
 using Backend.Application.Common;
 using Backend.Application.Modules.InPlaceLocations.Inputs;
-using Backend.Application.Modules.InPlaceLocations.Outputs;
+
 using Backend.Domain.Modules.InPlaceLocations.Contracts;
 using Backend.Domain.Modules.InPlaceLocations.Models;
 
@@ -10,19 +10,13 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
 {
     private readonly IInPlaceLocationRepository _inPlaceLocationRepository = inPlaceLocationRepository ?? throw new ArgumentNullException(nameof(inPlaceLocationRepository));
 
-    public async Task<InPlaceLocationResult> CreateInPlaceLocationAsync(CreateInPlaceLocationInput inPlaceLocation, CancellationToken cancellationToken = default)
+    public async Task<Result<InPlaceLocation>> CreateInPlaceLocationAsync(CreateInPlaceLocationInput inPlaceLocation, CancellationToken cancellationToken = default)
     {
         try
         {
             if (inPlaceLocation == null)
             {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Result = null,
-                    Message = "In-place location cannot be null."
-                };
+                return Result<InPlaceLocation>.BadRequest("In-place location cannot be null.");
             }
 
             var newInPlaceLocation = InPlaceLocation.Create(
@@ -33,36 +27,19 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
 
             var createdInPlaceLocation = await _inPlaceLocationRepository.AddAsync(newInPlaceLocation, cancellationToken);
 
-            return new InPlaceLocationResult
-            {
-                Success = true,
-                Result = createdInPlaceLocation,
-                Message = "In-place location created successfully."
-            };
+            return Result<InPlaceLocation>.Ok(createdInPlaceLocation);
         }
         catch (ArgumentException ex)
         {
-            return new InPlaceLocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Result = null,
-                Message = ex.Message
-            };
+            return Result<InPlaceLocation>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new InPlaceLocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Result = null,
-                Message = $"An error occurred while creating the in-place location: {ex.Message}"
-            };
+            return Result<InPlaceLocation>.Error($"An error occurred while creating the in-place location: {ex.Message}");
         }
     }
 
-    public async Task<InPlaceLocationListResult> GetAllInPlaceLocationsAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<InPlaceLocation>>> GetAllInPlaceLocationsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -70,153 +47,83 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
 
             if (!inPlaceLocations.Any())
             {
-                return new InPlaceLocationListResult
-                {
-                    Success = true,
-                    Result = inPlaceLocations,
-                    Message = "No in-place locations found."
-                };
+                return Result<IReadOnlyList<InPlaceLocation>>.Ok(inPlaceLocations);
             }
 
-            return new InPlaceLocationListResult
-            {
-                Success = true,
-                Result = inPlaceLocations,
-                Message = $"Retrieved {inPlaceLocations.Count} in-place location(s) successfully."
-            };
+            return Result<IReadOnlyList<InPlaceLocation>>.Ok(inPlaceLocations);
         }
         catch (Exception ex)
         {
-            return new InPlaceLocationListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving in-place locations: {ex.Message}"
-            };
+            return Result<IReadOnlyList<InPlaceLocation>>.Error($"An error occurred while retrieving in-place locations: {ex.Message}");
         }
     }
 
-    public async Task<InPlaceLocationResult> GetInPlaceLocationByIdAsync(int inPlaceLocationId, CancellationToken cancellationToken = default)
+    public async Task<Result<InPlaceLocation>> GetInPlaceLocationByIdAsync(int inPlaceLocationId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (inPlaceLocationId <= 0)
             {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "In-place location ID must be greater than zero."
-                };
+                return Result<InPlaceLocation>.BadRequest("In-place location ID must be greater than zero.");
             }
 
             var inPlaceLocation = await _inPlaceLocationRepository.GetByIdAsync(inPlaceLocationId, cancellationToken);
 
             if (inPlaceLocation == null)
             {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"In-place location with ID '{inPlaceLocationId}' not found."
-                };
+                return Result<InPlaceLocation>.NotFound($"In-place location with ID '{inPlaceLocationId}' not found.");
             }
 
-            return new InPlaceLocationResult
-            {
-                Success = true,
-                Result = inPlaceLocation,
-                Message = "In-place location retrieved successfully."
-            };
+            return Result<InPlaceLocation>.Ok(inPlaceLocation);
         }
         catch (Exception ex)
         {
-            return new InPlaceLocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving the in-place location: {ex.Message}"
-            };
+            return Result<InPlaceLocation>.Error($"An error occurred while retrieving the in-place location: {ex.Message}");
         }
     }
 
-    public async Task<InPlaceLocationListResult> GetInPlaceLocationsByLocationIdAsync(int locationId, CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<InPlaceLocation>>> GetInPlaceLocationsByLocationIdAsync(int locationId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (locationId <= 0)
             {
-                return new InPlaceLocationListResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Location ID must be greater than zero."
-                };
+                return Result<IReadOnlyList<InPlaceLocation>>.BadRequest("Location ID must be greater than zero.");
             }
 
             var inPlaceLocations = await _inPlaceLocationRepository.GetInPlaceLocationsByLocationIdAsync(locationId, cancellationToken);
 
             if (!inPlaceLocations.Any())
             {
-                return new InPlaceLocationListResult
-                {
-                    Success = true,
-                    Result = inPlaceLocations,
-                    Message = "No in-place locations found for this location."
-                };
+                return Result<IReadOnlyList<InPlaceLocation>>.Ok(inPlaceLocations);
             }
 
-            return new InPlaceLocationListResult
-            {
-                Success = true,
-                Result = inPlaceLocations,
-                Message = $"Retrieved {inPlaceLocations.Count} in-place location(s) for the location successfully."
-            };
+            return Result<IReadOnlyList<InPlaceLocation>>.Ok(inPlaceLocations);
         }
         catch (Exception ex)
         {
-            return new InPlaceLocationListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving in-place locations: {ex.Message}"
-            };
+            return Result<IReadOnlyList<InPlaceLocation>>.Error($"An error occurred while retrieving in-place locations: {ex.Message}");
         }
     }
 
-    public async Task<InPlaceLocationResult> UpdateInPlaceLocationAsync(UpdateInPlaceLocationInput inPlaceLocation, CancellationToken cancellationToken = default)
+    public async Task<Result<InPlaceLocation>> UpdateInPlaceLocationAsync(UpdateInPlaceLocationInput inPlaceLocation, CancellationToken cancellationToken = default)
     {
         try
         {
             if (inPlaceLocation == null)
             {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "In-place location cannot be null."
-                };
+                return Result<InPlaceLocation>.BadRequest("In-place location cannot be null.");
             }
 
             if (inPlaceLocation.Id <= 0)
             {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "In-place location ID must be greater than zero."
-                };
+                return Result<InPlaceLocation>.BadRequest("In-place location ID must be greater than zero.");
             }
 
             var existingInPlaceLocation = await _inPlaceLocationRepository.GetByIdAsync(inPlaceLocation.Id, cancellationToken);
             if (existingInPlaceLocation == null)
             {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"In-place location with ID '{inPlaceLocation.Id}' not found."
-                };
+                return Result<InPlaceLocation>.NotFound($"In-place location with ID '{inPlaceLocation.Id}' not found.");
             }
 
             existingInPlaceLocation.Update(
@@ -229,118 +136,58 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
 
             if (updatedInPlaceLocation == null)
             {
-                return new InPlaceLocationResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to update in-place location."
-                };
+                return Result<InPlaceLocation>.Error("Failed to update in-place location.");
             }
 
-            return new InPlaceLocationResult
-            {
-                Success = true,
-                Result = updatedInPlaceLocation,
-                Message = "In-place location updated successfully."
-            };
+            return Result<InPlaceLocation>.Ok(updatedInPlaceLocation);
         }
         catch (ArgumentException ex)
         {
-            return new InPlaceLocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<InPlaceLocation>.BadRequest(ex.Message);
         }
         catch (Exception ex) when (ex.GetType().Name == "DbUpdateException")
         {
-            return new InPlaceLocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Conflict,
-                Message = "Cannot update because the requested location reference is invalid."
-            };
+            return Result<InPlaceLocation>.Conflict("Cannot update because the requested location reference is invalid.");
         }
         catch (Exception ex)
         {
-            return new InPlaceLocationResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while updating the in-place location: {ex.Message}"
-            };
+            return Result<InPlaceLocation>.Error($"An error occurred while updating the in-place location: {ex.Message}");
         }
     }
 
-    public async Task<InPlaceLocationDeleteResult> DeleteInPlaceLocationAsync(int inPlaceLocationId, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteInPlaceLocationAsync(int inPlaceLocationId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (inPlaceLocationId <= 0)
             {
-                return new InPlaceLocationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "In-place location ID must be greater than zero.",
-                    Result = false
-                };
+                return Result<bool>.BadRequest("In-place location ID must be greater than zero.");
             }
 
             var existingInPlaceLocation = await _inPlaceLocationRepository.GetByIdAsync(inPlaceLocationId, cancellationToken);
             if (existingInPlaceLocation == null)
             {
-                return new InPlaceLocationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"In-place location with ID '{inPlaceLocationId}' not found.",
-                    Result = false
-                };
+                return Result<bool>.NotFound($"In-place location with ID '{inPlaceLocationId}' not found.");
             }
 
             var hasCourseEvents = await _inPlaceLocationRepository.HasCourseEventsAsync(inPlaceLocationId, cancellationToken);
             if (hasCourseEvents)
             {
-                return new InPlaceLocationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Conflict,
-                    Message = $"Cannot delete in-place location with ID '{inPlaceLocationId}' because it is assigned to course events. Please remove the assignments first.",
-                    Result = false
-                };
+                return Result<bool>.Conflict($"Cannot delete in-place location with ID '{inPlaceLocationId}' because it is assigned to course events. Please remove the assignments first.");
             }
 
             var isDeleted = await _inPlaceLocationRepository.RemoveAsync(inPlaceLocationId, cancellationToken);
 
             if (!isDeleted)
             {
-                return new InPlaceLocationDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to delete in-place location.",
-                    Result = false
-                };
+                return Result<bool>.Error("Failed to delete in-place location.");
             }
 
-            return new InPlaceLocationDeleteResult
-            {
-                Success = true,
-                Result = isDeleted,
-                Message = "In-place location deleted successfully."
-            };
+            return Result<bool>.Ok(true);
         }
         catch (Exception ex)
         {
-            return new InPlaceLocationDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while deleting the in-place location: {ex.Message}",
-                Result = false
-            };
+            return Result<bool>.Error($"An error occurred while deleting the in-place location: {ex.Message}");
         }
     }
 }

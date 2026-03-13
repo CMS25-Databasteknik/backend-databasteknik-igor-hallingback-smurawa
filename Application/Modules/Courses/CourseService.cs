@@ -1,6 +1,6 @@
 using Backend.Application.Common;
 using Backend.Application.Modules.Courses.Inputs;
-using Backend.Application.Modules.Courses.Outputs;
+
 using Backend.Domain.Modules.Courses.Contracts;
 using Backend.Domain.Modules.Courses.Models;
 
@@ -10,19 +10,13 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
 {
     private readonly ICourseRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
 
-    public async Task<CourseResult> CreateCourseAsync(CreateCourseInput course, CancellationToken cancellationToken = default)
+    public async Task<Result<Course>> CreateCourseAsync(CreateCourseInput course, CancellationToken cancellationToken = default)
     {
         try
         {
             if (course == null)
             {
-                return new CourseResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Result = null,
-                    Message = "Course cannot be null."
-                };
+                return Result<Course>.BadRequest("Course cannot be null.");
             }
 
             var newCourse = Course.Create(
@@ -33,36 +27,19 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
 
             _ = await _courseRepository.AddAsync(newCourse, cancellationToken);
 
-            return new CourseResult
-            {
-                Success = true,
-                Result = newCourse,
-                Message = "Course created successfully."
-            };
+            return Result<Course>.Ok(newCourse);
         }
         catch (ArgumentException ex)
         {
-            return new CourseResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Result = null,
-                Message = ex.Message
-            };
+            return Result<Course>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new CourseResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Result = null,
-                Message = $"An error occurred while creating the course: {ex.Message}"
-            };
+            return Result<Course>.Error($"An error occurred while creating the course: {ex.Message}");
         }
     }
 
-    public async Task<CourseListResult> GetAllCoursesAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<Course>>> GetAllCoursesAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -70,109 +47,59 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
 
             if (!courses.Any())
             {
-                return new CourseListResult
-                {
-                    Success = true,
-                    Result = courses,
-                    Message = "No courses found."
-                };
+                return Result<IReadOnlyList<Course>>.Ok(courses);
             }
 
-            return new CourseListResult
-            {
-                Success = true,
-                Result = courses,
-                Message = $"Retrieved {courses.Count()} course(s) successfully."
-            };
+            return Result<IReadOnlyList<Course>>.Ok(courses);
         }
         catch (Exception ex)
         {
-            return new CourseListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving courses: {ex.Message}"
-            };
+            return Result<IReadOnlyList<Course>>.Error($"An error occurred while retrieving courses: {ex.Message}");
         }
     }
 
-    public async Task<CourseWithEventsResult> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken = default)
+    public async Task<Result<CourseWithEvents>> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (courseId == Guid.Empty)
             {
-                return new CourseWithEventsResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course ID cannot be empty."
-                };
+                return Result<CourseWithEvents>.BadRequest("Course ID cannot be empty.");
             }
 
             var courseWithEvents = await _courseRepository.GetByIdWithEventsAsync(courseId, cancellationToken);
 
             if (courseWithEvents == null)
             {
-                return new CourseWithEventsResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course with ID '{courseId}' not found."
-                };
+                return Result<CourseWithEvents>.NotFound($"Course with ID '{courseId}' not found.");
             }
 
-            return new CourseWithEventsResult
-            {
-                Success = true,
-                Result = courseWithEvents,
-                Message = "Course retrieved successfully."
-            };
+            return Result<CourseWithEvents>.Ok(courseWithEvents);
         }
         catch (Exception ex)
         {
-            return new CourseWithEventsResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving the course: {ex.Message}"
-            };
+            return Result<CourseWithEvents>.Error($"An error occurred while retrieving the course: {ex.Message}");
         }
     }
 
-    public async Task<CourseResult> UpdateCourseAsync(UpdateCourseInput course, CancellationToken cancellationToken = default)
+    public async Task<Result<Course>> UpdateCourseAsync(UpdateCourseInput course, CancellationToken cancellationToken = default)
     {
         try
         {
             if (course == null)
             {
-                return new CourseResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course cannot be null."
-                };
+                return Result<Course>.BadRequest("Course cannot be null.");
             }
 
             if (course.Id == Guid.Empty)
             {
-                return new CourseResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course ID cannot be empty."
-                };
+                return Result<Course>.BadRequest("Course ID cannot be empty.");
             }
 
             var existingCourse = await _courseRepository.GetByIdAsync(course.Id, cancellationToken);
             if (existingCourse == null)
             {
-                return new CourseResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course with ID '{course.Id}' not found."
-                };
+                return Result<Course>.NotFound($"Course with ID '{course.Id}' not found.");
             }
 
             existingCourse.Update(
@@ -185,128 +112,62 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
 
             if (updatedCourse == null)
             {
-                return new CourseResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to update course."
-                };
+                return Result<Course>.Error("Failed to update course.");
             }
 
-            return new CourseResult
-            {
-                Success = true,
-                Result = updatedCourse,
-                Message = "Course updated successfully."
-            };
+            return Result<Course>.Ok(updatedCourse);
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("modified by another user"))
         {
-            return new CourseResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Conflict,
-                Message = "The course was modified by another user. Please refresh and try again."
-            };
+            return Result<Course>.Conflict("The course was modified by another user. Please refresh and try again.");
         }
         catch (ArgumentException ex)
         {
-            return new CourseResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<Course>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new CourseResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while updating the course: {ex.Message}"
-            };
+            return Result<Course>.Error($"An error occurred while updating the course: {ex.Message}");
         }
     }
 
-    public async Task<CourseDeleteResult> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken = default)
     {
         try
         {
             if (courseId == Guid.Empty)
             {
-                return new CourseDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course ID cannot be empty.",
-                    Result = false
-                };
+                return Result<bool>.BadRequest("Course ID cannot be empty.");
             }
 
             var existingCourse = await _courseRepository.GetByIdAsync(courseId, cancellationToken);
             if (existingCourse == null)
             {
-                return new CourseDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course with ID '{courseId}' not found.",
-                    Result = false
-                };
+                return Result<bool>.NotFound($"Course with ID '{courseId}' not found.");
             }
 
             var hasCourseEvents = await _courseRepository.HasCourseEventsAsync(courseId, cancellationToken);
             if (hasCourseEvents)
             {
-                return new CourseDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Conflict,
-                    Message = $"Cannot delete course with ID '{courseId}' because it has associated course events. Please delete the course events first.",
-                    Result = false
-                };
+                return Result<bool>.Conflict($"Cannot delete course with ID '{courseId}' because it has associated course events. Please delete the course events first.");
             }
 
             var isDeleted = await _courseRepository.RemoveAsync(courseId, cancellationToken);
 
             if (!isDeleted)
             {
-                return new CourseDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to delete course.",
-                    Result = false
-                };
+                return Result<bool>.Error("Failed to delete course.");
             }
 
-            return new CourseDeleteResult
-            {
-                Success = true,
-                Message = "Course deleted successfully.",
-                Result = true
-            };
+            return Result<bool>.Ok(true);
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("associated course events"))
         {
-            return new CourseDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Conflict,
-                Message = "Cannot delete course because it has associated course events. Please delete the course events first.",
-                Result = false
-            };
+            return Result<bool>.Conflict("Cannot delete course because it has associated course events. Please delete the course events first.");
         }
         catch (Exception ex)
         {
-            return new CourseDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while deleting the course: {ex.Message}",
-                Result = false
-            };
+            return Result<bool>.Error($"An error occurred while deleting the course: {ex.Message}");
         }
     }
 }

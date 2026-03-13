@@ -45,7 +45,7 @@ public static class ParticipantsEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/participants/{response.Result?.Id}", response);
+        return Results.Created($"/api/participants/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateParticipant(Guid id, UpdateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken)

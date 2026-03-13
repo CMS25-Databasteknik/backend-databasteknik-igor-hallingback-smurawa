@@ -55,7 +55,7 @@ public static class ParticipantContactTypesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/participant-contact-types/{response.Result?.Id}", response);
+        return Results.Created($"/api/participant-contact-types/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateParticipantContactType(int id, UpdateParticipantContactTypeRequest request, IParticipantContactTypeService service, CancellationToken cancellationToken)

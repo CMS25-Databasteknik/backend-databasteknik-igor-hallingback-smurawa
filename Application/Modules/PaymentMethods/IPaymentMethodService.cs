@@ -1,14 +1,15 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.PaymentMethods.Inputs;
-using Backend.Application.Modules.PaymentMethods.Outputs;
+using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
 
 namespace Backend.Application.Modules.PaymentMethods;
 
 public interface IPaymentMethodService
 {
-    Task<PaymentMethodListResult> GetAllPaymentMethodsAsync(CancellationToken cancellationToken = default);
-    Task<PaymentMethodResult> GetPaymentMethodByIdAsync(int id, CancellationToken cancellationToken = default);
-    Task<PaymentMethodResult> GetPaymentMethodByNameAsync(string name, CancellationToken cancellationToken = default);
-    Task<PaymentMethodResult> CreatePaymentMethodAsync(CreatePaymentMethodInput input, CancellationToken cancellationToken = default);
-    Task<PaymentMethodResult> UpdatePaymentMethodAsync(UpdatePaymentMethodInput input, CancellationToken cancellationToken = default);
-    Task<PaymentMethodDeleteResult> DeletePaymentMethodAsync(int id, CancellationToken cancellationToken = default);
+    Task<Result<IReadOnlyList<PaymentMethodModel>>> GetAllPaymentMethodsAsync(CancellationToken cancellationToken = default);
+    Task<Result<PaymentMethodModel>> GetPaymentMethodByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<Result<PaymentMethodModel>> GetPaymentMethodByNameAsync(string name, CancellationToken cancellationToken = default);
+    Task<Result<PaymentMethodModel>> CreatePaymentMethodAsync(CreatePaymentMethodInput input, CancellationToken cancellationToken = default);
+    Task<Result<PaymentMethodModel>> UpdatePaymentMethodAsync(UpdatePaymentMethodInput input, CancellationToken cancellationToken = default);
+    Task<Result<bool>> DeletePaymentMethodAsync(int id, CancellationToken cancellationToken = default);
 }

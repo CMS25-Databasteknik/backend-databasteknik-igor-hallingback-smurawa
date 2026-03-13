@@ -42,7 +42,7 @@ public static class InstructorRolesEndpoints
         if (!response.Success)
             return response.ToHttpResult();
 
-        return Results.Created($"/api/instructor-roles/{response.Result?.Id}", response);
+        return Results.Created($"/api/instructor-roles/{response.Value?.Id}", response);
     }
 
     private static async Task<IResult> UpdateInstructorRole(int id, UpdateInstructorRoleRequest request, IInstructorRoleService roleService, CancellationToken cancellationToken)

@@ -9,6 +9,7 @@ using Backend.Presentation.API.Models.CourseEvent;
 using Backend.Application.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Backend.Tests.Integration.Infrastructure;
+using Backend.Domain.Modules.CourseEvents.Models;
 
 namespace Backend.Tests.E2E.CourseEvents;
 
@@ -27,13 +28,13 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/course-events");
-        var payload = await response.Content.ReadFromJsonAsync<CourseEventListResult>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result<IReadOnlyList<CourseEvent>>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload);
         Assert.True(payload.Success);
-        Assert.NotNull(payload.Result);
-        Assert.Empty(payload.Result);
+        Assert.NotNull(payload.Value);
+        Assert.Empty(payload.Value);
     }
 
     [Fact]
@@ -91,7 +92,7 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(payload);
         var ids = payload.RootElement
-            .GetProperty("result")
+            .GetProperty("value")
             .EnumerateArray()
             .Select(item => item.GetProperty("id").GetGuid())
             .ToList();
@@ -134,16 +135,16 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         Assert.NotNull(createResponse.Headers.Location);
         var createdEventId = Guid.Parse(createResponse.Headers.Location!.OriginalString.Split('/')[^1]);
         var getResponse = await client.GetAsync($"/api/course-events/{createdEventId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<CourseEventDetailsResult>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result<CourseEventDetails>>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(getPayload);
         Assert.True(getPayload.Success);
-        Assert.NotNull(getPayload.Result);
-        Assert.Equal(createdEventId, getPayload.Result.Id);
-        Assert.Equal(courseId, getPayload.Result.CourseId);
-        Assert.Equal(courseEventTypeId, getPayload.Result.CourseEventType.Id);
-        Assert.Equal(1, getPayload.Result.VenueType.Id);
+        Assert.NotNull(getPayload.Value);
+        Assert.Equal(createdEventId, getPayload.Value.Id);
+        Assert.Equal(courseId, getPayload.Value.CourseId);
+        Assert.Equal(courseEventTypeId, getPayload.Value.CourseEventType.Id);
+        Assert.Equal(1, getPayload.Value.VenueType.Id);
     }
 
     [Fact]
@@ -163,7 +164,7 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         };
 
         var response = await client.PostAsJsonAsync("/api/course-events", createRequest);
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.NotNull(payload);
@@ -178,12 +179,12 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         using var client = _factory.CreateClient();
 
         var response = await client.GetAsync($"/api/course-events/{Guid.Empty}");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ErrorTypes.Validation, payload.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, payload.ErrorType);
     }
 
     [Fact]
@@ -207,14 +208,12 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
 
         using var client = _factory.CreateClient();
         var response = await client.DeleteAsync($"/api/course-events/{eventId}");
-        var payload = await response.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.NotNull(payload);
         Assert.False(payload.Success);
-        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);
-        Assert.False(payload.Result);
-    }
+        Assert.Equal(ErrorTypes.Conflict, payload.ErrorType);    }
 
     [Fact]
     public async Task DeleteCourseEvent_ReturnsOk_AndRemovesCourseEvent()
@@ -231,15 +230,13 @@ public sealed class CourseEventsEndpoints_Tests(CoursesOnlineDbApiFactory factor
         using var client = _factory.CreateClient();
 
         var deleteResponse = await client.DeleteAsync($"/api/course-events/{eventId}");
-        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<ResultBase<bool>>(_jsonOptions);
+        var deletePayload = await deleteResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         Assert.NotNull(deletePayload);
-        Assert.True(deletePayload.Success);
-        Assert.True(deletePayload.Result);
-
+        Assert.True(deletePayload.Success);
         var getResponse = await client.GetAsync($"/api/course-events/{eventId}");
-        var getPayload = await getResponse.Content.ReadFromJsonAsync<ResultBase>(_jsonOptions);
+        var getPayload = await getResponse.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         Assert.NotNull(getPayload);

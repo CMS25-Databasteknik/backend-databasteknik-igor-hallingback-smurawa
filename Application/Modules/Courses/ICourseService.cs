@@ -1,15 +1,15 @@
+using Backend.Application.Common;
 using Backend.Application.Modules.Courses.Inputs;
-using Backend.Application.Modules.Courses.Outputs;
+using Backend.Domain.Modules.Courses.Models;
 
 namespace Backend.Application.Modules.Courses
 {
     public interface ICourseService
     {
-        Task<CourseResult> CreateCourseAsync(CreateCourseInput course, CancellationToken cancellationToken = default);
-        Task<CourseListResult> GetAllCoursesAsync(CancellationToken cancellationToken = default);
-        Task<CourseWithEventsResult> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken = default);
-        Task<CourseResult> UpdateCourseAsync(UpdateCourseInput course, CancellationToken cancellationToken = default);
-        Task<CourseDeleteResult> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken = default);
-
+        Task<Result<Course>> CreateCourseAsync(CreateCourseInput course, CancellationToken cancellationToken = default);
+        Task<Result<IReadOnlyList<Course>>> GetAllCoursesAsync(CancellationToken cancellationToken = default);
+        Task<Result<CourseWithEvents>> GetCourseByIdAsync(Guid courseId, CancellationToken cancellationToken = default);
+        Task<Result<Course>> UpdateCourseAsync(UpdateCourseInput course, CancellationToken cancellationToken = default);
+        Task<Result<bool>> DeleteCourseAsync(Guid courseId, CancellationToken cancellationToken = default);
     }
 }

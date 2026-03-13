@@ -42,10 +42,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal("Online", result.Result.TypeName);
-        Assert.Equal("Course event type created successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal("Online", result.Value.TypeName);
 
         await mockRepo.Received(1).AddAsync(
             Arg.Is<CourseEventType>(t => t.TypeName == "Online"),
@@ -66,9 +65,8 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Course event type cannot be null.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
         mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
@@ -88,9 +86,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("Type name cannot be empty or whitespace.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("Type name cannot be empty or whitespace.", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
     }
@@ -108,9 +106,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("Type name cannot be empty or whitespace.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("Type name cannot be empty or whitespace.", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
     }
@@ -131,10 +129,10 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while creating the course event type", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while creating the course event type", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     [Fact]
@@ -149,8 +147,7 @@ public class CourseEventTypeService_Tests
         var result = await service.CreateCourseEventTypeAsync(new CreateCourseEventTypeInput("Online"), CancellationToken.None);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Equal("A typename with the same name already exists.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
         await mockRepo.DidNotReceive().AddAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
         mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
         mockCache.DidNotReceive().SetEntity(Arg.Any<CourseEventType>());
@@ -178,9 +175,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(typeName, result.Result.TypeName);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(typeName, result.Value.TypeName);
     }
 
     [Fact]
@@ -218,10 +215,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(3, result.Result.Count());
-        Assert.Equal("Retrieved 3 course event type(s) successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(3, result.Value.Count());
 
         await mockRepo.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
         await mockCache.Received(1).GetAllAsync(
@@ -244,10 +240,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Empty(result.Result);
-        Assert.Equal("No course event types found.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Empty(result.Value);
     }
 
     [Fact]
@@ -265,9 +260,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Contains("An error occurred while retrieving course event types", result.Message);
-        Assert.Contains("Database connection failed", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Contains("An error occurred while retrieving course event types", result.ErrorMessage);
+        Assert.Contains("Database connection failed", result.ErrorMessage);
     }
 
     #endregion
@@ -289,10 +284,9 @@ public class CourseEventTypeService_Tests
         var result = await service.GetCourseEventTypeByTypeNameAsync(typeName, CancellationToken.None);
 
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(typeName, result.Result.TypeName);
-        Assert.Equal("Course event type retrieved successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(typeName, result.Value.TypeName);
 
         await mockRepo.Received(1).GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>());
     }
@@ -306,8 +300,7 @@ public class CourseEventTypeService_Tests
         var result = await service.GetCourseEventTypeByTypeNameAsync(" ", CancellationToken.None);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Equal("Course event type name is required.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
 
         await mockRepo.DidNotReceive().GetCourseEventTypeByTypeNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
@@ -326,7 +319,7 @@ public class CourseEventTypeService_Tests
 
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Equal($"Course event type with name '{typeName}' not found.", result.Message);
+        Assert.Equal($"Course event type with name '{typeName}' not found.", result.ErrorMessage);
         await mockRepo.Received(1).GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>());
     }
 
@@ -342,9 +335,9 @@ public class CourseEventTypeService_Tests
         var result = await service.GetCourseEventTypeByTypeNameAsync("Online", CancellationToken.None);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Contains("An error occurred while retrieving the course event type", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Contains("An error occurred while retrieving the course event type", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     #endregion
@@ -369,11 +362,10 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(typeId, result.Result.Id);
-        Assert.Equal("Online", result.Result.TypeName);
-        Assert.Equal("Course event type retrieved successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(typeId, result.Value.Id);
+        Assert.Equal("Online", result.Value.TypeName);
 
         await mockRepo.Received(1).GetByIdAsync(typeId, Arg.Any<CancellationToken>());
         await mockCache.Received(1).GetByIdAsync(
@@ -400,8 +392,8 @@ public class CourseEventTypeService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains($"Course event type with ID '{typeId}' not found", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains($"Course event type with ID '{typeId}' not found", result.ErrorMessage);
     }
 
     [Fact]
@@ -416,9 +408,8 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Course event type ID must be greater than zero.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -435,9 +426,8 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Course event type ID must be greater than zero.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -459,10 +449,10 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while retrieving the course event type", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while retrieving the course event type", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     #endregion
@@ -492,11 +482,10 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.NotNull(result.Result);
-        Assert.Equal(typeId, result.Result.Id);
-        Assert.Equal("Virtual", result.Result.TypeName);
-        Assert.Equal("Course event type updated successfully.", result.Message);
+        Assert.Null(result.ErrorType);
+        Assert.NotNull(result.Value);
+        Assert.Equal(typeId, result.Value.Id);
+        Assert.Equal("Virtual", result.Value.TypeName);
 
         await mockRepo.Received(1).UpdateAsync(
             Arg.Is<int>(id => id == typeId),
@@ -518,9 +507,8 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Equal("Course event type cannot be null.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
 
         await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
     }
@@ -539,8 +527,8 @@ public class CourseEventTypeService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("Course event type with ID '0' not found", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains("Course event type with ID '0' not found", result.ErrorMessage);
     }
 
     [Fact]
@@ -558,9 +546,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("Type name cannot be empty or whitespace.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("Type name cannot be empty or whitespace.", result.ErrorMessage);
     }
 
     [Fact]
@@ -578,9 +566,9 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("Type name cannot be empty or whitespace.", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("Type name cannot be empty or whitespace.", result.ErrorMessage);
     }
 
     [Fact]
@@ -602,8 +590,8 @@ public class CourseEventTypeService_Tests
         // Assert
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains($"Course event type with ID '{typeId}' not found", result.Message);
+        Assert.Null(result.Value);
+        Assert.Contains($"Course event type with ID '{typeId}' not found", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().UpdateAsync(Arg.Any<int>(), Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>());
         mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
@@ -632,10 +620,10 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Null(result.Result);
-        Assert.Contains("An error occurred while updating the course event type", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Null(result.Value);
+        Assert.Contains("An error occurred while updating the course event type", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     #endregion
@@ -666,10 +654,7 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.True(result.Result);
-        Assert.Equal("Course event type deleted successfully.", result.Message);
-
+        Assert.Null(result.ErrorType);
         await mockRepo.Received(1).RemoveAsync(typeId, Arg.Any<CancellationToken>());
         mockCache.Received(1).ResetEntity(existingType);
     }
@@ -698,10 +683,7 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Equal("Failed to delete course event type.", result.Message);
-        mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);        mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
     }
 
     [Fact]
@@ -716,10 +698,7 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Equal("Course event type ID must be greater than zero.", result.Message);
-
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
@@ -735,10 +714,7 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Equal("Course event type ID must be greater than zero.", result.Message);
-
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
@@ -759,9 +735,7 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains($"Course event type with ID '{typeId}' not found", result.Message);
+        Assert.Equal(ErrorTypes.NotFound, result.ErrorType);        Assert.Contains($"Course event type with ID '{typeId}' not found", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
         mockCache.DidNotReceive().ResetEntity(Arg.Any<CourseEventType>());
@@ -788,9 +762,7 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains($"Cannot delete course event type with ID '{typeId}' because it is being used by one or more course events", result.Message);
+        Assert.Equal(ErrorTypes.Conflict, result.ErrorType);        Assert.Contains($"Cannot delete course event type with ID '{typeId}' because it is being used by one or more course events", result.ErrorMessage);
 
         await mockRepo.DidNotReceive().RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
@@ -816,10 +788,8 @@ public class CourseEventTypeService_Tests
 
         // Assert
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.False(result.Result);
-        Assert.Contains("An error occurred while deleting the course event type", result.Message);
-        Assert.Contains("Database error", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);        Assert.Contains("An error occurred while deleting the course event type", result.ErrorMessage);
+        Assert.Contains("Database error", result.ErrorMessage);
     }
 
     #endregion

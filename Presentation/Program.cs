@@ -32,32 +32,12 @@ public partial class Program
             if (!response.HasStarted && (response.ContentLength ?? 0) == 0)
             {
                 response.ContentType = "application/json";
-                var payload = response.StatusCode switch
+                Result? payload = response.StatusCode switch
                 {
-                    StatusCodes.Status400BadRequest => new ResultBase
-                    {
-                        Success = false,
-                        ErrorType = ErrorTypes.Validation,
-                        Message = "Malformed JSON payload."
-                    },
-                    StatusCodes.Status404NotFound => new ResultBase
-                    {
-                        Success = false,
-                        ErrorType = ErrorTypes.NotFound,
-                        Message = "Resource not found."
-                    },
-                    StatusCodes.Status409Conflict => new ResultBase
-                    {
-                        Success = false,
-                        ErrorType = ErrorTypes.Conflict,
-                        Message = "Conflict."
-                    },
-                    StatusCodes.Status422UnprocessableEntity => new ResultBase
-                    {
-                        Success = false,
-                        ErrorType = ErrorTypes.Unprocessable,
-                        Message = "Unprocessable entity."
-                    },
+                    StatusCodes.Status400BadRequest => Result.BadRequest("Malformed JSON payload."),
+                    StatusCodes.Status404NotFound => Result.NotFound("Resource not found."),
+                    StatusCodes.Status409Conflict => Result.Conflict("Conflict."),
+                    StatusCodes.Status422UnprocessableEntity => Result.Unprocessable("Unprocessable entity."),
                     _ => null
                 };
 

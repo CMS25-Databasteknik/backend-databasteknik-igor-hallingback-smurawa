@@ -1,7 +1,7 @@
 using Backend.Application.Common;
 using Backend.Application.Modules.PaymentMethods.Caching;
 using Backend.Application.Modules.PaymentMethods.Inputs;
-using Backend.Application.Modules.PaymentMethods.Outputs;
+
 using Backend.Domain.Modules.PaymentMethod.Contracts;
 using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
 
@@ -12,53 +12,48 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
     private readonly IPaymentMethodCache _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     private readonly IPaymentMethodRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-    public async Task<PaymentMethodResult> CreatePaymentMethodAsync(CreatePaymentMethodInput input, CancellationToken cancellationToken = default)
+    public async Task<Result<PaymentMethodModel>> CreatePaymentMethodAsync(CreatePaymentMethodInput input, CancellationToken cancellationToken = default)
     {
         try
         {
             if (input == null)
-                return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "Payment method cannot be null." };
+                return Result<PaymentMethodModel>.BadRequest("Payment method cannot be null.");
 
             var existing = await _repository.GetByNameAsync(input.Name, cancellationToken);
             if (existing is not null)
-                return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "A payment method with the same name already exists." };
+                return Result<PaymentMethodModel>.BadRequest("A payment method with the same name already exists.");
 
             var created = await _repository.AddAsync(PaymentMethodModel.Create(input.Name), cancellationToken);
             _cache.ResetEntity(created);
             _cache.SetEntity(created);
-            return new PaymentMethodResult { Success = true, Result = created, Message = "Payment method created successfully." };
+            return Result<PaymentMethodModel>.Ok(created);
         }
         catch (ArgumentException ex)
         {
-            return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
+            return Result<PaymentMethodModel>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while creating the payment method: {ex.Message}" };
+            return Result<PaymentMethodModel>.Error($"An error occurred while creating the payment method: {ex.Message}");
         }
     }
 
-    public async Task<PaymentMethodListResult> GetAllPaymentMethodsAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<PaymentMethodModel>>> GetAllPaymentMethodsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             var paymentMethods = await _cache.GetAllAsync(
                 token => _repository.GetAllAsync(token),
                 cancellationToken);
-            return new PaymentMethodListResult
-            {
-                Success = true,
-                Result = paymentMethods,
-                Message = paymentMethods.Any() ? $"Retrieved {paymentMethods.Count} payment method(s) successfully." : "No payment methods found."
-            };
+            return Result<IReadOnlyList<PaymentMethodModel>>.Ok(paymentMethods);
         }
         catch (Exception ex)
         {
-            return new PaymentMethodListResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while retrieving payment methods: {ex.Message}" };
+            return Result<IReadOnlyList<PaymentMethodModel>>.Error($"An error occurred while retrieving payment methods: {ex.Message}");
         }
     }
 
-    public async Task<PaymentMethodResult> GetPaymentMethodByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<PaymentMethodModel>> GetPaymentMethodByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -70,21 +65,21 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
                 token => _repository.GetByIdAsync(id, token),
                 cancellationToken);
             if (paymentMethod == null)
-                return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.NotFound, Message = $"Payment method with ID '{id}' not found." };
+                return Result<PaymentMethodModel>.NotFound($"Payment method with ID '{id}' not found.");
 
-            return new PaymentMethodResult { Success = true, Result = paymentMethod, Message = "Payment method retrieved successfully." };
+            return Result<PaymentMethodModel>.Ok(paymentMethod);
         }
         catch (ArgumentException ex)
         {
-            return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
+            return Result<PaymentMethodModel>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while retrieving the payment method: {ex.Message}" };
+            return Result<PaymentMethodModel>.Error($"An error occurred while retrieving the payment method: {ex.Message}");
         }
     }
 
-    public async Task<PaymentMethodResult> GetPaymentMethodByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<Result<PaymentMethodModel>> GetPaymentMethodByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -96,51 +91,51 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
                 token => _repository.GetByNameAsync(name, token),
                 cancellationToken);
             if (paymentMethod == null)
-                return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.NotFound, Message = $"Payment method with name '{name}' not found." };
+                return Result<PaymentMethodModel>.NotFound($"Payment method with name '{name}' not found.");
 
-            return new PaymentMethodResult { Success = true, Result = paymentMethod, Message = "Payment method retrieved successfully." };
+            return Result<PaymentMethodModel>.Ok(paymentMethod);
         }
         catch (ArgumentException ex)
         {
-            return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
+            return Result<PaymentMethodModel>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while retrieving the payment method: {ex.Message}" };
+            return Result<PaymentMethodModel>.Error($"An error occurred while retrieving the payment method: {ex.Message}");
         }
     }
 
-    public async Task<PaymentMethodResult> UpdatePaymentMethodAsync(UpdatePaymentMethodInput input, CancellationToken cancellationToken = default)
+    public async Task<Result<PaymentMethodModel>> UpdatePaymentMethodAsync(UpdatePaymentMethodInput input, CancellationToken cancellationToken = default)
     {
         try
         {
             if (input == null)
-                return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "Payment method cannot be null." };
+                return Result<PaymentMethodModel>.BadRequest("Payment method cannot be null.");
 
             var existingPaymentMethod = await _repository.GetByIdAsync(input.Id, cancellationToken);
             if (existingPaymentMethod == null)
-                return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.NotFound, Message = $"Payment method with ID '{input.Id}' not found." };
+                return Result<PaymentMethodModel>.NotFound($"Payment method with ID '{input.Id}' not found.");
 
             existingPaymentMethod.Update(input.Name);
             var updatedPaymentMethod = await _repository.UpdateAsync(existingPaymentMethod.Id, existingPaymentMethod, cancellationToken);
             if (updatedPaymentMethod == null)
-                return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = "Failed to update payment method." };
+                return Result<PaymentMethodModel>.Error("Failed to update payment method.");
             _cache.ResetEntity(existingPaymentMethod);
             _cache.SetEntity(updatedPaymentMethod);
 
-            return new PaymentMethodResult { Success = true, Result = updatedPaymentMethod, Message = "Payment method updated successfully." };
+            return Result<PaymentMethodModel>.Ok(updatedPaymentMethod);
         }
         catch (ArgumentException ex)
         {
-            return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Validation, Message = ex.Message };
+            return Result<PaymentMethodModel>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Unexpected, Message = $"An error occurred while updating the payment method: {ex.Message}" };
+            return Result<PaymentMethodModel>.Error($"An error occurred while updating the payment method: {ex.Message}");
         }
     }
 
-    public async Task<PaymentMethodDeleteResult> DeletePaymentMethodAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeletePaymentMethodAsync(int id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -149,25 +144,25 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
 
             var existingPaymentMethod = await _repository.GetByIdAsync(id, cancellationToken);
             if (existingPaymentMethod == null)
-                return new PaymentMethodDeleteResult { Success = false, ErrorType = ErrorTypes.NotFound, Result = false, Message = $"Payment method with ID '{id}' not found." };
+                return Result<bool>.NotFound($"Payment method with ID '{id}' not found.");
 
             if (await _repository.IsInUseAsync(id, cancellationToken))
-                return new PaymentMethodDeleteResult { Success = false, ErrorType = ErrorTypes.Conflict, Result = false, Message = $"Cannot delete payment method with ID '{id}' because it is in use." };
+                return Result<bool>.Conflict($"Cannot delete payment method with ID '{id}' because it is in use.");
 
             var isDeleted = await _repository.RemoveAsync(id, cancellationToken);
             if (!isDeleted)
-                return new PaymentMethodDeleteResult { Success = false, ErrorType = ErrorTypes.Unexpected, Result = false, Message = "Failed to delete payment method." };
+                return Result<bool>.Error("Failed to delete payment method.");
 
             _cache.ResetEntity(existingPaymentMethod);
-            return new PaymentMethodDeleteResult { Success = true, Result = true, Message = "Payment method deleted successfully." };
+            return Result<bool>.Ok(true);
         }
         catch (ArgumentException ex)
         {
-            return new PaymentMethodDeleteResult { Success = false, ErrorType = ErrorTypes.Validation, Result = false, Message = ex.Message };
+            return Result<bool>.BadRequest("An error occurred.");
         }
         catch (Exception ex)
         {
-            return new PaymentMethodDeleteResult { Success = false, ErrorType = ErrorTypes.Unexpected, Result = false, Message = $"An error occurred while deleting the payment method: {ex.Message}" };
+            return Result<bool>.Error($"An error occurred while deleting the payment method: {ex.Message}");
         }
     }
 }

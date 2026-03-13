@@ -46,8 +46,8 @@ public class InstructorRoleService_Tests
         var result = await service.CreateInstructorRoleAsync(new CreateInstructorRoleInput("Lead"));
 
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.Equal("Lead", result.Result?.RoleName);
+        Assert.Null(result.ErrorType);
+        Assert.Equal("Lead", result.Value?.RoleName);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class InstructorRoleService_Tests
         var result = await service.CreateInstructorRoleAsync(new CreateInstructorRoleInput("   "));
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
     }
 
     [Fact]
@@ -98,9 +98,7 @@ public class InstructorRoleService_Tests
 
         var result = await service.DeleteInstructorRoleAsync(1);
 
-        Assert.True(result.Success);
-        Assert.True(result.Result);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
+        Assert.True(result.Success);        Assert.Null(result.ErrorType);
     }
 
     [Fact]
@@ -129,7 +127,7 @@ public class InstructorRoleService_Tests
         var result = await service.GetInstructorRoleByIdAsync(11);
 
         Assert.True(result.Success);
-        Assert.Equal(cached, result.Result);
+        Assert.Equal(cached, result.Value);
         await repo.DidNotReceive().GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>());
     }
 
@@ -147,7 +145,7 @@ public class InstructorRoleService_Tests
         var result = await service.UpdateInstructorRoleAsync(new UpdateInstructorRoleInput(existing.Id, "Senior Lead"));
 
         Assert.True(result.Success);
-        Assert.Equal(updated, result.Result);
+        Assert.Equal(updated, result.Value);
         cache.Received(1).ResetEntity(existing);
         cache.Received(1).SetEntity(updated);
     }

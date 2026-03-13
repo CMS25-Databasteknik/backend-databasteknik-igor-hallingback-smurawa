@@ -1,7 +1,7 @@
 using Backend.Application.Common;
 using Backend.Application.Modules.CourseRegistrationStatuses.Caching;
 using Backend.Application.Modules.CourseRegistrationStatuses.Inputs;
-using Backend.Application.Modules.CourseRegistrationStatuses.Outputs;
+
 using Backend.Domain.Modules.CourseRegistrationStatuses.Contracts;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 
@@ -12,64 +12,38 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
     private readonly ICourseRegistrationStatusCache _cache = cache ?? throw new ArgumentNullException(nameof(cache));
     private readonly ICourseRegistrationStatusRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-    public async Task<CourseRegistrationStatusResult> CreateCourseRegistrationStatusAsync(CreateCourseRegistrationStatusInput input, CancellationToken cancellationToken = default)
+    public async Task<Result<CourseRegistrationStatus>> CreateCourseRegistrationStatusAsync(CreateCourseRegistrationStatusInput input, CancellationToken cancellationToken = default)
     {
         try
         {
             if (input == null)
             {
-                return new CourseRegistrationStatusResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course registration status cannot be null."
-                };
+                return Result<CourseRegistrationStatus>.BadRequest("Course registration status cannot be null.");
             }
 
             var existingCourseRegistrationStatus = await _repository.GetCourseRegistrationStatusByNameAsync(input.Name, cancellationToken);
 
             if (existingCourseRegistrationStatus is not null)
-                return new CourseRegistrationStatusResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Result = null,
-                    Message = "A status with the same name already exists."
-                };
+                return Result<CourseRegistrationStatus>.BadRequest("A status with the same name already exists.");
 
             var newStatus = CourseRegistrationStatus.Create(input.Name);
             var createdStatus = await _repository.AddAsync(newStatus, cancellationToken);
             _cache.ResetEntity(createdStatus);
             _cache.SetEntity(createdStatus);
 
-            return new CourseRegistrationStatusResult
-            {
-                Success = true,
-                Result = createdStatus,
-                Message = "Course registration status created successfully."
-            };
+            return Result<CourseRegistrationStatus>.Ok(createdStatus);
         }
         catch (ArgumentException ex)
         {
-            return new CourseRegistrationStatusResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<CourseRegistrationStatus>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationStatusResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while creating the course registration status: {ex.Message}"
-            };
+            return Result<CourseRegistrationStatus>.Error($"An error occurred while creating the course registration status: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationStatusListResult> GetAllCourseRegistrationStatusesAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IReadOnlyList<CourseRegistrationStatus>>> GetAllCourseRegistrationStatusesAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -77,27 +51,15 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 token => _repository.GetAllAsync(token),
                 cancellationToken);
 
-            return new CourseRegistrationStatusListResult
-            {
-                Success = true,
-                Result = statuses,
-                Message = statuses.Any()
-                    ? $"Retrieved {statuses.Count} course registration status(es) successfully."
-                    : "No course registration statuses found."
-            };
+            return Result<IReadOnlyList<CourseRegistrationStatus>>.Ok(statuses);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationStatusListResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving course registration statuses: {ex.Message}"
-            };
+            return Result<IReadOnlyList<CourseRegistrationStatus>>.Error($"An error occurred while retrieving course registration statuses: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationStatusResult> GetCourseRegistrationStatusByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<CourseRegistrationStatus>> GetCourseRegistrationStatusByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -110,42 +72,22 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                 cancellationToken);
             if (status == null)
             {
-                return new CourseRegistrationStatusResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course registration status with ID '{id}' not found."
-                };
+                return Result<CourseRegistrationStatus>.NotFound($"Course registration status with ID '{id}' not found.");
             }
 
-            return new CourseRegistrationStatusResult
-            {
-                Success = true,
-                Result = status,
-                Message = "Course registration status retrieved successfully."
-            };
+            return Result<CourseRegistrationStatus>.Ok(status);
         }
         catch (ArgumentException ex)
         {
-            return new CourseRegistrationStatusResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<CourseRegistrationStatus>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationStatusResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving the course registration status: {ex.Message}"
-            };
+            return Result<CourseRegistrationStatus>.Error($"An error occurred while retrieving the course registration status: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationStatusResult> GetCourseRegistrationStatusByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<Result<CourseRegistrationStatus>> GetCourseRegistrationStatusByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -156,64 +98,34 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
 
             if (status == null)
             {
-                return new CourseRegistrationStatusResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course registration status with name '{name}' not found."
-                };
+                return Result<CourseRegistrationStatus>.NotFound($"Course registration status with name '{name}' not found.");
             }
 
-            return new CourseRegistrationStatusResult
-            {
-                Success = true,
-                Result = status,
-                Message = "Course registration status retrieved successfully."
-            };
+            return Result<CourseRegistrationStatus>.Ok(status);
         }
         catch (ArgumentException ex)
         {
-            return new CourseRegistrationStatusResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<CourseRegistrationStatus>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationStatusResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while retrieving the course registration status: {ex.Message}"
-            };
+            return Result<CourseRegistrationStatus>.Error($"An error occurred while retrieving the course registration status: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationStatusResult> UpdateCourseRegistrationStatusAsync(UpdateCourseRegistrationStatusInput input, CancellationToken cancellationToken = default)
+    public async Task<Result<CourseRegistrationStatus>> UpdateCourseRegistrationStatusAsync(UpdateCourseRegistrationStatusInput input, CancellationToken cancellationToken = default)
     {
         try
         {
             if (input == null)
             {
-                return new CourseRegistrationStatusResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Validation,
-                    Message = "Course registration status cannot be null."
-                };
+                return Result<CourseRegistrationStatus>.BadRequest("Course registration status cannot be null.");
             }
 
             var existingStatus = await _repository.GetByIdAsync(input.Id, cancellationToken);
             if (existingStatus == null)
             {
-                return new CourseRegistrationStatusResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Message = $"Course registration status with ID '{input.Id}' not found."
-                };
+                return Result<CourseRegistrationStatus>.NotFound($"Course registration status with ID '{input.Id}' not found.");
             }
 
             existingStatus.Update(input.Name);
@@ -221,45 +133,25 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
 
             if (updatedStatus == null)
             {
-                return new CourseRegistrationStatusResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Message = "Failed to update course registration status."
-                };
+                return Result<CourseRegistrationStatus>.Error("Failed to update course registration status.");
             }
 
             _cache.ResetEntity(existingStatus);
             _cache.SetEntity(updatedStatus);
 
-            return new CourseRegistrationStatusResult
-            {
-                Success = true,
-                Result = updatedStatus,
-                Message = "Course registration status updated successfully."
-            };
+            return Result<CourseRegistrationStatus>.Ok(updatedStatus);
         }
         catch (ArgumentException ex)
         {
-            return new CourseRegistrationStatusResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Message = ex.Message
-            };
+            return Result<CourseRegistrationStatus>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationStatusResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Message = $"An error occurred while updating the course registration status: {ex.Message}"
-            };
+            return Result<CourseRegistrationStatus>.Error($"An error occurred while updating the course registration status: {ex.Message}");
         }
     }
 
-    public async Task<CourseRegistrationStatusDeleteResult> DeleteCourseRegistrationStatusAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteCourseRegistrationStatusAsync(int id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -270,68 +162,33 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
 
             if (existingStatus == null)
             {
-                return new CourseRegistrationStatusDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.NotFound,
-                    Result = false,
-                    Message = $"Course registration status with ID '{id}' not found."
-                };
+                return Result<bool>.NotFound($"Course registration status with ID '{id}' not found.");
             }
 
             var isStatusInUse = await _repository.IsInUseAsync(id, cancellationToken);
 
             if (isStatusInUse)
             {
-                return new CourseRegistrationStatusDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Conflict,
-                    Result = false,
-                    Message = $"Cannot delete course registration status with ID '{id}' because it is in use."
-                };
+                return Result<bool>.Conflict($"Cannot delete course registration status with ID '{id}' because it is in use.");
             }
 
             var deleted = await _repository.RemoveAsync(id, cancellationToken);
             if (!deleted)
             {
-                return new CourseRegistrationStatusDeleteResult
-                {
-                    Success = false,
-                    ErrorType = ErrorTypes.Unexpected,
-                    Result = false,
-                    Message = "Failed to delete course registration status."
-                };
+                return Result<bool>.Error("Failed to delete course registration status.");
             }
 
             _cache.ResetEntity(existingStatus);
 
-            return new CourseRegistrationStatusDeleteResult
-            {
-                Success = true,
-                Result = true,
-                Message = "Course registration status deleted successfully."
-            };
+            return Result<bool>.Ok(true);
         }
         catch (ArgumentException ex)
         {
-            return new CourseRegistrationStatusDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Validation,
-                Result = false,
-                Message = ex.Message
-            };
+            return Result<bool>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
-            return new CourseRegistrationStatusDeleteResult
-            {
-                Success = false,
-                ErrorType = ErrorTypes.Unexpected,
-                Result = false,
-                Message = $"An error occurred while deleting the course registration status: {ex.Message}"
-            };
+            return Result<bool>.Error($"An error occurred while deleting the course registration status: {ex.Message}");
         }
     }
 }

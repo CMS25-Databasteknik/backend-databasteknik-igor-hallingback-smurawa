@@ -78,8 +78,8 @@ public class CourseEventService_Tests
         var result = await service.CreateCourseEventAsync(input);
 
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.Equal(created, result.Result);
+        Assert.Null(result.ErrorType);
+        Assert.Equal(created, result.Value);
         await eventRepo.Received(1).AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
@@ -92,7 +92,7 @@ public class CourseEventService_Tests
         var result = await service.CreateCourseEventAsync(null!);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
         await eventRepo.DidNotReceive().AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
@@ -114,7 +114,7 @@ public class CourseEventService_Tests
 
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Contains("Course with ID", result.Message);
+        Assert.Contains("Course with ID", result.ErrorMessage);
         await eventRepo.DidNotReceive().AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
@@ -136,7 +136,7 @@ public class CourseEventService_Tests
 
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Contains("Course event type with ID", result.Message);
+        Assert.Contains("Course event type with ID", result.ErrorMessage);
         await eventRepo.DidNotReceive().AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
@@ -150,8 +150,8 @@ public class CourseEventService_Tests
         var result = await service.CreateCourseEventAsync(input);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
-        Assert.Contains("Price cannot be negative", result.Message);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
+        Assert.Contains("Price cannot be negative", result.ErrorMessage);
         await eventRepo.DidNotReceive().AddAsync(Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
@@ -168,8 +168,8 @@ public class CourseEventService_Tests
         var result = await service.CreateCourseEventAsync(input);
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
-        Assert.Contains("db fail", result.Message);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
+        Assert.Contains("db fail", result.ErrorMessage);
     }
 
     #endregion
@@ -192,8 +192,8 @@ public class CourseEventService_Tests
         var result = await service.GetAllCourseEventsAsync();
 
         Assert.True(result.Success);
-        Assert.NotNull(result.Result);
-        Assert.Equal(events.Count, result.Result!.Count);
+        Assert.NotNull(result.Value);
+        Assert.Equal(events.Count, result.Value!.Count);
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public class CourseEventService_Tests
     {
         var service = CreateService();
         var result = await service.GetCourseEventByIdAsync(Guid.Empty);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class CourseEventService_Tests
     {
         var service = CreateService();
         var result = await service.GetCourseEventsByCourseIdAsync(Guid.Empty);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
     }
 
     #endregion
@@ -234,8 +234,8 @@ public class CourseEventService_Tests
         var result = await service.UpdateCourseEventAsync(input);
 
         Assert.True(result.Success);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
-        Assert.Equal(updated.EventDate, result.Result!.EventDate);
+        Assert.Null(result.ErrorType);
+        Assert.Equal(updated.EventDate, result.Value!.EventDate);
     }
 
     [Fact]
@@ -311,7 +311,7 @@ public class CourseEventService_Tests
 
         var result = await service.UpdateCourseEventAsync(input);
 
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
         await eventRepo.DidNotReceive().UpdateAsync(Arg.Any<Guid>(), Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>());
     }
 
@@ -324,7 +324,7 @@ public class CourseEventService_Tests
     {
         var service = CreateService();
         var result = await service.DeleteCourseEventAsync(Guid.Empty);
-        Assert.Equal(ErrorTypes.Validation, result.ErrorType);
+        Assert.Equal(ErrorTypes.BadRequest, result.ErrorType);
     }
 
     [Fact]
@@ -374,9 +374,7 @@ public class CourseEventService_Tests
         var service = CreateService(eventRepo);
         var result = await service.DeleteCourseEventAsync(eventId);
 
-        Assert.True(result.Success);
-        Assert.True(result.Result);
-        Assert.Equal(ErrorTypes.None, result.ErrorType);
+        Assert.True(result.Success);        Assert.Null(result.ErrorType);
     }
 
     [Fact]
@@ -390,7 +388,7 @@ public class CourseEventService_Tests
         var result = await service.DeleteCourseEventAsync(Guid.NewGuid());
 
         Assert.False(result.Success);
-        Assert.Equal(ErrorTypes.Unexpected, result.ErrorType);
+        Assert.Equal(ErrorTypes.Error, result.ErrorType);
     }
 
     #endregion
