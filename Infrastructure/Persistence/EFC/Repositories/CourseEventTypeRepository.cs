@@ -10,7 +10,7 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context)
     : RepositoryBase<CourseEventType, int, CourseEventTypeEntity, CoursesOnlineDbContext>(context), ICourseEventTypeRepository
 {
     protected override CourseEventType ToModel(CourseEventTypeEntity entity)
-        => new(entity.Id, entity.TypeName);
+        => CourseEventType.Reconstitute(entity.Id, entity.TypeName);
 
     protected override CourseEventTypeEntity ToEntity(CourseEventType courseEventType)
         => new()

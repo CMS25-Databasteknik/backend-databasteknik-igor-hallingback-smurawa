@@ -1,6 +1,7 @@
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Backend.Domain.Modules.CourseRegistrations.Models;
 
@@ -13,7 +14,8 @@ public sealed class CourseRegistration
     public CourseRegistrationStatus Status { get; private set; }
     public PaymentMethodModel PaymentMethod { get; private set; } = null!;
 
-    public CourseRegistration(
+    [JsonConstructor]
+    private CourseRegistration(
         Guid id,
         Guid participantId,
         Guid courseEventId,
@@ -27,6 +29,23 @@ public sealed class CourseRegistration
         Id = id;
         SetValues(participantId, courseEventId, registrationDate, status, paymentMethod);
     }
+
+    public static CourseRegistration Create(
+        Guid participantId,
+        Guid courseEventId,
+        DateTime registrationDate,
+        CourseRegistrationStatus status,
+        PaymentMethodModel paymentMethod)
+        => new(Guid.NewGuid(), participantId, courseEventId, registrationDate, status, paymentMethod);
+
+    public static CourseRegistration Reconstitute(
+        Guid id,
+        Guid participantId,
+        Guid courseEventId,
+        DateTime registrationDate,
+        CourseRegistrationStatus status,
+        PaymentMethodModel paymentMethod)
+        => new(id, participantId, courseEventId, registrationDate, status, paymentMethod);
 
     public void Update(
         Guid participantId,
@@ -62,6 +81,6 @@ public sealed class CourseRegistration
         CourseEventId = courseEventId;
         RegistrationDate = registrationDate;
         Status = status;
-        PaymentMethod = new PaymentMethodModel(paymentMethod.Id, paymentMethod.Name);
+        PaymentMethod = PaymentMethodModel.Reconstitute(paymentMethod.Id, paymentMethod.Name);
     }
 }

@@ -37,7 +37,7 @@ public class CourseRegistrationStatusService(ICourseRegistrationStatusCache cach
                     Message = "A status with the same name already exists."
                 };
 
-            var newStatus = new CourseRegistrationStatus(input.Name);
+            var newStatus = CourseRegistrationStatus.Create(input.Name);
             var createdStatus = await _repository.AddAsync(newStatus, cancellationToken);
             _cache.ResetEntity(createdStatus);
             _cache.SetEntity(createdStatus);

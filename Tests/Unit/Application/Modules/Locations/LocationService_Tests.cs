@@ -16,7 +16,7 @@ public class LocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
-        var expectedLocation = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
+        var expectedLocation = Location.Reconstitute(1, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>())
             .Returns(expectedLocation);
@@ -211,7 +211,7 @@ public class LocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
-        var expectedLocation = new Location(1, streetName, postalCode, city);
+        var expectedLocation = Location.Reconstitute(1, streetName, postalCode, city);
 
         mockRepo.AddAsync(Arg.Any<Location>(), Arg.Any<CancellationToken>())
             .Returns(expectedLocation);
@@ -269,9 +269,9 @@ public class LocationService_Tests
         var mockRepo = Substitute.For<ILocationRepository>();
         var locations = new List<Location>
         {
-            new Location(1, "Kungsgatan 12", "11143", "Stockholm"),
-            new Location(2, "Storgatan 5", "41138", "Göteborg"),
-            new Location(3, "Vasagatan 10", "21120", "Malmö")
+            Location.Reconstitute(1, "Kungsgatan 12", "11143", "Stockholm"),
+            Location.Reconstitute(2, "Storgatan 5", "41138", "Göteborg"),
+            Location.Reconstitute(3, "Vasagatan 10", "21120", "Malmö")
         };
 
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
@@ -343,7 +343,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var location = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
+        var location = Location.Reconstitute(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(location);
@@ -457,8 +457,8 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
-        var updatedLocation = new Location(locationId, "Kungsgatan 15", "11143", "Stockholm");
+        var existingLocation = Location.Reconstitute(locationId, "Kungsgatan 12", "11143", "Stockholm");
+        var updatedLocation = Location.Reconstitute(locationId, "Kungsgatan 15", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -530,7 +530,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new Location(1, "Old Street", "11111", "City"));
+            .Returns(Location.Reconstitute(1, "Old Street", "11111", "City"));
         var service = new LocationService(mockRepo);
         var input = new UpdateLocationInput(1, "", "11143", "Stockholm");
 
@@ -550,7 +550,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new Location(1, "Old Street", "11111", "City"));
+            .Returns(Location.Reconstitute(1, "Old Street", "11111", "City"));
         var service = new LocationService(mockRepo);
         var input = new UpdateLocationInput(1, "Kungsgatan 12", "", "Stockholm");
 
@@ -570,7 +570,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new Location(1, "Old Street", "11111", "City"));
+            .Returns(Location.Reconstitute(1, "Old Street", "11111", "City"));
         var service = new LocationService(mockRepo);
         var input = new UpdateLocationInput(1, "Kungsgatan 12", "11143", "");
 
@@ -615,7 +615,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
+        var existingLocation = Location.Reconstitute(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -643,7 +643,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new Location(1, "Old Street", "11111", "City"));
+            .Returns(Location.Reconstitute(1, "Old Street", "11111", "City"));
 
         var service = new LocationService(mockRepo);
         var input = new UpdateLocationInput(1, "Kungsgatan 12", "123 45", "Stockholm");
@@ -670,7 +670,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
+        var existingLocation = Location.Reconstitute(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -763,7 +763,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
+        var existingLocation = Location.Reconstitute(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -792,7 +792,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
+        var existingLocation = Location.Reconstitute(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);
@@ -822,7 +822,7 @@ public class LocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ILocationRepository>();
         var locationId = 1;
-        var existingLocation = new Location(locationId, "Kungsgatan 12", "11143", "Stockholm");
+        var existingLocation = Location.Reconstitute(locationId, "Kungsgatan 12", "11143", "Stockholm");
 
         mockRepo.GetByIdAsync(locationId, Arg.Any<CancellationToken>())
             .Returns(existingLocation);

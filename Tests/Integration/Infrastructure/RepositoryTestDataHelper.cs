@@ -20,7 +20,7 @@ internal static class RepositoryTestDataHelper
 {
     public static Task<Course> CreateCourseAsync(CoursesOnlineDbContext context)
         => new CourseRepository(context).AddAsync(
-            new Course(
+            Course.Reconstitute(
                 Guid.NewGuid(),
                 $"Course-{Guid.NewGuid():N}",
                 "Integration course",
@@ -29,7 +29,7 @@ internal static class RepositoryTestDataHelper
 
     public static Task<CourseEventType> CreateCourseEventTypeAsync(CoursesOnlineDbContext context)
         => new CourseEventTypeRepository(context).AddAsync(
-            new CourseEventType($"Type-{Guid.NewGuid():N}"),
+            CourseEventType.Create($"Type-{Guid.NewGuid():N}"),
             CancellationToken.None);
 
     public static async Task<CourseEvent> CreateCourseEventAsync(CoursesOnlineDbContext context, Guid? courseId = null, int? typeId = null, int seats = 5)
@@ -45,20 +45,20 @@ internal static class RepositoryTestDataHelper
         var resolvedTypeId = eventType?.Id ?? (await CreateCourseEventTypeAsync(context)).Id;
 
         return await new CourseEventRepository(context).AddAsync(
-            new CourseEvent(
+            CourseEvent.Reconstitute(
                 Guid.NewGuid(),
                 resolvedCourseId,
                 DateTime.UtcNow.AddDays(1),
                 99m,
                 seats,
                 resolvedTypeId,
-                new VenueType(1, "InPerson")),
+                VenueType.Reconstitute(1, "InPerson")),
             CancellationToken.None);
     }
 
     public static Task<Participant> CreateParticipantAsync(CoursesOnlineDbContext context)
         => new ParticipantRepository(context).AddAsync(
-            new Participant(
+            Participant.Reconstitute(
                 Guid.NewGuid(),
                 "First",
                 "Last",
@@ -68,20 +68,20 @@ internal static class RepositoryTestDataHelper
 
     public static Task<Location> CreateLocationAsync(CoursesOnlineDbContext context)
         => new LocationRepository(context).AddAsync(
-            new Location(0, $"Street-{Guid.NewGuid():N}", "12345", "City"),
+            Location.Create($"Street-{Guid.NewGuid():N}", "12345", "City"),
             CancellationToken.None);
 
     public static async Task<InPlaceLocation> CreateInPlaceLocationAsync(CoursesOnlineDbContext context, int? locationId = null)
     {
         var resolvedLocationId = locationId ?? (await CreateLocationAsync(context)).Id;
         return await new InPlaceLocationRepository(context).AddAsync(
-            new InPlaceLocation(0, resolvedLocationId, 101, 20),
+            InPlaceLocation.Create(resolvedLocationId, 101, 20),
             CancellationToken.None);
     }
 
     public static Task<InstructorRole> CreateInstructorRoleAsync(CoursesOnlineDbContext context)
         => new InstructorRoleRepository(context).AddAsync(
-            new InstructorRole($"Role-{Guid.NewGuid():N}"),
+            InstructorRole.Create($"Role-{Guid.NewGuid():N}"),
             CancellationToken.None);
 
     public static async Task<Instructor> CreateInstructorAsync(CoursesOnlineDbContext context, int? roleId = null)
@@ -91,7 +91,7 @@ internal static class RepositoryTestDataHelper
             : await CreateInstructorRoleAsync(context);
 
         return await new InstructorRepository(context).AddAsync(
-            new Instructor(Guid.NewGuid(), $"Instructor-{Guid.NewGuid():N}", role!),
+            Instructor.Reconstitute(Guid.NewGuid(), $"Instructor-{Guid.NewGuid():N}", role!),
             CancellationToken.None);
     }
 
@@ -106,13 +106,13 @@ internal static class RepositoryTestDataHelper
         var resolvedStatus = status ?? CourseRegistrationStatus.Pending;
 
         return await new CourseRegistrationRepository(context).AddAsync(
-            new CourseRegistration(
+            CourseRegistration.Reconstitute(
                 Guid.NewGuid(),
                 resolvedParticipantId,
                 resolvedEventId,
                 DateTime.UtcNow,
                 resolvedStatus,
-                new PaymentMethod(1, "Card")),
+                PaymentMethod.Reconstitute(1, "Card")),
             CancellationToken.None);
     }
 

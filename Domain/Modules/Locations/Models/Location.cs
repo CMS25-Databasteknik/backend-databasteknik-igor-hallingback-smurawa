@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Backend.Domain.Modules.Locations.Models;
@@ -9,7 +10,8 @@ public sealed class Location
     public string PostalCode { get; private set; } = string.Empty;
     public string City { get; private set; } = string.Empty;
 
-    public Location(int id, string streetName, string postalCode, string city)
+    [JsonConstructor]
+    private Location(int id, string streetName, string postalCode, string city)
     {
         if (id < 0)
             throw new ArgumentException("ID must be greater than or equal to zero.", nameof(id));
@@ -17,6 +19,12 @@ public sealed class Location
         Id = id;
         SetValues(streetName, postalCode, city);
     }
+
+    public static Location Create(string streetName, string postalCode, string city)
+        => new(0, streetName, postalCode, city);
+
+    public static Location Reconstitute(int id, string streetName, string postalCode, string city)
+        => new(id, streetName, postalCode, city);
 
     public void Update(string streetName, string postalCode, string city)
     {

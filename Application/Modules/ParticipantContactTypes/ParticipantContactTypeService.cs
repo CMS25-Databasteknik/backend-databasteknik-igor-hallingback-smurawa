@@ -23,7 +23,7 @@ public sealed class ParticipantContactTypeService(IParticipantContactTypeCache c
             if (existing is not null)
                 return new ParticipantContactTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "A participant contact type with the same name already exists." };
 
-            var created = await _repository.AddAsync(new ParticipantContactType(1, input.Name), cancellationToken);
+            var created = await _repository.AddAsync(ParticipantContactType.Create(input.Name), cancellationToken);
             _cache.ResetEntity(created);
             _cache.SetEntity(created);
             return new ParticipantContactTypeResult { Success = true, Result = created, Message = "Participant contact type created successfully." };

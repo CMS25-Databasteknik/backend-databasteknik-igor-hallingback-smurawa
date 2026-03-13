@@ -25,8 +25,7 @@ public class LocationService(ILocationRepository locationRepository) : ILocation
                 };
             }
 
-            var newLocation = new Location(
-                0,
+            var newLocation = Location.Create(
                 location.StreetName,
                 location.PostalCode,
                 location.City

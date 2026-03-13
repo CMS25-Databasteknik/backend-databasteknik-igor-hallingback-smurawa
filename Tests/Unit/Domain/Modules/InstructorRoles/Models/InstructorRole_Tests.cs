@@ -7,7 +7,7 @@ public class InstructorRole_Tests
     [Fact]
     public void Constructor_Should_Create_Role_When_Valid()
     {
-        var role = new InstructorRole(1, "Lead");
+        var role = InstructorRole.Reconstitute(1, "Lead");
 
         Assert.Equal(1, role.Id);
         Assert.Equal("Lead", role.RoleName);
@@ -16,7 +16,7 @@ public class InstructorRole_Tests
     [Fact]
     public void Constructor_Should_Trim_Name()
     {
-        var role = new InstructorRole(2, "  Assistant  ");
+        var role = InstructorRole.Reconstitute(2, "  Assistant  ");
 
         Assert.Equal("Assistant", role.RoleName);
     }
@@ -24,7 +24,7 @@ public class InstructorRole_Tests
     [Fact]
     public void Constructor_Should_Accept_Id_Zero_For_New_Role()
     {
-        var role = new InstructorRole(0, "Lead");
+        var role = InstructorRole.Reconstitute(0, "Lead");
 
         Assert.Equal(0, role.Id);
         Assert.Equal("Lead", role.RoleName);
@@ -34,7 +34,7 @@ public class InstructorRole_Tests
     [InlineData(-1)]
     public void Constructor_Should_Throw_When_Id_Invalid(int id)
     {
-        var ex = Assert.Throws<ArgumentException>(() => new InstructorRole(id, "Lead"));
+        var ex = Assert.Throws<ArgumentException>(() => InstructorRole.Reconstitute(id, "Lead"));
         Assert.Equal("id", ex.ParamName);
     }
 
@@ -44,14 +44,14 @@ public class InstructorRole_Tests
     [InlineData("   ")]
     public void Constructor_Should_Throw_When_Name_Invalid(string? name)
     {
-        var ex = Assert.Throws<ArgumentException>(() => new InstructorRole(1, name!));
+        var ex = Assert.Throws<ArgumentException>(() => InstructorRole.Reconstitute(1, name!));
         Assert.Equal("roleName", ex.ParamName);
     }
 
     [Fact]
     public void Update_Should_Change_RoleName_When_Input_Is_Valid()
     {
-        var role = new InstructorRole(1, "Lead");
+        var role = InstructorRole.Reconstitute(1, "Lead");
 
         role.Update("Assistant");
 
@@ -62,7 +62,7 @@ public class InstructorRole_Tests
     [Fact]
     public void Update_Should_Throw_When_Name_Is_Whitespace()
     {
-        var role = new InstructorRole(1, "Lead");
+        var role = InstructorRole.Reconstitute(1, "Lead");
 
         var ex = Assert.Throws<ArgumentException>(() => role.Update("   "));
         Assert.Equal("roleName", ex.ParamName);

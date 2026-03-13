@@ -15,7 +15,7 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
-        var expectedCourse = new Course(Guid.NewGuid(), "Test Course", "Test Description", 5);
+        var expectedCourse = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 5);
 
         mockRepo.AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(expectedCourse);
@@ -210,7 +210,7 @@ public class CourseService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
-        var expectedCourse = new Course(Guid.NewGuid(), title, description, duration);
+        var expectedCourse = Course.Reconstitute(Guid.NewGuid(), title, description, duration);
 
         mockRepo.AddAsync(Arg.Any<Course>(), Arg.Any<CancellationToken>())
             .Returns(expectedCourse);
@@ -276,9 +276,9 @@ public class CourseService_Tests
         var mockRepo = Substitute.For<ICourseRepository>();
         var courses = new List<Course>
         {
-            new Course(Guid.NewGuid(), "Course 1", "Description 1", 10),
-            new Course(Guid.NewGuid(), "Course 2", "Description 2", 20),
-            new Course(Guid.NewGuid(), "Course 3", "Description 3", 15)
+            Course.Reconstitute(Guid.NewGuid(), "Course 1", "Description 1", 10),
+            Course.Reconstitute(Guid.NewGuid(), "Course 2", "Description 2", 20),
+            Course.Reconstitute(Guid.NewGuid(), "Course 3", "Description 3", 15)
         };
 
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
@@ -350,7 +350,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
-        var course = new Course(courseId, "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(courseId, "Test Course", "Test Description", 10);
         var courseWithEvents = new CourseWithEvents(course, new List<CourseEvent>());
 
         mockRepo.GetByIdWithEventsAsync(courseId, Arg.Any<CancellationToken>())
@@ -446,9 +446,9 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
-        var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
+        var existingCourse = Course.Reconstitute(courseId, "Old Title", "Old Description", 5);
         var courseWithEvents = existingCourse;
-        var updatedCourse = new Course(courseId, "Updated Title", "Updated Description", 10);
+        var updatedCourse = Course.Reconstitute(courseId, "Updated Title", "Updated Description", 10);
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
             .Returns(courseWithEvents);
@@ -522,7 +522,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5));
+            .Returns(Course.Reconstitute(Guid.NewGuid(), "Old Title", "Old Description", 5));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "", "Test Description", 5);
 
@@ -542,7 +542,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5));
+            .Returns(Course.Reconstitute(Guid.NewGuid(), "Old Title", "Old Description", 5));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "", 5);
 
@@ -562,7 +562,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Course(Guid.NewGuid(), "Old Title", "Old Description", 5));
+            .Returns(Course.Reconstitute(Guid.NewGuid(), "Old Title", "Old Description", 5));
         var service = new CourseService(mockRepo);
         var input = new UpdateCourseInput(Guid.NewGuid(), "Test Title", "Test Description", 0);
 
@@ -607,7 +607,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
-        var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
+        var existingCourse = Course.Reconstitute(courseId, "Old Title", "Old Description", 5);
         var courseWithEvents = existingCourse;
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -635,7 +635,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
-        var existingCourse = new Course(courseId, "Old Title", "Old Description", 5);
+        var existingCourse = Course.Reconstitute(courseId, "Old Title", "Old Description", 5);
         var courseWithEvents = existingCourse;
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -668,7 +668,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
-        var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
+        var existingCourse = Course.Reconstitute(courseId, "Test Course", "Test Description", 5);
         var courseWithEvents = existingCourse;
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -743,7 +743,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
-        var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
+        var existingCourse = Course.Reconstitute(courseId, "Test Course", "Test Description", 5);
         var courseWithEvents = existingCourse;
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -773,7 +773,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
-        var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
+        var existingCourse = Course.Reconstitute(courseId, "Test Course", "Test Description", 5);
         var courseWithEvents = existingCourse;
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())
@@ -804,7 +804,7 @@ public class CourseService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRepository>();
         var courseId = Guid.NewGuid();
-        var existingCourse = new Course(courseId, "Test Course", "Test Description", 5);
+        var existingCourse = Course.Reconstitute(courseId, "Test Course", "Test Description", 5);
         var courseWithEvents = existingCourse;
 
         mockRepo.GetByIdAsync(courseId, Arg.Any<CancellationToken>())

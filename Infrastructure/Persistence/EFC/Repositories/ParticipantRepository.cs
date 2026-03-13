@@ -15,9 +15,9 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
         var contactTypeEntity = entity.ContactType
             ?? throw new InvalidOperationException("Participant contact type must be loaded from database.");
 
-        var contactType = new ParticipantContactType(contactTypeEntity.Id, contactTypeEntity.Name);
+        var contactType = ParticipantContactType.Reconstitute(contactTypeEntity.Id, contactTypeEntity.Name);
 
-        return new Participant(
+        return Participant.Reconstitute(
             entity.Id,
             entity.FirstName,
             entity.LastName,

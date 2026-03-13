@@ -18,7 +18,7 @@ public class PaymentMethodService_Tests
         cache.GetAllAsync(Arg.Any<Func<CancellationToken, Task<IReadOnlyList<PaymentMethodModel>>>>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<PaymentMethodModel>>>>()(ci.Arg<CancellationToken>()));
         repo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns([new PaymentMethodModel(1, "Card"), new PaymentMethodModel(2, "Invoice")]);
+            .Returns([PaymentMethodModel.Reconstitute(1, "Card"), PaymentMethodModel.Reconstitute(2, "Invoice")]);
         var service = new PaymentMethodService(cache, repo);
 
         var result = await service.GetAllPaymentMethodsAsync();
@@ -34,7 +34,7 @@ public class PaymentMethodService_Tests
     {
         var repo = Substitute.For<IPaymentMethodRepository>();
         var cache = Substitute.For<IPaymentMethodCache>();
-        var cached = new PaymentMethodModel(5, "Swish");
+        var cached = PaymentMethodModel.Reconstitute(5, "Swish");
         cache.GetByIdAsync(5, Arg.Any<Func<CancellationToken, Task<PaymentMethodModel?>>>(), Arg.Any<CancellationToken>())
             .Returns(cached);
         var service = new PaymentMethodService(cache, repo);
@@ -51,8 +51,8 @@ public class PaymentMethodService_Tests
     {
         var repo = Substitute.For<IPaymentMethodRepository>();
         var cache = Substitute.For<IPaymentMethodCache>();
-        var existing = new PaymentMethodModel(2, "Card");
-        var updated = new PaymentMethodModel(2, "Invoice");
+        var existing = PaymentMethodModel.Reconstitute(2, "Card");
+        var updated = PaymentMethodModel.Reconstitute(2, "Invoice");
 
         repo.GetByIdAsync(existing.Id, Arg.Any<CancellationToken>()).Returns(existing);
         repo.UpdateAsync(existing.Id, Arg.Any<PaymentMethodModel>(), Arg.Any<CancellationToken>())

@@ -110,8 +110,7 @@ public class CourseRegistrationService(
                 };
             }
 
-            var newCourseRegistration = new CourseRegistration(
-                Guid.NewGuid(),
+            var newCourseRegistration = CourseRegistration.Create(
                 courseRegistration.ParticipantId,
                 courseRegistration.CourseEventId,
                 DateTime.UtcNow,

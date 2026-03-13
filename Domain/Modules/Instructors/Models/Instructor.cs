@@ -1,5 +1,6 @@
 using Backend.Domain.Modules.InstructorRoles.Models;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Backend.Domain.Modules.Instructors.Models;
 
@@ -10,7 +11,8 @@ public sealed class Instructor
     public int InstructorRoleId { get; private set; }
     public InstructorRole Role { get; private set; }
 
-    public Instructor(Guid id, string name, InstructorRole role)
+    [JsonConstructor]
+    private Instructor(Guid id, string name, InstructorRole role)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("ID cannot be empty.", nameof(id));
@@ -18,6 +20,12 @@ public sealed class Instructor
         Id = id;
         SetValues(name, role);
     }
+
+    public static Instructor Create(string name, InstructorRole role)
+        => new(Guid.NewGuid(), name, role);
+
+    public static Instructor Reconstitute(Guid id, string name, InstructorRole role)
+        => new(id, name, role);
 
     public void Update(string name, InstructorRole role)
     {

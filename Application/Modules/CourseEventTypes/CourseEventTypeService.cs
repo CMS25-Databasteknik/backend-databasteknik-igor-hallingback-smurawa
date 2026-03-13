@@ -38,7 +38,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                     Message = "A typename with the same name already exists."
                 };
 
-            var newCourseEventType = new CourseEventType(courseEventType.TypeName);
+            var newCourseEventType = CourseEventType.Create(courseEventType.TypeName);
 
             var createdCourseEventType = await _courseEventTypeRepository.AddAsync(newCourseEventType, cancellationToken);
             _cache.ResetEntity(createdCourseEventType);

@@ -24,11 +24,11 @@ public class InstructorRoleService_Tests
     {
         var repo = Substitute.For<IInstructorRoleRepository>();
         repo.AddAsync(Arg.Any<InstructorRole>(), Arg.Any<CancellationToken>())
-            .Returns(ci => new InstructorRole(1, ci.Arg<InstructorRole>().RoleName));
+            .Returns(ci => InstructorRole.Reconstitute(1, ci.Arg<InstructorRole>().RoleName));
         repo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(ci => ci.Arg<int>() == 9 ? null : new InstructorRole(ci.Arg<int>(), $"Role{ci.Arg<int>()}"));
+            .Returns(ci => ci.Arg<int>() == 9 ? null : InstructorRole.Reconstitute(ci.Arg<int>(), $"Role{ci.Arg<int>()}"));
         repo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<InstructorRole>>(new List<InstructorRole> { new(1, "Lead") }));
+            .Returns(Task.FromResult<IReadOnlyList<InstructorRole>>(new List<InstructorRole> { InstructorRole.Reconstitute(1, "Lead") }));
         repo.UpdateAsync(Arg.Any<int>(), Arg.Any<InstructorRole>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<InstructorRole>().Id == 9 ? null : ci.Arg<InstructorRole>());
         repo.RemoveAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
@@ -121,7 +121,7 @@ public class InstructorRoleService_Tests
     {
         var cache = CreateCache();
         var repo = CreateRepo();
-        var cached = new InstructorRole(11, "CachedRole");
+        var cached = InstructorRole.Reconstitute(11, "CachedRole");
         cache.GetByIdAsync(11, Arg.Any<Func<CancellationToken, Task<InstructorRole?>>>(), Arg.Any<CancellationToken>())
             .Returns(cached);
         var service = new InstructorRoleService(cache, repo);
@@ -138,8 +138,8 @@ public class InstructorRoleService_Tests
     {
         var cache = CreateCache();
         var repo = CreateRepo();
-        var existing = new InstructorRole(2, "Lead");
-        var updated = new InstructorRole(2, "Senior Lead");
+        var existing = InstructorRole.Reconstitute(2, "Lead");
+        var updated = InstructorRole.Reconstitute(2, "Senior Lead");
         repo.GetByIdAsync(existing.Id, Arg.Any<CancellationToken>()).Returns(existing);
         repo.UpdateAsync(existing.Id, Arg.Any<InstructorRole>(), Arg.Any<CancellationToken>()).Returns(updated);
         var service = new InstructorRoleService(cache, repo);

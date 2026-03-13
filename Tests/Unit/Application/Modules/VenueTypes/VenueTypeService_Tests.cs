@@ -19,7 +19,7 @@ public class VenueTypeService_Tests
         cache.GetAllAsync(Arg.Any<Func<CancellationToken, Task<IReadOnlyList<VenueType>>>>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<VenueType>>>>()(ci.Arg<CancellationToken>()));
         repo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns([new VenueType(1, "InPerson"), new VenueType(2, "Online")]);
+            .Returns([VenueType.Reconstitute(1, "InPerson"), VenueType.Reconstitute(2, "Online")]);
         var service = new VenueTypeService(cache, repo);
 
         var result = await service.GetAllVenueTypesAsync();
@@ -35,7 +35,7 @@ public class VenueTypeService_Tests
     {
         var repo = Substitute.For<IVenueTypeRepository>();
         var cache = Substitute.For<IVenueTypeCache>();
-        var cached = new VenueType(3, "Hybrid");
+        var cached = VenueType.Reconstitute(3, "Hybrid");
 
         cache.GetByIdAsync(
                 3,
@@ -57,8 +57,8 @@ public class VenueTypeService_Tests
     {
         var repo = Substitute.For<IVenueTypeRepository>();
         var cache = Substitute.For<IVenueTypeCache>();
-        var existing = new VenueType(4, "Onsite");
-        var updated = new VenueType(4, "Remote");
+        var existing = VenueType.Reconstitute(4, "Onsite");
+        var updated = VenueType.Reconstitute(4, "Remote");
 
         repo.GetByIdAsync(existing.Id, Arg.Any<CancellationToken>())
             .Returns(existing);

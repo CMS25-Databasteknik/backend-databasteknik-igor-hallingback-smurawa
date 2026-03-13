@@ -10,7 +10,7 @@ public class LocationRepository(CoursesOnlineDbContext context)
     : RepositoryBase<Location, int, LocationEntity, CoursesOnlineDbContext>(context), ILocationRepository
 {
     protected override Location ToModel(LocationEntity entity)
-        => new(entity.Id, entity.StreetName, entity.PostalCode, entity.City);
+        => Location.Reconstitute(entity.Id, entity.StreetName, entity.PostalCode, entity.City);
 
     protected override LocationEntity ToEntity(Location location)
         => new()

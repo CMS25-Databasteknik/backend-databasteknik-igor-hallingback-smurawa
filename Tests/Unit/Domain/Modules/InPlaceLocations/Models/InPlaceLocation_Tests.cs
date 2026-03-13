@@ -14,7 +14,7 @@ public class InPlaceLocation_Tests
         var seats = 30;
 
         // Act
-        var inPlaceLocation = new InPlaceLocation(id, locationId, roomNumber, seats);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats);
 
         // Assert
         Assert.NotNull(inPlaceLocation);
@@ -35,7 +35,7 @@ public class InPlaceLocation_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new InPlaceLocation(id, locationId, roomNumber, seats));
+            InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats));
 
         Assert.Equal("id", exception.ParamName);
         Assert.Contains("ID must be greater than or equal to zero", exception.Message);
@@ -51,7 +51,7 @@ public class InPlaceLocation_Tests
         var seats = 30;
 
         // Act
-        var inPlaceLocation = new InPlaceLocation(id, locationId, roomNumber, seats);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats);
 
         // Assert
         Assert.Equal(0, inPlaceLocation.Id);
@@ -68,7 +68,7 @@ public class InPlaceLocation_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new InPlaceLocation(id, locationId, roomNumber, seats));
+            InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats));
 
         Assert.Equal("locationId", exception.ParamName);
         Assert.Contains("Location ID must be greater than zero", exception.Message);
@@ -85,7 +85,7 @@ public class InPlaceLocation_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new InPlaceLocation(id, locationId, roomNumber, seats));
+            InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats));
 
         Assert.Equal("locationId", exception.ParamName);
         Assert.Contains("Location ID must be greater than zero", exception.Message);
@@ -102,7 +102,7 @@ public class InPlaceLocation_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new InPlaceLocation(id, locationId, roomNumber, seats));
+            InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats));
 
         Assert.Equal("roomNumber", exception.ParamName);
         Assert.Contains("Room number must be greater than zero", exception.Message);
@@ -119,7 +119,7 @@ public class InPlaceLocation_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new InPlaceLocation(id, locationId, roomNumber, seats));
+            InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats));
 
         Assert.Equal("roomNumber", exception.ParamName);
         Assert.Contains("Room number must be greater than zero", exception.Message);
@@ -136,7 +136,7 @@ public class InPlaceLocation_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new InPlaceLocation(id, locationId, roomNumber, seats));
+            InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats));
 
         Assert.Equal("seats", exception.ParamName);
         Assert.Contains("Seats must be greater than zero", exception.Message);
@@ -153,7 +153,7 @@ public class InPlaceLocation_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new InPlaceLocation(id, locationId, roomNumber, seats));
+            InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats));
 
         Assert.Equal("seats", exception.ParamName);
         Assert.Contains("Seats must be greater than zero", exception.Message);
@@ -169,7 +169,7 @@ public class InPlaceLocation_Tests
         int id, int locationId, int roomNumber, int seats)
     {
         // Act
-        var inPlaceLocation = new InPlaceLocation(id, locationId, roomNumber, seats);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats);
 
         // Assert
         Assert.Equal(id, inPlaceLocation.Id);
@@ -182,7 +182,7 @@ public class InPlaceLocation_Tests
     public void Properties_Should_Be_Initialized_Correctly()
     {
         // Arrange & Act
-        var inPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(1, 1, 101, 30);
 
         // Assert
         Assert.Equal(1, inPlaceLocation.Id);
@@ -195,8 +195,8 @@ public class InPlaceLocation_Tests
     public void Two_InPlaceLocations_With_Same_Values_Should_Have_Same_Property_Values()
     {
         // Arrange
-        var inPlaceLocation1 = new InPlaceLocation(1, 1, 101, 30);
-        var inPlaceLocation2 = new InPlaceLocation(1, 1, 101, 30);
+        var inPlaceLocation1 = InPlaceLocation.Reconstitute(1, 1, 101, 30);
+        var inPlaceLocation2 = InPlaceLocation.Reconstitute(1, 1, 101, 30);
 
         // Assert
         Assert.Equal(inPlaceLocation1.Id, inPlaceLocation2.Id);
@@ -215,7 +215,7 @@ public class InPlaceLocation_Tests
         var seats = 30;
 
         // Act
-        var inPlaceLocation = new InPlaceLocation(id, locationId, roomNumber, seats);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats);
 
         // Assert
         Assert.Equal(roomNumber, inPlaceLocation.RoomNumber);
@@ -231,7 +231,7 @@ public class InPlaceLocation_Tests
         var seats = 500;
 
         // Act
-        var inPlaceLocation = new InPlaceLocation(id, locationId, roomNumber, seats);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats);
 
         // Assert
         Assert.Equal(seats, inPlaceLocation.Seats);
@@ -247,7 +247,7 @@ public class InPlaceLocation_Tests
         var seats = 1;
 
         // Act
-        var inPlaceLocation = new InPlaceLocation(id, locationId, roomNumber, seats);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(id, locationId, roomNumber, seats);
 
         // Assert
         Assert.Equal(1, inPlaceLocation.Seats);
@@ -257,7 +257,7 @@ public class InPlaceLocation_Tests
     public void Id_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var inPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(1, 1, 101, 30);
 
         // Assert
         Assert.Equal(1, inPlaceLocation.Id);
@@ -269,7 +269,7 @@ public class InPlaceLocation_Tests
     public void LocationId_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var inPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(1, 1, 101, 30);
 
         // Assert
         Assert.Equal(1, inPlaceLocation.LocationId);
@@ -281,7 +281,7 @@ public class InPlaceLocation_Tests
     public void RoomNumber_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var inPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(1, 1, 101, 30);
 
         // Assert
         Assert.Equal(101, inPlaceLocation.RoomNumber);
@@ -293,7 +293,7 @@ public class InPlaceLocation_Tests
     public void Seats_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var inPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(1, 1, 101, 30);
 
         // Assert
         Assert.Equal(30, inPlaceLocation.Seats);
@@ -306,9 +306,9 @@ public class InPlaceLocation_Tests
     {
         // Arrange
         var locationId = 1;
-        var room1 = new InPlaceLocation(1, locationId, 101, 30);
-        var room2 = new InPlaceLocation(2, locationId, 102, 25);
-        var room3 = new InPlaceLocation(3, locationId, 103, 50);
+        var room1 = InPlaceLocation.Reconstitute(1, locationId, 101, 30);
+        var room2 = InPlaceLocation.Reconstitute(2, locationId, 102, 25);
+        var room3 = InPlaceLocation.Reconstitute(3, locationId, 103, 50);
 
         // Assert
         Assert.Equal(locationId, room1.LocationId);
@@ -323,8 +323,8 @@ public class InPlaceLocation_Tests
     {
         // Arrange
         var roomNumber = 101;
-        var room1 = new InPlaceLocation(1, 1, roomNumber, 30);
-        var room2 = new InPlaceLocation(2, 2, roomNumber, 25);
+        var room1 = InPlaceLocation.Reconstitute(1, 1, roomNumber, 30);
+        var room2 = InPlaceLocation.Reconstitute(2, 2, roomNumber, 25);
 
         // Assert
         Assert.Equal(roomNumber, room1.RoomNumber);
@@ -341,7 +341,7 @@ public class InPlaceLocation_Tests
     public void Constructor_Should_Accept_Various_Valid_Seat_Capacities(int seats)
     {
         // Act
-        var inPlaceLocation = new InPlaceLocation(1, 1, 101, seats);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(1, 1, 101, seats);
 
         // Assert
         Assert.Equal(seats, inPlaceLocation.Seats);
@@ -356,7 +356,7 @@ public class InPlaceLocation_Tests
     public void Constructor_Should_Accept_Various_Valid_Room_Numbers(int roomNumber)
     {
         // Act
-        var inPlaceLocation = new InPlaceLocation(1, 1, roomNumber, 30);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(1, 1, roomNumber, 30);
 
         // Assert
         Assert.Equal(roomNumber, inPlaceLocation.RoomNumber);
@@ -365,7 +365,7 @@ public class InPlaceLocation_Tests
     [Fact]
     public void Update_Should_Change_Values_When_Input_Is_Valid()
     {
-        var inPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(1, 1, 101, 30);
 
         inPlaceLocation.Update(2, 202, 45);
 
@@ -377,7 +377,7 @@ public class InPlaceLocation_Tests
     [Fact]
     public void Update_Should_Throw_ArgumentException_When_Seats_Is_Zero()
     {
-        var inPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(1, 1, 101, 30);
 
         var ex = Assert.Throws<ArgumentException>(() => inPlaceLocation.Update(1, 101, 0));
         Assert.Equal("seats", ex.ParamName);

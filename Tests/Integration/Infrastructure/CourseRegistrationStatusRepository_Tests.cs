@@ -14,7 +14,7 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
         var repo = new CourseRegistrationStatusRepository(context);
         var name = $"Status-{Guid.NewGuid():N}";
 
-        var created = await repo.AddAsync(new CourseRegistrationStatus(name), CancellationToken.None);
+        var created = await repo.AddAsync(CourseRegistrationStatus.Create(name), CancellationToken.None);
         var byName = await repo.GetCourseRegistrationStatusByNameAsync(name, CancellationToken.None);
 
         Assert.NotNull(byName);
@@ -84,9 +84,9 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRegistrationStatusRepository(context);
-        var created = await repo.AddAsync(new CourseRegistrationStatus($"Status-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(CourseRegistrationStatus.Create($"Status-{Guid.NewGuid():N}"), CancellationToken.None);
 
-        var updated = await repo.UpdateAsync(created.Id, new CourseRegistrationStatus(created.Id, "Renamed"), CancellationToken.None);
+        var updated = await repo.UpdateAsync(created.Id, CourseRegistrationStatus.Reconstitute(created.Id, "Renamed"), CancellationToken.None);
 
         Assert.NotNull(updated);
         Assert.Equal("Renamed", updated!.Name);
@@ -115,7 +115,7 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRegistrationStatusRepository(context);
-        var created = await repo.AddAsync(new CourseRegistrationStatus($"Status-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(CourseRegistrationStatus.Create($"Status-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var deleted = await repo.RemoveAsync(created.Id, CancellationToken.None);
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
@@ -131,7 +131,7 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
         var repo = new CourseRegistrationStatusRepository(context);
 
         await Assert.ThrowsAsync<DbUpdateException>(() =>
-            repo.AddAsync(new CourseRegistrationStatus("Pending"), CancellationToken.None));
+            repo.AddAsync(CourseRegistrationStatus.Create("Pending"), CancellationToken.None));
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class CourseRegistrationStatusRepository_Tests(SqliteInMemoryFixture fixt
         var repo = new CourseRegistrationStatusRepository(context);
 
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-            repo.UpdateAsync(999_999, new CourseRegistrationStatus(999_999, "Missing"), CancellationToken.None));
+            repo.UpdateAsync(999_999, CourseRegistrationStatus.Reconstitute(999_999, "Missing"), CancellationToken.None));
     }
 
     [Fact]

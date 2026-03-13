@@ -16,7 +16,7 @@ public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new PaymentMethodRepository(context);
         var name = $"Method-{Guid.NewGuid():N}";
 
-        var created = await repo.AddAsync(new PaymentMethodModel(0, name), CancellationToken.None);
+        var created = await repo.AddAsync(PaymentMethodModel.Reconstitute(0, name), CancellationToken.None);
         var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
         var byName = await repo.GetByNameAsync(name, CancellationToken.None);
 
@@ -37,8 +37,8 @@ public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new PaymentMethodRepository(context);
-        var first = await repo.AddAsync(new PaymentMethodModel(0, $"MethodA-{Guid.NewGuid():N}"), CancellationToken.None);
-        var second = await repo.AddAsync(new PaymentMethodModel(0, $"MethodB-{Guid.NewGuid():N}"), CancellationToken.None);
+        var first = await repo.AddAsync(PaymentMethodModel.Reconstitute(0, $"MethodA-{Guid.NewGuid():N}"), CancellationToken.None);
+        var second = await repo.AddAsync(PaymentMethodModel.Reconstitute(0, $"MethodB-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var all = await repo.GetAllAsync(CancellationToken.None);
         var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
@@ -54,9 +54,9 @@ public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new PaymentMethodRepository(context);
-        var created = await repo.AddAsync(new PaymentMethodModel(0, $"Method-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(PaymentMethodModel.Reconstitute(0, $"Method-{Guid.NewGuid():N}"), CancellationToken.None);
 
-        var updated = await repo.UpdateAsync(created.Id, new PaymentMethodModel(created.Id, "Updated"), CancellationToken.None);
+        var updated = await repo.UpdateAsync(created.Id, PaymentMethodModel.Reconstitute(created.Id, "Updated"), CancellationToken.None);
 
         Assert.NotNull(updated);
         Assert.Equal("Updated", updated!.Name);
@@ -71,20 +71,20 @@ public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
         await using var context = fixture.CreateDbContext();
         var paymentMethodRepo = new PaymentMethodRepository(context);
         var paymentMethod = await paymentMethodRepo.AddAsync(
-            new PaymentMethodModel(0, $"Method-{Guid.NewGuid():N}"),
+            PaymentMethodModel.Reconstitute(0, $"Method-{Guid.NewGuid():N}"),
             CancellationToken.None);
         var participant = await RepositoryTestDataHelper.CreateParticipantAsync(context);
         var courseEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
         var registrationRepo = new CourseRegistrationRepository(context);
 
         await registrationRepo.AddAsync(
-            new CourseRegistration(
+            CourseRegistration.Reconstitute(
                 Guid.NewGuid(),
                 participant.Id,
                 courseEvent.Id,
                 DateTime.UtcNow,
                 CourseRegistrationStatus.Pending,
-                new PaymentMethodModel(paymentMethod.Id, paymentMethod.Name)),
+                PaymentMethodModel.Reconstitute(paymentMethod.Id, paymentMethod.Name)),
             CancellationToken.None);
 
         var inUse = await paymentMethodRepo.IsInUseAsync(paymentMethod.Id, CancellationToken.None);
@@ -97,7 +97,7 @@ public class PaymentMethodRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new PaymentMethodRepository(context);
-        var created = await repo.AddAsync(new PaymentMethodModel(0, $"Method-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(PaymentMethodModel.Reconstitute(0, $"Method-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var removed = await repo.RemoveAsync(created.Id, CancellationToken.None);
         var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);

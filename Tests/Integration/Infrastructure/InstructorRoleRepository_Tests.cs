@@ -14,7 +14,7 @@ public class InstructorRoleRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new InstructorRoleRepository(context);
         var roleName = $"Trainer-{Guid.NewGuid():N}";
 
-        var created = await repo.AddAsync(new InstructorRole(roleName), CancellationToken.None);
+        var created = await repo.AddAsync(InstructorRole.Create(roleName), CancellationToken.None);
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
 
         Assert.NotNull(loaded);
@@ -34,7 +34,7 @@ public class InstructorRoleRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new InstructorRoleRepository(context);
-        var created = await repo.AddAsync(new InstructorRole($"Role-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(InstructorRole.Create($"Role-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var all = await repo.GetAllAsync(CancellationToken.None);
 
@@ -46,8 +46,8 @@ public class InstructorRoleRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new InstructorRoleRepository(context);
-        var first = await repo.AddAsync(new InstructorRole($"RoleA-{Guid.NewGuid():N}"), CancellationToken.None);
-        var second = await repo.AddAsync(new InstructorRole($"RoleB-{Guid.NewGuid():N}"), CancellationToken.None);
+        var first = await repo.AddAsync(InstructorRole.Create($"RoleA-{Guid.NewGuid():N}"), CancellationToken.None);
+        var second = await repo.AddAsync(InstructorRole.Create($"RoleB-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var all = await repo.GetAllAsync(CancellationToken.None);
         var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
@@ -63,9 +63,9 @@ public class InstructorRoleRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new InstructorRoleRepository(context);
-        var created = await repo.AddAsync(new InstructorRole($"Role-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(InstructorRole.Create($"Role-{Guid.NewGuid():N}"), CancellationToken.None);
 
-        var updated = await repo.UpdateAsync(created.Id, new InstructorRole(created.Id, "UpdatedRole"), CancellationToken.None);
+        var updated = await repo.UpdateAsync(created.Id, InstructorRole.Reconstitute(created.Id, "UpdatedRole"), CancellationToken.None);
 
         Assert.NotNull(updated);
         Assert.Equal("UpdatedRole", updated!.RoleName);
@@ -82,7 +82,7 @@ public class InstructorRoleRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new InstructorRoleRepository(context);
-        var created = await repo.AddAsync(new InstructorRole($"Role-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(InstructorRole.Create($"Role-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var deleted = await repo.RemoveAsync(created.Id, CancellationToken.None);
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);

@@ -10,7 +10,7 @@ public class CourseWithEvents_Tests
     public void Constructor_Should_Create_CourseWithEvents_When_Parameters_Are_Valid()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>();
 
         // Act
@@ -40,7 +40,7 @@ public class CourseWithEvents_Tests
     public void Constructor_Should_Throw_ArgumentNullException_When_Events_Is_Null()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         IReadOnlyList<CourseEvent> events = null!;
 
         // Act & Assert
@@ -54,7 +54,7 @@ public class CourseWithEvents_Tests
     public void Constructor_Should_Accept_Empty_Events_List()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>();
 
         // Act
@@ -70,11 +70,11 @@ public class CourseWithEvents_Tests
     {
         // Arrange
         var courseId = Guid.NewGuid();
-        var course = new Course(courseId, "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(courseId, "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>
         {
-            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, new VenueType(1, "InPerson")),
-            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 1500m, 25, 1, new VenueType(1, "InPerson"))
+            CourseEvent.Reconstitute(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, VenueType.Reconstitute(1, "InPerson")),
+            CourseEvent.Reconstitute(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(1), 1500m, 25, 1, VenueType.Reconstitute(1, "InPerson"))
         };
 
         // Act
@@ -90,10 +90,10 @@ public class CourseWithEvents_Tests
     {
         // Arrange
         var courseId = Guid.NewGuid();
-        var course = new Course(courseId, "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(courseId, "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>
         {
-            new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, new VenueType(1, "InPerson"))
+            CourseEvent.Reconstitute(Guid.NewGuid(), courseId, DateTime.UtcNow, 1000m, 20, 1, VenueType.Reconstitute(1, "InPerson"))
         };
 
         // Act
@@ -110,7 +110,7 @@ public class CourseWithEvents_Tests
     public void Course_Property_Should_Have_Init_Accessor()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>();
 
         // Act
@@ -127,7 +127,7 @@ public class CourseWithEvents_Tests
     public void Events_Property_Should_Have_Init_Accessor()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>();
 
         // Act
@@ -145,12 +145,12 @@ public class CourseWithEvents_Tests
     {
         // Arrange
         var courseId = Guid.NewGuid();
-        var course = new Course(courseId, "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(courseId, "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>();
 
         for (int i = 0; i < 100; i++)
         {
-            events.Add(new CourseEvent(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(i), 1000m + i, 20, 1, new VenueType(1, "InPerson")));
+            events.Add(CourseEvent.Reconstitute(Guid.NewGuid(), courseId, DateTime.UtcNow.AddDays(i), 1000m + i, 20, 1, VenueType.Reconstitute(1, "InPerson")));
         }
 
         // Act
@@ -164,10 +164,10 @@ public class CourseWithEvents_Tests
     public void Constructor_Should_Throw_ArgumentException_When_Event_Belongs_To_Another_Course()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var events = new List<CourseEvent>
         {
-            new CourseEvent(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 20, 1, new VenueType(1, "InPerson"))
+            CourseEvent.Reconstitute(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, 1000m, 20, 1, VenueType.Reconstitute(1, "InPerson"))
         };
 
         // Act & Assert
@@ -179,7 +179,7 @@ public class CourseWithEvents_Tests
     public void Two_Instances_With_Same_Course_Should_Have_Same_Course_Reference()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var events1 = new List<CourseEvent>();
         var events2 = new List<CourseEvent>();
 

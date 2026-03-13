@@ -6,9 +6,9 @@ public class VenueType_Tests
 {
     public static IEnumerable<object[]> ValidVenueTypes()
     {
-        yield return [new VenueType(1, "InPerson")];
-        yield return [new VenueType(2, "Online")];
-        yield return [new VenueType(3, "Hybrid")];
+        yield return [VenueType.Reconstitute(1, "InPerson")];
+        yield return [VenueType.Reconstitute(2, "Online")];
+        yield return [VenueType.Reconstitute(3, "Hybrid")];
     }
 
     [Theory]
@@ -22,6 +22,6 @@ public class VenueType_Tests
     [Fact]
     public void Constructor_Should_Throw_When_Id_Is_Invalid()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new VenueType(0, "InPerson"));
+        Assert.Throws<ArgumentOutOfRangeException>(() => VenueType.Reconstitute(0, "InPerson"));
     }
 }

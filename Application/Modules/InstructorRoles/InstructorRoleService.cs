@@ -26,7 +26,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 };
             }
 
-            var role = new InstructorRole(input.RoleName);
+            var role = InstructorRole.Create(input.RoleName);
             var created = await _repository.AddAsync(role, cancellationToken);
             _cache.ResetEntity(created);
             _cache.SetEntity(created);

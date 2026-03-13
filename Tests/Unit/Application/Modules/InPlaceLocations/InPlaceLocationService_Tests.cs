@@ -16,7 +16,7 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
-        var expectedInPlaceLocation = new InPlaceLocation(1, 1, 101, 30);
+        var expectedInPlaceLocation = InPlaceLocation.Reconstitute(1, 1, 101, 30);
 
         mockRepo.AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
             .Returns(expectedInPlaceLocation);
@@ -211,7 +211,7 @@ public class InPlaceLocationService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
-        var expectedInPlaceLocation = new InPlaceLocation(1, locationId, roomNumber, seats);
+        var expectedInPlaceLocation = InPlaceLocation.Reconstitute(1, locationId, roomNumber, seats);
 
         mockRepo.AddAsync(Arg.Any<InPlaceLocation>(), Arg.Any<CancellationToken>())
             .Returns(expectedInPlaceLocation);
@@ -249,9 +249,9 @@ public class InPlaceLocationService_Tests
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocations = new List<InPlaceLocation>
         {
-            new InPlaceLocation(1, 1, 101, 30),
-            new InPlaceLocation(2, 1, 102, 25),
-            new InPlaceLocation(3, 2, 201, 50)
+            InPlaceLocation.Reconstitute(1, 1, 101, 30),
+            InPlaceLocation.Reconstitute(2, 1, 102, 25),
+            InPlaceLocation.Reconstitute(3, 2, 201, 50)
         };
 
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
@@ -323,7 +323,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
-        var inPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
+        var inPlaceLocation = InPlaceLocation.Reconstitute(inPlaceLocationId, 1, 101, 30);
 
         mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(inPlaceLocation);
@@ -439,8 +439,8 @@ public class InPlaceLocationService_Tests
         var locationId = 1;
         var inPlaceLocations = new List<InPlaceLocation>
         {
-            new InPlaceLocation(1, locationId, 101, 30),
-            new InPlaceLocation(2, locationId, 102, 25)
+            InPlaceLocation.Reconstitute(1, locationId, 101, 30),
+            InPlaceLocation.Reconstitute(2, locationId, 102, 25)
         };
 
         mockRepo.GetInPlaceLocationsByLocationIdAsync(locationId, Arg.Any<CancellationToken>())
@@ -552,8 +552,8 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
-        var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
-        var updatedInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 35);
+        var existingInPlaceLocation = InPlaceLocation.Reconstitute(inPlaceLocationId, 1, 101, 30);
+        var updatedInPlaceLocation = InPlaceLocation.Reconstitute(inPlaceLocationId, 1, 101, 35);
 
         mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
@@ -625,7 +625,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new InPlaceLocation(1, 1, 101, 30));
+            .Returns(InPlaceLocation.Reconstitute(1, 1, 101, 30));
         var service = new InPlaceLocationService(mockRepo);
         var input = new UpdateInPlaceLocationInput(1, 0, 101, 30);
 
@@ -645,7 +645,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new InPlaceLocation(1, 1, 101, 30));
+            .Returns(InPlaceLocation.Reconstitute(1, 1, 101, 30));
         var service = new InPlaceLocationService(mockRepo);
         var input = new UpdateInPlaceLocationInput(1, 1, 0, 30);
 
@@ -665,7 +665,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new InPlaceLocation(1, 1, 101, 30));
+            .Returns(InPlaceLocation.Reconstitute(1, 1, 101, 30));
         var service = new InPlaceLocationService(mockRepo);
         var input = new UpdateInPlaceLocationInput(1, 1, 101, 0);
 
@@ -710,7 +710,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
-        var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
+        var existingInPlaceLocation = InPlaceLocation.Reconstitute(inPlaceLocationId, 1, 101, 30);
 
         mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
@@ -738,7 +738,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
-        var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
+        var existingInPlaceLocation = InPlaceLocation.Reconstitute(inPlaceLocationId, 1, 101, 30);
 
         mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
@@ -769,7 +769,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
-        var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
+        var existingInPlaceLocation = InPlaceLocation.Reconstitute(inPlaceLocationId, 1, 101, 30);
 
         mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
@@ -862,7 +862,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
-        var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
+        var existingInPlaceLocation = InPlaceLocation.Reconstitute(inPlaceLocationId, 1, 101, 30);
 
         mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
@@ -891,7 +891,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
-        var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
+        var existingInPlaceLocation = InPlaceLocation.Reconstitute(inPlaceLocationId, 1, 101, 30);
 
         mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);
@@ -921,7 +921,7 @@ public class InPlaceLocationService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInPlaceLocationRepository>();
         var inPlaceLocationId = 1;
-        var existingInPlaceLocation = new InPlaceLocation(inPlaceLocationId, 1, 101, 30);
+        var existingInPlaceLocation = InPlaceLocation.Reconstitute(inPlaceLocationId, 1, 101, 30);
 
         mockRepo.GetByIdAsync(inPlaceLocationId, Arg.Any<CancellationToken>())
             .Returns(existingInPlaceLocation);

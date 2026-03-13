@@ -15,8 +15,8 @@ public class InstructorRepository(CoursesOnlineDbContext context)
         if (entity.InstructorRole == null)
             throw new InvalidOperationException("Instructor role must be loaded from database.");
 
-        var role = new InstructorRole(entity.InstructorRole.Id, entity.InstructorRole.RoleName);
-        return new Instructor(entity.Id, entity.Name, role);
+        var role = InstructorRole.Reconstitute(entity.InstructorRole.Id, entity.InstructorRole.RoleName);
+        return Instructor.Reconstitute(entity.Id, entity.Name, role);
     }
 
     protected override InstructorEntity ToEntity(Instructor instructor)
@@ -39,8 +39,8 @@ public class InstructorRepository(CoursesOnlineDbContext context)
         _context.Instructors.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var role = new InstructorRole(roleExists.Id, roleExists.RoleName);
-        return new Instructor(entity.Id, entity.Name, role);
+        var role = InstructorRole.Reconstitute(roleExists.Id, roleExists.RoleName);
+        return Instructor.Reconstitute(entity.Id, entity.Name, role);
     }
 
     public override async Task<bool> RemoveAsync(Guid instructorId, CancellationToken cancellationToken)
@@ -91,8 +91,8 @@ public class InstructorRepository(CoursesOnlineDbContext context)
         entity.InstructorRoleId = instructor.InstructorRoleId;
         await _context.SaveChangesAsync(cancellationToken);
 
-        var role = new InstructorRole(roleEntity.Id, roleEntity.RoleName);
-        return new Instructor(entity.Id, entity.Name, role);
+        var role = InstructorRole.Reconstitute(roleEntity.Id, roleEntity.RoleName);
+        return Instructor.Reconstitute(entity.Id, entity.Name, role);
     }
 
     public async Task<bool> HasCourseEventsAsync(Guid instructorId, CancellationToken cancellationToken)

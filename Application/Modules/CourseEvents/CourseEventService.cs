@@ -67,8 +67,7 @@ public class CourseEventService(
                 };
             }
 
-            var newCourseEvent = new CourseEvent(
-                Guid.NewGuid(),
+            var newCourseEvent = CourseEvent.Create(
                 courseEvent.CourseId,
                 courseEvent.EventDate,
                 courseEvent.Price,

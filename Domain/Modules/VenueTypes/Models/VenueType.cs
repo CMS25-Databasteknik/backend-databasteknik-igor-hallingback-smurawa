@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Backend.Domain.Modules.VenueTypes.Models;
 
 public sealed class VenueType : IEquatable<VenueType>
@@ -5,12 +7,20 @@ public sealed class VenueType : IEquatable<VenueType>
     public int Id { get; }
     public string Name { get; private set; } = string.Empty;
 
-    public VenueType(int id, string name)
+    [JsonConstructor]
+    private VenueType(int id, string name)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-
         Id = id;
         SetValues(name);
+    }
+
+    public static VenueType Create(string name)
+        => new(0, name);
+
+    public static VenueType Reconstitute(int id, string name)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+        return new(id, name);
     }
 
     public void Update(string name)

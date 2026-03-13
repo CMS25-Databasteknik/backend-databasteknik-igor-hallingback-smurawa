@@ -25,8 +25,7 @@ public class InPlaceLocationService(IInPlaceLocationRepository inPlaceLocationRe
                 };
             }
 
-            var newInPlaceLocation = new InPlaceLocation(
-                0,
+            var newInPlaceLocation = InPlaceLocation.Create(
                 inPlaceLocation.LocationId,
                 inPlaceLocation.RoomNumber,
                 inPlaceLocation.Seats

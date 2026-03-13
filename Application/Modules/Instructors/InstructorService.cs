@@ -39,7 +39,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
                 };
             }
 
-            var newInstructor = new Instructor(Guid.NewGuid(), instructor.Name, role);
+            var newInstructor = Instructor.Create(instructor.Name, role);
 
             var createdInstructor = await _instructorRepository.AddAsync(newInstructor, cancellationToken);
 

@@ -21,7 +21,7 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new ParticipantRepository(context);
-        var input = new Participant(Guid.NewGuid(), "Ada", "Lovelace", $"ada-{Guid.NewGuid():N}@example.com", "123456789");
+        var input = Participant.Reconstitute(Guid.NewGuid(), "Ada", "Lovelace", $"ada-{Guid.NewGuid():N}@example.com", "123456789");
 
         var created = await repo.AddAsync(
             input,
@@ -94,7 +94,7 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
 
         var updated = await repo.UpdateAsync(
             participant.Id,
-            new Participant(participant.Id, "Updated", "Name", $"updated-{Guid.NewGuid():N}@example.com", "999999"),
+            Participant.Reconstitute(participant.Id, "Updated", "Name", $"updated-{Guid.NewGuid():N}@example.com", "999999"),
             CancellationToken.None);
 
         Assert.NotNull(updated);
@@ -164,19 +164,19 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new ParticipantRepository(context);
 
         var created = await repo.AddAsync(
-            new Participant(
+            Participant.Reconstitute(
                 Guid.NewGuid(),
                 "Billing",
                 "Contact",
                 $"billing-{Guid.NewGuid():N}@example.com",
                 "555123",
-                new ParticipantContactType(2, "Billing")),
+                ParticipantContactType.Reconstitute(2, "Billing")),
             CancellationToken.None);
 
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
 
         Assert.NotNull(loaded);
-        Assert.Equal(new ParticipantContactType(2, "Billing"), loaded!.ContactType);
+        Assert.Equal(ParticipantContactType.Reconstitute(2, "Billing"), loaded!.ContactType);
     }
 
     [Fact]

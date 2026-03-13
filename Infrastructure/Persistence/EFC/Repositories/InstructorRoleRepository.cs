@@ -10,7 +10,7 @@ public class InstructorRoleRepository(CoursesOnlineDbContext context)
     : RepositoryBase<InstructorRole, int, InstructorRoleEntity, CoursesOnlineDbContext>(context), IInstructorRoleRepository
 {
     protected override InstructorRole ToModel(InstructorRoleEntity entity) =>
-        new(entity.Id, entity.RoleName);
+        InstructorRole.Reconstitute(entity.Id, entity.RoleName);
 
     protected override InstructorRoleEntity ToEntity(InstructorRole role)
         => new()

@@ -18,10 +18,10 @@ public class CourseRegistrationRepository(CoursesOnlineDbContext context)
         var paymentMethodEntity = entity.PaymentMethod
             ?? throw new InvalidOperationException("Payment method must be loaded from database.");
 
-        var status = new CourseRegistrationStatus(statusEntity.Id, statusEntity.Name);
-        var paymentMethod = new PaymentMethod(paymentMethodEntity.Id, paymentMethodEntity.Name);
+        var status = CourseRegistrationStatus.Reconstitute(statusEntity.Id, statusEntity.Name);
+        var paymentMethod = PaymentMethod.Reconstitute(paymentMethodEntity.Id, paymentMethodEntity.Name);
 
-        return new CourseRegistration(
+        return CourseRegistration.Reconstitute(
             entity.Id,
             entity.ParticipantId,
             entity.CourseEventId,

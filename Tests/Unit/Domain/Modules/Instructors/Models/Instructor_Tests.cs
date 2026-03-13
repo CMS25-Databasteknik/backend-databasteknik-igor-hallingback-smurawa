@@ -10,9 +10,9 @@ public class Instructor_Tests
     {
         var id = Guid.NewGuid();
         var name = "John Doe";
-        var role = new InstructorRole(1, "Lead");
+        var role = InstructorRole.Reconstitute(1, "Lead");
 
-        var instructor = new Instructor(id, name, role);
+        var instructor = Instructor.Reconstitute(id, name, role);
 
         Assert.Equal(id, instructor.Id);
         Assert.Equal(name, instructor.Name);
@@ -23,7 +23,7 @@ public class Instructor_Tests
     [Fact]
     public void Constructor_Should_Throw_When_Id_Is_Empty()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new Instructor(Guid.Empty, "Jane", new InstructorRole(1, "Lead")));
+        var ex = Assert.Throws<ArgumentException>(() => Instructor.Reconstitute(Guid.Empty, "Jane", InstructorRole.Reconstitute(1, "Lead")));
         Assert.Equal("id", ex.ParamName);
     }
 
@@ -33,22 +33,22 @@ public class Instructor_Tests
     [InlineData("   ")]
     public void Constructor_Should_Throw_When_Name_Is_Invalid(string? name)
     {
-        var ex = Assert.Throws<ArgumentException>(() => new Instructor(Guid.NewGuid(), name!, new InstructorRole(1, "Lead")));
+        var ex = Assert.Throws<ArgumentException>(() => Instructor.Reconstitute(Guid.NewGuid(), name!, InstructorRole.Reconstitute(1, "Lead")));
         Assert.Equal("name", ex.ParamName);
     }
 
     [Fact]
     public void Constructor_Should_Throw_When_Role_Is_Null()
     {
-        Assert.Throws<ArgumentNullException>(() => new Instructor(Guid.NewGuid(), "Jane", null!));
+        Assert.Throws<ArgumentNullException>(() => Instructor.Reconstitute(Guid.NewGuid(), "Jane", null!));
     }
 
     [Fact]
     public void Constructor_Should_Throw_When_Role_Id_Is_Zero()
     {
-        var role = new InstructorRole(0, "Lead");
+        var role = InstructorRole.Reconstitute(0, "Lead");
 
-        var ex = Assert.Throws<ArgumentException>(() => new Instructor(Guid.NewGuid(), "Jane", role));
+        var ex = Assert.Throws<ArgumentException>(() => Instructor.Reconstitute(Guid.NewGuid(), "Jane", role));
         Assert.Equal("role", ex.ParamName);
     }
 
@@ -56,9 +56,9 @@ public class Instructor_Tests
     public void Constructor_Should_Trim_Name()
     {
         var id = Guid.NewGuid();
-        var role = new InstructorRole(1, "Lead");
+        var role = InstructorRole.Reconstitute(1, "Lead");
 
-        var instructor = new Instructor(id, "  Jane  ", role);
+        var instructor = Instructor.Reconstitute(id, "  Jane  ", role);
 
         Assert.Equal("Jane", instructor.Name);
     }
@@ -66,8 +66,8 @@ public class Instructor_Tests
     [Fact]
     public void Update_Should_Change_Name_And_Role_When_Input_Is_Valid()
     {
-        var instructor = new Instructor(Guid.NewGuid(), "Jane", new InstructorRole(1, "Lead"));
-        var newRole = new InstructorRole(2, "Assistant");
+        var instructor = Instructor.Reconstitute(Guid.NewGuid(), "Jane", InstructorRole.Reconstitute(1, "Lead"));
+        var newRole = InstructorRole.Reconstitute(2, "Assistant");
 
         instructor.Update("John", newRole);
 
@@ -79,8 +79,8 @@ public class Instructor_Tests
     [Fact]
     public void Update_Should_Throw_When_Role_Id_Is_Zero()
     {
-        var instructor = new Instructor(Guid.NewGuid(), "Jane", new InstructorRole(1, "Lead"));
-        var invalidRole = new InstructorRole(0, "Assistant");
+        var instructor = Instructor.Reconstitute(Guid.NewGuid(), "Jane", InstructorRole.Reconstitute(1, "Lead"));
+        var invalidRole = InstructorRole.Reconstitute(0, "Assistant");
 
         var ex = Assert.Throws<ArgumentException>(() => instructor.Update("John", invalidRole));
         Assert.Equal("role", ex.ParamName);

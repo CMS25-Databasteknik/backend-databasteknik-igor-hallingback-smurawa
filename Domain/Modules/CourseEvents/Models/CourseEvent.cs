@@ -1,6 +1,7 @@
 using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Backend.Domain.Modules.CourseEvents.Models;
 
@@ -16,7 +17,8 @@ public sealed class CourseEvent
     public CourseEventType CourseEventType { get; private set; }
     public VenueType VenueType { get; private set; }
 
-    public CourseEvent(
+    [JsonConstructor]
+    private CourseEvent(
         Guid id,
         Guid courseId,
         DateTime eventDate,
@@ -33,6 +35,29 @@ public sealed class CourseEvent
         Id = id;
         SetValues(courseId, eventDate, price, seats, courseEventTypeId, venueType, courseEventType, resolvedVenueType);
     }
+
+    public static CourseEvent Create(
+        Guid courseId,
+        DateTime eventDate,
+        decimal price,
+        int seats,
+        int courseEventTypeId,
+        VenueType venueType,
+        CourseEventType? courseEventType = null,
+        VenueType? resolvedVenueType = null)
+        => new(Guid.NewGuid(), courseId, eventDate, price, seats, courseEventTypeId, venueType, courseEventType, resolvedVenueType);
+
+    public static CourseEvent Reconstitute(
+        Guid id,
+        Guid courseId,
+        DateTime eventDate,
+        decimal price,
+        int seats,
+        int courseEventTypeId,
+        VenueType venueType,
+        CourseEventType? courseEventType = null,
+        VenueType? resolvedVenueType = null)
+        => new(id, courseId, eventDate, price, seats, courseEventTypeId, venueType, courseEventType, resolvedVenueType);
 
     public void Update(
         Guid courseId,
@@ -83,7 +108,7 @@ public sealed class CourseEvent
         Seats = seats;
         CourseEventTypeId = courseEventTypeId;
         VenueTypeId = venueType.Id;
-        CourseEventType = courseEventType ?? new CourseEventType(courseEventTypeId, $"Type {courseEventTypeId}");
-        VenueType = resolvedVenueType ?? new VenueType(venueType.Id, venueType.Name);
+        CourseEventType = courseEventType ?? CourseEventType.Reconstitute(courseEventTypeId, $"Type {courseEventTypeId}");
+        VenueType = resolvedVenueType ?? VenueType.Reconstitute(venueType.Id, venueType.Name);
     }
 }

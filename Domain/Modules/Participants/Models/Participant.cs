@@ -1,4 +1,5 @@
 using Backend.Domain.Modules.ParticipantContactTypes.Models;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Backend.Domain.Modules.Participants.Models;
@@ -12,7 +13,8 @@ public sealed class Participant
     public string PhoneNumber { get; private set; } = string.Empty;
     public ParticipantContactType ContactType { get; private set; } = null!;
 
-    public Participant(
+    [JsonConstructor]
+    private Participant(
         Guid id,
         string firstName,
         string lastName,
@@ -26,6 +28,23 @@ public sealed class Participant
         Id = id;
         SetValues(firstName, lastName, email, phoneNumber, contactType);
     }
+
+    public static Participant Create(
+        string firstName,
+        string lastName,
+        string email,
+        string phoneNumber,
+        ParticipantContactType? contactType = null)
+        => new(Guid.NewGuid(), firstName, lastName, email, phoneNumber, contactType);
+
+    public static Participant Reconstitute(
+        Guid id,
+        string firstName,
+        string lastName,
+        string email,
+        string phoneNumber,
+        ParticipantContactType? contactType = null)
+        => new(id, firstName, lastName, email, phoneNumber, contactType);
 
     public void Update(
         string firstName,
@@ -64,7 +83,7 @@ public sealed class Participant
         if (string.IsNullOrWhiteSpace(phoneNumber))
             throw new ArgumentException("Phone number cannot be empty or whitespace.", nameof(phoneNumber));
 
-        var resolvedContactType = contactType ?? new ParticipantContactType(1, "Primary");
+        var resolvedContactType = contactType ?? ParticipantContactType.Reconstitute(1, "Primary");
 
         FirstName = firstName.Trim();
         LastName = lastName.Trim();

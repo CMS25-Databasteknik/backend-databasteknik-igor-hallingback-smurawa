@@ -12,7 +12,7 @@ public class LocationRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new LocationRepository(context);
-        var input = new Location(0, "Test Street 1", "12345", "Test City");
+        var input = Location.Reconstitute(0, "Test Street 1", "12345", "Test City");
 
         var created = await repo.AddAsync(input, CancellationToken.None);
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
@@ -38,7 +38,7 @@ public class LocationRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new LocationRepository(context);
-        var created = await repo.AddAsync(new Location(0, $"Street-{Guid.NewGuid():N}", "54321", "Town"), CancellationToken.None);
+        var created = await repo.AddAsync(Location.Reconstitute(0, $"Street-{Guid.NewGuid():N}", "54321", "Town"), CancellationToken.None);
 
         var all = await repo.GetAllAsync(CancellationToken.None);
 
@@ -50,8 +50,8 @@ public class LocationRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new LocationRepository(context);
-        var first = await repo.AddAsync(new Location(0, $"StreetA-{Guid.NewGuid():N}", "11111", "A"), CancellationToken.None);
-        var second = await repo.AddAsync(new Location(0, $"StreetB-{Guid.NewGuid():N}", "22222", "B"), CancellationToken.None);
+        var first = await repo.AddAsync(Location.Reconstitute(0, $"StreetA-{Guid.NewGuid():N}", "11111", "A"), CancellationToken.None);
+        var second = await repo.AddAsync(Location.Reconstitute(0, $"StreetB-{Guid.NewGuid():N}", "22222", "B"), CancellationToken.None);
 
         var all = await repo.GetAllAsync(CancellationToken.None);
         var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
@@ -67,9 +67,9 @@ public class LocationRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new LocationRepository(context);
-        var created = await repo.AddAsync(new Location(0, $"Street-{Guid.NewGuid():N}", "54321", "Town"), CancellationToken.None);
+        var created = await repo.AddAsync(Location.Reconstitute(0, $"Street-{Guid.NewGuid():N}", "54321", "Town"), CancellationToken.None);
 
-        var updated = await repo.UpdateAsync(created.Id, new Location(created.Id, "New Street", "11111", "New City"), CancellationToken.None);
+        var updated = await repo.UpdateAsync(created.Id, Location.Reconstitute(created.Id, "New Street", "11111", "New City"), CancellationToken.None);
 
         Assert.NotNull(updated);
         Assert.Equal("New City", updated!.City);
@@ -101,7 +101,7 @@ public class LocationRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new LocationRepository(context);
-        var created = await repo.AddAsync(new Location(0, $"Street-{Guid.NewGuid():N}", "54321", "Town"), CancellationToken.None);
+        var created = await repo.AddAsync(Location.Reconstitute(0, $"Street-{Guid.NewGuid():N}", "54321", "Town"), CancellationToken.None);
 
         var deleted = await repo.RemoveAsync(created.Id, CancellationToken.None);
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);

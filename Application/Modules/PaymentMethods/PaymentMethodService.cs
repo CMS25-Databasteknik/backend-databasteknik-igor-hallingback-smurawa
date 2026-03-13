@@ -23,7 +23,7 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
             if (existing is not null)
                 return new PaymentMethodResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "A payment method with the same name already exists." };
 
-            var created = await _repository.AddAsync(new PaymentMethodModel(0, input.Name), cancellationToken);
+            var created = await _repository.AddAsync(PaymentMethodModel.Create(input.Name), cancellationToken);
             _cache.ResetEntity(created);
             _cache.SetEntity(created);
             return new PaymentMethodResult { Success = true, Result = created, Message = "Payment method created successfully." };

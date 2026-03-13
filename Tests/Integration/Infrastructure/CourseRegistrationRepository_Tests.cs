@@ -25,13 +25,13 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         var courseEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
         var repo = new CourseRegistrationRepository(context);
 
-        var input = new CourseRegistration(
+        var input = CourseRegistration.Reconstitute(
             Guid.NewGuid(),
             participant.Id,
             courseEvent.Id,
             DateTime.UtcNow,
             CourseRegistrationStatus.Pending,
-            new PaymentMethod(1, "Card"));
+            PaymentMethod.Reconstitute(1, "Card"));
 
         var created = await repo.AddAsync(input, CancellationToken.None);
         var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
@@ -41,7 +41,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal(participant.Id, byId!.ParticipantId);
         Assert.Equal(courseEvent.Id, byId.CourseEventId);
         Assert.Equal(CourseRegistrationStatus.Pending.Id, byId.Status.Id);
-        Assert.Equal(new PaymentMethod(1, "Card"), byId.PaymentMethod);
+        Assert.Equal(PaymentMethod.Reconstitute(1, "Card"), byId.PaymentMethod);
 
         var persisted = await context.CourseRegistrations
             .AsNoTracking()
@@ -51,7 +51,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal(participant.Id, persisted.ParticipantId);
         Assert.Equal(courseEvent.Id, persisted.CourseEventId);
         Assert.Equal(CourseRegistrationStatus.Pending.Id, persisted.CourseRegistrationStatusId);
-        Assert.Equal(new PaymentMethod(1, "Card").Id, persisted.PaymentMethodId);
+        Assert.Equal(PaymentMethod.Reconstitute(1, "Card").Id, persisted.PaymentMethodId);
     }
 
     [Fact]
@@ -65,13 +65,13 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new CourseRegistrationRepository(context);
 
         var second = await repo.CreateRegistrationWithSeatCheckAsync(
-            new CourseRegistration(
+            CourseRegistration.Reconstitute(
                 Guid.NewGuid(),
                 secondParticipant.Id,
                 courseEvent.Id,
                 DateTime.UtcNow,
                 CourseRegistrationStatus.Pending,
-                new PaymentMethod(1, "Card")),
+                PaymentMethod.Reconstitute(1, "Card")),
             CancellationToken.None);
 
         Assert.Null(second);
@@ -105,23 +105,23 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new CourseRegistrationRepository(context);
 
         var first = await repo.AddAsync(
-            new CourseRegistration(
+            CourseRegistration.Reconstitute(
                 Guid.NewGuid(),
                 participant.Id,
                 courseEvent.Id,
                 DateTime.UtcNow.AddMinutes(-5),
                 CourseRegistrationStatus.Pending,
-                new PaymentMethod(1, "Card")),
+                PaymentMethod.Reconstitute(1, "Card")),
             CancellationToken.None);
 
         var second = await repo.AddAsync(
-            new CourseRegistration(
+            CourseRegistration.Reconstitute(
                 Guid.NewGuid(),
                 secondParticipant.Id,
                 courseEvent.Id,
                 DateTime.UtcNow,
                 CourseRegistrationStatus.Pending,
-                new PaymentMethod(1, "Card")),
+                PaymentMethod.Reconstitute(1, "Card")),
             CancellationToken.None);
 
         var firstEntity = await context.CourseRegistrations.SingleAsync(x => x.Id == first.Id, CancellationToken.None);
@@ -176,13 +176,13 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
 
         var updated = await repo.UpdateAsync(
             created.Id,
-            new CourseRegistration(
+            CourseRegistration.Reconstitute(
                 created.Id,
                 created.ParticipantId,
                 created.CourseEventId,
                 created.RegistrationDate,
                 CourseRegistrationStatus.Paid,
-                new PaymentMethod(2, "Invoice")),
+                PaymentMethod.Reconstitute(2, "Invoice")),
             CancellationToken.None);
 
         Assert.NotNull(updated);
@@ -193,7 +193,7 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
             .SingleAsync(x => x.Id == created.Id, CancellationToken.None);
 
         Assert.Equal(CourseRegistrationStatus.Paid.Id, persisted.CourseRegistrationStatusId);
-        Assert.Equal(new PaymentMethod(2, "Invoice").Id, persisted.PaymentMethodId);
+        Assert.Equal(PaymentMethod.Reconstitute(2, "Invoice").Id, persisted.PaymentMethodId);
     }
 
     [Fact]
@@ -233,13 +233,13 @@ public class CourseRegistrationRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new CourseRegistrationRepository(context);
         var existingEvent = await RepositoryTestDataHelper.CreateCourseEventAsync(context);
 
-        var input = new CourseRegistration(
+        var input = CourseRegistration.Reconstitute(
             Guid.NewGuid(),
             Guid.NewGuid(),
             existingEvent.Id,
             DateTime.UtcNow,
             CourseRegistrationStatus.Pending,
-            new PaymentMethod(1, "Card"));
+            PaymentMethod.Reconstitute(1, "Card"));
 
         await Assert.ThrowsAsync<DbUpdateException>(() => repo.AddAsync(input, CancellationToken.None));
     }

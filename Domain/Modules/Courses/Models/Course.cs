@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Backend.Domain.Modules.Courses.Models;
 
 public sealed class Course
@@ -7,7 +9,8 @@ public sealed class Course
     public string Description { get; private set; } = string.Empty;
     public int DurationInDays { get; private set; }
 
-    public Course(
+    [JsonConstructor]
+    private Course(
         Guid id,
         string title,
         string description,
@@ -19,6 +22,12 @@ public sealed class Course
         Id = id;
         SetValues(title, description, durationInDays);
     }
+
+    public static Course Create(string title, string description, int durationInDays)
+        => new(Guid.NewGuid(), title, description, durationInDays);
+
+    public static Course Reconstitute(Guid id, string title, string description, int durationInDays)
+        => new(id, title, description, durationInDays);
 
     public void Update(string title, string description, int durationInDays)
     {

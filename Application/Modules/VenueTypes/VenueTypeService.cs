@@ -23,7 +23,7 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
             if (existing is not null)
                 return new VenueTypeResult { Success = false, ErrorType = ErrorTypes.Validation, Message = "A venue type with the same name already exists." };
 
-            var created = await _repository.AddAsync(new VenueType(1, input.Name), cancellationToken);
+            var created = await _repository.AddAsync(VenueType.Create(input.Name), cancellationToken);
             _cache.ResetEntity(created);
             _cache.SetEntity(created);
             return new VenueTypeResult { Success = true, Result = created, Message = "Venue type created successfully." };

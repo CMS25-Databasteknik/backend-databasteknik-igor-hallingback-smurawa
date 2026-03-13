@@ -6,9 +6,9 @@ public class ParticipantContactType_Tests
 {
     public static IEnumerable<object[]> ValidContactTypes()
     {
-        yield return [new ParticipantContactType(1, "Primary")];
-        yield return [new ParticipantContactType(2, "Billing")];
-        yield return [new ParticipantContactType(3, "Emergency")];
+        yield return [ParticipantContactType.Reconstitute(1, "Primary")];
+        yield return [ParticipantContactType.Reconstitute(2, "Billing")];
+        yield return [ParticipantContactType.Reconstitute(3, "Emergency")];
     }
 
     [Theory]
@@ -22,6 +22,6 @@ public class ParticipantContactType_Tests
     [Fact]
     public void Constructor_Should_Throw_When_Id_Is_Invalid()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => new ParticipantContactType(0, "Invalid"));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ParticipantContactType.Reconstitute(0, "Invalid"));
     }
 }

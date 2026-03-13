@@ -14,7 +14,7 @@ public class CourseEventTypeRepository_Tests(SqliteInMemoryFixture fixture)
         var repo = new CourseEventTypeRepository(context);
         var typeName = $"Lecture-{Guid.NewGuid():N}";
 
-        var created = await repo.AddAsync(new CourseEventType(typeName), CancellationToken.None);
+        var created = await repo.AddAsync(CourseEventType.Create(typeName), CancellationToken.None);
         var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
         var byName = await repo.GetCourseEventTypeByTypeNameAsync(typeName, CancellationToken.None);
 
@@ -40,7 +40,7 @@ public class CourseEventTypeRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseEventTypeRepository(context);
-        var created = await repo.AddAsync(new CourseEventType($"Type-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(CourseEventType.Create($"Type-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var all = await repo.GetAllAsync(CancellationToken.None);
 
@@ -52,8 +52,8 @@ public class CourseEventTypeRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseEventTypeRepository(context);
-        var first = await repo.AddAsync(new CourseEventType($"TypeA-{Guid.NewGuid():N}"), CancellationToken.None);
-        var second = await repo.AddAsync(new CourseEventType($"TypeB-{Guid.NewGuid():N}"), CancellationToken.None);
+        var first = await repo.AddAsync(CourseEventType.Create($"TypeA-{Guid.NewGuid():N}"), CancellationToken.None);
+        var second = await repo.AddAsync(CourseEventType.Create($"TypeB-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var all = await repo.GetAllAsync(CancellationToken.None);
 
@@ -70,9 +70,9 @@ public class CourseEventTypeRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseEventTypeRepository(context);
-        var created = await repo.AddAsync(new CourseEventType($"Type-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(CourseEventType.Create($"Type-{Guid.NewGuid():N}"), CancellationToken.None);
 
-        var updated = await repo.UpdateAsync(created.Id, new CourseEventType(created.Id, "UpdatedType"), CancellationToken.None);
+        var updated = await repo.UpdateAsync(created.Id, CourseEventType.Reconstitute(created.Id, "UpdatedType"), CancellationToken.None);
 
         Assert.NotNull(updated);
         Assert.Equal("UpdatedType", updated!.TypeName);
@@ -102,7 +102,7 @@ public class CourseEventTypeRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseEventTypeRepository(context);
-        var created = await repo.AddAsync(new CourseEventType($"Type-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(CourseEventType.Create($"Type-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var deleted = await repo.RemoveAsync(created.Id, CancellationToken.None);
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);

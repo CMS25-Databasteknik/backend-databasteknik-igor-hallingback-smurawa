@@ -10,7 +10,7 @@ public sealed class ParticipantContactTypeRepository(CoursesOnlineDbContext cont
     : RepositoryBase<ParticipantContactType, int, ParticipantContactTypeEntity, CoursesOnlineDbContext>(context), IParticipantContactTypeRepository
 {
     protected override ParticipantContactType ToModel(ParticipantContactTypeEntity entity)
-        => new(entity.Id, entity.Name);
+        => ParticipantContactType.Reconstitute(entity.Id, entity.Name);
 
     protected override ParticipantContactTypeEntity ToEntity(ParticipantContactType participantContactType)
         => new()

@@ -18,7 +18,7 @@ public class ParticipantContactTypeService_Tests
         cache.GetAllAsync(Arg.Any<Func<CancellationToken, Task<IReadOnlyList<ParticipantContactType>>>>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<Func<CancellationToken, Task<IReadOnlyList<ParticipantContactType>>>>()(ci.Arg<CancellationToken>()));
         repo.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns([new ParticipantContactType(1, "Primary"), new ParticipantContactType(2, "Billing")]);
+            .Returns([ParticipantContactType.Reconstitute(1, "Primary"), ParticipantContactType.Reconstitute(2, "Billing")]);
         var service = new ParticipantContactTypeService(cache, repo);
 
         var result = await service.GetAllParticipantContactTypesAsync();
@@ -34,7 +34,7 @@ public class ParticipantContactTypeService_Tests
     {
         var repo = Substitute.For<IParticipantContactTypeRepository>();
         var cache = Substitute.For<IParticipantContactTypeCache>();
-        var cached = new ParticipantContactType(7, "Billing");
+        var cached = ParticipantContactType.Reconstitute(7, "Billing");
         cache.GetByIdAsync(7, Arg.Any<Func<CancellationToken, Task<ParticipantContactType?>>>(), Arg.Any<CancellationToken>())
             .Returns(cached);
         var service = new ParticipantContactTypeService(cache, repo);
@@ -51,8 +51,8 @@ public class ParticipantContactTypeService_Tests
     {
         var repo = Substitute.For<IParticipantContactTypeRepository>();
         var cache = Substitute.For<IParticipantContactTypeCache>();
-        var existing = new ParticipantContactType(3, "Primary");
-        var updated = new ParticipantContactType(3, "Billing");
+        var existing = ParticipantContactType.Reconstitute(3, "Primary");
+        var updated = ParticipantContactType.Reconstitute(3, "Billing");
 
         repo.GetByIdAsync(existing.Id, Arg.Any<CancellationToken>()).Returns(existing);
         repo.UpdateAsync(existing.Id, Arg.Any<ParticipantContactType>(), Arg.Any<CancellationToken>())

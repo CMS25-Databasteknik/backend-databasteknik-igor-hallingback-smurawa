@@ -25,8 +25,7 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
                 };
             }
 
-            var newCourse = new Course(
-                id: Guid.NewGuid(),
+            var newCourse = Course.Create(
                 course.Title,
                 course.Description,
                 course.DurationInDays

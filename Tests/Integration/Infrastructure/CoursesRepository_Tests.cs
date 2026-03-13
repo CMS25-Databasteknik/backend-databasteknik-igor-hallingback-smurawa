@@ -24,7 +24,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRepository(context);
-        var input = new Course(Guid.NewGuid(), $"Test Course {Guid.NewGuid():N}", "A course for testing", 5);
+        var input = Course.Reconstitute(Guid.NewGuid(), $"Test Course {Guid.NewGuid():N}", "A course for testing", 5);
 
         var course = await repo.AddAsync(input, CancellationToken.None);
 
@@ -51,8 +51,8 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRepository(context);
 
-        await repo.AddAsync(new Course(Guid.NewGuid(), $"C-{Guid.NewGuid():N}", "D1", 1), CancellationToken.None);
-        await repo.AddAsync(new Course(Guid.NewGuid(), $"C-{Guid.NewGuid():N}", "D2", 2), CancellationToken.None);
+        await repo.AddAsync(Course.Reconstitute(Guid.NewGuid(), $"C-{Guid.NewGuid():N}", "D1", 1), CancellationToken.None);
+        await repo.AddAsync(Course.Reconstitute(Guid.NewGuid(), $"C-{Guid.NewGuid():N}", "D2", 2), CancellationToken.None);
 
         var courses = await repo.GetAllAsync(CancellationToken.None);
 
@@ -64,8 +64,8 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseRepository(context);
-        var first = await repo.AddAsync(new Course(Guid.NewGuid(), $"OrderA-{Guid.NewGuid():N}", "D1", 1), CancellationToken.None);
-        var second = await repo.AddAsync(new Course(Guid.NewGuid(), $"OrderB-{Guid.NewGuid():N}", "D2", 1), CancellationToken.None);
+        var first = await repo.AddAsync(Course.Reconstitute(Guid.NewGuid(), $"OrderA-{Guid.NewGuid():N}", "D1", 1), CancellationToken.None);
+        var second = await repo.AddAsync(Course.Reconstitute(Guid.NewGuid(), $"OrderB-{Guid.NewGuid():N}", "D2", 1), CancellationToken.None);
 
         var firstEntity = await context.Courses.SingleAsync(x => x.Id == first.Id, CancellationToken.None);
         var secondEntity = await context.Courses.SingleAsync(x => x.Id == second.Id, CancellationToken.None);
@@ -113,7 +113,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
 
         var updated = await repo.UpdateAsync(
             course.Id,
-            new Course(course.Id, "Updated Title", "Updated Description", 10),
+            Course.Reconstitute(course.Id, "Updated Title", "Updated Description", 10),
             CancellationToken.None);
 
         Assert.NotNull(updated);

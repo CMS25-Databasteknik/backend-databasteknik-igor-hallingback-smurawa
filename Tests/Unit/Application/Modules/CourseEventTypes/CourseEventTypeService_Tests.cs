@@ -29,7 +29,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var expectedType = new CourseEventType(1, "Online");
+        var expectedType = CourseEventType.Reconstitute(1, "Online");
 
         mockRepo.AddAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
             .Returns(expectedType);
@@ -142,7 +142,7 @@ public class CourseEventTypeService_Tests
     {
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         mockRepo.GetCourseEventTypeByTypeNameAsync("Online", Arg.Any<CancellationToken>())
-            .Returns(new CourseEventType(1, "Online"));
+            .Returns(CourseEventType.Reconstitute(1, "Online"));
 
         var service = CreateService(mockRepo, out var mockCache);
 
@@ -165,7 +165,7 @@ public class CourseEventTypeService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var expectedType = new CourseEventType(1, typeName);
+        var expectedType = CourseEventType.Reconstitute(1, typeName);
 
         mockRepo.AddAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
             .Returns(expectedType);
@@ -203,9 +203,9 @@ public class CourseEventTypeService_Tests
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var types = new List<CourseEventType>
         {
-            new CourseEventType(1, "Online"),
-            new CourseEventType(2, "In-Person"),
-            new CourseEventType(3, "Hybrid")
+            CourseEventType.Reconstitute(1, "Online"),
+            CourseEventType.Reconstitute(2, "In-Person"),
+            CourseEventType.Reconstitute(3, "Hybrid")
         };
 
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
@@ -279,7 +279,7 @@ public class CourseEventTypeService_Tests
     {
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeName = "Online";
-        var courseEventType = new CourseEventType(1, typeName);
+        var courseEventType = CourseEventType.Reconstitute(1, typeName);
 
         mockRepo.GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>())
             .Returns(courseEventType);
@@ -357,7 +357,7 @@ public class CourseEventTypeService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
-        var courseEventType = new CourseEventType(typeId, "Online");
+        var courseEventType = CourseEventType.Reconstitute(typeId, "Online");
 
         mockRepo.GetByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(courseEventType);
@@ -475,8 +475,8 @@ public class CourseEventTypeService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
-        var existingType = new CourseEventType(typeId, "Online");
-        var updatedType = new CourseEventType(typeId, "Virtual");
+        var existingType = CourseEventType.Reconstitute(typeId, "Online");
+        var updatedType = CourseEventType.Reconstitute(typeId, "Virtual");
 
         mockRepo.GetByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(existingType);
@@ -549,7 +549,7 @@ public class CourseEventTypeService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseEventType(1, "Online"));
+            .Returns(CourseEventType.Reconstitute(1, "Online"));
         var service = CreateService(mockRepo, out var mockCache);
         var input = new UpdateCourseEventTypeInput(1, "");
 
@@ -569,7 +569,7 @@ public class CourseEventTypeService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         mockRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new CourseEventType(1, "Online"));
+            .Returns(CourseEventType.Reconstitute(1, "Online"));
         var service = CreateService(mockRepo, out var mockCache);
         var input = new UpdateCourseEventTypeInput(1, "   ");
 
@@ -616,7 +616,7 @@ public class CourseEventTypeService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
-        var existingType = new CourseEventType(typeId, "Online");
+        var existingType = CourseEventType.Reconstitute(typeId, "Online");
 
         mockRepo.GetByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(existingType);
@@ -648,7 +648,7 @@ public class CourseEventTypeService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
-        var existingType = new CourseEventType(typeId, "Online");
+        var existingType = CourseEventType.Reconstitute(typeId, "Online");
 
         mockRepo.GetByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(existingType);
@@ -680,7 +680,7 @@ public class CourseEventTypeService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
-        var existingType = new CourseEventType(typeId, "Online");
+        var existingType = CourseEventType.Reconstitute(typeId, "Online");
 
         mockRepo.GetByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(existingType);
@@ -773,7 +773,7 @@ public class CourseEventTypeService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
-        var existingType = new CourseEventType(typeId, "Online");
+        var existingType = CourseEventType.Reconstitute(typeId, "Online");
 
         mockRepo.GetByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(existingType);
@@ -801,7 +801,7 @@ public class CourseEventTypeService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
         var typeId = 1;
-        var existingType = new CourseEventType(typeId, "Online");
+        var existingType = CourseEventType.Reconstitute(typeId, "Online");
 
         mockRepo.GetByIdAsync(typeId, Arg.Any<CancellationToken>())
             .Returns(existingType);

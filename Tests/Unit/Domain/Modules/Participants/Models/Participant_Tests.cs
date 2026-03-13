@@ -16,7 +16,7 @@ public class Participant_Tests
         var phoneNumber = "+46701234567";
 
         // Act
-        var participant = new Participant(id, firstName, lastName, email, phoneNumber);
+        var participant = Participant.Reconstitute(id, firstName, lastName, email, phoneNumber);
 
         // Assert
         Assert.NotNull(participant);
@@ -25,7 +25,7 @@ public class Participant_Tests
         Assert.Equal(lastName, participant.LastName);
         Assert.Equal(email, participant.Email);
         Assert.Equal(phoneNumber, participant.PhoneNumber);
-        Assert.Equal(new ParticipantContactType(1, "Primary"), participant.ContactType);
+        Assert.Equal(ParticipantContactType.Reconstitute(1, "Primary"), participant.ContactType);
     }
 
     [Fact]
@@ -33,9 +33,9 @@ public class Participant_Tests
     {
         var id = Guid.NewGuid();
 
-        var participant = new Participant(id, "John", "Doe", "john.doe@example.com", "+46701234567");
+        var participant = Participant.Reconstitute(id, "John", "Doe", "john.doe@example.com", "+46701234567");
 
-        Assert.Equal(new ParticipantContactType(1, "Primary"), participant.ContactType);
+        Assert.Equal(ParticipantContactType.Reconstitute(1, "Primary"), participant.ContactType);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("id", exception.ParamName);
         Assert.Contains("ID cannot be empty", exception.Message);
@@ -68,7 +68,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("firstName", exception.ParamName);
         Assert.Contains("First name cannot be empty or whitespace", exception.Message);
@@ -86,7 +86,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("firstName", exception.ParamName);
         Assert.Contains("First name cannot be empty or whitespace", exception.Message);
@@ -104,7 +104,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("firstName", exception.ParamName);
         Assert.Contains("First name cannot be empty or whitespace", exception.Message);
@@ -122,7 +122,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("lastName", exception.ParamName);
         Assert.Contains("Last name cannot be empty or whitespace", exception.Message);
@@ -140,7 +140,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("lastName", exception.ParamName);
         Assert.Contains("Last name cannot be empty or whitespace", exception.Message);
@@ -158,7 +158,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("lastName", exception.ParamName);
         Assert.Contains("Last name cannot be empty or whitespace", exception.Message);
@@ -176,7 +176,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("email", exception.ParamName);
         Assert.Contains("Email cannot be empty or whitespace", exception.Message);
@@ -194,7 +194,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("email", exception.ParamName);
         Assert.Contains("Email cannot be empty or whitespace", exception.Message);
@@ -212,7 +212,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("email", exception.ParamName);
         Assert.Contains("Email cannot be empty or whitespace", exception.Message);
@@ -230,7 +230,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("phoneNumber", exception.ParamName);
         Assert.Contains("Phone number cannot be empty or whitespace", exception.Message);
@@ -248,7 +248,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("phoneNumber", exception.ParamName);
         Assert.Contains("Phone number cannot be empty or whitespace", exception.Message);
@@ -266,7 +266,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, firstName, lastName, email, phoneNumber));
+            Participant.Reconstitute(id, firstName, lastName, email, phoneNumber));
 
         Assert.Equal("phoneNumber", exception.ParamName);
         Assert.Contains("Phone number cannot be empty or whitespace", exception.Message);
@@ -283,7 +283,7 @@ public class Participant_Tests
         var id = Guid.NewGuid();
 
         // Act
-        var participant = new Participant(id, firstName, lastName, email, phoneNumber);
+        var participant = Participant.Reconstitute(id, firstName, lastName, email, phoneNumber);
 
         // Assert
         Assert.Equal(firstName, participant.FirstName);
@@ -303,7 +303,7 @@ public class Participant_Tests
         var phoneNumber = "+46701234567";
 
         // Act
-        var participant = new Participant(id, firstName, lastName, email, phoneNumber);
+        var participant = Participant.Reconstitute(id, firstName, lastName, email, phoneNumber);
 
         // Assert
         Assert.Equal(id, participant.Id);
@@ -323,8 +323,8 @@ public class Participant_Tests
         var email = "john.doe@example.com";
         var phoneNumber = "+46701234567";
 
-        var participant1 = new Participant(id, firstName, lastName, email, phoneNumber);
-        var participant2 = new Participant(id, firstName, lastName, email, phoneNumber);
+        var participant1 = Participant.Reconstitute(id, firstName, lastName, email, phoneNumber);
+        var participant2 = Participant.Reconstitute(id, firstName, lastName, email, phoneNumber);
 
         // Assert
         Assert.Equal(participant1.Id, participant2.Id);
@@ -338,7 +338,7 @@ public class Participant_Tests
     public void Id_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var participant = new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
+        var participant = Participant.Reconstitute(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
 
         // Assert
         var initialId = participant.Id;
@@ -349,7 +349,7 @@ public class Participant_Tests
     public void FirstName_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var participant = new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
+        var participant = Participant.Reconstitute(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
 
         // Assert
         var initialFirstName = participant.FirstName;
@@ -360,7 +360,7 @@ public class Participant_Tests
     public void LastName_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var participant = new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
+        var participant = Participant.Reconstitute(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
 
         // Assert
         var initialLastName = participant.LastName;
@@ -371,7 +371,7 @@ public class Participant_Tests
     public void Email_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var participant = new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
+        var participant = Participant.Reconstitute(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
 
         // Assert
         var initialEmail = participant.Email;
@@ -382,7 +382,7 @@ public class Participant_Tests
     public void PhoneNumber_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var participant = new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
+        var participant = Participant.Reconstitute(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", "+46701234567");
 
         // Assert
         var initialPhoneNumber = participant.PhoneNumber;
@@ -395,7 +395,7 @@ public class Participant_Tests
         // Arrange
         var firstName = "Very Long First Name With Multiple Words";
         var lastName = "Very Long Last Name With Multiple Words";
-        var participant = new Participant(Guid.NewGuid(), firstName, lastName, "test@example.com", "+46701234567");
+        var participant = Participant.Reconstitute(Guid.NewGuid(), firstName, lastName, "test@example.com", "+46701234567");
 
         // Assert
         Assert.Equal(firstName, participant.FirstName);
@@ -408,7 +408,7 @@ public class Participant_Tests
         // Arrange
         var firstName = "Göran";
         var lastName = "Åström";
-        var participant = new Participant(Guid.NewGuid(), firstName, lastName, "goran.astrom@example.com", "+46701234567");
+        var participant = Participant.Reconstitute(Guid.NewGuid(), firstName, lastName, "goran.astrom@example.com", "+46701234567");
 
         // Assert
         Assert.Equal(firstName, participant.FirstName);
@@ -420,7 +420,7 @@ public class Participant_Tests
     {
         // Arrange
         var email = "user.name+tag@example.co.uk";
-        var participant = new Participant(Guid.NewGuid(), "John", "Doe", email, "+46701234567");
+        var participant = Participant.Reconstitute(Guid.NewGuid(), "John", "Doe", email, "+46701234567");
 
         // Assert
         Assert.Equal(email, participant.Email);
@@ -433,7 +433,7 @@ public class Participant_Tests
     public void Constructor_Should_Accept_Various_Phone_Number_Formats(string phoneNumber)
     {
         // Act
-        var participant = new Participant(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", phoneNumber);
+        var participant = Participant.Reconstitute(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", phoneNumber);
 
         // Assert
         Assert.Equal(phoneNumber, participant.PhoneNumber);
@@ -443,7 +443,7 @@ public class Participant_Tests
     public void Update_Should_Change_Values_When_Input_Is_Valid()
     {
         // Arrange
-        var participant = new Participant(
+        var participant = Participant.Reconstitute(
             Guid.NewGuid(),
             "John",
             "Doe",
@@ -456,21 +456,21 @@ public class Participant_Tests
             "Smith",
             "jane.smith@example.com",
             "+46709876543",
-            new ParticipantContactType(2, "Billing"));
+            ParticipantContactType.Reconstitute(2, "Billing"));
 
         // Assert
         Assert.Equal("Jane", participant.FirstName);
         Assert.Equal("Smith", participant.LastName);
         Assert.Equal("jane.smith@example.com", participant.Email);
         Assert.Equal("+46709876543", participant.PhoneNumber);
-        Assert.Equal(new ParticipantContactType(2, "Billing"), participant.ContactType);
+        Assert.Equal(ParticipantContactType.Reconstitute(2, "Billing"), participant.ContactType);
     }
 
     [Fact]
     public void Update_Should_Throw_ArgumentException_When_Email_Is_Empty()
     {
         // Arrange
-        var participant = new Participant(
+        var participant = Participant.Reconstitute(
             Guid.NewGuid(),
             "John",
             "Doe",
@@ -479,7 +479,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            participant.Update("Jane", "Smith", "", "+46709876543", new ParticipantContactType(1, "Primary")));
+            participant.Update("Jane", "Smith", "", "+46709876543", ParticipantContactType.Reconstitute(1, "Primary")));
 
         Assert.Equal("email", exception.ParamName);
     }
@@ -498,7 +498,7 @@ public class Participant_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Participant(id, "John", "Doe", invalidEmail, "+46701234567"));
+            Participant.Reconstitute(id, "John", "Doe", invalidEmail, "+46701234567"));
 
         Assert.Equal("email", exception.ParamName);
         Assert.Contains("Email", exception.Message, StringComparison.OrdinalIgnoreCase);

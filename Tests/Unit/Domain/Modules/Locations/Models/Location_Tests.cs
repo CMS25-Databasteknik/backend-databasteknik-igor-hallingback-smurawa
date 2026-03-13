@@ -14,7 +14,7 @@ public class Location_Tests
         var city = "Stockholm";
 
         // Act
-        var location = new Location(id, streetName, postalCode, city);
+        var location = Location.Reconstitute(id, streetName, postalCode, city);
 
         // Assert
         Assert.NotNull(location);
@@ -35,7 +35,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("id", exception.ParamName);
         Assert.Contains("ID must be greater than or equal to zero", exception.Message);
@@ -51,7 +51,7 @@ public class Location_Tests
         var city = "Stockholm";
 
         // Act
-        var location = new Location(id, streetName, postalCode, city);
+        var location = Location.Reconstitute(id, streetName, postalCode, city);
 
         // Assert
         Assert.Equal(0, location.Id);
@@ -68,7 +68,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("streetName", exception.ParamName);
         Assert.Contains("Street name cannot be empty or whitespace", exception.Message);
@@ -85,7 +85,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("streetName", exception.ParamName);
         Assert.Contains("Street name cannot be empty or whitespace", exception.Message);
@@ -102,7 +102,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("streetName", exception.ParamName);
         Assert.Contains("Street name cannot be empty or whitespace", exception.Message);
@@ -119,7 +119,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("postalCode", exception.ParamName);
         Assert.Contains("Postal code cannot be empty or whitespace", exception.Message);
@@ -136,7 +136,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("postalCode", exception.ParamName);
         Assert.Contains("Postal code cannot be empty or whitespace", exception.Message);
@@ -153,7 +153,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("postalCode", exception.ParamName);
         Assert.Contains("Postal code cannot be empty or whitespace", exception.Message);
@@ -170,7 +170,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("city", exception.ParamName);
         Assert.Contains("City cannot be empty or whitespace", exception.Message);
@@ -187,7 +187,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("city", exception.ParamName);
         Assert.Contains("City cannot be empty or whitespace", exception.Message);
@@ -204,7 +204,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("city", exception.ParamName);
         Assert.Contains("City cannot be empty or whitespace", exception.Message);
@@ -219,7 +219,7 @@ public class Location_Tests
         int id, string streetName, string postalCode, string city)
     {
         // Act
-        var location = new Location(id, streetName, postalCode, city);
+        var location = Location.Reconstitute(id, streetName, postalCode, city);
 
         // Assert
         Assert.Equal(id, location.Id);
@@ -232,7 +232,7 @@ public class Location_Tests
     public void Properties_Should_Be_Initialized_Correctly()
     {
         // Arrange & Act
-        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
+        var location = Location.Reconstitute(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal(1, location.Id);
@@ -245,8 +245,8 @@ public class Location_Tests
     public void Two_Locations_With_Same_Values_Should_Have_Same_Property_Values()
     {
         // Arrange
-        var location1 = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
-        var location2 = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
+        var location1 = Location.Reconstitute(1, "Kungsgatan 12", "11143", "Stockholm");
+        var location2 = Location.Reconstitute(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal(location1.Id, location2.Id);
@@ -265,7 +265,7 @@ public class Location_Tests
         var city = "Stockholm";
 
         // Act
-        var location = new Location(id, streetName, postalCode, city);
+        var location = Location.Reconstitute(id, streetName, postalCode, city);
 
         // Assert
         Assert.Equal(streetName, location.StreetName);
@@ -281,7 +281,7 @@ public class Location_Tests
         var city = "Göteborg";
 
         // Act
-        var location = new Location(id, streetName, postalCode, city);
+        var location = Location.Reconstitute(id, streetName, postalCode, city);
 
         // Assert
         Assert.Equal("Göteborg", location.City);
@@ -291,7 +291,7 @@ public class Location_Tests
     public void Id_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
+        var location = Location.Reconstitute(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal(1, location.Id);
@@ -304,7 +304,7 @@ public class Location_Tests
     public void StreetName_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
+        var location = Location.Reconstitute(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal("Kungsgatan 12", location.StreetName);
@@ -316,7 +316,7 @@ public class Location_Tests
     public void PostalCode_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
+        var location = Location.Reconstitute(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal("11143", location.PostalCode);
@@ -328,7 +328,7 @@ public class Location_Tests
     public void City_Property_Should_Be_Read_Only()
     {
         // Arrange
-        var location = new Location(1, "Kungsgatan 12", "11143", "Stockholm");
+        var location = Location.Reconstitute(1, "Kungsgatan 12", "11143", "Stockholm");
 
         // Assert
         Assert.Equal("Stockholm", location.City);
@@ -339,7 +339,7 @@ public class Location_Tests
     [Fact]
     public void Update_Should_Change_Values_When_Input_Is_Valid()
     {
-        var location = new Location(1, "Old Street", "11111", "Old City");
+        var location = Location.Reconstitute(1, "Old Street", "11111", "Old City");
 
         location.Update("New Street", "22222", "New City");
 
@@ -351,7 +351,7 @@ public class Location_Tests
     [Fact]
     public void Update_Should_Throw_ArgumentException_When_City_Is_Whitespace()
     {
-        var location = new Location(1, "Old Street", "11111", "Old City");
+        var location = Location.Reconstitute(1, "Old Street", "11111", "Old City");
 
         var ex = Assert.Throws<ArgumentException>(() => location.Update("New Street", "22222", "   "));
         Assert.Equal("city", ex.ParamName);
@@ -368,7 +368,7 @@ public class Location_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Location(id, streetName, postalCode, city));
+            Location.Reconstitute(id, streetName, postalCode, city));
 
         Assert.Equal("postalCode", exception.ParamName);
         Assert.Contains("Postal code must consist of exactly 5 digits with no spaces", exception.Message);

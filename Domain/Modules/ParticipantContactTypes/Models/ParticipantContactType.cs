@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Backend.Domain.Modules.ParticipantContactTypes.Models;
 
 public sealed class ParticipantContactType : IEquatable<ParticipantContactType>
@@ -5,12 +7,20 @@ public sealed class ParticipantContactType : IEquatable<ParticipantContactType>
     public int Id { get; }
     public string Name { get; private set; } = string.Empty;
 
-    public ParticipantContactType(int id, string name)
+    [JsonConstructor]
+    private ParticipantContactType(int id, string name)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
-
         Id = id;
         SetValues(name);
+    }
+
+    public static ParticipantContactType Create(string name)
+        => new(0, name);
+
+    public static ParticipantContactType Reconstitute(int id, string name)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+        return new(id, name);
     }
 
     public void Update(string name)

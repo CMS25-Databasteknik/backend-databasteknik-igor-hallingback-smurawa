@@ -21,7 +21,7 @@ public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
         await using var context = fixture.CreateDbContext();
         var role = await RepositoryTestDataHelper.CreateInstructorRoleAsync(context);
         var repo = new InstructorRepository(context);
-        var input = new Instructor(Guid.NewGuid(), "Test Instructor", role);
+        var input = Instructor.Reconstitute(Guid.NewGuid(), "Test Instructor", role);
 
         var created = await repo.AddAsync(input, CancellationToken.None);
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
@@ -79,7 +79,7 @@ public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
 
         var updated = await repo.UpdateAsync(
             instructor.Id,
-            new Instructor(instructor.Id, "Updated Instructor", instructor.Role),
+            Instructor.Reconstitute(instructor.Id, "Updated Instructor", instructor.Role),
             CancellationToken.None);
 
         Assert.NotNull(updated);

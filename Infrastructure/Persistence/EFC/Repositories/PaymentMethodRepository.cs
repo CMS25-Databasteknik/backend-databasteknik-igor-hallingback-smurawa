@@ -10,7 +10,7 @@ public sealed class PaymentMethodRepository(CoursesOnlineDbContext context)
     : RepositoryBase<PaymentMethodModel, int, PaymentMethodEntity, CoursesOnlineDbContext>(context), IPaymentMethodRepository
 {
     protected override PaymentMethodModel ToModel(PaymentMethodEntity entity)
-        => new(entity.Id, entity.Name);
+        => PaymentMethodModel.Reconstitute(entity.Id, entity.Name);
 
     protected override PaymentMethodEntity ToEntity(PaymentMethodModel paymentMethod)
         => new()

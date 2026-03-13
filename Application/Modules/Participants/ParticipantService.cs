@@ -42,8 +42,7 @@ public class ParticipantService(
                 };
             }
 
-            var newParticipant = new Participant(
-                Guid.NewGuid(),
+            var newParticipant = Participant.Create(
                 participant.FirstName,
                 participant.LastName,
                 participant.Email,

@@ -24,7 +24,7 @@ public class CourseResult_Tests
     public void Should_Store_Course_In_Result_Property()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var result = new CourseResult
         {
             Result = course
@@ -40,7 +40,7 @@ public class CourseResult_Tests
     public void Should_Support_Success_Response_With_Course()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var result = new CourseResult
         {
             Success = true,
@@ -80,7 +80,7 @@ public class CourseResult_Tests
     public void Should_Be_Strongly_Typed_As_Course()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test", "Description", 5);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test", "Description", 5);
         var result = new CourseResult { Result = course };
 
         // Act - This should compile without casting
@@ -112,7 +112,7 @@ public class CourseWithEventsResult_Tests
     public void Should_Store_CourseWithEvents_In_Result_Property()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var courseWithEvents = new CourseWithEvents(course, Array.Empty<CourseEvent>());
         var result = new CourseWithEventsResult
         {
@@ -129,7 +129,7 @@ public class CourseWithEventsResult_Tests
     public void Should_Support_Success_Response_With_CourseWithEvents()
     {
         // Arrange
-        var course = new Course(Guid.NewGuid(), "Test Course", "Test Description", 10);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Test Course", "Test Description", 10);
         var courseWithEvents = new CourseWithEvents(course, Array.Empty<CourseEvent>());
         var result = new CourseWithEventsResult
         {
@@ -186,8 +186,8 @@ public class CourseListResult_Tests
         // Arrange
         var courses = new List<Course>
         {
-            new Course(Guid.NewGuid(), "Course 1", "Description 1", 5),
-            new Course(Guid.NewGuid(), "Course 2", "Description 2", 10)
+            Course.Reconstitute(Guid.NewGuid(), "Course 1", "Description 1", 5),
+            Course.Reconstitute(Guid.NewGuid(), "Course 2", "Description 2", 10)
         };
         var result = new CourseListResult
         {
@@ -205,9 +205,9 @@ public class CourseListResult_Tests
         // Arrange
         var courses = new List<Course>
         {
-            new Course(Guid.NewGuid(), "Course 1", "Description 1", 5),
-            new Course(Guid.NewGuid(), "Course 2", "Description 2", 10),
-            new Course(Guid.NewGuid(), "Course 3", "Description 3", 15)
+            Course.Reconstitute(Guid.NewGuid(), "Course 1", "Description 1", 5),
+            Course.Reconstitute(Guid.NewGuid(), "Course 2", "Description 2", 10),
+            Course.Reconstitute(Guid.NewGuid(), "Course 3", "Description 3", 15)
         };
         var result = new CourseListResult
         {
@@ -266,8 +266,8 @@ public class CourseListResult_Tests
         // Arrange
         var courses = new List<Course>
         {
-            new Course(Guid.NewGuid(), "Course 1", "Description 1", 5),
-            new Course(Guid.NewGuid(), "Course 2", "Description 2", 10)
+            Course.Reconstitute(Guid.NewGuid(), "Course 1", "Description 1", 5),
+            Course.Reconstitute(Guid.NewGuid(), "Course 2", "Description 2", 10)
         };
         var result = new CourseListResult { Result = courses };
 

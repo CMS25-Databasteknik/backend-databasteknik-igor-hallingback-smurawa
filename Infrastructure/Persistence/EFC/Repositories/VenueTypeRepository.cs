@@ -10,7 +10,7 @@ public sealed class VenueTypeRepository(CoursesOnlineDbContext context)
     : RepositoryBase<VenueType, int, VenueTypeEntity, CoursesOnlineDbContext>(context), IVenueTypeRepository
 {
     protected override VenueType ToModel(VenueTypeEntity entity)
-        => new(entity.Id, entity.Name);
+        => VenueType.Reconstitute(entity.Id, entity.Name);
 
     protected override VenueTypeEntity ToEntity(VenueType venueType)
         => new()

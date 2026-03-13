@@ -16,7 +16,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.NotNull(course);
@@ -39,7 +39,7 @@ public class Course_Tests
         var id = Guid.NewGuid();
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.NotNull(course);
@@ -59,7 +59,7 @@ public class Course_Tests
         var durationInDays = 1;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal(1, course.DurationInDays);
@@ -75,7 +75,7 @@ public class Course_Tests
         var durationInDays = int.MaxValue;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal(int.MaxValue, course.DurationInDays);
@@ -96,7 +96,7 @@ public class Course_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
 
         Assert.Equal("id", exception.ParamName);
         Assert.Contains("Course id cannot be empty", exception.Message);
@@ -117,7 +117,7 @@ public class Course_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
 
         Assert.Equal("title", exception.ParamName);
         Assert.Contains("Course title cannot be empty", exception.Message);
@@ -134,7 +134,7 @@ public class Course_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
 
         Assert.Equal("title", exception.ParamName);
         Assert.Contains("Course title cannot be empty", exception.Message);
@@ -151,7 +151,7 @@ public class Course_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
 
         Assert.Equal("title", exception.ParamName);
         Assert.Contains("Course title cannot be empty", exception.Message);
@@ -172,7 +172,7 @@ public class Course_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
 
         Assert.Equal("title", exception.ParamName);
     }
@@ -192,7 +192,7 @@ public class Course_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
 
         Assert.Equal("description", exception.ParamName);
         Assert.Contains("Course description cannot be empty", exception.Message);
@@ -209,7 +209,7 @@ public class Course_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
 
         Assert.Equal("description", exception.ParamName);
         Assert.Contains("Course description cannot be empty", exception.Message);
@@ -226,7 +226,7 @@ public class Course_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
 
         Assert.Equal("description", exception.ParamName);
         Assert.Contains("Course description cannot be empty", exception.Message);
@@ -246,7 +246,7 @@ public class Course_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
 
         Assert.Equal("description", exception.ParamName);
     }
@@ -266,7 +266,7 @@ public class Course_Tests
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
     }
 
     [Fact]
@@ -280,7 +280,7 @@ public class Course_Tests
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
     }
 
     [Theory]
@@ -297,7 +297,7 @@ public class Course_Tests
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new Course(id, title, description, durationInDays));
+            Course.Reconstitute(id, title, description, durationInDays));
     }
 
     #endregion
@@ -314,7 +314,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Test Course", course.Title);
@@ -330,7 +330,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Test Course", course.Title);
@@ -346,7 +346,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Test Course", course.Title);
@@ -362,7 +362,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Test Description", course.Description);
@@ -378,7 +378,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Test Description", course.Description);
@@ -394,7 +394,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Test Description", course.Description);
@@ -410,7 +410,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Test Course", course.Title);
@@ -427,7 +427,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Test   Course  With   Spaces", course.Title);
@@ -443,7 +443,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Test   Description  With   Spaces", course.Description);
@@ -463,7 +463,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert - Properties should have getters but no setters
         Assert.Equal(id, course.Id);
@@ -493,8 +493,8 @@ public class Course_Tests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var course1 = new Course(id, "Course 1", "Description 1", 10);
-        var course2 = new Course(id, "Course 2", "Description 2", 20);
+        var course1 = Course.Reconstitute(id, "Course 1", "Description 1", 10);
+        var course2 = Course.Reconstitute(id, "Course 2", "Description 2", 20);
 
         // Act & Assert
         Assert.Equal(course1.Id, course2.Id);
@@ -504,8 +504,8 @@ public class Course_Tests
     public void Two_Courses_With_Different_Ids_Should_Have_Different_Ids()
     {
         // Arrange
-        var course1 = new Course(Guid.NewGuid(), "Course 1", "Description 1", 10);
-        var course2 = new Course(Guid.NewGuid(), "Course 1", "Description 1", 10);
+        var course1 = Course.Reconstitute(Guid.NewGuid(), "Course 1", "Description 1", 10);
+        var course2 = Course.Reconstitute(Guid.NewGuid(), "Course 1", "Description 1", 10);
 
         // Act & Assert
         Assert.NotEqual(course1.Id, course2.Id);
@@ -525,7 +525,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("C# & .NET: Advanced Topics!", course.Title);
@@ -541,7 +541,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Learn C#, ASP.NET & Entity Framework! 100% coverage.", course.Description);
@@ -557,7 +557,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("C# Programmering 编程 プログラミング", course.Title);
@@ -573,7 +573,7 @@ public class Course_Tests
         var durationInDays = 10;
 
         // Act
-        var course = new Course(id, title, description, durationInDays);
+        var course = Course.Reconstitute(id, title, description, durationInDays);
 
         // Assert
         Assert.Equal("Advanced C# 🚀", course.Title);
@@ -586,7 +586,7 @@ public class Course_Tests
     [Fact]
     public void Update_Should_Change_Values_When_Input_Is_Valid()
     {
-        var course = new Course(Guid.NewGuid(), "Old", "Old desc", 5);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Old", "Old desc", 5);
 
         course.Update("New Title", "New Description", 10);
 
@@ -598,7 +598,7 @@ public class Course_Tests
     [Fact]
     public void Update_Should_Throw_ArgumentException_When_Title_Is_Whitespace()
     {
-        var course = new Course(Guid.NewGuid(), "Old", "Old desc", 5);
+        var course = Course.Reconstitute(Guid.NewGuid(), "Old", "Old desc", 5);
 
         var ex = Assert.Throws<ArgumentException>(() => course.Update("   ", "New Description", 10));
         Assert.Equal("title", ex.ParamName);

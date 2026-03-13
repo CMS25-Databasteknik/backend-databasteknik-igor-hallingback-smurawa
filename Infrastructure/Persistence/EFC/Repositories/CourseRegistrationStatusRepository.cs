@@ -11,7 +11,7 @@ public sealed class CourseRegistrationStatusRepository(
     : RepositoryBase<CourseRegistrationStatus, int, CourseRegistrationStatusEntity, CoursesOnlineDbContext>(context), ICourseRegistrationStatusRepository
 {
     protected override CourseRegistrationStatus ToModel(CourseRegistrationStatusEntity entity)
-        => new(entity.Id, entity.Name);
+        => CourseRegistrationStatus.Reconstitute(entity.Id, entity.Name);
 
     protected override CourseRegistrationStatusEntity ToEntity(CourseRegistrationStatus status)
         => new()

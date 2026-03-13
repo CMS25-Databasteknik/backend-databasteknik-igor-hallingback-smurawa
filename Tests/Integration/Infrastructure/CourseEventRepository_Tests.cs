@@ -24,7 +24,7 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         var type = await RepositoryTestDataHelper.CreateCourseEventTypeAsync(context);
         var repo = new CourseEventRepository(context);
 
-        var input = new CourseEvent(Guid.NewGuid(), course.Id, DateTime.UtcNow.AddDays(1), 100m, 10, type.Id, new VenueType(1, "InPerson"));
+        var input = CourseEvent.Reconstitute(Guid.NewGuid(), course.Id, DateTime.UtcNow.AddDays(1), 100m, 10, type.Id, VenueType.Reconstitute(1, "InPerson"));
         var created = await repo.AddAsync(input, CancellationToken.None);
         var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
         var byCourse = await repo.GetCourseEventsByCourseIdAsync(course.Id, CancellationToken.None);
@@ -100,19 +100,19 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
 
         var updated = await repo.UpdateAsync(
             courseEvent.Id,
-            new CourseEvent(
+            CourseEvent.Reconstitute(
                 courseEvent.Id,
                 courseEvent.CourseId,
                 courseEvent.EventDate.AddDays(2),
                 123m,
                 15,
                 courseEvent.CourseEventTypeId,
-                new VenueType(3, "Hybrid")),
+                VenueType.Reconstitute(3, "Hybrid")),
             CancellationToken.None);
 
         Assert.NotNull(updated);
         Assert.Equal(123m, updated!.Price);
-        Assert.Equal(new VenueType(3, "Hybrid"), updated.VenueType);
+        Assert.Equal(VenueType.Reconstitute(3, "Hybrid"), updated.VenueType);
 
         var persisted = await context.CourseEvents
             .AsNoTracking()
@@ -120,7 +120,7 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
 
         Assert.Equal(123m, persisted.Price);
         Assert.Equal(15, persisted.Seats);
-        Assert.Equal(new VenueType(3, "Hybrid").Id, persisted.VenueTypeId);
+        Assert.Equal(VenueType.Reconstitute(3, "Hybrid").Id, persisted.VenueTypeId);
     }
 
     [Fact]
@@ -187,18 +187,18 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         await using var context = fixture.CreateDbContext();
         var course = await RepositoryTestDataHelper.CreateCourseAsync(context);
         var type = await new CourseEventTypeRepository(context)
-            .AddAsync(new Backend.Domain.Modules.CourseEventTypes.Models.CourseEventType("Workshop"), CancellationToken.None);
+            .AddAsync(Backend.Domain.Modules.CourseEventTypes.Models.CourseEventType.Create("Workshop"), CancellationToken.None);
         var repo = new CourseEventRepository(context);
 
         var created = await repo.AddAsync(
-            new CourseEvent(
+            CourseEvent.Reconstitute(
                 Guid.NewGuid(),
                 course.Id,
                 DateTime.UtcNow.AddDays(2),
                 249m,
                 12,
                 type.Id,
-                new VenueType(2, "Online")),
+                VenueType.Reconstitute(2, "Online")),
             CancellationToken.None);
 
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
@@ -206,7 +206,7 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.NotNull(loaded);
         Assert.Equal(type.Id, loaded!.CourseEventType.Id);
         Assert.Equal("Workshop", loaded.CourseEventType.TypeName);
-        Assert.Equal(new VenueType(2, "Online").Id, loaded.VenueType.Id);
+        Assert.Equal(VenueType.Reconstitute(2, "Online").Id, loaded.VenueType.Id);
     }
 
     [Fact]
@@ -232,14 +232,14 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             repo.UpdateAsync(
                 missingId,
-                new CourseEvent(
+                CourseEvent.Reconstitute(
                     missingId,
                     course.Id,
                     DateTime.UtcNow.AddDays(1),
                     149m,
                     20,
                     type.Id,
-                    new VenueType(1, "InPerson")),
+                    VenueType.Reconstitute(1, "InPerson")),
                 CancellationToken.None));
     }
 
@@ -249,14 +249,14 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         await using var context = fixture.CreateDbContext();
         var repo = new CourseEventRepository(context);
 
-        var input = new CourseEvent(
+        var input = CourseEvent.Reconstitute(
             Guid.NewGuid(),
             Guid.NewGuid(),
             DateTime.UtcNow.AddDays(1),
             199m,
             10,
             999_999,
-            new VenueType(1, "InPerson"));
+            VenueType.Reconstitute(1, "InPerson"));
 
         await Assert.ThrowsAsync<DbUpdateException>(() => repo.AddAsync(input, CancellationToken.None));
     }

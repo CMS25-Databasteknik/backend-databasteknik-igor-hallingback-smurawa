@@ -15,7 +15,7 @@ public class InstructorService_Tests
     {
         var repo = Substitute.For<IInstructorRoleRepository>();
         repo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(ci => new InstructorRole(ci.Arg<int>(), $"Role-{ci.Arg<int>()}"));
+            .Returns(ci => InstructorRole.Reconstitute(ci.Arg<int>(), $"Role-{ci.Arg<int>()}"));
         return repo;
     }
 
@@ -28,9 +28,9 @@ public class InstructorService_Tests
         var mockRepo = Substitute.For<IInstructorRepository>();
         var mockRoleRepo = Substitute.For<IInstructorRoleRepository>();
         mockRoleRepo.GetByIdAsync(1, Arg.Any<CancellationToken>())
-            .Returns(new InstructorRole(1, "Lead"));
+            .Returns(InstructorRole.Reconstitute(1, "Lead"));
 
-        var expectedInstructor = new Instructor(Guid.NewGuid(), "Dr. John Doe", new InstructorRole(1, "Lead"));
+        var expectedInstructor = Instructor.Reconstitute(Guid.NewGuid(), "Dr. John Doe", InstructorRole.Reconstitute(1, "Lead"));
 
         mockRepo.AddAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(expectedInstructor);
@@ -143,7 +143,7 @@ public class InstructorService_Tests
     {
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
-        var expectedInstructor = new Instructor(Guid.NewGuid(), name, new InstructorRole(1, "Lead"));
+        var expectedInstructor = Instructor.Reconstitute(Guid.NewGuid(), name, InstructorRole.Reconstitute(1, "Lead"));
 
         mockRepo.AddAsync(Arg.Any<Instructor>(), Arg.Any<CancellationToken>())
             .Returns(expectedInstructor);
@@ -182,9 +182,9 @@ public class InstructorService_Tests
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructors = new List<Instructor>
         {
-            new Instructor(Guid.NewGuid(), "Dr. John Doe", new InstructorRole(1, "Lead")),
-            new Instructor(Guid.NewGuid(), "Prof. Jane Smith", new InstructorRole(1, "Lead")),
-            new Instructor(Guid.NewGuid(), "Dr. Robert Johnson", new InstructorRole(1, "Lead"))
+            Instructor.Reconstitute(Guid.NewGuid(), "Dr. John Doe", InstructorRole.Reconstitute(1, "Lead")),
+            Instructor.Reconstitute(Guid.NewGuid(), "Prof. Jane Smith", InstructorRole.Reconstitute(1, "Lead")),
+            Instructor.Reconstitute(Guid.NewGuid(), "Dr. Robert Johnson", InstructorRole.Reconstitute(1, "Lead"))
         };
 
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
@@ -256,7 +256,7 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
-        var instructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
+        var instructor = Instructor.Reconstitute(instructorId, "Dr. John Doe", InstructorRole.Reconstitute(1, "Lead"));
 
         mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(instructor);
@@ -351,8 +351,8 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
-        var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
-        var updatedInstructor = new Instructor(instructorId, "Prof. John Doe", new InstructorRole(2, "Assistant"));
+        var existingInstructor = Instructor.Reconstitute(instructorId, "Dr. John Doe", InstructorRole.Reconstitute(1, "Lead"));
+        var updatedInstructor = Instructor.Reconstitute(instructorId, "Prof. John Doe", InstructorRole.Reconstitute(2, "Assistant"));
 
         mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
@@ -424,7 +424,7 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Instructor(Guid.NewGuid(), "Existing", new InstructorRole(1, "Lead")));
+            .Returns(Instructor.Reconstitute(Guid.NewGuid(), "Existing", InstructorRole.Reconstitute(1, "Lead")));
         var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(Guid.NewGuid(), "");
 
@@ -444,7 +444,7 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         mockRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(new Instructor(Guid.NewGuid(), "Existing", new InstructorRole(1, "Lead")));
+            .Returns(Instructor.Reconstitute(Guid.NewGuid(), "Existing", InstructorRole.Reconstitute(1, "Lead")));
         var service = new InstructorService(mockRepo, CreateRoleRepo());
         var input = new UpdateInstructorInput(Guid.NewGuid(), "   ");
 
@@ -489,7 +489,7 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
-        var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
+        var existingInstructor = Instructor.Reconstitute(instructorId, "Dr. John Doe", InstructorRole.Reconstitute(1, "Lead"));
 
         mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
@@ -521,7 +521,7 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
-        var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
+        var existingInstructor = Instructor.Reconstitute(instructorId, "Dr. John Doe", InstructorRole.Reconstitute(1, "Lead"));
 
         mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
@@ -595,7 +595,7 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
-        var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
+        var existingInstructor = Instructor.Reconstitute(instructorId, "Dr. John Doe", InstructorRole.Reconstitute(1, "Lead"));
 
         mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
@@ -624,7 +624,7 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
-        var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
+        var existingInstructor = Instructor.Reconstitute(instructorId, "Dr. John Doe", InstructorRole.Reconstitute(1, "Lead"));
 
         mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);
@@ -654,7 +654,7 @@ public class InstructorService_Tests
         // Arrange
         var mockRepo = Substitute.For<IInstructorRepository>();
         var instructorId = Guid.NewGuid();
-        var existingInstructor = new Instructor(instructorId, "Dr. John Doe", new InstructorRole(1, "Lead"));
+        var existingInstructor = Instructor.Reconstitute(instructorId, "Dr. John Doe", InstructorRole.Reconstitute(1, "Lead"));
 
         mockRepo.GetByIdAsync(instructorId, Arg.Any<CancellationToken>())
             .Returns(existingInstructor);

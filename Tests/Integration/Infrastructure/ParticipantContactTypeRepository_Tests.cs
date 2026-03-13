@@ -15,7 +15,7 @@ public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixtur
         var repo = new ParticipantContactTypeRepository(context);
         var name = $"Contact-{Guid.NewGuid():N}";
 
-        var created = await repo.AddAsync(new ParticipantContactType(1, name), CancellationToken.None);
+        var created = await repo.AddAsync(ParticipantContactType.Reconstitute(1, name), CancellationToken.None);
         var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
         var byName = await repo.GetByNameAsync(name, CancellationToken.None);
 
@@ -36,8 +36,8 @@ public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixtur
     {
         await using var context = fixture.CreateDbContext();
         var repo = new ParticipantContactTypeRepository(context);
-        var first = await repo.AddAsync(new ParticipantContactType(1, $"ContactA-{Guid.NewGuid():N}"), CancellationToken.None);
-        var second = await repo.AddAsync(new ParticipantContactType(1, $"ContactB-{Guid.NewGuid():N}"), CancellationToken.None);
+        var first = await repo.AddAsync(ParticipantContactType.Reconstitute(1, $"ContactA-{Guid.NewGuid():N}"), CancellationToken.None);
+        var second = await repo.AddAsync(ParticipantContactType.Reconstitute(1, $"ContactB-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var all = await repo.GetAllAsync(CancellationToken.None);
         var firstIndex = all.ToList().FindIndex(x => x.Id == first.Id);
@@ -53,9 +53,9 @@ public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixtur
     {
         await using var context = fixture.CreateDbContext();
         var repo = new ParticipantContactTypeRepository(context);
-        var created = await repo.AddAsync(new ParticipantContactType(1, $"Contact-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(ParticipantContactType.Reconstitute(1, $"Contact-{Guid.NewGuid():N}"), CancellationToken.None);
 
-        var updated = await repo.UpdateAsync(created.Id, new ParticipantContactType(created.Id, "Updated"), CancellationToken.None);
+        var updated = await repo.UpdateAsync(created.Id, ParticipantContactType.Reconstitute(created.Id, "Updated"), CancellationToken.None);
 
         Assert.NotNull(updated);
         Assert.Equal("Updated", updated!.Name);
@@ -70,18 +70,18 @@ public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixtur
         await using var context = fixture.CreateDbContext();
         var contactTypeRepo = new ParticipantContactTypeRepository(context);
         var contactType = await contactTypeRepo.AddAsync(
-            new ParticipantContactType(1, $"Contact-{Guid.NewGuid():N}"),
+            ParticipantContactType.Reconstitute(1, $"Contact-{Guid.NewGuid():N}"),
             CancellationToken.None);
         var participantRepo = new ParticipantRepository(context);
 
         await participantRepo.AddAsync(
-            new Participant(
+            Participant.Reconstitute(
                 Guid.NewGuid(),
                 "Test",
                 "User",
                 $"user-{Guid.NewGuid():N}@example.com",
                 "12345",
-                new ParticipantContactType(contactType.Id, contactType.Name)),
+                ParticipantContactType.Reconstitute(contactType.Id, contactType.Name)),
             CancellationToken.None);
 
         var inUse = await contactTypeRepo.IsInUseAsync(contactType.Id, CancellationToken.None);
@@ -94,7 +94,7 @@ public class ParticipantContactTypeRepository_Tests(SqliteInMemoryFixture fixtur
     {
         await using var context = fixture.CreateDbContext();
         var repo = new ParticipantContactTypeRepository(context);
-        var created = await repo.AddAsync(new ParticipantContactType(1, $"Contact-{Guid.NewGuid():N}"), CancellationToken.None);
+        var created = await repo.AddAsync(ParticipantContactType.Reconstitute(1, $"Contact-{Guid.NewGuid():N}"), CancellationToken.None);
 
         var removed = await repo.RemoveAsync(created.Id, CancellationToken.None);
         var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);

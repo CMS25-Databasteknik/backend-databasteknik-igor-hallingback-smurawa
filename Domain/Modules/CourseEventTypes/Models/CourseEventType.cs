@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Backend.Domain.Modules.CourseEventTypes.Models;
 
 public sealed class CourseEventType
@@ -5,18 +7,20 @@ public sealed class CourseEventType
     public int Id { get; }
     public string TypeName { get; private set; } = string.Empty;
 
-    public CourseEventType(string typeName)
-        : this(0, typeName)
-    {
-    }
-
-    public CourseEventType(int id, string typeName)
+    [JsonConstructor]
+    private CourseEventType(int id, string typeName)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(id);
 
         Id = id;
         SetValues(typeName);
     }
+
+    public static CourseEventType Create(string typeName)
+        => new(0, typeName);
+
+    public static CourseEventType Reconstitute(int id, string typeName)
+        => new(id, typeName);
 
     public void Update(string typeName)
     {

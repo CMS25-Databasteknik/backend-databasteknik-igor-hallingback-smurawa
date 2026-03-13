@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Backend.Domain.Modules.PaymentMethod.Models;
 
 public sealed class PaymentMethod : IEquatable<PaymentMethod>
@@ -5,12 +7,20 @@ public sealed class PaymentMethod : IEquatable<PaymentMethod>
     public int Id { get; }
     public string Name { get; private set; } = string.Empty;
 
-    public PaymentMethod(int id, string name)
+    [JsonConstructor]
+    private PaymentMethod(int id, string name)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(id);
-
         Id = id;
         SetValues(name);
+    }
+
+    public static PaymentMethod Create(string name)
+        => new(0, name);
+
+    public static PaymentMethod Reconstitute(int id, string name)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(id);
+        return new(id, name);
     }
 
     public void Update(string name)

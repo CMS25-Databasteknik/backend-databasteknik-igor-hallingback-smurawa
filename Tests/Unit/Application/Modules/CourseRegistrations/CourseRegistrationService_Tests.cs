@@ -35,14 +35,14 @@ public class CourseRegistrationService_Tests
             .Returns(ci =>
             {
                 var id = ci.Arg<Guid>();
-                return id == Guid.Empty ? null : new Participant(id, "A", "B", "a@b.com", "123");
+                return id == Guid.Empty ? null : Participant.Reconstitute(id, "A", "B", "a@b.com", "123");
             });
 
         ceRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(ci =>
             {
                 var id = ci.Arg<Guid>();
-                return id == Guid.Empty ? null : new CourseEvent(id, Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, new VenueType(1, "InPerson"));
+                return id == Guid.Empty ? null : CourseEvent.Reconstitute(id, Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 10, 5, 1, VenueType.Reconstitute(1, "InPerson"));
             });
 
         statusRepo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
@@ -63,7 +63,7 @@ public class CourseRegistrationService_Tests
             .Returns(ci =>
             {
                 var id = ci.Arg<int>();
-                return id <= 0 ? null : new PaymentMethod(id, id == 2 ? "Invoice" : "Card");
+                return id <= 0 ? null : PaymentMethod.Reconstitute(id, id == 2 ? "Invoice" : "Card");
             });
 
         return new CourseRegistrationService(regRepo, pRepo, ceRepo, statusRepo, payRepo);
@@ -78,7 +78,7 @@ public class CourseRegistrationService_Tests
         var mockRepo = Substitute.For<ICourseRegistrationRepository>();
         var participantId = Guid.NewGuid();
         var courseEventId = Guid.NewGuid();
-        var expectedRegistration = new CourseRegistration(Guid.NewGuid(), participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card"));
+        var expectedRegistration = CourseRegistration.Reconstitute(Guid.NewGuid(), participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card"));
 
         mockRepo.AddAsync(Arg.Any<CourseRegistration>(), Arg.Any<CancellationToken>())
             .Returns(expectedRegistration);
@@ -99,7 +99,7 @@ public class CourseRegistrationService_Tests
         Assert.Equal("Course registration created successfully.", result.Message);
 
         await mockRepo.Received(1).AddAsync(
-            Arg.Is<CourseRegistration>(cr => cr.ParticipantId == participantId && cr.CourseEventId == courseEventId && cr.Status == CourseRegistrationStatus.Pending && cr.PaymentMethod.Equals(new PaymentMethod(1, "Card"))),
+            Arg.Is<CourseRegistration>(cr => cr.ParticipantId == participantId && cr.CourseEventId == courseEventId && cr.Status == CourseRegistrationStatus.Pending && cr.PaymentMethod.Equals(PaymentMethod.Reconstitute(1, "Card"))),
             Arg.Any<CancellationToken>());
     }
 
@@ -186,8 +186,8 @@ public class CourseRegistrationService_Tests
 
     public static IEnumerable<object[]> CreateRegistrationStatusAndPaymentData =>
     [
-        [CourseRegistrationStatus.Paid, new PaymentMethod(2, "Invoice")],
-        [CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card")]
+        [CourseRegistrationStatus.Paid, PaymentMethod.Reconstitute(2, "Invoice")],
+        [CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card")]
     ];
 
     [Theory]
@@ -198,7 +198,7 @@ public class CourseRegistrationService_Tests
         var mockRepo = Substitute.For<ICourseRegistrationRepository>();
         var participantId = Guid.NewGuid();
         var courseEventId = Guid.NewGuid();
-        var expectedRegistration = new CourseRegistration(Guid.NewGuid(), participantId, courseEventId, DateTime.UtcNow, status, payment);
+        var expectedRegistration = CourseRegistration.Reconstitute(Guid.NewGuid(), participantId, courseEventId, DateTime.UtcNow, status, payment);
 
         mockRepo.AddAsync(Arg.Any<CourseRegistration>(), Arg.Any<CancellationToken>())
             .Returns(expectedRegistration);
@@ -235,9 +235,9 @@ public class CourseRegistrationService_Tests
         var mockRepo = Substitute.For<ICourseRegistrationRepository>();
         var registrations = new List<CourseRegistration>
         {
-            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card")),
-            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, new PaymentMethod(2, "Invoice")),
-            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card"))
+            CourseRegistration.Reconstitute(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card")),
+            CourseRegistration.Reconstitute(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, PaymentMethod.Reconstitute(2, "Invoice")),
+            CourseRegistration.Reconstitute(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card"))
         };
 
         mockRepo.GetAllAsync(Arg.Any<CancellationToken>())
@@ -309,7 +309,7 @@ public class CourseRegistrationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRegistrationRepository>();
         var registrationId = Guid.NewGuid();
-        var registration = new CourseRegistration(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, new PaymentMethod(2, "Invoice"));
+        var registration = CourseRegistration.Reconstitute(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, PaymentMethod.Reconstitute(2, "Invoice"));
 
         mockRepo.GetByIdAsync(registrationId, Arg.Any<CancellationToken>())
             .Returns(registration);
@@ -405,8 +405,8 @@ public class CourseRegistrationService_Tests
         var participantId = Guid.NewGuid();
         var registrations = new List<CourseRegistration>
         {
-            new CourseRegistration(Guid.NewGuid(), participantId, Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card")),
-            new CourseRegistration(Guid.NewGuid(), participantId, Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, new PaymentMethod(2, "Invoice"))
+            CourseRegistration.Reconstitute(Guid.NewGuid(), participantId, Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card")),
+            CourseRegistration.Reconstitute(Guid.NewGuid(), participantId, Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Paid, PaymentMethod.Reconstitute(2, "Invoice"))
         };
 
         mockRepo.GetCourseRegistrationsByParticipantIdAsync(participantId, Arg.Any<CancellationToken>())
@@ -502,8 +502,8 @@ public class CourseRegistrationService_Tests
         var courseEventId = Guid.NewGuid();
         var registrations = new List<CourseRegistration>
         {
-            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card")),
-            new CourseRegistration(Guid.NewGuid(), Guid.NewGuid(), courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Paid, new PaymentMethod(2, "Invoice"))
+            CourseRegistration.Reconstitute(Guid.NewGuid(), Guid.NewGuid(), courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card")),
+            CourseRegistration.Reconstitute(Guid.NewGuid(), Guid.NewGuid(), courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Paid, PaymentMethod.Reconstitute(2, "Invoice"))
         };
 
         mockRepo.GetCourseRegistrationsByCourseEventIdAsync(courseEventId, Arg.Any<CancellationToken>())
@@ -599,8 +599,8 @@ public class CourseRegistrationService_Tests
         var registrationId = Guid.NewGuid();
         var participantId = Guid.NewGuid();
         var courseEventId = Guid.NewGuid();
-        var existingRegistration = new CourseRegistration(registrationId, participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card"));
-        var updatedRegistration = new CourseRegistration(registrationId, participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Paid, new PaymentMethod(2, "Invoice"));
+        var existingRegistration = CourseRegistration.Reconstitute(registrationId, participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card"));
+        var updatedRegistration = CourseRegistration.Reconstitute(registrationId, participantId, courseEventId, DateTime.UtcNow, CourseRegistrationStatus.Paid, PaymentMethod.Reconstitute(2, "Invoice"));
 
         mockRepo.GetByIdAsync(registrationId, Arg.Any<CancellationToken>())
             .Returns(existingRegistration);
@@ -623,7 +623,7 @@ public class CourseRegistrationService_Tests
 
         await mockRepo.Received(1).UpdateAsync(
             Arg.Is<Guid>(id => id == registrationId),
-            Arg.Is<CourseRegistration>(cr => cr.Id == registrationId && cr.Status == CourseRegistrationStatus.Paid && cr.PaymentMethod.Equals(new PaymentMethod(2, "Invoice"))),
+            Arg.Is<CourseRegistration>(cr => cr.Id == registrationId && cr.Status == CourseRegistrationStatus.Paid && cr.PaymentMethod.Equals(PaymentMethod.Reconstitute(2, "Invoice"))),
             Arg.Any<CancellationToken>());
     }
 
@@ -733,7 +733,7 @@ public class CourseRegistrationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRegistrationRepository>();
         var registrationId = Guid.NewGuid();
-        var existingRegistration = new CourseRegistration(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card"));
+        var existingRegistration = CourseRegistration.Reconstitute(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card"));
 
         mockRepo.GetByIdAsync(registrationId, Arg.Any<CancellationToken>())
             .Returns(existingRegistration);
@@ -760,7 +760,7 @@ public class CourseRegistrationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRegistrationRepository>();
         var registrationId = Guid.NewGuid();
-        var existingRegistration = new CourseRegistration(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card"));
+        var existingRegistration = CourseRegistration.Reconstitute(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card"));
 
         mockRepo.GetByIdAsync(registrationId, Arg.Any<CancellationToken>())
             .Returns(existingRegistration);
@@ -792,7 +792,7 @@ public class CourseRegistrationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRegistrationRepository>();
         var registrationId = Guid.NewGuid();
-        var existingRegistration = new CourseRegistration(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card"));
+        var existingRegistration = CourseRegistration.Reconstitute(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card"));
 
         mockRepo.GetByIdAsync(registrationId, Arg.Any<CancellationToken>())
             .Returns(existingRegistration);
@@ -863,7 +863,7 @@ public class CourseRegistrationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRegistrationRepository>();
         var registrationId = Guid.NewGuid();
-        var existingRegistration = new CourseRegistration(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card"));
+        var existingRegistration = CourseRegistration.Reconstitute(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card"));
 
         mockRepo.GetByIdAsync(registrationId, Arg.Any<CancellationToken>())
             .Returns(existingRegistration);
@@ -890,7 +890,7 @@ public class CourseRegistrationService_Tests
         // Arrange
         var mockRepo = Substitute.For<ICourseRegistrationRepository>();
         var registrationId = Guid.NewGuid();
-        var existingRegistration = new CourseRegistration(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, new PaymentMethod(1, "Card"));
+        var existingRegistration = CourseRegistration.Reconstitute(registrationId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, CourseRegistrationStatus.Pending, PaymentMethod.Reconstitute(1, "Card"));
 
         mockRepo.GetByIdAsync(registrationId, Arg.Any<CancellationToken>())
             .Returns(existingRegistration);

@@ -13,7 +13,7 @@ public class InPlaceLocationRepository_Tests(SqliteInMemoryFixture fixture)
         await using var context = fixture.CreateDbContext();
         var location = await RepositoryTestDataHelper.CreateLocationAsync(context);
         var repo = new InPlaceLocationRepository(context);
-        var input = new InPlaceLocation(0, location.Id, 101, 20);
+        var input = InPlaceLocation.Reconstitute(0, location.Id, 101, 20);
 
         var created = await repo.AddAsync(input, CancellationToken.None);
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
@@ -73,7 +73,7 @@ public class InPlaceLocationRepository_Tests(SqliteInMemoryFixture fixture)
 
         var updated = await repo.UpdateAsync(
             created.Id,
-            new InPlaceLocation(created.Id, created.LocationId, 202, 30),
+            InPlaceLocation.Reconstitute(created.Id, created.LocationId, 202, 30),
             CancellationToken.None);
 
         Assert.NotNull(updated);

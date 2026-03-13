@@ -13,7 +13,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
         : RepositoryBase<Course, Guid, CourseEntity, CoursesOnlineDbContext>(context), ICourseRepository
     {
         protected override Course ToModel(CourseEntity entity)
-            => new(entity.Id, entity.Title, entity.Description, entity.DurationInDays);
+            => Course.Reconstitute(entity.Id, entity.Title, entity.Description, entity.DurationInDays);
 
         private static CourseEvent ToCourseEventModel(CourseEventEntity entity)
         {
@@ -22,10 +22,10 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             var venueTypeEntity = entity.VenueType
                 ?? throw new InvalidOperationException("Venue type must be loaded from database.");
 
-            var courseEventType = new CourseEventType(courseEventTypeEntity.Id, courseEventTypeEntity.TypeName);
-            var venueType = new VenueType(venueTypeEntity.Id, venueTypeEntity.Name);
+            var courseEventType = CourseEventType.Reconstitute(courseEventTypeEntity.Id, courseEventTypeEntity.TypeName);
+            var venueType = VenueType.Reconstitute(venueTypeEntity.Id, venueTypeEntity.Name);
 
-            return new CourseEvent(
+            return CourseEvent.Reconstitute(
                 entity.Id,
                 entity.CourseId,
                 entity.EventDate,
