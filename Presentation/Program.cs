@@ -1,6 +1,7 @@
 using Backend.Application.Extensions;
 using Backend.Application.Common;
 using Backend.Infrastructure.Extensions;
+using Backend.Infrastructure.Persistence;
 using Backend.Presentation.API.Endpoints;
 using Microsoft.AspNetCore.Routing;
 
@@ -18,7 +19,7 @@ public partial class Program
 
         builder.Services.AddMemoryCache();
 
-        builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
+        builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
         builder.Services.AddApplication(builder.Configuration, builder.Environment);
 
         var app = builder.Build();
@@ -65,7 +66,7 @@ public partial class Program
             }
         });
 
-        await Backend.Infrastructure.Persistence.DatabaseInitializer.InitializeAsync(app.Services, app.Environment);
+        await PersistenceDatabaseInitializer.InitializeAsync(app.Services, app.Environment);
 
         app.MapOpenApi();
         app.UseHttpsRedirection();

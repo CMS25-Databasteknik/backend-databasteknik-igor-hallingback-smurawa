@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Persistence;
 
-public static class DatabaseInitializer
+public static class PersistenceDatabaseInitializer
 {
     public static async Task InitializeAsync(IServiceProvider sp, IHostEnvironment env, CancellationToken ct = default)
     {
