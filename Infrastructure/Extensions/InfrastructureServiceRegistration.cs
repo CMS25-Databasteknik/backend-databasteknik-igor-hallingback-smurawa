@@ -17,19 +17,15 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.Infrastructure.Extensions;
 
 public static class InfrastructureServiceRegistration
 {
-    public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration config)
+    public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration config, IHostEnvironment env)
     {
-        var useSqliteForTests = string.Equals(
-            Environment.GetEnvironmentVariable("DB_PROVIDER"),
-            "Sqlite",
-            StringComparison.OrdinalIgnoreCase);
-
-        if (useSqliteForTests)
+        if (env.IsDevelopment())
         {
             services.AddSingleton(_ =>
             {

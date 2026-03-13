@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
-public sealed class InPlaceLocationEntityConfiguration : IEntityTypeConfiguration<InPlaceLocationEntity>
+public sealed class InPlaceLocationEntityConfiguration(bool isSqlite) : IEntityTypeConfiguration<InPlaceLocationEntity>
 {
     public void Configure(EntityTypeBuilder<InPlaceLocationEntity> e)
     {
-        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("InPlaceLocations");
 
@@ -23,7 +22,7 @@ public sealed class InPlaceLocationEntityConfiguration : IEntityTypeConfiguratio
         e.Property(x => x.Seats)
             .IsRequired();
 
-        if (isSqliteTestMode)
+        if (isSqlite)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

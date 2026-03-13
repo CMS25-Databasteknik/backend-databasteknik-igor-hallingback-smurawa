@@ -1,7 +1,6 @@
 using Backend.Application.Extensions;
 using Backend.Application.Common;
 using Backend.Infrastructure.Extensions;
-using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Presentation.API.Endpoints;
 using Microsoft.AspNetCore.Routing;
 
@@ -19,7 +18,7 @@ public partial class Program
 
         builder.Services.AddMemoryCache();
 
-        builder.Services.AddInfrastructureServices(builder.Configuration);
+        builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
         builder.Services.AddApplication(builder.Configuration, builder.Environment);
 
         var app = builder.Build();
@@ -66,17 +65,7 @@ public partial class Program
             }
         });
 
-        var isSqliteTestMode = string.Equals(
-            Environment.GetEnvironmentVariable("DB_PROVIDER"),
-            "Sqlite",
-            StringComparison.OrdinalIgnoreCase);
-
-        if (isSqliteTestMode)
-        {
-            using var scope = app.Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<CoursesOnlineDbContext>();
-            await db.Database.EnsureCreatedAsync();
-        }
+        await Backend.Infrastructure.Persistence.DatabaseInitializer.InitializeAsync(app.Services, app.Environment);
 
         app.MapOpenApi();
         app.UseHttpsRedirection();

@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
-public sealed class VenueTypeEntityConfiguration : IEntityTypeConfiguration<VenueTypeEntity>
+public sealed class VenueTypeEntityConfiguration(bool isSqlite) : IEntityTypeConfiguration<VenueTypeEntity>
 {
     public void Configure(EntityTypeBuilder<VenueTypeEntity> e)
     {
-        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("VenueTypes");
 
@@ -21,7 +20,7 @@ public sealed class VenueTypeEntityConfiguration : IEntityTypeConfiguration<Venu
             .HasMaxLength(50)
             .IsRequired();
 
-        if (isSqliteTestMode)
+        if (isSqlite)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

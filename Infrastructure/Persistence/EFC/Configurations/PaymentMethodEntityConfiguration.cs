@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
-public sealed class PaymentMethodEntityConfiguration : IEntityTypeConfiguration<PaymentMethodEntity>
+public sealed class PaymentMethodEntityConfiguration(bool isSqlite) : IEntityTypeConfiguration<PaymentMethodEntity>
 {
     public void Configure(EntityTypeBuilder<PaymentMethodEntity> e)
     {
-        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("PaymentMethods");
 
@@ -21,7 +20,7 @@ public sealed class PaymentMethodEntityConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(50)
             .IsRequired();
 
-        if (isSqliteTestMode)
+        if (isSqlite)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

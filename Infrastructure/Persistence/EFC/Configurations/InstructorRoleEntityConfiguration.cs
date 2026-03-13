@@ -4,17 +4,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
-public sealed class InstructorRoleEntityConfiguration : IEntityTypeConfiguration<InstructorRoleEntity>
+public sealed class InstructorRoleEntityConfiguration(bool isSqlite) : IEntityTypeConfiguration<InstructorRoleEntity>
 {
     public void Configure(EntityTypeBuilder<InstructorRoleEntity> e)
     {
-        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("InstructorRoles", t =>
         {
             t.HasCheckConstraint(
                 "CK_InstructorRoles_RoleName_NotEmpty",
-                isSqliteTestMode
+                isSqlite
                     ? "LTRIM(RTRIM([RoleName])) <> ''"
                     : "LEN([RoleName]) > 0");
         });
@@ -28,7 +27,7 @@ public sealed class InstructorRoleEntityConfiguration : IEntityTypeConfiguration
             .HasMaxLength(50)
             .IsRequired();
 
-        if (isSqliteTestMode)
+        if (isSqlite)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

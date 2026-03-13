@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
-public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfiguration<CourseRegistrationEntity>
+public sealed class CourseRegistrationEntityConfiguration(bool isSqlite) : IEntityTypeConfiguration<CourseRegistrationEntity>
 {
     public void Configure(EntityTypeBuilder<CourseRegistrationEntity> e)
     {
-        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("CourseRegistrations");
 
@@ -18,7 +17,7 @@ public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfigura
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("(NEWSEQUENTIALID())", "DF_CourseRegistrations_Id");
 
-        if (isSqliteTestMode)
+        if (isSqlite)
         {
             e.Property(x => x.RegistrationDate)
                 .HasPrecision(0)
@@ -41,7 +40,7 @@ public sealed class CourseRegistrationEntityConfiguration : IEntityTypeConfigura
             .HasDefaultValue(1)
             .IsRequired();
 
-        if (isSqliteTestMode)
+        if (isSqlite)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

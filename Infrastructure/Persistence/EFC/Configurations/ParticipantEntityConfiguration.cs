@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
-public sealed class ParticipantEntityConfiguration : IEntityTypeConfiguration<ParticipantEntity>
+public sealed class ParticipantEntityConfiguration(bool isSqlite) : IEntityTypeConfiguration<ParticipantEntity>
 {
     public void Configure(EntityTypeBuilder<ParticipantEntity> e)
     {
-        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("Participants", t =>
         {
@@ -41,7 +40,7 @@ public sealed class ParticipantEntityConfiguration : IEntityTypeConfiguration<Pa
             .HasDefaultValue(1)
             .IsRequired();
 
-        if (isSqliteTestMode)
+        if (isSqlite)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

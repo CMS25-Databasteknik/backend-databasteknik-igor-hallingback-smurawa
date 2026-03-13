@@ -11,14 +11,12 @@ public sealed class CoursesOnlineDbApiFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Environment.SetEnvironmentVariable("DB_PROVIDER", "Sqlite");
         builder.UseEnvironment("Development");
     }
 
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
-        Environment.SetEnvironmentVariable("DB_PROVIDER", null);
     }
 
     public async Task ResetAndSeedDataAsync()

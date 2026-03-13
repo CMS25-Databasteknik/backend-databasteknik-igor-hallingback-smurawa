@@ -4,11 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Backend.Infrastructure.Persistence.EFC.Configurations;
 
-public sealed class InstructorEntityConfiguration : IEntityTypeConfiguration<InstructorEntity>
+public sealed class InstructorEntityConfiguration(bool isSqlite) : IEntityTypeConfiguration<InstructorEntity>
 {
     public void Configure(EntityTypeBuilder<InstructorEntity> e)
     {
-        var isSqliteTestMode = string.Equals(Environment.GetEnvironmentVariable("DB_PROVIDER"), "Sqlite", StringComparison.OrdinalIgnoreCase);
 
         e.ToTable("Instructors", t =>
         {
@@ -28,7 +27,7 @@ public sealed class InstructorEntityConfiguration : IEntityTypeConfiguration<Ins
         e.Property(x => x.InstructorRoleId)
             .IsRequired();
 
-        if (isSqliteTestMode)
+        if (isSqlite)
         {
             e.Property(x => x.Concurrency)
                 .IsConcurrencyToken()

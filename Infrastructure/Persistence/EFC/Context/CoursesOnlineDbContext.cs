@@ -1,4 +1,5 @@
 using Backend.Infrastructure.Persistence.Entities;
+using Backend.Infrastructure.Persistence.EFC.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Infrastructure.Persistence.EFC.Context;
@@ -25,7 +26,21 @@ public sealed class CoursesOnlineDbContext(DbContextOptions<CoursesOnlineDbConte
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CoursesOnlineDbContext).Assembly);
+        var isSqlite = Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite";
+
+        modelBuilder.ApplyConfiguration(new CourseEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new CourseEventEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new CourseEventTypeEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new CourseRegistrationEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new CourseRegistrationStatusEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new InPlaceLocationEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new InstructorEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new InstructorRoleEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new LocationEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new ParticipantContactTypeEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new ParticipantEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new PaymentMethodEntityConfiguration(isSqlite));
+        modelBuilder.ApplyConfiguration(new VenueTypeEntityConfiguration(isSqlite));
     }
 }
 
