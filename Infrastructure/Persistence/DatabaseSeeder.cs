@@ -124,11 +124,11 @@ public static class DatabaseSeeder
     {
         var instructors = new List<InstructorEntity>
         {
-            new() { Id = Guid.NewGuid(), Name = "Emma Johnson", InstructorRoleId = roles[0].Id },
-            new() { Id = Guid.NewGuid(), Name = "Michael Chen", InstructorRoleId = roles[1].Id },
-            new() { Id = Guid.NewGuid(), Name = "Sarah Williams", InstructorRoleId = roles[2].Id },
-            new() { Id = Guid.NewGuid(), Name = "David Anderson", InstructorRoleId = roles[2].Id },
-            new() { Id = Guid.NewGuid(), Name = "Lisa Martinez", InstructorRoleId = roles[0].Id },
+            new() { Id = Guid.NewGuid(), Name = "Erik Lindqvist", InstructorRoleId = roles[0].Id },
+            new() { Id = Guid.NewGuid(), Name = "Anna Johansson", InstructorRoleId = roles[1].Id },
+            new() { Id = Guid.NewGuid(), Name = "Lars Eriksson", InstructorRoleId = roles[2].Id },
+            new() { Id = Guid.NewGuid(), Name = "Maria Svensson", InstructorRoleId = roles[2].Id },
+            new() { Id = Guid.NewGuid(), Name = "Johan Karlsson", InstructorRoleId = roles[0].Id },
         };
         context.Instructors.AddRange(instructors);
         await context.SaveChangesAsync(ct);
