@@ -146,14 +146,14 @@ Transactions are used explicitly in repositories with multi-step atomic operatio
 | `Course` | `Title`, `Description`, `DurationInDays` |
 | `CourseEvent` | `CourseId`, `EventDate`, `Price` *(VO)*, `Seats`, `CourseEventTypeId`, `VenueTypeId` |
 | `CourseEventType` | `Name` *(lookup)* |
-| `CourseRegistration` | `CourseEventId`, `ParticipantId`, `StatusId`, `PaymentMethodId`, `RegisteredAt` |
+| `CourseRegistration` | `CourseEventId`, `ParticipantId`, `Status`, `PaymentMethodId`, `RegisteredAt` |
 | `CourseRegistrationStatus` | `Name` *(lookup)* |
 | `Participant` | `FirstName`, `LastName`, `Email` *(VO)*, `PhoneNumber` *(VO)*, `ContactTypeId` |
 | `ParticipantContactType` | `Name` *(lookup)* |
 | `Instructor` | `Name`, `RoleId` |
 | `InstructorRole` | `Name` *(lookup)* |
 | `Location` | `StreetName`, `PostalCode`, `City` |
-| `InPlaceLocation` | `LocationId`, `RoomName`, `Capacity` |
+| `InPlaceLocation` | `LocationId`, `RoomNumber`, `Seats` |
 | `PaymentMethod` | `Name` *(lookup)* |
 | `VenueType` | `Name` *(lookup)* |
 
@@ -191,7 +191,7 @@ The infrastructure layer switches database provider based on environment:
 |---|---|---|
 | Development | SQLite in-memory (shared cache) | `EnsureCreatedAsync` |
 | Production | SQL Server | `MigrateAsync` |
-| Tests | SQLite in-memory (via `DB_PROVIDER=Sqlite`) | `EnsureCreatedAsync` |
+| Tests | SQLite in-memory (via `SqliteInMemoryFixture`) | `EnsureCreatedAsync` |
 
 `ContextRegistrationExtension` checks `env.IsDevelopment()` to register the correct provider. A singleton `SqliteConnection` is kept open for the lifetime of the dev app so the in-memory database survives across requests.
 
@@ -253,7 +253,7 @@ Caching lives in the **Application layer** — never in repositories. Only looku
 
 - Real EF Core DbContext against SQLite in-memory
 - Every repository tested: CRUD, ordering, filtering, constraint violations
-- `SqliteInMemoryFixture` sets `DB_PROVIDER=Sqlite`; infrastructure detects this and uses SQLite automatically
+- `SqliteInMemoryFixture` directly configures a `SqliteConnection` and passes it to `DbContextOptionsBuilder` — no environment variable needed
 
 ### E2E tests
 
