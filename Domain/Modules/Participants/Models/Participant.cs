@@ -13,6 +13,9 @@ public sealed class Participant
     public PhoneNumber PhoneNumber { get; private set; } = null!;
     public ParticipantContactType ContactType { get; private set; } = null!;
 
+    /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
+
+
     [JsonConstructor]
     private Participant(
         Guid id,

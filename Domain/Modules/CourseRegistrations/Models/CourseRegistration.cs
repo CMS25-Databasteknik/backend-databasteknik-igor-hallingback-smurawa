@@ -14,6 +14,9 @@ public sealed class CourseRegistration
     public CourseRegistrationStatus Status { get; private set; }
     public PaymentMethodModel PaymentMethod { get; private set; } = null!;
 
+    /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
+
+
     [JsonConstructor]
     private CourseRegistration(
         Guid id,

@@ -9,6 +9,9 @@ public sealed class InPlaceLocation
     public int RoomNumber { get; private set; }
     public int Seats { get; private set; }
 
+    /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
+
+
     [JsonConstructor]
     private InPlaceLocation(int id, int locationId, int roomNumber, int seats)
     {
