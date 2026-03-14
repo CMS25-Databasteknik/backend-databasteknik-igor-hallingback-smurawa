@@ -16,5 +16,7 @@ public static class PersistenceDatabaseInitializer
             await context.Database.EnsureCreatedAsync(ct);
         else
             await context.Database.MigrateAsync(ct);
+
+        await DatabaseSeeder.SeedAsync(context, ct);
     }
 }

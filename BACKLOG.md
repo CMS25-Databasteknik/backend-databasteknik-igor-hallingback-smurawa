@@ -98,6 +98,8 @@ Mixes old-style `if (price < 0) throw new ArgumentOutOfRangeException(...)` with
 new-style `ArgumentOutOfRangeException.ThrowIfNegativeOrZero(seats)`.
 Fix: use `ThrowIfNegativeOrZero` / `ThrowIfNegative` consistently throughout.
 
+- **fix-courseevent-validation-style** — `price` intentionally keeps `if (price < 0) throw new ArgumentOutOfRangeException(...)` because `ThrowIfNegative` doesn't accept a custom message and price=0 is valid (free event). All other guards in `SetValues` use `ThrowIfNegativeOrZero` consistently.
+
 ---
 
 ## Baseline
