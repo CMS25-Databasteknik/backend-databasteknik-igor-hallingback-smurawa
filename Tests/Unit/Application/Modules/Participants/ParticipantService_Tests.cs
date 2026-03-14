@@ -52,11 +52,11 @@ public class ParticipantService_Tests
         Assert.NotNull(result.Value);
         Assert.Equal("John", result.Value.FirstName);
         Assert.Equal("Doe", result.Value.LastName);
-        Assert.Equal("john.doe@example.com", result.Value.Email);
-        Assert.Equal("+46701234567", result.Value.PhoneNumber);
+        Assert.Equal("john.doe@example.com", result.Value.Email.Value);
+        Assert.Equal("+46701234567", result.Value.PhoneNumber.Value);
 
         await mockRepo.Received(1).AddAsync(
-            Arg.Is<Participant>(p => p.FirstName == "John" && p.LastName == "Doe" && p.Email == "john.doe@example.com"),
+            Arg.Is<Participant>(p => p.FirstName == "John" && p.LastName == "Doe" && p.Email.Value == "john.doe@example.com"),
             Arg.Any<CancellationToken>());
     }
 
@@ -286,8 +286,8 @@ public class ParticipantService_Tests
         Assert.NotNull(result.Value);
         Assert.Equal(firstName, result.Value.FirstName);
         Assert.Equal(lastName, result.Value.LastName);
-        Assert.Equal(email, result.Value.Email);
-        Assert.Equal(phoneNumber, result.Value.PhoneNumber);
+        Assert.Equal(email, result.Value.Email.Value);
+        Assert.Equal(phoneNumber, result.Value.PhoneNumber.Value);
     }
 
     [Theory]
@@ -520,7 +520,7 @@ public class ParticipantService_Tests
         Assert.Null(result.ErrorType);
         Assert.NotNull(result.Value);
         Assert.Equal("Smith", result.Value.LastName);
-        Assert.Equal("john.smith@example.com", result.Value.Email);
+        Assert.Equal("john.smith@example.com", result.Value.Email.Value);
 
         await mockRepo.Received(1).UpdateAsync(
             Arg.Is<Guid>(id => id == participantId),

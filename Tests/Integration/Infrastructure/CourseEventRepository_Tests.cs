@@ -52,7 +52,7 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal(input.CourseId, persisted.CourseId);
         Assert.Equal(input.CourseEventTypeId, persisted.CourseEventTypeId);
         Assert.Equal(input.Seats, persisted.Seats);
-        Assert.Equal(input.Price, persisted.Price);
+        Assert.Equal(input.Price.Value, persisted.Price);
         Assert.Equal(input.VenueType.Id, persisted.VenueTypeId);
     }
 
@@ -111,7 +111,7 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
             CancellationToken.None);
 
         Assert.NotNull(updated);
-        Assert.Equal(123m, updated!.Price);
+        Assert.Equal(123m, updated!.Price.Value);
         Assert.Equal(VenueType.Reconstitute(3, "Hybrid"), updated.VenueType);
 
         var persisted = await context.CourseEvents

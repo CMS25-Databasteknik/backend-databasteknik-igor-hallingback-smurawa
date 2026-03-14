@@ -229,7 +229,7 @@ public class CourseEventService_Tests
         eventRepo.UpdateAsync(Arg.Any<Guid>(), Arg.Any<CourseEvent>(), Arg.Any<CancellationToken>()).Returns(updated);
 
         var service = CreateService(eventRepo);
-        var input = new UpdateCourseEventInput(eventId, courseId, updated.EventDate, updated.Price, updated.Seats, updated.CourseEventTypeId, 1);
+        var input = new UpdateCourseEventInput(eventId, courseId, updated.EventDate, updated.Price.Value, updated.Seats, updated.CourseEventTypeId, 1);
 
         var result = await service.UpdateCourseEventAsync(input);
 

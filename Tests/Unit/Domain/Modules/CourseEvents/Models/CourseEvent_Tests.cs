@@ -31,7 +31,7 @@ public class CourseEvent_Tests
         Assert.Equal(id, courseEvent.Id);
         Assert.Equal(courseId, courseEvent.CourseId);
         Assert.Equal(eventDate, courseEvent.EventDate);
-        Assert.Equal(price, courseEvent.Price);
+        Assert.Equal(price, courseEvent.Price.Value);
         Assert.Equal(seats, courseEvent.Seats);
         Assert.Equal(courseEventTypeId, courseEvent.CourseEventTypeId);
         Assert.Equal(VenueType.Reconstitute(1, "InPerson"), courseEvent.VenueType);
@@ -144,7 +144,7 @@ public class CourseEvent_Tests
         var courseEvent = CourseEvent.Reconstitute(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.Reconstitute(1, "InPerson"));
 
         // Assert
-        Assert.Equal(0m, courseEvent.Price);
+        Assert.Equal(0m, courseEvent.Price.Value);
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class CourseEvent_Tests
         var courseEvent = CourseEvent.Reconstitute(id, courseId, eventDate, price, seats, courseEventTypeId, VenueType.Reconstitute(1, "InPerson"));
 
         // Assert
-        Assert.Equal(price, courseEvent.Price);
+        Assert.Equal(price, courseEvent.Price.Value);
     }
 
     [Theory]
@@ -271,7 +271,7 @@ public class CourseEvent_Tests
         Assert.Equal(id, courseEvent.Id);
         Assert.Equal(courseId, courseEvent.CourseId);
         Assert.Equal(eventDate, courseEvent.EventDate);
-        Assert.Equal(price, courseEvent.Price);
+        Assert.Equal(price, courseEvent.Price.Value);
         Assert.Equal(seats, courseEvent.Seats);
         Assert.Equal(courseEventTypeId, courseEvent.CourseEventTypeId);
     }
@@ -421,7 +421,7 @@ public class CourseEvent_Tests
         var courseEvent = CourseEvent.Reconstitute(Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, price, 30, 1, VenueType.Reconstitute(1, "InPerson"));
 
         // Assert
-        Assert.Equal(price, courseEvent.Price);
+        Assert.Equal(price, courseEvent.Price.Value);
     }
 
     [Fact]
@@ -446,7 +446,7 @@ public class CourseEvent_Tests
         // Assert
         Assert.Equal(newCourseId, courseEvent.CourseId);
         Assert.Equal(newEventDate, courseEvent.EventDate);
-        Assert.Equal(250m, courseEvent.Price);
+        Assert.Equal(250m, courseEvent.Price.Value);
         Assert.Equal(25, courseEvent.Seats);
         Assert.Equal(2, courseEvent.CourseEventTypeId);
         Assert.Equal(VenueType.Reconstitute(3, "Hybrid"), courseEvent.VenueType);

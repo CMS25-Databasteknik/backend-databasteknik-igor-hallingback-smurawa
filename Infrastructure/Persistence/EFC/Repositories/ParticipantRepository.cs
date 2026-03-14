@@ -36,8 +36,8 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
             Id = participant.Id,
             FirstName = participant.FirstName,
             LastName = participant.LastName,
-            Email = participant.Email,
-            PhoneNumber = participant.PhoneNumber,
+            Email = participant.Email.Value,
+            PhoneNumber = participant.PhoneNumber.Value,
             ContactTypeId = contactType.Id
         };
     }
@@ -118,8 +118,8 @@ public class ParticipantRepository(CoursesOnlineDbContext context)
 
         entity.FirstName = participant.FirstName;
         entity.LastName = participant.LastName;
-        entity.Email = participant.Email;
-        entity.PhoneNumber = participant.PhoneNumber;
+        entity.Email = participant.Email.Value;
+        entity.PhoneNumber = participant.PhoneNumber.Value;
         entity.ContactTypeId = participant.ContactType.Id;
         entity.ModifiedAtUtc = DateTime.UtcNow;
 

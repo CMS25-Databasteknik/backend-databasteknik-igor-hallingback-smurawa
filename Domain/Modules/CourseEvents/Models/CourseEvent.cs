@@ -1,3 +1,4 @@
+using Backend.Domain.Common.ValueObjects;
 using Backend.Domain.Modules.CourseEventTypes.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using System.Diagnostics.CodeAnalysis;
@@ -10,7 +11,7 @@ public sealed class CourseEvent
     public Guid Id { get; }
     public Guid CourseId { get; private set; }
     public DateTime EventDate { get; private set; }
-    public decimal Price { get; private set; }
+    public Price Price { get; private set; } = null!;
     public int Seats { get; private set; }
     public int CourseEventTypeId { get; private set; }
     public int VenueTypeId { get; private set; }
@@ -22,7 +23,7 @@ public sealed class CourseEvent
         Guid id,
         Guid courseId,
         DateTime eventDate,
-        decimal price,
+        Price price,
         int seats,
         int courseEventTypeId,
         VenueType venueType,
@@ -45,7 +46,11 @@ public sealed class CourseEvent
         VenueType venueType,
         CourseEventType? courseEventType = null,
         VenueType? resolvedVenueType = null)
-        => new(Guid.NewGuid(), courseId, eventDate, price, seats, courseEventTypeId, venueType, courseEventType, resolvedVenueType);
+    {
+        if (price < 0)
+            throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
+        return new(Guid.NewGuid(), courseId, eventDate, Price.Create(price), seats, courseEventTypeId, venueType, courseEventType, resolvedVenueType);
+    }
 
     public static CourseEvent Reconstitute(
         Guid id,
@@ -57,7 +62,11 @@ public sealed class CourseEvent
         VenueType venueType,
         CourseEventType? courseEventType = null,
         VenueType? resolvedVenueType = null)
-        => new(id, courseId, eventDate, price, seats, courseEventTypeId, venueType, courseEventType, resolvedVenueType);
+    {
+        if (price < 0)
+            throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
+        return new(id, courseId, eventDate, Price.Create(price), seats, courseEventTypeId, venueType, courseEventType, resolvedVenueType);
+    }
 
     public void Update(
         Guid courseId,
@@ -69,14 +78,16 @@ public sealed class CourseEvent
         CourseEventType? courseEventType = null,
         VenueType? resolvedVenueType = null)
     {
-        SetValues(courseId, eventDate, price, seats, courseEventTypeId, venueType, courseEventType, resolvedVenueType);
+        if (price < 0)
+            throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
+        SetValues(courseId, eventDate, Price.Create(price), seats, courseEventTypeId, venueType, courseEventType, resolvedVenueType);
     }
 
     [MemberNotNull(nameof(CourseEventType), nameof(VenueType))]
     private void SetValues(
         Guid courseId,
         DateTime eventDate,
-        decimal price,
+        Price price,
         int seats,
         int courseEventTypeId,
         VenueType venueType,
@@ -89,11 +100,7 @@ public sealed class CourseEvent
         if (eventDate == default)
             throw new ArgumentException("Event date must be specified.", nameof(eventDate));
 
-        if (price < 0)
-            throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
-
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(seats);
-
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(courseEventTypeId);
         ArgumentNullException.ThrowIfNull(venueType);
 

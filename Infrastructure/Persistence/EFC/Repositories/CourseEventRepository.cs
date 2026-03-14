@@ -43,7 +43,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
                 Id = courseEvent.Id,
                 CourseId = courseEvent.CourseId,
                 EventDate = courseEvent.EventDate,
-                Price = courseEvent.Price,
+                Price = courseEvent.Price.Value,
                 Seats = courseEvent.Seats,
                 CourseEventTypeId = courseEvent.CourseEventTypeId,
                 VenueTypeId = venueType.Id
@@ -156,7 +156,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
 
             entity.CourseId = courseEvent.CourseId;
             entity.EventDate = courseEvent.EventDate;
-            entity.Price = courseEvent.Price;
+            entity.Price = courseEvent.Price.Value;
             entity.Seats = courseEvent.Seats;
             entity.CourseEventTypeId = courseEvent.CourseEventTypeId;
             entity.VenueTypeId = courseEvent.VenueType.Id;

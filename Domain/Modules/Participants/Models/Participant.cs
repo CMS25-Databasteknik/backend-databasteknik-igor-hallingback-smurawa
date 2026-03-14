@@ -1,6 +1,6 @@
+using Backend.Domain.Common.ValueObjects;
 using Backend.Domain.Modules.ParticipantContactTypes.Models;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 
 namespace Backend.Domain.Modules.Participants.Models;
 
@@ -9,8 +9,8 @@ public sealed class Participant
     public Guid Id { get; }
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
-    public string Email { get; private set; } = string.Empty;
-    public string PhoneNumber { get; private set; } = string.Empty;
+    public Email Email { get; private set; } = null!;
+    public PhoneNumber PhoneNumber { get; private set; } = null!;
     public ParticipantContactType ContactType { get; private set; } = null!;
 
     [JsonConstructor]
@@ -18,8 +18,8 @@ public sealed class Participant
         Guid id,
         string firstName,
         string lastName,
-        string email,
-        string phoneNumber,
+        Email email,
+        PhoneNumber phoneNumber,
         ParticipantContactType? contactType = null)
     {
         if (id == Guid.Empty)
@@ -35,7 +35,10 @@ public sealed class Participant
         string email,
         string phoneNumber,
         ParticipantContactType? contactType = null)
-        => new(Guid.NewGuid(), firstName, lastName, email, phoneNumber, contactType);
+        => new(Guid.NewGuid(), firstName, lastName,
+            Email.Create(email, nameof(email)),
+            PhoneNumber.Create(phoneNumber, nameof(phoneNumber)),
+            contactType);
 
     public static Participant Reconstitute(
         Guid id,
@@ -44,7 +47,10 @@ public sealed class Participant
         string email,
         string phoneNumber,
         ParticipantContactType? contactType = null)
-        => new(id, firstName, lastName, email, phoneNumber, contactType);
+        => new(id, firstName, lastName,
+            Email.Create(email, nameof(email)),
+            PhoneNumber.Create(phoneNumber, nameof(phoneNumber)),
+            contactType);
 
     public void Update(
         string firstName,
@@ -53,14 +59,17 @@ public sealed class Participant
         string phoneNumber,
         ParticipantContactType? contactType = null)
     {
-        SetValues(firstName, lastName, email, phoneNumber, contactType);
+        SetValues(firstName, lastName,
+            Email.Create(email, nameof(email)),
+            PhoneNumber.Create(phoneNumber, nameof(phoneNumber)),
+            contactType);
     }
 
     private void SetValues(
         string firstName,
         string lastName,
-        string email,
-        string phoneNumber,
+        Email email,
+        PhoneNumber phoneNumber,
         ParticipantContactType? contactType)
     {
         if (string.IsNullOrWhiteSpace(firstName))
@@ -69,26 +78,12 @@ public sealed class Participant
         if (string.IsNullOrWhiteSpace(lastName))
             throw new ArgumentException("Last name cannot be empty or whitespace.", nameof(lastName));
 
-        if (string.IsNullOrWhiteSpace(email))
-            throw new ArgumentException("Email cannot be empty or whitespace.", nameof(email));
-
-        if (!Regex.IsMatch(
-        email.Trim(),
-        @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$",
-        RegexOptions.CultureInvariant))
-        {
-            throw new ArgumentException("Email format is invalid. Expected format: user@domain.com", nameof(email));
-        }
-
-        if (string.IsNullOrWhiteSpace(phoneNumber))
-            throw new ArgumentException("Phone number cannot be empty or whitespace.", nameof(phoneNumber));
-
         var resolvedContactType = contactType ?? ParticipantContactType.Reconstitute(1, "Primary");
 
         FirstName = firstName.Trim();
         LastName = lastName.Trim();
-        Email = email.Trim();
-        PhoneNumber = phoneNumber.Trim();
+        Email = email;
+        PhoneNumber = phoneNumber;
         ContactType = resolvedContactType;
     }
 }

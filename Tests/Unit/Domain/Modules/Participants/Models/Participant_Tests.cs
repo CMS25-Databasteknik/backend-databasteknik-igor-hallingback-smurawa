@@ -23,8 +23,8 @@ public class Participant_Tests
         Assert.Equal(id, participant.Id);
         Assert.Equal(firstName, participant.FirstName);
         Assert.Equal(lastName, participant.LastName);
-        Assert.Equal(email, participant.Email);
-        Assert.Equal(phoneNumber, participant.PhoneNumber);
+        Assert.Equal(email, participant.Email.Value);
+        Assert.Equal(phoneNumber, participant.PhoneNumber.Value);
         Assert.Equal(ParticipantContactType.Reconstitute(1, "Primary"), participant.ContactType);
     }
 
@@ -288,8 +288,8 @@ public class Participant_Tests
         // Assert
         Assert.Equal(firstName, participant.FirstName);
         Assert.Equal(lastName, participant.LastName);
-        Assert.Equal(email, participant.Email);
-        Assert.Equal(phoneNumber, participant.PhoneNumber);
+        Assert.Equal(email, participant.Email.Value);
+        Assert.Equal(phoneNumber, participant.PhoneNumber.Value);
     }
 
     [Fact]
@@ -309,8 +309,8 @@ public class Participant_Tests
         Assert.Equal(id, participant.Id);
         Assert.Equal(firstName, participant.FirstName);
         Assert.Equal(lastName, participant.LastName);
-        Assert.Equal(email, participant.Email);
-        Assert.Equal(phoneNumber, participant.PhoneNumber);
+        Assert.Equal(email, participant.Email.Value);
+        Assert.Equal(phoneNumber, participant.PhoneNumber.Value);
     }
 
     [Fact]
@@ -423,7 +423,7 @@ public class Participant_Tests
         var participant = Participant.Reconstitute(Guid.NewGuid(), "John", "Doe", email, "+46701234567");
 
         // Assert
-        Assert.Equal(email, participant.Email);
+        Assert.Equal(email, participant.Email.Value);
     }
 
     [Theory]
@@ -436,7 +436,7 @@ public class Participant_Tests
         var participant = Participant.Reconstitute(Guid.NewGuid(), "John", "Doe", "john.doe@example.com", phoneNumber);
 
         // Assert
-        Assert.Equal(phoneNumber, participant.PhoneNumber);
+        Assert.Equal(phoneNumber, participant.PhoneNumber.Value);
     }
 
     [Fact]
@@ -461,8 +461,8 @@ public class Participant_Tests
         // Assert
         Assert.Equal("Jane", participant.FirstName);
         Assert.Equal("Smith", participant.LastName);
-        Assert.Equal("jane.smith@example.com", participant.Email);
-        Assert.Equal("+46709876543", participant.PhoneNumber);
+        Assert.Equal("jane.smith@example.com", participant.Email.Value);
+        Assert.Equal("+46709876543", participant.PhoneNumber.Value);
         Assert.Equal(ParticipantContactType.Reconstitute(2, "Billing"), participant.ContactType);
     }
 

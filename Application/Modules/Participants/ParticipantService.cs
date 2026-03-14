@@ -91,8 +91,8 @@ public class ParticipantService(
                 existingParticipant.Id,
                 existingParticipant.FirstName,
                 existingParticipant.LastName,
-                existingParticipant.Email,
-                existingParticipant.PhoneNumber,
+                existingParticipant.Email.Value,
+                existingParticipant.PhoneNumber.Value,
                 new ParticipantLookupItem(
                     existingParticipant.ContactType.Id,
                     existingParticipant.ContactType.Name)

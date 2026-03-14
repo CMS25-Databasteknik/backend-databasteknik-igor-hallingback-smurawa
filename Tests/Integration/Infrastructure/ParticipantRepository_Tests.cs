@@ -45,8 +45,8 @@ public class ParticipantRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal(input.Id, persisted.Id);
         Assert.Equal(input.FirstName, persisted.FirstName);
         Assert.Equal(input.LastName, persisted.LastName);
-        Assert.Equal(input.Email, persisted.Email);
-        Assert.Equal(input.PhoneNumber, persisted.PhoneNumber);
+        Assert.Equal(input.Email.Value, persisted.Email);
+        Assert.Equal(input.PhoneNumber.Value, persisted.PhoneNumber);
         Assert.Equal(input.ContactType.Id, persisted.ContactTypeId);
     }
 
