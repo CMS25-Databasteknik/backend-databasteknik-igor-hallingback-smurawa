@@ -1,329 +1,332 @@
-# Backend - Course Management System
+# Course Management System — Backend
 
-A .NET 10 backend solution for managing courses, course events, instructors, participants, locations, and registrations.
+A .NET REST API for managing online courses, events, instructors, participants, and registrations. Demonstrates practical application of **Domain-Driven Design**, **Clean Architecture**, and production-grade testing practices.
+
+## Table of Contents
+
+- [Architecture](#architecture)
+- [DDD Patterns](#ddd-patterns)
+- [Domain Model](#domain-model)
+- [API Endpoints](#api-endpoints)
+- [Database Strategy](#database-strategy)
+- [Caching](#caching)
+- [Testing](#testing)
+- [Getting Started](#getting-started)
+- [Technology Stack](#technology-stack)
+
+---
 
 ## Architecture
 
-The solution follows Clean Architecture and is split into these layers:
+The solution is structured as four projects following Clean Architecture. Dependencies only point inward — infrastructure and presentation know about application and domain, but domain knows nothing about the others.
 
-### Projects
+```
+Presentation → Application → Domain
+Infrastructure → Application → Domain
+```
 
-#### **Domain** (`Domain.csproj`)
+| Project | Responsibility |
+|---------|---------------|
+| `Domain` | Business models, validation rules, Value Objects, repository contracts |
+| `Application` | Services, DTOs (Input/Output), caching for lookup entities |
+| `Infrastructure` | EF Core `DbContext`, repositories, entity configs, migrations |
+| `Presentation` | Minimal API endpoints, request models, HTTP result mapping |
 
-Core business models and business rules.
+### Folder structure per module
 
-- **Target Framework**: .NET 10.0
-- **Dependencies**: None
+```
+Domain/Modules/{Module}/Models/
+Domain/Modules/{Module}/Contracts/I{Entity}Repository.cs
+Domain/Common/ValueObjects/           ← shared Value Objects
 
-#### **Application** (`Application.csproj`)
+Application/Modules/{Module}/I{Entity}Service.cs
+Application/Modules/{Module}/{Entity}Service.cs
+Application/Modules/{Module}/Inputs/
+Application/Modules/{Module}/Outputs/
+Application/Modules/{Module}/Caching/ ← lookup entities only
 
-Application services, use cases, and caching logic.
+Infrastructure/Persistence/EFC/Repositories/
+Infrastructure/Persistence/EFC/Configurations/
+Infrastructure/Persistence/Entities/
+Infrastructure/Persistence/           ← DatabaseSeeder, PersistenceDatabaseInitializer
 
-- **Target Framework**: .NET 10.0
-- **Dependencies**:
-  - Domain project
-  - Microsoft.Extensions.Configuration (10.0.2)
-  - Microsoft.Extensions.DependencyInjection (10.0.2)
-  - Microsoft.Extensions.Hosting (10.0.2)
+Presentation/Endpoints/
+Presentation/Models/{Module}/
 
-#### **Infrastructure** (`Infrastructure.csproj`)
+Tests/Unit/Domain/
+Tests/Unit/Application/
+Tests/Integration/Infrastructure/
+Tests/E2E/
+```
 
-Database access and EF Core implementation.
+---
 
-- **Target Framework**: .NET 10.0
-- **Dependencies**:
-  - Application project
-  - Microsoft.EntityFrameworkCore (10.0.2)
-  - Microsoft.EntityFrameworkCore.SqlServer (10.0.2)
-  - Microsoft.EntityFrameworkCore.Sqlite (10.0.2)
-  - Microsoft.EntityFrameworkCore.Tools (10.0.2)
-- **Main runtime DB**: SQL Server
-- **Test DB**: SQLite in-memory (integration tests)
+## DDD Patterns
 
-#### **Presentation** (`Presentation.csproj`)
+### Value Objects
 
-Minimal API layer exposing HTTP endpoints.
+Three Value Objects live in `Domain/Common/ValueObjects/` and are used as property types on domain models:
 
-- **Target Framework**: .NET 10.0
-- **Dependencies**:
-  - Application project
-  - Infrastructure project
-  - Microsoft.AspNetCore.OpenApi (10.0.2)
-  - Microsoft.EntityFrameworkCore.Design (10.0.2)
-- **Features**:
-  - Minimal API endpoints
-  - OpenAPI documentation
-  - CORS configuration
-  - HTTPS redirection
+| Value Object | Used on | Validation |
+|---|---|---|
+| `Email` | `Participant.Email` | Regex format check, not null/whitespace |
+| `PhoneNumber` | `Participant.PhoneNumber` | Not null/whitespace |
+| `Price` | `CourseEvent.Price` | Non-negative decimal |
 
-#### **Tests** (`Tests.csproj`)
+Each VO is:
+- **Sealed and immutable** — `Value` is the only public member
+- **Created via static factory** — `Email.Create(value, paramName)` throws `ArgumentException` on invalid input
+- **Structurally equal** — `IEquatable<T>` + `==`/`!=` operator overloads
+- **JSON-serializable** — inline `JsonConverter` ensures round-trip through System.Text.Json without manual configuration
 
-Unit, integration, and E2E tests.
+```csharp
+// Domain model using VOs
+public Email Email { get; private set; }
+public PhoneNumber PhoneNumber { get; private set; }
 
-- **Target Framework**: .NET 10.0
-- **Testing Framework**: xUnit (2.9.3)
-- **Dependencies**:
-  - Application project
-  - Infrastructure project
-  - Presentation project
-  - Microsoft.AspNetCore.Mvc.Testing (10.0.2)
-  - Microsoft.NET.Test.Sdk (17.14.1)
-  - NSubstitute (5.3.0) - for mocking
-  - xunit.runner.visualstudio (3.1.4)
-  - coverlet.collector (6.0.4) - for code coverage
+// Repository extracting primitives for EF
+entity.Email = participant.Email.Value;
+```
 
-## Features
+### Constructor + Update + SetValues Pattern
 
-The system has CRUD support for these resources:
+All domain models share a single validation path. Constructors and `Update()` both delegate to a private `SetValues()` method, ensuring invariants are enforced regardless of how the model is created or mutated.
 
-- Courses
-- Course events
-- Course event types
-- Course registrations
-- Course registration statuses
-- Instructors
-- Instructor roles
-- Participants
-- Locations
-- In-place locations
-- Payment methods
-- Venue types
-- Participant contact types
+```csharp
+// [JsonConstructor] — used by deserializer, accepts VO types
+private Participant(Guid id, string firstName, ..., Email email, PhoneNumber phoneNumber, ...)
+    => SetValues(firstName, ..., email, phoneNumber, ...);
 
-### CRUD by resource
+// Factory — takes primitives, creates VOs, calls constructor
+public static Participant Create(string firstName, ..., string email, string phoneNumber, ...)
+    => new(Guid.NewGuid(), firstName, ..., Email.Create(email, nameof(email)), ...);
 
-- **Courses**: Create, Read (all/by id), Update, Delete
-- **Course Events**: Create, Read (all/by id/by course), Update, Delete
-- **Course Event Types**: Create, Read (all/by id), Update, Delete
-- **Course Registrations**: Create, Read (all/by id/by participant/by event), Update, Delete
-- **Course Registration Statuses**: Create, Read (all/by id), Update, Delete
-- **Instructors**: Create, Read (all/by id), Update, Delete
-- **Instructor Roles**: Create, Read (all/by id), Update, Delete
-- **Participants**: Create, Read (all/by id), Update, Delete
-- **Locations**: Create, Read (all/by id), Update, Delete
-- **In-Place Locations**: Create, Read (all/by id/by location), Update, Delete
-- **Payment Methods**: Create, Read (all/by id/by name), Update, Delete
-- **Venue Types**: Create, Read (all/by id/by name), Update, Delete
-- **Participant Contact Types**: Create, Read (all/by id/by name), Update, Delete
+// Reconstitute — hydrates from DB, same shape as Create but with existing ID
+public static Participant Reconstitute(Guid id, string firstName, ..., string email, ...) => ...;
+
+// Update — mutates existing instance via the same SetValues path
+public void Update(string firstName, ..., string email, string phoneNumber, ...)
+    => SetValues(firstName, ..., Email.Create(email, nameof(email)), ...);
+```
+
+- `Reconstitute(...)` is used exclusively by repositories — it bypasses side effects a fresh `Create` might trigger (e.g. raising domain events in future)
+- Service update flow: `existing = await repo.GetAsync(id)` → `existing.Update(...)` → `await repo.UpdateAsync(existing)`
+
+### Result Pattern
+
+All service methods return `ResultBase` or `ResultBase<T>` instead of throwing exceptions for control flow. Endpoints call `.ToHttpResult()` which maps to the correct HTTP status code.
+
+```csharp
+// Service
+if (existing is null) return ResultBase.NotFound("Course not found.");
+return ResultBase.Ok(MapToResult(existing));
+
+// Endpoint
+var result = await service.GetCourseAsync(id);
+return result.ToHttpResult();  // → 200 OK or 404 Not Found
+```
+
+Available result states: `Ok`, `NotFound`, `BadRequest`, `Conflict`, `Unprocessable`.
+
+### Repository Pattern
+
+`RepositoryBase<TModel, TId, TEntity, TDbContext>` provides default CRUD operations. Each concrete repository implements:
+
+- `ToEntity(model)` — maps domain model → EF entity (extracts `.Value` from VOs)
+- `ToModel(entity)` — maps EF entity → domain model via `Reconstitute(...)` (includes required lookups via `Include(...)`, fails fast if missing)
+
+Transactions are used explicitly in repositories with multi-step atomic operations (`CourseRegistrationRepository`, `CourseEventRepository`, `ParticipantRepository`). Raw SQL (`Database.SqlQuery<T>` / `Database.ExecuteSqlAsync`) is used only for seat-availability checks and relation-table cleanup in those same repositories.
+
+---
+
+## Domain Model
+
+| Entity | Key Properties |
+|--------|---------------|
+| `Course` | `Title`, `Description`, `DurationInDays` |
+| `CourseEvent` | `CourseId`, `EventDate`, `Price` *(VO)*, `Seats`, `CourseEventTypeId`, `VenueTypeId` |
+| `CourseEventType` | `Name` *(lookup)* |
+| `CourseRegistration` | `CourseEventId`, `ParticipantId`, `StatusId`, `PaymentMethodId`, `RegisteredAt` |
+| `CourseRegistrationStatus` | `Name` *(lookup)* |
+| `Participant` | `FirstName`, `LastName`, `Email` *(VO)*, `PhoneNumber` *(VO)*, `ContactTypeId` |
+| `ParticipantContactType` | `Name` *(lookup)* |
+| `Instructor` | `Name`, `RoleId` |
+| `InstructorRole` | `Name` *(lookup)* |
+| `Location` | `StreetName`, `PostalCode`, `City` |
+| `InPlaceLocation` | `LocationId`, `RoomName`, `Capacity` |
+| `PaymentMethod` | `Name` *(lookup)* |
+| `VenueType` | `Name` *(lookup)* |
+
+---
 
 ## API Endpoints
 
-All endpoints are prefixed with `/api` and follow RESTful conventions:
+All endpoints are prefixed with `/api`. OpenAPI spec available at `/openapi/v1.json`.
 
-- `GET /api/courses` - Get all courses
-- `GET /api/courses/{id}` - Get a specific course
-- `POST /api/courses` - Create a new course
-- `PUT /api/courses/{id}` - Update a course
-- `DELETE /api/courses/{id}` - Delete a course
+| Resource | Endpoints |
+|----------|-----------|
+| Courses | `GET /api/courses` · `GET /api/courses/{id}` · `POST` · `PUT /{id}` · `DELETE /{id}` |
+| Course Events | `GET /api/courseevents` · `GET /{id}` · `GET /course/{courseId}` · `POST` · `PUT /{id}` · `DELETE /{id}` |
+| Course Event Types | Full CRUD |
+| Course Registrations | `GET` (all/by id/by participant/by event) · `POST` · `PUT /{id}` · `DELETE /{id}` |
+| Course Registration Statuses | Full CRUD |
+| Participants | Full CRUD |
+| Participant Contact Types | Full CRUD |
+| Instructors | Full CRUD |
+| Instructor Roles | Full CRUD |
+| Locations | Full CRUD |
+| In-Place Locations | `GET` (all/by id/by location) · `POST` · `PUT /{id}` · `DELETE /{id}` |
+| Payment Methods | `GET` (all/by id/by name) · `POST` · `PUT /{id}` · `DELETE /{id}` |
+| Venue Types | `GET` (all/by id/by name) · `POST` · `PUT /{id}` · `DELETE /{id}` |
 
-Similar patterns exist for other modules (course events, instructors, participants, etc.).
+---
 
-## Database
+## Database Strategy
 
-- **Runtime database**: SQL Server
-- **Database name**: CoursesOnline
-- **ORM**: Entity Framework Core 10.0.2
-- **Connection**: Configured in `appsettings.json`
-- **Migrations**: Located in `Infrastructure/Persistence/EFC/Migrations/`
+### Provider switching
 
-### Transaction Handling
+The infrastructure layer switches database provider based on environment:
 
-Transactions are used in repository operations that need atomic multi-step behavior.
+| Environment | Provider | Schema init |
+|---|---|---|
+| Development | SQLite in-memory (shared cache) | `EnsureCreatedAsync` |
+| Production | SQL Server | `MigrateAsync` |
+| Tests | SQLite in-memory (via `DB_PROVIDER=Sqlite`) | `EnsureCreatedAsync` |
 
-- `Infrastructure/Persistence/EFC/Repositories/CourseRegistrationRepository.cs`
-  - Uses `BeginTransactionAsync(...)` in registration create flows (`AddAsync`, `CreateRegistrationWithSeatCheckAsync`).
-  - Commits on success and rolls back on failure.
-- `Infrastructure/Persistence/EFC/Repositories/CourseEventRepository.cs`
-  - Wraps multi-step delete operations (event + relation table cleanup) in a transaction.
-- `Infrastructure/Persistence/EFC/Repositories/ParticipantRepository.cs`
-  - Uses transaction for multi-step delete operations (registrations + participant).
+`ContextRegistrationExtension` checks `env.IsDevelopment()` to register the correct provider. A singleton `SqliteConnection` is kept open for the lifetime of the dev app so the in-memory database survives across requests.
 
-### Raw SQL Usage
+### Seeding
 
-Raw SQL is used only in specific repository scenarios where direct SQL is more suitable.
+`DatabaseSeeder` seeds reference data in both dev and production on startup, in dependency order:
 
-- `Infrastructure/Persistence/EFC/Repositories/CourseRegistrationRepository.cs`
-  - Uses `Database.SqlQuery<int>(...)` for SQL-based checks/calculations in registration flows.
-- `Infrastructure/Persistence/EFC/Repositories/CourseEventRepository.cs`
-  - Uses `Database.ExecuteSqlAsync(...)` for relation-table cleanup in transactional delete operations.
-- `Infrastructure/Persistence/EFC/Repositories/ParticipantRepository.cs`
-  - Uses `Database.ExecuteSqlAsync(...)` for registration + participant delete operations.
+1. Fixed-ID lookup tables (VenueTypes, PaymentMethods, etc.)
+2. Auto-ID lookup tables
+3. Transactional data (Courses, Events, Participants, Registrations)
 
-### Caching
+Seeding is idempotent — guarded by `AnyAsync()` checks before inserting. It runs via `PersistenceDatabaseInitializer.InitializeAsync` called from `Program.cs` after `app.Build()`.
 
-Caching is implemented in the **Application layer** (not in repositories), using `IMemoryCache`.
+### Migrations
 
-- Base caching abstractions:
-  - `Application/Common/Caching/ICacheEntityBase.cs`
-  - `Application/Common/Caching/CacheEntityBase.cs`
-  - `Application/Extensions/Caching/MemoryCacheExtensions.cs`
-- Concrete cache implementations:
-  - `Application/Modules/CourseEventTypes/Caching/CourseEventTypeCache.cs`
-  - `Application/Modules/CourseRegistrationStatuses/Caching/CourseRegistrationStatusCache.cs`
-  - `Application/Modules/InstructorRoles/Caching/InstructorRoleCache.cs`
-  - `Application/Modules/PaymentMethods/Caching/PaymentMethodCache.cs`
-  - `Application/Modules/VenueTypes/Caching/VenueTypeCache.cs`
-  - `Application/Modules/ParticipantContactTypes/Caching/ParticipantContactTypeCache.cs`
-- Services that currently use cache:
-  - `Application/Modules/CourseEventTypes/CourseEventTypeService.cs`
-  - `Application/Modules/CourseRegistrationStatuses/CourseRegistrationStatusService.cs`
-  - `Application/Modules/InstructorRoles/InstructorRoleService.cs`
-  - `Application/Modules/PaymentMethods/PaymentMethodService.cs`
-  - `Application/Modules/VenueTypes/VenueTypeService.cs`
-  - `Application/Modules/ParticipantContactTypes/ParticipantContactTypeService.cs`
+SQL Server-specific migrations live in `Infrastructure/Persistence/EFC/Migrations/`. They are only applied in production. Dev and test environments use `EnsureCreatedAsync` — no migrations needed.
 
-The cache is primarily used for read operations (`get by id`, `get all`, and where applicable `get by name`) and is invalidated/reset on writes.
+### EF Entity Configuration
 
-### Connection String
+Configurations take a `bool isSqlite` constructor parameter to handle the concurrency token difference between providers:
 
-```json
-{
-  "ConnectionStrings": {
-    "CoursesOnlineDatabase": "Data Source=localhost;Initial Catalog=CoursesOnline;..."
-  }
-}
+```csharp
+if (isSqlite)
+    e.Property(x => x.Concurrency).IsConcurrencyToken().IsRequired(false);
+else
+    e.Property(x => x.Concurrency).IsRowVersion().IsConcurrencyToken().IsRequired();
 ```
+
+---
+
+## Caching
+
+Caching lives in the **Application layer** — never in repositories. Only lookup/reference entities are cached (entities that are read frequently and rarely change).
+
+- Base abstractions: `CacheEntityBase`, `ICacheEntityBase<TEntity, TId>`, `MemoryCacheExtensions`
+- Concrete caches: `CourseEventTypeCache`, `CourseRegistrationStatusCache`, `InstructorRoleCache`, `PaymentMethodCache`, `VenueTypeCache`, `ParticipantContactTypeCache`
+- Cache is invalidated on any write operation
+
+---
+
+## Testing
+
+**All tests passing.**
+
+| Type | Coverage | Technology |
+|------|-------|-----------|
+| Unit | Domain models, services, Value Objects, input DTOs | NSubstitute mocks, no DB |
+| Integration | Every repository | SQLite in-memory via `SqliteInMemoryFixture` |
+| E2E | Every endpoint | `WebApplicationFactory` + SQLite in-memory, HTTP round-trips |
+
+### Unit tests
+
+- Domain model tests: constructor, `Update(...)`, `Reconstitute(...)`, all validation paths
+- Value Object tests: `Email`, `PhoneNumber`, `Price` — valid/invalid inputs, equality, operators
+- Application service tests: all CRUD flows, result states, NSubstitute mocks for repositories
+- Input DTO validation tests
+
+### Integration tests
+
+- Real EF Core DbContext against SQLite in-memory
+- Every repository tested: CRUD, ordering, filtering, constraint violations
+- `SqliteInMemoryFixture` sets `DB_PROVIDER=Sqlite`; infrastructure detects this and uses SQLite automatically
+
+### E2E tests
+
+- Full HTTP request/response via `WebApplicationFactory`
+- Data is deleted and reseeded between tests via raw SQL for isolation
+- Covers every endpoint: status codes, response shape, ordering, error responses
+
+```bash
+# Run all
+dotnet test
+
+# By type
+dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.Unit"
+dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.Integration"
+dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.E2E"
+
+# Single test class
+dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~CourseEvent_Tests"
+```
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
-- .NET 10.0 SDK
-- SQL Server (local or remote instance)
-- Visual Studio 2022 or later / VS Code / Rider
+- [.NET SDK](https://dotnet.microsoft.com/download)
+- SQL Server (for production profile)
 
-### Setup
+### Run in development (SQLite, no SQL Server needed)
 
-1. **Clone the repository**
+```bash
+dotnet restore
+dotnet run --project Presentation
+```
 
-   ```bash
-   cd Backend
+The dev profile uses SQLite in-memory and seeds data automatically on startup.
+
+- API: `https://localhost:7118` / `http://localhost:5400`
+- OpenAPI: `https://localhost:7118/openapi/v1.json`
+
+### Run in production (SQL Server)
+
+1. Set the connection string in `Presentation/appsettings.json`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "CoursesOnlineDatabase": "Data Source=localhost;Initial Catalog=CoursesOnline;..."
+     }
+   }
    ```
 
-2. **Restore dependencies**
-
-   ```bash
-   dotnet restore
-   ```
-
-3. **Update database connection string**
-   - Edit `Presentation/appsettings.json`
-   - Update the `CoursesOnlineDatabase` connection string with your SQL Server details
-
-4. **Apply database migrations**
-
+2. Apply migrations:
    ```bash
    dotnet ef database update --project Infrastructure --startup-project Presentation
    ```
 
-5. **Run the application**
-
+3. Run with the production profile:
    ```bash
-   dotnet run --project Presentation
+   dotnet run --project Presentation --launch-profile https-prod
    ```
 
-6. **Access the API**
-   - API base URL (default profile): `https://localhost:7118` (also serves `http://localhost:5400`)
-   - OpenAPI docs: `https://localhost:7118/openapi/v1.json`
-   - Frontend `.env.development` defaults to the HTTPS API base `https://localhost:7118/api`. Switch it to `http://localhost:5400/api` if you choose the HTTP-only profile.
-
-### Running Tests
-
-Run all tests:
-
-```bash
-dotnet test
-```
-
-Run only integration tests:
-
-```bash
-dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.Integration"
-```
-
-Run only unit tests:
-
-```bash
-dotnet test Tests/Tests.csproj --filter "FullyQualifiedName~Tests.Unit"
-```
-
-## Testing Setup
-
-The project has three kinds of tests:
-
-1. **Unit tests**
-
-- Test small pieces of logic (usually services/domain behavior).
-- Use mocks (NSubstitute) instead of a real database.
-- Fast and focused.
-
-2. **Integration tests**
-
-- Test real repository behavior against a real EF Core database context.
-- Use **SQLite in-memory** so tests are fast and isolated.
-- Data is created directly in a temporary in-memory database during test execution.
-
-3. **E2E tests**
-
-- Test full HTTP request/response flows through the API.
-- Use `WebApplicationFactory` with SQLite in-memory test mode.
-- Reset and reseed test data between tests for isolation.
-- Current E2E-covered resources: `Courses`, `Course Events`, `Course Registrations`, `Course Event Types`, `Course Registration Statuses`, `Payment Methods`, `Participants`, `Participant Contact Types`, `Instructors`, `Instructor Roles`, `Locations`, `In-Place Locations`, and `Venue Types`.
-
-### How SQLite test mode works
-
-- Integration tests use `Tests/Integration/SqliteInMemoryFixture.cs`.
-- The fixture sets `DB_PROVIDER=Sqlite`.
-- Infrastructure registration detects this and uses SQLite in-memory instead of SQL Server.
-- EF configurations also check this flag and use SQLite-compatible settings.
-
-In normal app runtime, `DB_PROVIDER` is not set, so SQL Server is used.
-
-### Domain Update Pattern Testing
-
-Domain models use a shared validation path where constructors and `Update(...)` methods both call internal `SetValues(...)` methods.
-
-- This keeps validation/invariants in one place.
-- Application update services load existing models, call `existingModel.Update(...)`, and then persist.
-- Unit tests include explicit `Update(...)` behavior checks for domain models (valid updates + invalid input cases).
+---
 
 ## Technology Stack
 
-- **.NET 10.0**
-- **ASP.NET Core** - Web API framework
-- **Entity Framework Core 10.0.2** - ORM
-- **SQL Server** - Database
-- **xUnit** - Testing framework
-- **NSubstitute** - Mocking library
-- **OpenAPI** - API documentation
+| Concern | Technology |
+|---------|-----------|
+| Framework | ASP.NET Core — Minimal API |
+| ORM | Entity Framework Core |
+| Database (prod) | SQL Server |
+| Database (dev/test) | SQLite in-memory |
+| Testing | xUnit, NSubstitute, `WebApplicationFactory` |
+| API docs | OpenAPI (built-in ASP.NET Core) |
+| Nullable reference types | Enabled project-wide |
 
-## Project Structure
-
-```
-Backend/
-├── .github/              # CI/CD and workflow configuration
-├── Domain/               # Enterprise business logic and entities
-├── Application/          # Application business logic and services
-├── Infrastructure/       # Data access and external services
-├── Presentation/         # Web API layer
-├── Tests/                # Unit, integration, and E2E tests
-├── Backend.slnx          # Solution file
-├── dotnet-tools.json     # Local .NET tool manifest
-└── README.md             # Project documentation
-```
-
-Note: `bin/` and `obj/` are build output directories and are omitted from the source structure.
-
-## Development Notes
-
-- The solution uses **nullable reference types** enabled by default
-- **Implicit usings** are enabled for cleaner code
-- All projects target **.NET 10.0**
-- The architecture promotes **testability** and **maintainability**
-- **Dependency injection** is used throughout the application
-- Transaction handling is used in repositories that need atomic multi-step operations.
-- Caching is implemented in the **Application** layer (services/caches), not in repositories.
-- Domain entities centralize validation by using `constructor + Update(...) + SetValues(...)`.
-- Service update flows follow: `load existing -> existing.Update(...) -> repository.UpdateAsync(...)`.
-- Persistence/domain conversion logic now lives in each repository mapper (`ToModel`/`ToEntity`) close to usage.
-- Lookup/domain-value mappings in repositories are strict: related lookup entities (for example status, payment method, venue type, contact type) must be loaded from the database in `ToModel` (typically via `Include(...)`), and mapping fails fast if lookup names are missing.
