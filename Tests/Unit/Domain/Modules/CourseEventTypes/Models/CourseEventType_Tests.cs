@@ -9,15 +9,15 @@ public class CourseEventType_Tests
     {
         // Arrange
         var id = 1;
-        var typeName = "Online";
+        var name = "Online";
 
         // Act
-        var courseEventType = CourseEventType.Reconstitute(id, typeName);
+        var courseEventType = CourseEventType.Reconstitute(id, name);
 
         // Assert
         Assert.NotNull(courseEventType);
         Assert.Equal(id, courseEventType.Id);
-        Assert.Equal(typeName, courseEventType.TypeName);
+        Assert.Equal(name, courseEventType.Name);
     }
 
     [Fact]
@@ -25,14 +25,14 @@ public class CourseEventType_Tests
     {
         // Arrange
         var id = 0;
-        var typeName = "Online";
+        var name = "Online";
 
         // Act
-        var courseEventType = CourseEventType.Reconstitute(id, typeName);
+        var courseEventType = CourseEventType.Reconstitute(id, name);
 
         // Assert
         Assert.Equal(0, courseEventType.Id);
-        Assert.Equal(typeName, courseEventType.TypeName);
+        Assert.Equal(name, courseEventType.Name);
     }
 
     [Fact]
@@ -40,11 +40,11 @@ public class CourseEventType_Tests
     {
         // Arrange
         var id = -1;
-        var typeName = "Online";
+        var name = "Online";
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            CourseEventType.Reconstitute(id, typeName));
+            CourseEventType.Reconstitute(id, name));
     }
 
     [Fact]
@@ -52,13 +52,13 @@ public class CourseEventType_Tests
     {
         // Arrange
         var id = 1;
-        string typeName = null!;
+        string name = null!;
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            CourseEventType.Reconstitute(id, typeName));
+            CourseEventType.Reconstitute(id, name));
 
-        Assert.Equal("typeName", exception.ParamName);
+        Assert.Equal("name", exception.ParamName);
         Assert.Contains("Type name cannot be empty or whitespace", exception.Message);
     }
 
@@ -67,13 +67,13 @@ public class CourseEventType_Tests
     {
         // Arrange
         var id = 1;
-        var typeName = "";
+        var name = "";
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            CourseEventType.Reconstitute(id, typeName));
+            CourseEventType.Reconstitute(id, name));
 
-        Assert.Equal("typeName", exception.ParamName);
+        Assert.Equal("name", exception.ParamName);
         Assert.Contains("Type name cannot be empty or whitespace", exception.Message);
     }
 
@@ -82,13 +82,13 @@ public class CourseEventType_Tests
     {
         // Arrange
         var id = 1;
-        var typeName = "   ";
+        var name = "   ";
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() =>
-            CourseEventType.Reconstitute(id, typeName));
+            CourseEventType.Reconstitute(id, name));
 
-        Assert.Equal("typeName", exception.ParamName);
+        Assert.Equal("name", exception.ParamName);
         Assert.Contains("Type name cannot be empty or whitespace", exception.Message);
     }
 
@@ -97,14 +97,14 @@ public class CourseEventType_Tests
     [InlineData(2, "In-Person")]
     [InlineData(3, "Hybrid")]
     [InlineData(4, "Virtual")]
-    public void Constructor_Should_Create_CourseEventType_With_Various_Valid_Parameters(int id, string typeName)
+    public void Constructor_Should_Create_CourseEventType_With_Various_Valid_Parameters(int id, string name)
     {
         // Act
-        var courseEventType = CourseEventType.Reconstitute(id, typeName);
+        var courseEventType = CourseEventType.Reconstitute(id, name);
 
         // Assert
         Assert.Equal(id, courseEventType.Id);
-        Assert.Equal(typeName, courseEventType.TypeName);
+        Assert.Equal(name, courseEventType.Name);
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class CourseEventType_Tests
 
         // Assert
         Assert.Equal(1, courseEventType.Id);
-        Assert.Equal("Online", courseEventType.TypeName);
+        Assert.Equal("Online", courseEventType.Name);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class CourseEventType_Tests
 
         // Assert
         Assert.Equal(courseEventType1.Id, courseEventType2.Id);
-        Assert.Equal(courseEventType1.TypeName, courseEventType2.TypeName);
+        Assert.Equal(courseEventType1.Name, courseEventType2.Name);
     }
 
     [Fact]
@@ -149,9 +149,9 @@ public class CourseEventType_Tests
         var courseEventType = CourseEventType.Reconstitute(1, "Online");
 
         // Assert
-        Assert.Equal("Online", courseEventType.TypeName);
-        var initialTypeName = courseEventType.TypeName;
-        Assert.Equal(initialTypeName, courseEventType.TypeName);
+        Assert.Equal("Online", courseEventType.Name);
+        var initialName = courseEventType.Name;
+        Assert.Equal(initialName, courseEventType.Name);
     }
 
     [Fact]
@@ -159,13 +159,13 @@ public class CourseEventType_Tests
     {
         // Arrange
         var id = 1;
-        var typeName = "Very Long Type Name";
+        var name = "Very Long Type Name";
 
         // Act
-        var courseEventType = CourseEventType.Reconstitute(id, typeName);
+        var courseEventType = CourseEventType.Reconstitute(id, name);
 
         // Assert
-        Assert.Equal(typeName, courseEventType.TypeName);
+        Assert.Equal(name, courseEventType.Name);
     }
 
     [Fact]
@@ -173,13 +173,13 @@ public class CourseEventType_Tests
     {
         // Arrange
         var id = 1;
-        var typeName = "In-Person";
+        var name = "In-Person";
 
         // Act
-        var courseEventType = CourseEventType.Reconstitute(id, typeName);
+        var courseEventType = CourseEventType.Reconstitute(id, name);
 
         // Assert
-        Assert.Equal(typeName, courseEventType.TypeName);
+        Assert.Equal(name, courseEventType.Name);
     }
 
     [Fact]
@@ -187,10 +187,10 @@ public class CourseEventType_Tests
     {
         // Arrange
         var id = int.MaxValue;
-        var typeName = "Online";
+        var name = "Online";
 
         // Act
-        var courseEventType = CourseEventType.Reconstitute(id, typeName);
+        var courseEventType = CourseEventType.Reconstitute(id, name);
 
         // Assert
         Assert.Equal(id, courseEventType.Id);
@@ -203,13 +203,13 @@ public class CourseEventType_Tests
     [InlineData("Virtual")]
     [InlineData("Remote")]
     [InlineData("On-Site")]
-    public void Constructor_Should_Accept_Various_Type_Names(string typeName)
+    public void Constructor_Should_Accept_Various_Type_Names(string name)
     {
         // Act
-        var courseEventType = CourseEventType.Reconstitute(1, typeName);
+        var courseEventType = CourseEventType.Reconstitute(1, name);
 
         // Assert
-        Assert.Equal(typeName, courseEventType.TypeName);
+        Assert.Equal(name, courseEventType.Name);
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public class CourseEventType_Tests
 
         // Assert
         Assert.Equal(1, courseEventType.Id);
-        Assert.Equal("Hybrid", courseEventType.TypeName);
+        Assert.Equal("Hybrid", courseEventType.Name);
     }
 
     [Fact]
@@ -234,6 +234,6 @@ public class CourseEventType_Tests
 
         // Act & Assert
         var exception = Assert.Throws<ArgumentException>(() => courseEventType.Update("   "));
-        Assert.Equal("typeName", exception.ParamName);
+        Assert.Equal("name", exception.ParamName);
     }
 }

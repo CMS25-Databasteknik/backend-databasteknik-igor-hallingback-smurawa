@@ -1,5 +1,5 @@
-using Backend.Domain.Modules.PaymentMethod.Contracts;
-using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
+using Backend.Domain.Modules.PaymentMethods.Contracts;
+using PaymentMethodModel = Backend.Domain.Modules.PaymentMethods.Models.PaymentMethod;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;

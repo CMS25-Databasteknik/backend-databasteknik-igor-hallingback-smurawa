@@ -31,7 +31,7 @@ public class InstructorRepository_Tests(SqliteInMemoryFixture fixture)
         Assert.Equal(input.Name, created.Name);
         Assert.Equal(role.Id, created.InstructorRoleId);
         Assert.Equal(role.Id, loaded!.InstructorRoleId);
-        Assert.Equal(role.RoleName, loaded.Role.RoleName);
+        Assert.Equal(role.Name, loaded.Role.Name);
 
         var persisted = await context.Instructors
             .AsNoTracking()

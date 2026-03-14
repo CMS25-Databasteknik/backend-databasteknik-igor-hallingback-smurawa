@@ -6,8 +6,8 @@ using Backend.Domain.Modules.CourseRegistrationStatuses.Contracts;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
-using Backend.Domain.Modules.PaymentMethod.Contracts;
-using Backend.Domain.Modules.PaymentMethod.Models;
+using Backend.Domain.Modules.PaymentMethods.Contracts;
+using Backend.Domain.Modules.PaymentMethods.Models;
 using Backend.Domain.Modules.Participants.Contracts;
 
 namespace Backend.Application.Modules.CourseRegistrations;

@@ -205,7 +205,7 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
 
         Assert.NotNull(loaded);
         Assert.Equal(type.Id, loaded!.CourseEventType.Id);
-        Assert.Equal("Workshop", loaded.CourseEventType.TypeName);
+        Assert.Equal("Workshop", loaded.CourseEventType.Name);
         Assert.Equal(VenueType.Reconstitute(2, "Online").Id, loaded.VenueType.Id);
     }
 
@@ -297,7 +297,7 @@ public class CourseEventRepository_Tests(SqliteInMemoryFixture fixture)
             Seats = 10,
             CourseEventTypeId = 1,
             VenueTypeId = 1,
-            CourseEventType = new CourseEventTypeEntity { Id = 1, TypeName = "Online" },
+            CourseEventType = new CourseEventTypeEntity { Id = 1, Name = "Online" },
             VenueType = null!
         };
 

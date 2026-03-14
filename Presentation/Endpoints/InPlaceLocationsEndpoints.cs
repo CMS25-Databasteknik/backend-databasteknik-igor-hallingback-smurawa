@@ -25,28 +25,19 @@ public static class InPlaceLocationsEndpoints
     private static async Task<IResult> GetAllInPlaceLocations(IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
     {
         var response = await inPlaceLocationService.GetAllInPlaceLocationsAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetInPlaceLocationById(int id, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
     {
         var response = await inPlaceLocationService.GetInPlaceLocationByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetInPlaceLocationsByLocationId(int locationId, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
     {
         var response = await inPlaceLocationService.GetInPlaceLocationsByLocationIdAsync(locationId, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateInPlaceLocation(CreateInPlaceLocationRequest request, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
@@ -63,19 +54,13 @@ public static class InPlaceLocationsEndpoints
     {
         var input = new UpdateInPlaceLocationInput(id, request.LocationId, request.RoomNumber, request.Seats);
         var response = await inPlaceLocationService.UpdateInPlaceLocationAsync(input, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteInPlaceLocation(int id, IInPlaceLocationService inPlaceLocationService, CancellationToken cancellationToken)
     {
         var response = await inPlaceLocationService.DeleteInPlaceLocationAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

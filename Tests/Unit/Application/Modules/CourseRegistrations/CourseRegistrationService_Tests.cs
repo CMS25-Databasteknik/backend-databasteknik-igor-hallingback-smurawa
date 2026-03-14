@@ -9,8 +9,8 @@ using Backend.Domain.Modules.CourseRegistrations.Models;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 using Backend.Domain.Modules.Participants.Contracts;
 using Backend.Domain.Modules.Participants.Models;
-using Backend.Domain.Modules.PaymentMethod.Contracts;
-using Backend.Domain.Modules.PaymentMethod.Models;
+using Backend.Domain.Modules.PaymentMethods.Contracts;
+using Backend.Domain.Modules.PaymentMethods.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using NSubstitute;
 

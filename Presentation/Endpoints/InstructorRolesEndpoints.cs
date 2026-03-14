@@ -29,15 +29,12 @@ public static class InstructorRolesEndpoints
     private static async Task<IResult> GetInstructorRoleById(int id, IInstructorRoleService roleService, CancellationToken cancellationToken)
     {
         var response = await roleService.GetInstructorRoleByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateInstructorRole(CreateInstructorRoleRequest request, IInstructorRoleService roleService, CancellationToken cancellationToken)
     {
-        var input = new CreateInstructorRoleInput(request.RoleName);
+        var input = new CreateInstructorRoleInput(request.Name);
         var response = await roleService.CreateInstructorRoleAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -47,21 +44,15 @@ public static class InstructorRolesEndpoints
 
     private static async Task<IResult> UpdateInstructorRole(int id, UpdateInstructorRoleRequest request, IInstructorRoleService roleService, CancellationToken cancellationToken)
     {
-        var input = new UpdateInstructorRoleInput(id, request.RoleName);
+        var input = new UpdateInstructorRoleInput(id, request.Name);
         var response = await roleService.UpdateInstructorRoleAsync(input, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteInstructorRole(int id, IInstructorRoleService roleService, CancellationToken cancellationToken)
     {
         var response = await roleService.DeleteInstructorRoleAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

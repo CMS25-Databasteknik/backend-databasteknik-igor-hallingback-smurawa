@@ -23,19 +23,13 @@ public static class CoursesEndpoints
     private static async Task<IResult> GetAllCourses(ICourseService courseService, CancellationToken cancellationToken)
     {
         var response = await courseService.GetAllCoursesAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetCourseById(Guid id, ICourseService courseService, CancellationToken cancellationToken)
     {
         var response = await courseService.GetCourseByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateCourse(CreateCourseRequest request, ICourseService courseService, CancellationToken cancellationToken)
@@ -52,19 +46,13 @@ public static class CoursesEndpoints
     {
         var input = new UpdateCourseInput(id, request.Title, request.Description, request.DurationInDays);
         var response = await courseService.UpdateCourseAsync(input, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteCourse(Guid id, ICourseService courseService, CancellationToken cancellationToken)
     {
         var response = await courseService.DeleteCourseAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

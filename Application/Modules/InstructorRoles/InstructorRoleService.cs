@@ -21,7 +21,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return Result<InstructorRole>.BadRequest("Role cannot be null.");
             }
 
-            var role = InstructorRole.Create(input.RoleName);
+            var role = InstructorRole.Create(input.Name);
             var created = await _repository.AddAsync(role, cancellationToken);
             _cache.ResetEntity(created);
             _cache.SetEntity(created);
@@ -99,7 +99,7 @@ public class InstructorRoleService(IInstructorRoleCache cache, IInstructorRoleRe
                 return Result<InstructorRole>.NotFound($"Instructor role with ID '{input.Id}' not found.");
             }
 
-            existingRole.Update(input.RoleName);
+            existingRole.Update(input.Name);
             var updatedInstructorRole = await _repository.UpdateAsync(existingRole.Id, existingRole, cancellationToken);
             if (updatedInstructorRole == null)
             {

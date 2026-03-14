@@ -10,13 +10,13 @@ public class InstructorRoleRepository(CoursesOnlineDbContext context)
     : RepositoryBase<InstructorRole, int, InstructorRoleEntity, CoursesOnlineDbContext>(context), IInstructorRoleRepository
 {
     protected override InstructorRole ToModel(InstructorRoleEntity entity) =>
-        InstructorRole.Reconstitute(entity.Id, entity.RoleName);
+        InstructorRole.Reconstitute(entity.Id, entity.Name);
 
     protected override InstructorRoleEntity ToEntity(InstructorRole role)
         => new()
         {
             Id = role.Id,
-            RoleName = role.RoleName
+            Name = role.Name
         };
 
     public override async Task<InstructorRole> AddAsync(InstructorRole role, CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ public class InstructorRoleRepository(CoursesOnlineDbContext context)
         if (entity == null)
             return null;
 
-        entity.RoleName = role.RoleName;
+        entity.Name = role.Name;
         await _context.SaveChangesAsync(cancellationToken);
 
         return ToModel(entity);

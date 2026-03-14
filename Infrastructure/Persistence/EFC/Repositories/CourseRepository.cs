@@ -22,7 +22,7 @@ namespace Backend.Infrastructure.Persistence.EFC.Repositories
             var venueTypeEntity = entity.VenueType
                 ?? throw new InvalidOperationException("Venue type must be loaded from database.");
 
-            var courseEventType = CourseEventType.Reconstitute(courseEventTypeEntity.Id, courseEventTypeEntity.TypeName);
+            var courseEventType = CourseEventType.Reconstitute(courseEventTypeEntity.Id, courseEventTypeEntity.Name);
             var venueType = VenueType.Reconstitute(venueTypeEntity.Id, venueTypeEntity.Name);
 
             return CourseEvent.Reconstitute(

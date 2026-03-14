@@ -6,7 +6,7 @@ using Backend.Domain.Modules.Courses.Models;
 
 namespace Backend.Application.Modules.Courses;
 
-public class CourseService(ICourseRepository courseRepository) : ICourseService
+public sealed class CourseService(ICourseRepository courseRepository) : ICourseService
 {
     private readonly ICourseRepository _courseRepository = courseRepository ?? throw new ArgumentNullException(nameof(courseRepository));
 
@@ -44,11 +44,6 @@ public class CourseService(ICourseRepository courseRepository) : ICourseService
         try
         {
             var courses = await _courseRepository.GetAllAsync(cancellationToken);
-
-            if (!courses.Any())
-            {
-                return Result<IReadOnlyList<Course>>.Ok(courses);
-            }
 
             return Result<IReadOnlyList<Course>>.Ok(courses);
         }

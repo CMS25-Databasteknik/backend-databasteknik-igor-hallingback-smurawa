@@ -104,7 +104,7 @@ public class CourseEventService(
                 courseEvent.EventDate,
                 courseEvent.Price,
                 courseEvent.Seats,
-                new CourseEventLookupItem(courseEvent.CourseEventType.Id, courseEvent.CourseEventType.TypeName),
+                new CourseEventLookupItem(courseEvent.CourseEventType.Id, courseEvent.CourseEventType.Name),
                 new CourseEventLookupItem(courseEvent.VenueTypeId, courseEvent.VenueType.Name)
             );
 

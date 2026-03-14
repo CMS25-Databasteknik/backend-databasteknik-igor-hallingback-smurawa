@@ -23,19 +23,13 @@ public static class ParticipantsEndpoints
     private static async Task<IResult> GetAllParticipants(IParticipantService participantService, CancellationToken cancellationToken)
     {
         var response = await participantService.GetAllParticipantsAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetParticipantById(Guid id, IParticipantService participantService, CancellationToken cancellationToken)
     {
         var response = await participantService.GetParticipantByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateParticipant(CreateParticipantRequest request, IParticipantService participantService, CancellationToken cancellationToken)
@@ -52,19 +46,13 @@ public static class ParticipantsEndpoints
     {
         var input = new UpdateParticipantInput(id, request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.ContactTypeId);
         var response = await participantService.UpdateParticipantAsync(input, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteParticipant(Guid id, IParticipantService participantService, CancellationToken cancellationToken)
     {
         var response = await participantService.DeleteParticipantAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

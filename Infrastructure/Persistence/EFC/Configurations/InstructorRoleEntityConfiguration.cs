@@ -14,8 +14,8 @@ public sealed class InstructorRoleEntityConfiguration(bool isSqlite) : IEntityTy
             t.HasCheckConstraint(
                 "CK_InstructorRoles_RoleName_NotEmpty",
                 isSqlite
-                    ? "LTRIM(RTRIM([RoleName])) <> ''"
-                    : "LEN([RoleName]) > 0");
+                    ? "LTRIM(RTRIM([Name])) <> ''"
+                    : "LEN([Name]) > 0");
         });
 
         e.HasKey(x => x.Id).HasName("PK_InstructorRoles_Id");
@@ -23,7 +23,7 @@ public sealed class InstructorRoleEntityConfiguration(bool isSqlite) : IEntityTy
         e.Property(x => x.Id)
             .ValueGeneratedOnAdd();
 
-        e.Property(x => x.RoleName)
+        e.Property(x => x.Name)
             .HasMaxLength(50)
             .IsRequired();
 
@@ -41,8 +41,8 @@ public sealed class InstructorRoleEntityConfiguration(bool isSqlite) : IEntityTy
                 .IsRequired();
         }
 
-        e.HasIndex(x => x.RoleName)
+        e.HasIndex(x => x.Name)
             .IsUnique()
-            .HasDatabaseName("IX_InstructorRoles_RoleName");
+            .HasDatabaseName("IX_InstructorRoles_Name");
     }
 }

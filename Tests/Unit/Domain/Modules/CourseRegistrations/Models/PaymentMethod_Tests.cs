@@ -1,4 +1,4 @@
-using Backend.Domain.Modules.PaymentMethod.Models;
+using Backend.Domain.Modules.PaymentMethods.Models;
 
 namespace Backend.Tests.Unit.Domain.Modules.CourseRegistrations.Models;
 

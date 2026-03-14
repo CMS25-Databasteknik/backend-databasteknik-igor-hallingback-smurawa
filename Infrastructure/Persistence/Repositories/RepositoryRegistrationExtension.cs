@@ -9,7 +9,7 @@ using Backend.Domain.Modules.Instructors.Contracts;
 using Backend.Domain.Modules.Locations.Contracts;
 using Backend.Domain.Modules.ParticipantContactTypes.Contracts;
 using Backend.Domain.Modules.Participants.Contracts;
-using Backend.Domain.Modules.PaymentMethod.Contracts;
+using Backend.Domain.Modules.PaymentMethods.Contracts;
 using Backend.Domain.Modules.VenueTypes.Contracts;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.Extensions.DependencyInjection;

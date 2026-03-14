@@ -1,7 +1,7 @@
 using Backend.Domain.Modules.CourseRegistrations.Contracts;
 using Backend.Domain.Modules.CourseRegistrations.Models;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
-using Backend.Domain.Modules.PaymentMethod.Models;
+using Backend.Domain.Modules.PaymentMethods.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;

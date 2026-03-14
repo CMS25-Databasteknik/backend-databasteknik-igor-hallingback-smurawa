@@ -11,7 +11,7 @@ public sealed class CourseEventTypeEntityConfiguration(bool isSqlite) : IEntityT
 
         e.ToTable("CourseEventTypes", t =>
         {
-            t.HasCheckConstraint("CK_CourseEventTypes_TypeName_NotEmpty", "LTRIM(RTRIM([TypeName])) <> ''");
+            t.HasCheckConstraint("CK_CourseEventTypes_TypeName_NotEmpty", "LTRIM(RTRIM([Name])) <> ''");
         });
 
         e.HasKey(x => x.Id).HasName("PK_CourseEventTypes_Id");
@@ -19,7 +19,7 @@ public sealed class CourseEventTypeEntityConfiguration(bool isSqlite) : IEntityT
         e.Property(x => x.Id)
             .ValueGeneratedOnAdd();
 
-        e.Property(x => x.TypeName)
+        e.Property(x => x.Name)
             .HasMaxLength(20)
             .IsRequired();
 
@@ -37,9 +37,9 @@ public sealed class CourseEventTypeEntityConfiguration(bool isSqlite) : IEntityT
                 .IsRequired();
         }
 
-        e.HasIndex(x => x.TypeName)
+        e.HasIndex(x => x.Name)
             .IsUnique()
-            .HasDatabaseName("IX_CourseEventTypes_TypeName");
+            .HasDatabaseName("IX_CourseEventTypes_Name");
     }
 }
 

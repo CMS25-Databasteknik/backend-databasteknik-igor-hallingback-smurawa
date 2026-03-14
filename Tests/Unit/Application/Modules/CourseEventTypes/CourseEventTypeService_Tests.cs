@@ -44,10 +44,10 @@ public class CourseEventTypeService_Tests
         Assert.True(result.Success);
         Assert.Null(result.ErrorType);
         Assert.NotNull(result.Value);
-        Assert.Equal("Online", result.Value.TypeName);
+        Assert.Equal("Online", result.Value.Name);
 
         await mockRepo.Received(1).AddAsync(
-            Arg.Is<CourseEventType>(t => t.TypeName == "Online"),
+            Arg.Is<CourseEventType>(t => t.Name == "Online"),
             Arg.Any<CancellationToken>());
         mockCache.Received(1).ResetEntity(expectedType);
         mockCache.Received(1).SetEntity(expectedType);
@@ -158,17 +158,17 @@ public class CourseEventTypeService_Tests
     [InlineData("In-Person")]
     [InlineData("Hybrid")]
     [InlineData("Virtual")]
-    public async Task CreateCourseEventTypeAsync_Should_Create_Type_With_Various_Valid_Names(string typeName)
+    public async Task CreateCourseEventTypeAsync_Should_Create_Type_With_Various_Valid_Names(string name)
     {
         // Arrange
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var expectedType = CourseEventType.Reconstitute(1, typeName);
+        var expectedType = CourseEventType.Reconstitute(1, name);
 
         mockRepo.AddAsync(Arg.Any<CourseEventType>(), Arg.Any<CancellationToken>())
             .Returns(expectedType);
 
         var service = CreateService(mockRepo, out var mockCache);
-        var input = new CreateCourseEventTypeInput(typeName);
+        var input = new CreateCourseEventTypeInput(name);
 
         // Act
         var result = await service.CreateCourseEventTypeAsync(input, CancellationToken.None);
@@ -177,7 +177,7 @@ public class CourseEventTypeService_Tests
         Assert.True(result.Success);
         Assert.Null(result.ErrorType);
         Assert.NotNull(result.Value);
-        Assert.Equal(typeName, result.Value.TypeName);
+        Assert.Equal(name, result.Value.Name);
     }
 
     [Fact]
@@ -273,22 +273,22 @@ public class CourseEventTypeService_Tests
     public async Task GetCourseEventTypeByTypeNameAsync_Should_Return_Type_When_Type_Exists()
     {
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var typeName = "Online";
-        var courseEventType = CourseEventType.Reconstitute(1, typeName);
+        var name = "Online";
+        var courseEventType = CourseEventType.Reconstitute(1, name);
 
-        mockRepo.GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>())
+        mockRepo.GetCourseEventTypeByTypeNameAsync(name, Arg.Any<CancellationToken>())
             .Returns(courseEventType);
 
         var service = CreateService(mockRepo, out var mockCache);
 
-        var result = await service.GetCourseEventTypeByTypeNameAsync(typeName, CancellationToken.None);
+        var result = await service.GetCourseEventTypeByTypeNameAsync(name, CancellationToken.None);
 
         Assert.True(result.Success);
         Assert.Null(result.ErrorType);
         Assert.NotNull(result.Value);
-        Assert.Equal(typeName, result.Value.TypeName);
+        Assert.Equal(name, result.Value.Name);
 
-        await mockRepo.Received(1).GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>());
+        await mockRepo.Received(1).GetCourseEventTypeByTypeNameAsync(name, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -309,18 +309,18 @@ public class CourseEventTypeService_Tests
     public async Task GetCourseEventTypeByTypeNameAsync_Should_Return_NotFound_When_Type_Does_Not_Exist()
     {
         var mockRepo = Substitute.For<ICourseEventTypeRepository>();
-        var typeName = "Unknown";
-        mockRepo.GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>())
+        var name = "Unknown";
+        mockRepo.GetCourseEventTypeByTypeNameAsync(name, Arg.Any<CancellationToken>())
             .Returns((CourseEventType?)null);
 
         var service = CreateService(mockRepo, out var mockCache);
 
-        var result = await service.GetCourseEventTypeByTypeNameAsync(typeName, CancellationToken.None);
+        var result = await service.GetCourseEventTypeByTypeNameAsync(name, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Equal(ErrorTypes.NotFound, result.ErrorType);
-        Assert.Equal($"Course event type with name '{typeName}' not found.", result.ErrorMessage);
-        await mockRepo.Received(1).GetCourseEventTypeByTypeNameAsync(typeName, Arg.Any<CancellationToken>());
+        Assert.Equal($"Course event type with name '{name}' not found.", result.ErrorMessage);
+        await mockRepo.Received(1).GetCourseEventTypeByTypeNameAsync(name, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -365,7 +365,7 @@ public class CourseEventTypeService_Tests
         Assert.Null(result.ErrorType);
         Assert.NotNull(result.Value);
         Assert.Equal(typeId, result.Value.Id);
-        Assert.Equal("Online", result.Value.TypeName);
+        Assert.Equal("Online", result.Value.Name);
 
         await mockRepo.Received(1).GetByIdAsync(typeId, Arg.Any<CancellationToken>());
         await mockCache.Received(1).GetByIdAsync(
@@ -485,11 +485,11 @@ public class CourseEventTypeService_Tests
         Assert.Null(result.ErrorType);
         Assert.NotNull(result.Value);
         Assert.Equal(typeId, result.Value.Id);
-        Assert.Equal("Virtual", result.Value.TypeName);
+        Assert.Equal("Virtual", result.Value.Name);
 
         await mockRepo.Received(1).UpdateAsync(
             Arg.Is<int>(id => id == typeId),
-            Arg.Is<CourseEventType>(t => t.Id == typeId && t.TypeName == "Virtual"),
+            Arg.Is<CourseEventType>(t => t.Id == typeId && t.Name == "Virtual"),
             Arg.Any<CancellationToken>());
         mockCache.Received(1).ResetEntity(existingType);
         mockCache.Received(1).SetEntity(updatedType);

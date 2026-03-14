@@ -13,7 +13,7 @@ namespace Backend.Tests.E2E.InstructorRoles;
 
 public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : IClassFixture<CoursesOnlineDbApiFactory>
 {
-    private sealed record InstructorRoleDto(int Id, string RoleName);
+    private sealed record InstructorRoleDto(int Id, string Name);
 
     private readonly CoursesOnlineDbApiFactory _factory = factory;
     private readonly JsonSerializerOptions _jsonOptions = new()
@@ -44,13 +44,13 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
 
         var firstCreate = await client.PostAsJsonAsync("/api/instructor-roles", new CreateInstructorRoleRequest
         {
-            RoleName = $"OrderA-{Guid.NewGuid():N}"
+            Name = $"OrderA-{Guid.NewGuid():N}"
         });
         var firstId = int.Parse(firstCreate.Headers.Location!.OriginalString.Split('/')[^1]);
 
         var secondCreate = await client.PostAsJsonAsync("/api/instructor-roles", new CreateInstructorRoleRequest
         {
-            RoleName = $"OrderB-{Guid.NewGuid():N}"
+            Name = $"OrderB-{Guid.NewGuid():N}"
         });
         var secondId = int.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
 
@@ -71,7 +71,7 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
 
         var createRequest = new CreateInstructorRoleRequest
         {
-            RoleName = $"Mentor-{Guid.NewGuid():N}"
+            Name = $"Mentor-{Guid.NewGuid():N}"
         };
 
         var createResponse = await client.PostAsJsonAsync("/api/instructor-roles", createRequest);
@@ -86,7 +86,7 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
         Assert.NotNull(getPayload?.Value);
         Assert.True(getPayload.Success);
         Assert.Equal(createdId, getPayload.Value.Id);
-        Assert.Equal(createRequest.RoleName, getPayload.Value.RoleName);
+        Assert.Equal(createRequest.Name, getPayload.Value.Name);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        using var content = new StringContent("{\"roleName\":123}", Encoding.UTF8, "application/json");
+        using var content = new StringContent("{\"name\":123}", Encoding.UTF8, "application/json");
         var response = await client.PostAsync("/api/instructor-roles", content);
         var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
@@ -151,7 +151,7 @@ public sealed class InstructorRolesEndpoints_Tests(CoursesOnlineDbApiFactory fac
         {
             var createRequest = new CreateInstructorRoleRequest
             {
-                RoleName = $"TempRole-{Guid.NewGuid():N}"
+                Name = $"TempRole-{Guid.NewGuid():N}"
             };
 
             var createResponse = await client.PostAsJsonAsync("/api/instructor-roles", createRequest);

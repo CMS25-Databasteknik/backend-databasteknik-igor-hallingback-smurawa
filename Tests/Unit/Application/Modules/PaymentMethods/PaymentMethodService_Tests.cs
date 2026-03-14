@@ -2,9 +2,9 @@ using Backend.Application.Common;
 using Backend.Application.Modules.PaymentMethods;
 using Backend.Application.Modules.PaymentMethods.Caching;
 using Backend.Application.Modules.PaymentMethods.Inputs;
-using Backend.Domain.Modules.PaymentMethod.Contracts;
+using Backend.Domain.Modules.PaymentMethods.Contracts;
 using NSubstitute;
-using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
+using PaymentMethodModel = Backend.Domain.Modules.PaymentMethods.Models.PaymentMethod;
 
 namespace Backend.Tests.Unit.Application.Modules.PaymentMethods;
 

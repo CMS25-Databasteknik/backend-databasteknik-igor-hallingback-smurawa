@@ -38,7 +38,7 @@ public sealed class Instructor
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Name cannot be empty or whitespace.", nameof(name));
 
-        Role = role ?? throw new ArgumentNullException(nameof(role));
+        ArgumentNullException.ThrowIfNull(role);
 
         if (role.Id <= 0)
             throw new ArgumentException("Instructor role ID must be greater than zero.", nameof(role));

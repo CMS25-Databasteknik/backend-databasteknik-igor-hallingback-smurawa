@@ -1,5 +1,5 @@
 using Backend.Application.Common.Caching;
-using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
+using PaymentMethodModel = Backend.Domain.Modules.PaymentMethods.Models.PaymentMethod;
 
 namespace Backend.Application.Modules.PaymentMethods.Caching;
 

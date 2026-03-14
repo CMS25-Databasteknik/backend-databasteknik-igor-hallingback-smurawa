@@ -15,7 +15,7 @@ public class InstructorRepository(CoursesOnlineDbContext context)
         if (entity.InstructorRole == null)
             throw new InvalidOperationException("Instructor role must be loaded from database.");
 
-        var role = InstructorRole.Reconstitute(entity.InstructorRole.Id, entity.InstructorRole.RoleName);
+        var role = InstructorRole.Reconstitute(entity.InstructorRole.Id, entity.InstructorRole.Name);
         return Instructor.Reconstitute(entity.Id, entity.Name, role);
     }
 
@@ -39,7 +39,7 @@ public class InstructorRepository(CoursesOnlineDbContext context)
         _context.Instructors.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var role = InstructorRole.Reconstitute(roleExists.Id, roleExists.RoleName);
+        var role = InstructorRole.Reconstitute(roleExists.Id, roleExists.Name);
         return Instructor.Reconstitute(entity.Id, entity.Name, role);
     }
 
@@ -91,7 +91,7 @@ public class InstructorRepository(CoursesOnlineDbContext context)
         entity.InstructorRoleId = instructor.InstructorRoleId;
         await _context.SaveChangesAsync(cancellationToken);
 
-        var role = InstructorRole.Reconstitute(roleEntity.Id, roleEntity.RoleName);
+        var role = InstructorRole.Reconstitute(roleEntity.Id, roleEntity.Name);
         return Instructor.Reconstitute(entity.Id, entity.Name, role);
     }
 

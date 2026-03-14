@@ -24,7 +24,7 @@ public class InstructorRoleService_Tests
     {
         var repo = Substitute.For<IInstructorRoleRepository>();
         repo.AddAsync(Arg.Any<InstructorRole>(), Arg.Any<CancellationToken>())
-            .Returns(ci => InstructorRole.Reconstitute(1, ci.Arg<InstructorRole>().RoleName));
+            .Returns(ci => InstructorRole.Reconstitute(1, ci.Arg<InstructorRole>().Name));
         repo.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(ci => ci.Arg<int>() == 9 ? null : InstructorRole.Reconstitute(ci.Arg<int>(), $"Role{ci.Arg<int>()}"));
         repo.GetAllAsync(Arg.Any<CancellationToken>())
@@ -47,7 +47,7 @@ public class InstructorRoleService_Tests
 
         Assert.True(result.Success);
         Assert.Null(result.ErrorType);
-        Assert.Equal("Lead", result.Value?.RoleName);
+        Assert.Equal("Lead", result.Value?.Name);
     }
 
     [Fact]

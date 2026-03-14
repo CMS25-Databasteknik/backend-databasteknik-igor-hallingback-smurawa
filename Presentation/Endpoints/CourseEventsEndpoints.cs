@@ -25,28 +25,19 @@ public static class CourseEventsEndpoints
     private static async Task<IResult> GetAllCourseEvents(ICourseEventService service, CancellationToken cancellationToken)
     {
         var response = await service.GetAllCourseEventsAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetCourseEventById(Guid id, ICourseEventService service, CancellationToken cancellationToken)
     {
         var response = await service.GetCourseEventByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetCourseEventsByCourseId(Guid courseId, ICourseEventService service, CancellationToken cancellationToken)
     {
         var response = await service.GetCourseEventsByCourseIdAsync(courseId, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateCourseEvent(CreateCourseEventRequest request, ICourseEventService service, CancellationToken cancellationToken)
@@ -63,19 +54,13 @@ public static class CourseEventsEndpoints
     {
         var input = new UpdateCourseEventInput(id, request.CourseId, request.EventDate, request.Price, request.Seats, request.CourseEventTypeId, request.VenueTypeId);
         var response = await service.UpdateCourseEventAsync(input, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteCourseEvent(Guid id, ICourseEventService service, CancellationToken cancellationToken)
     {
         var response = await service.DeleteCourseEventAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

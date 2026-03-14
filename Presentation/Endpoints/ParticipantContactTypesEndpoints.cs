@@ -24,28 +24,19 @@ public static class ParticipantContactTypesEndpoints
     private static async Task<IResult> GetParticipantContactTypes(IParticipantContactTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.GetAllParticipantContactTypesAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetParticipantContactTypeById(int id, IParticipantContactTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.GetParticipantContactTypeByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetParticipantContactTypeByName(string name, IParticipantContactTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.GetParticipantContactTypeByNameAsync(name, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateParticipantContactType(CreateParticipantContactTypeRequest request, IParticipantContactTypeService service, CancellationToken cancellationToken)
@@ -62,19 +53,13 @@ public static class ParticipantContactTypesEndpoints
     {
         var updateInput = new UpdateParticipantContactTypeInput(id, request.Name);
         var response = await service.UpdateParticipantContactTypeAsync(updateInput, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteParticipantContactType(int id, IParticipantContactTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.DeleteParticipantContactTypeAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

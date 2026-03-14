@@ -24,28 +24,19 @@ public static class PaymentMethodsEndpoints
     private static async Task<IResult> GetPaymentMethods(IPaymentMethodService service, CancellationToken cancellationToken)
     {
         var response = await service.GetAllPaymentMethodsAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetPaymentMethodById(int id, IPaymentMethodService service, CancellationToken cancellationToken)
     {
         var response = await service.GetPaymentMethodByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetPaymentMethodByName(string name, IPaymentMethodService service, CancellationToken cancellationToken)
     {
         var response = await service.GetPaymentMethodByNameAsync(name, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreatePaymentMethod(CreatePaymentMethodRequest request, IPaymentMethodService service, CancellationToken cancellationToken)
@@ -62,19 +53,13 @@ public static class PaymentMethodsEndpoints
     {
         var updateInput = new UpdatePaymentMethodInput(id, request.Name);
         var response = await service.UpdatePaymentMethodAsync(updateInput, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeletePaymentMethod(int id, IPaymentMethodService service, CancellationToken cancellationToken)
     {
         var response = await service.DeletePaymentMethodAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

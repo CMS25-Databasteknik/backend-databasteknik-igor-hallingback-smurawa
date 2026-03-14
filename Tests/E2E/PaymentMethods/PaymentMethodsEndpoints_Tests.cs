@@ -8,7 +8,7 @@ using Backend.Application.Common;
 using Backend.Presentation.API.Models.PaymentMethod;
 using Backend.Tests.Integration.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Backend.Domain.Modules.PaymentMethod.Models;
+using Backend.Domain.Modules.PaymentMethods.Models;
 
 namespace Backend.Tests.E2E.PaymentMethods;
 

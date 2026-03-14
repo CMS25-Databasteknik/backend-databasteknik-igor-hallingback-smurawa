@@ -30,7 +30,7 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         }
         catch (ArgumentException ex)
         {
-            return Result<VenueType>.BadRequest("An error occurred.");
+            return Result<VenueType>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -71,7 +71,7 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         }
         catch (ArgumentException ex)
         {
-            return Result<VenueType>.BadRequest("An error occurred.");
+            return Result<VenueType>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -97,7 +97,7 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         }
         catch (ArgumentException ex)
         {
-            return Result<VenueType>.BadRequest("An error occurred.");
+            return Result<VenueType>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -127,7 +127,7 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         }
         catch (ArgumentException ex)
         {
-            return Result<VenueType>.BadRequest("An error occurred.");
+            return Result<VenueType>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -158,7 +158,7 @@ public sealed class VenueTypeService(IVenueTypeCache cache, IVenueTypeRepository
         }
         catch (ArgumentException ex)
         {
-            return Result<bool>.BadRequest("An error occurred.");
+            return Result<bool>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {

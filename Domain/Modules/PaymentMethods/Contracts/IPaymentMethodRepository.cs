@@ -1,7 +1,7 @@
 using Backend.Domain.Common.Base;
-using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
+using PaymentMethodModel = Backend.Domain.Modules.PaymentMethods.Models.PaymentMethod;
 
-namespace Backend.Domain.Modules.PaymentMethod.Contracts;
+namespace Backend.Domain.Modules.PaymentMethods.Contracts;
 
 public interface IPaymentMethodRepository : IRepositoryBase<PaymentMethodModel, int>
 {

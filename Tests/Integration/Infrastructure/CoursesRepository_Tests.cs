@@ -99,7 +99,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
         var loadedEvent = Assert.Single(loaded.Events);
         Assert.Equal(createdEvent.Id, loadedEvent.Id);
         Assert.Equal(eventType.Id, loadedEvent.CourseEventType.Id);
-        Assert.Equal(eventType.TypeName, loadedEvent.CourseEventType.TypeName);
+        Assert.Equal(eventType.Name, loadedEvent.CourseEventType.Name);
         Assert.Equal(1, loadedEvent.VenueType.Id);
         Assert.Equal("InPerson", loadedEvent.VenueType.Name);
     }
@@ -188,7 +188,7 @@ public class CoursesRepository_Tests(SqliteInMemoryFixture fixture)
             Seats = 10,
             CourseEventTypeId = 1,
             VenueTypeId = 1,
-            CourseEventType = new CourseEventTypeEntity { Id = 1, TypeName = "Online" },
+            CourseEventType = new CourseEventTypeEntity { Id = 1, Name = "Online" },
             VenueType = null!
         };
 

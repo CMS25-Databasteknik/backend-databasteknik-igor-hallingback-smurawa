@@ -5,33 +5,33 @@ namespace Backend.Domain.Modules.CourseEventTypes.Models;
 public sealed class CourseEventType
 {
     public int Id { get; }
-    public string TypeName { get; private set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
     [JsonConstructor]
-    private CourseEventType(int id, string typeName)
+    private CourseEventType(int id, string name)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(id);
 
         Id = id;
-        SetValues(typeName);
+        SetValues(name);
     }
 
-    public static CourseEventType Create(string typeName)
-        => new(0, typeName);
+    public static CourseEventType Create(string name)
+        => new(0, name);
 
-    public static CourseEventType Reconstitute(int id, string typeName)
-        => new(id, typeName);
+    public static CourseEventType Reconstitute(int id, string name)
+        => new(id, name);
 
-    public void Update(string typeName)
+    public void Update(string name)
     {
-        SetValues(typeName);
+        SetValues(name);
     }
 
-    private void SetValues(string typeName)
+    private void SetValues(string name)
     {
-        if (string.IsNullOrWhiteSpace(typeName))
-            throw new ArgumentException("Type name cannot be empty or whitespace.", nameof(typeName));
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Type name cannot be empty or whitespace.", nameof(name));
 
-        TypeName = typeName.Trim();
+        Name = name.Trim();
     }
 }

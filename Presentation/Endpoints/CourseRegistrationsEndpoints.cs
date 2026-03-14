@@ -27,37 +27,25 @@ public static class CourseRegistrationsEndpoints
     private static async Task<IResult> GetAllCourseRegistrations(ICourseRegistrationService service, CancellationToken cancellationToken)
     {
         var response = await service.GetAllCourseRegistrationsAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetCourseRegistrationById(Guid id, ICourseRegistrationService service, CancellationToken cancellationToken)
     {
         var response = await service.GetCourseRegistrationByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetCourseRegistrationsByParticipantId(Guid participantId, ICourseRegistrationService service, CancellationToken cancellationToken)
     {
         var response = await service.GetCourseRegistrationsByParticipantIdAsync(participantId, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetCourseRegistrationsByCourseEventId(Guid courseEventId, ICourseRegistrationService service, CancellationToken cancellationToken)
     {
         var response = await service.GetCourseRegistrationsByCourseEventIdAsync(courseEventId, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateCourseRegistration(CreateCourseRegistrationRequest request, ICourseRegistrationService service, CancellationToken cancellationToken)
@@ -74,19 +62,13 @@ public static class CourseRegistrationsEndpoints
     {
         var input = new UpdateCourseRegistrationInput(id, request.ParticipantId, request.CourseEventId, request.StatusId, request.PaymentMethodId);
         var response = await service.UpdateCourseRegistrationAsync(input, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteCourseRegistration(Guid id, ICourseRegistrationService service, CancellationToken cancellationToken)
     {
         var response = await service.DeleteCourseRegistrationAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
 }
 }
 

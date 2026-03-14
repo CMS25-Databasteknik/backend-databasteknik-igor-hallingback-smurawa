@@ -1,6 +1,6 @@
 using Backend.Domain.Modules.CourseRegistrations.Models;
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
-using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
+using PaymentMethodModel = Backend.Domain.Modules.PaymentMethods.Models.PaymentMethod;
 using Backend.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 

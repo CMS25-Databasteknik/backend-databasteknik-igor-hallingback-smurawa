@@ -24,28 +24,19 @@ public static class VenueTypesEndpoints
     private static async Task<IResult> GetVenueTypes(IVenueTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.GetAllVenueTypesAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetVenueTypeById(int id, IVenueTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.GetVenueTypeByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetVenueTypeByName(string name, IVenueTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.GetVenueTypeByNameAsync(name, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateVenueType(CreateVenueTypeRequest request, IVenueTypeService service, CancellationToken cancellationToken)
@@ -62,19 +53,13 @@ public static class VenueTypesEndpoints
     {
         var updateInput = new UpdateVenueTypeInput(id, request.Name);
         var response = await service.UpdateVenueTypeAsync(updateInput, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteVenueType(int id, IVenueTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.DeleteVenueTypeAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

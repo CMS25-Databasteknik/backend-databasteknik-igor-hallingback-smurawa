@@ -7,7 +7,7 @@ using Backend.Domain.Modules.Instructors.Models;
 
 namespace Backend.Application.Modules.Instructors;
 
-public class InstructorService(IInstructorRepository instructorRepository, IInstructorRoleRepository instructorRoleRepository) : IInstructorService
+public sealed class InstructorService(IInstructorRepository instructorRepository, IInstructorRoleRepository instructorRoleRepository) : IInstructorService
 {
     private readonly IInstructorRepository _instructorRepository = instructorRepository ?? throw new ArgumentNullException(nameof(instructorRepository));
     private readonly IInstructorRoleRepository _instructorRoleRepository = instructorRoleRepository ?? throw new ArgumentNullException(nameof(instructorRoleRepository));
@@ -53,11 +53,6 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
         {
             var instructors = await _instructorRepository.GetAllAsync(cancellationToken);
 
-            if (!instructors.Any())
-            {
-                return Result<IReadOnlyList<Instructor>>.Ok(instructors);
-            }
-
             return Result<IReadOnlyList<Instructor>>.Ok(instructors);
         }
         catch (Exception ex)
@@ -85,7 +80,7 @@ public class InstructorService(IInstructorRepository instructorRepository, IInst
             var details = new InstructorDetails(
                 instructor.Id,
                 instructor.Name,
-                new InstructorLookupItem(instructor.Role.Id, instructor.Role.RoleName)
+                new InstructorLookupItem(instructor.Role.Id, instructor.Role.Name)
             );
 
             return Result<InstructorDetails>.Ok(details);

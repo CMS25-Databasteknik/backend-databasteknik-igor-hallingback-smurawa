@@ -2,8 +2,8 @@ using Backend.Application.Common;
 using Backend.Application.Modules.PaymentMethods.Caching;
 using Backend.Application.Modules.PaymentMethods.Inputs;
 
-using Backend.Domain.Modules.PaymentMethod.Contracts;
-using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
+using Backend.Domain.Modules.PaymentMethods.Contracts;
+using PaymentMethodModel = Backend.Domain.Modules.PaymentMethods.Models.PaymentMethod;
 
 namespace Backend.Application.Modules.PaymentMethods;
 
@@ -30,7 +30,7 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
         }
         catch (ArgumentException ex)
         {
-            return Result<PaymentMethodModel>.BadRequest("An error occurred.");
+            return Result<PaymentMethodModel>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -57,8 +57,8 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
     {
         try
         {
-            if (id < 0)
-                throw new ArgumentException("Id must be zero or positive.", nameof(id));
+            if (id <= 0)
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
 
             var paymentMethod = await _cache.GetByIdAsync(
                 id,
@@ -71,7 +71,7 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
         }
         catch (ArgumentException ex)
         {
-            return Result<PaymentMethodModel>.BadRequest("An error occurred.");
+            return Result<PaymentMethodModel>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -97,7 +97,7 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
         }
         catch (ArgumentException ex)
         {
-            return Result<PaymentMethodModel>.BadRequest("An error occurred.");
+            return Result<PaymentMethodModel>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -127,7 +127,7 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
         }
         catch (ArgumentException ex)
         {
-            return Result<PaymentMethodModel>.BadRequest("An error occurred.");
+            return Result<PaymentMethodModel>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {
@@ -139,8 +139,8 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
     {
         try
         {
-            if (id < 0)
-                throw new ArgumentException("Id must be zero or positive.", nameof(id));
+            if (id <= 0)
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
 
             var existingPaymentMethod = await _repository.GetByIdAsync(id, cancellationToken);
             if (existingPaymentMethod == null)
@@ -158,7 +158,7 @@ public sealed class PaymentMethodService(IPaymentMethodCache cache, IPaymentMeth
         }
         catch (ArgumentException ex)
         {
-            return Result<bool>.BadRequest("An error occurred.");
+            return Result<bool>.BadRequest(ex.Message);
         }
         catch (Exception ex)
         {

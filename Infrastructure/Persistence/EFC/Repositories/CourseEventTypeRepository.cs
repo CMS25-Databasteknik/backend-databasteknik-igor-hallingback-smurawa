@@ -10,13 +10,13 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context)
     : RepositoryBase<CourseEventType, int, CourseEventTypeEntity, CoursesOnlineDbContext>(context), ICourseEventTypeRepository
 {
     protected override CourseEventType ToModel(CourseEventTypeEntity entity)
-        => CourseEventType.Reconstitute(entity.Id, entity.TypeName);
+        => CourseEventType.Reconstitute(entity.Id, entity.Name);
 
     protected override CourseEventTypeEntity ToEntity(CourseEventType courseEventType)
         => new()
         {
             Id = courseEventType.Id,
-            TypeName = courseEventType.TypeName
+            Name = courseEventType.Name
         };
 
     public override async Task<CourseEventType> AddAsync(CourseEventType courseEventType, CancellationToken cancellationToken)
@@ -62,7 +62,7 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context)
     {
         var entity = await _context.CourseEventTypes
             .AsNoTracking()
-            .SingleOrDefaultAsync(cet => cet.TypeName == typeName, cancellationToken);
+            .SingleOrDefaultAsync(cet => cet.Name == typeName, cancellationToken);
 
         return entity == null ? null : ToModel(entity);
     }
@@ -73,7 +73,7 @@ public class CourseEventTypeRepository(CoursesOnlineDbContext context)
         if (entity is null)
             throw new KeyNotFoundException($"Course event type '{courseEventType.Id}' not found.");
 
-        entity.TypeName = courseEventType.TypeName;
+        entity.Name = courseEventType.Name;
         await _context.SaveChangesAsync(cancellationToken);
 
         return ToModel(entity);

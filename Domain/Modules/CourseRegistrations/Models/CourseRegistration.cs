@@ -1,5 +1,5 @@
 using Backend.Domain.Modules.CourseRegistrationStatuses.Models;
-using PaymentMethodModel = Backend.Domain.Modules.PaymentMethod.Models.PaymentMethod;
+using PaymentMethodModel = Backend.Domain.Modules.PaymentMethods.Models.PaymentMethod;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 

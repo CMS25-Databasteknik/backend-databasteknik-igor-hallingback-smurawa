@@ -21,12 +21,12 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return Result<CourseEventType>.BadRequest("Course event type cannot be null.");
             }
 
-            var existingCourseEventType = await _courseEventTypeRepository.GetCourseEventTypeByTypeNameAsync(courseEventType.TypeName, cancellationToken);
+            var existingCourseEventType = await _courseEventTypeRepository.GetCourseEventTypeByTypeNameAsync(courseEventType.Name, cancellationToken);
 
             if (existingCourseEventType is not null)
                 return Result<CourseEventType>.BadRequest("A typename with the same name already exists.");
 
-            var newCourseEventType = CourseEventType.Create(courseEventType.TypeName);
+            var newCourseEventType = CourseEventType.Create(courseEventType.Name);
 
             var createdCourseEventType = await _courseEventTypeRepository.AddAsync(newCourseEventType, cancellationToken);
             _cache.ResetEntity(createdCourseEventType);
@@ -132,7 +132,7 @@ public class CourseEventTypeService(ICourseEventTypeCache cache, ICourseEventTyp
                 return Result<CourseEventType>.NotFound($"Course event type with ID '{courseEventType.Id}' not found.");
             }
 
-            existingCourseEventType.Update(courseEventType.TypeName);
+            existingCourseEventType.Update(courseEventType.Name);
 
             var updatedCourseEventType = await _courseEventTypeRepository.UpdateAsync(existingCourseEventType.Id, existingCourseEventType, cancellationToken);
 

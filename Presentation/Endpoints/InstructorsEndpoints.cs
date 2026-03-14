@@ -23,19 +23,13 @@ public static class InstructorsEndpoints
     private static async Task<IResult> GetAllInstructors(IInstructorService instructorService, CancellationToken cancellationToken)
     {
         var response = await instructorService.GetAllInstructorsAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetInstructorById(Guid id, IInstructorService instructorService, CancellationToken cancellationToken)
     {
         var response = await instructorService.GetInstructorByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateInstructor(CreateInstructorRequest request, IInstructorService instructorService, CancellationToken cancellationToken)
@@ -52,19 +46,13 @@ public static class InstructorsEndpoints
     {
         var input = new UpdateInstructorInput(id, request.Name, request.InstructorRoleId);
         var response = await instructorService.UpdateInstructorAsync(input, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteInstructor(Guid id, IInstructorService instructorService, CancellationToken cancellationToken)
     {
         var response = await instructorService.DeleteInstructorAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

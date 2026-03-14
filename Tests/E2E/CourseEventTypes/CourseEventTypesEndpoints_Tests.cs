@@ -13,7 +13,7 @@ namespace Backend.Tests.E2E.CourseEventTypes;
 
 public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory factory) : IClassFixture<CoursesOnlineDbApiFactory>
 {
-    private sealed record CourseEventTypeDto(int Id, string TypeName);
+    private sealed record CourseEventTypeDto(int Id, string Name);
 
     private readonly CoursesOnlineDbApiFactory _factory = factory;
     private readonly JsonSerializerOptions _jsonOptions = new()
@@ -44,13 +44,13 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
 
         var firstCreate = await client.PostAsJsonAsync("/api/course-event-types", new CreateCourseEventTypeRequest
         {
-            TypeName = $"OrderA-{Guid.NewGuid():N}"
+            Name = $"OrderA-{Guid.NewGuid():N}"
         });
         var firstId = int.Parse(firstCreate.Headers.Location!.OriginalString.Split('/')[^1]);
 
         var secondCreate = await client.PostAsJsonAsync("/api/course-event-types", new CreateCourseEventTypeRequest
         {
-            TypeName = $"OrderB-{Guid.NewGuid():N}"
+            Name = $"OrderB-{Guid.NewGuid():N}"
         });
         var secondId = int.Parse(secondCreate.Headers.Location!.OriginalString.Split('/')[^1]);
 
@@ -71,7 +71,7 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
 
         var createRequest = new CreateCourseEventTypeRequest
         {
-            TypeName = $"Webinar-{Guid.NewGuid():N}"
+            Name = $"Webinar-{Guid.NewGuid():N}"
         };
 
         var createResponse = await client.PostAsJsonAsync("/api/course-event-types", createRequest);
@@ -88,7 +88,7 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
         Assert.True(getPayload.Success);
         Assert.NotNull(getPayload.Value);
         Assert.Equal(createdId, getPayload.Value.Id);
-        Assert.Equal(createRequest.TypeName, getPayload.Value.TypeName);
+        Assert.Equal(createRequest.Name, getPayload.Value.Name);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
         await _factory.ResetAndSeedDataAsync();
         using var client = _factory.CreateClient();
 
-        using var content = new StringContent("{\"typeName\":123}", Encoding.UTF8, "application/json");
+        using var content = new StringContent("{\"name\":123}", Encoding.UTF8, "application/json");
         var response = await client.PostAsync("/api/course-event-types", content);
         var payload = await response.Content.ReadFromJsonAsync<Result>(_jsonOptions);
 
@@ -153,7 +153,7 @@ public sealed class CourseEventTypesEndpoints_Tests(CoursesOnlineDbApiFactory fa
         {
             var createRequest = new CreateCourseEventTypeRequest
             {
-                TypeName = $"TempType-{Guid.NewGuid():N}"
+                Name = $"TempType-{Guid.NewGuid():N}"
             };
 
             var createResponse = await client.PostAsJsonAsync("/api/course-event-types", createRequest);

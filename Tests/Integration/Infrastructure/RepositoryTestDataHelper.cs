@@ -8,7 +8,7 @@ using Backend.Domain.Modules.InstructorRoles.Models;
 using Backend.Domain.Modules.Instructors.Models;
 using Backend.Domain.Modules.Locations.Models;
 using Backend.Domain.Modules.Participants.Models;
-using Backend.Domain.Modules.PaymentMethod.Models;
+using Backend.Domain.Modules.PaymentMethods.Models;
 using Backend.Domain.Modules.VenueTypes.Models;
 using Backend.Infrastructure.Persistence.EFC.Context;
 using Backend.Infrastructure.Persistence.EFC.Repositories;

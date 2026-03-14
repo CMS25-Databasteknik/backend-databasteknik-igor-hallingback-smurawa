@@ -23,24 +23,18 @@ public static class CourseEventTypesEndpoints
     private static async Task<IResult> GetAllCourseEventTypes(ICourseEventTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.GetAllCourseEventTypesAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetCourseEventTypeById(int id, ICourseEventTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.GetCourseEventTypeByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateCourseEventType(CreateCourseEventTypeRequest request, ICourseEventTypeService service, CancellationToken cancellationToken)
     {
-        var input = new CreateCourseEventTypeInput(request.TypeName);
+        var input = new CreateCourseEventTypeInput(request.Name);
         var response = await service.CreateCourseEventTypeAsync(input, cancellationToken);
         if (!response.Success)
             return response.ToHttpResult();
@@ -50,21 +44,15 @@ public static class CourseEventTypesEndpoints
 
     private static async Task<IResult> UpdateCourseEventType(int id, UpdateCourseEventTypeRequest request, ICourseEventTypeService service, CancellationToken cancellationToken)
     {
-        var input = new UpdateCourseEventTypeInput(id, request.TypeName);
+        var input = new UpdateCourseEventTypeInput(id, request.Name);
         var response = await service.UpdateCourseEventTypeAsync(input, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteCourseEventType(int id, ICourseEventTypeService service, CancellationToken cancellationToken)
     {
         var response = await service.DeleteCourseEventTypeAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

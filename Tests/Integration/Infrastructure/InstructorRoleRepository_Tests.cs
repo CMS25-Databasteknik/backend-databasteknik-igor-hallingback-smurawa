@@ -12,21 +12,21 @@ public class InstructorRoleRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new InstructorRoleRepository(context);
-        var roleName = $"Trainer-{Guid.NewGuid():N}";
+        var name = $"Trainer-{Guid.NewGuid():N}";
 
-        var created = await repo.AddAsync(InstructorRole.Create(roleName), CancellationToken.None);
+        var created = await repo.AddAsync(InstructorRole.Create(name), CancellationToken.None);
         var loaded = await repo.GetByIdAsync(created.Id, CancellationToken.None);
 
         Assert.NotNull(loaded);
         Assert.Equal(created.Id, loaded!.Id);
-        Assert.Equal(roleName, loaded!.RoleName);
+        Assert.Equal(name, loaded!.Name);
 
         var persisted = await context.InstructorRoles
             .AsNoTracking()
             .SingleAsync(x => x.Id == created.Id, CancellationToken.None);
 
         Assert.Equal(created.Id, persisted.Id);
-        Assert.Equal(roleName, persisted.RoleName);
+        Assert.Equal(name, persisted.Name);
     }
 
     [Fact]
@@ -68,13 +68,13 @@ public class InstructorRoleRepository_Tests(SqliteInMemoryFixture fixture)
         var updated = await repo.UpdateAsync(created.Id, InstructorRole.Reconstitute(created.Id, "UpdatedRole"), CancellationToken.None);
 
         Assert.NotNull(updated);
-        Assert.Equal("UpdatedRole", updated!.RoleName);
+        Assert.Equal("UpdatedRole", updated!.Name);
 
         var persisted = await context.InstructorRoles
             .AsNoTracking()
             .SingleAsync(x => x.Id == created.Id, CancellationToken.None);
 
-        Assert.Equal("UpdatedRole", persisted.RoleName);
+        Assert.Equal("UpdatedRole", persisted.Name);
     }
 
     [Fact]

@@ -12,27 +12,27 @@ public class CourseEventTypeRepository_Tests(SqliteInMemoryFixture fixture)
     {
         await using var context = fixture.CreateDbContext();
         var repo = new CourseEventTypeRepository(context);
-        var typeName = $"Lecture-{Guid.NewGuid():N}";
+        var name = $"Lecture-{Guid.NewGuid():N}";
 
-        var created = await repo.AddAsync(CourseEventType.Create(typeName), CancellationToken.None);
+        var created = await repo.AddAsync(CourseEventType.Create(name), CancellationToken.None);
         var byId = await repo.GetByIdAsync(created.Id, CancellationToken.None);
-        var byName = await repo.GetCourseEventTypeByTypeNameAsync(typeName, CancellationToken.None);
+        var byName = await repo.GetCourseEventTypeByTypeNameAsync(name, CancellationToken.None);
 
         Assert.True(created.Id > 0);
         Assert.NotNull(byId);
         Assert.NotNull(byName);
-        Assert.Equal(typeName, created.TypeName);
+        Assert.Equal(name, created.Name);
         Assert.Equal(created.Id, byId!.Id);
-        Assert.Equal(typeName, byId.TypeName);
+        Assert.Equal(name, byId.Name);
         Assert.Equal(created.Id, byName!.Id);
-        Assert.Equal(typeName, byName.TypeName);
+        Assert.Equal(name, byName.Name);
 
         var persisted = await context.CourseEventTypes
             .AsNoTracking()
             .SingleAsync(x => x.Id == created.Id, CancellationToken.None);
 
         Assert.Equal(created.Id, persisted.Id);
-        Assert.Equal(typeName, persisted.TypeName);
+        Assert.Equal(name, persisted.Name);
     }
 
     [Fact]
@@ -75,13 +75,13 @@ public class CourseEventTypeRepository_Tests(SqliteInMemoryFixture fixture)
         var updated = await repo.UpdateAsync(created.Id, CourseEventType.Reconstitute(created.Id, "UpdatedType"), CancellationToken.None);
 
         Assert.NotNull(updated);
-        Assert.Equal("UpdatedType", updated!.TypeName);
+        Assert.Equal("UpdatedType", updated!.Name);
 
         var persisted = await context.CourseEventTypes
             .AsNoTracking()
             .SingleAsync(x => x.Id == created.Id, CancellationToken.None);
 
-        Assert.Equal("UpdatedType", persisted.TypeName);
+        Assert.Equal("UpdatedType", persisted.Name);
     }
 
     [Fact]

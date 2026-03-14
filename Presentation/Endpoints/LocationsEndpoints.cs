@@ -23,19 +23,13 @@ public static class LocationsEndpoints
     private static async Task<IResult> GetAllLocations(ILocationService locationService, CancellationToken cancellationToken)
     {
         var response = await locationService.GetAllLocationsAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetLocationById(int id, ILocationService locationService, CancellationToken cancellationToken)
     {
         var response = await locationService.GetLocationByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateLocation(CreateLocationRequest request, ILocationService locationService, CancellationToken cancellationToken)
@@ -52,19 +46,13 @@ public static class LocationsEndpoints
     {
         var input = new UpdateLocationInput(id, request.StreetName, request.PostalCode, request.City);
         var response = await locationService.UpdateLocationAsync(input, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteLocation(int id, ILocationService locationService, CancellationToken cancellationToken)
     {
         var response = await locationService.DeleteLocationAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

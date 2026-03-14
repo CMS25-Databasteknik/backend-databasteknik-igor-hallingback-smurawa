@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Backend.Domain.Modules.PaymentMethod.Models;
+namespace Backend.Domain.Modules.PaymentMethods.Models;
 
 public sealed class PaymentMethod : IEquatable<PaymentMethod>
 {

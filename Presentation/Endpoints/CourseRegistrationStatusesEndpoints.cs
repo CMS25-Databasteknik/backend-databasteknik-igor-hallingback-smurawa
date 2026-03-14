@@ -23,19 +23,13 @@ public static class CourseRegistrationStatusesEndpoints
     private static async Task<IResult> GetCourseRegistrationStatuses(ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
     {
         var response = await statusService.GetAllCourseRegistrationStatusesAsync(cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> GetCourseRegistrationStatusById(int id, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
     {
         var response = await statusService.GetCourseRegistrationStatusByIdAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> CreateCourseRegistrationStatus(CreateCourseRegistrationStatusRequest request, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
@@ -52,19 +46,13 @@ public static class CourseRegistrationStatusesEndpoints
     {
         var updateInput = new UpdateCourseRegistrationStatusInput(id, request.Name);
         var response = await statusService.UpdateCourseRegistrationStatusAsync(updateInput, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 
     private static async Task<IResult> DeleteCourseRegistrationStatus(int id, ICourseRegistrationStatusService statusService, CancellationToken cancellationToken)
     {
         var response = await statusService.DeleteCourseRegistrationStatusAsync(id, cancellationToken);
-        if (!response.Success)
-            return response.ToHttpResult();
-
-        return Results.Ok(response);
+        return response.ToHttpResult();
     }
 }
 

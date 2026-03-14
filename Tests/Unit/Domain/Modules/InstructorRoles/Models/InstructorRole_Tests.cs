@@ -10,7 +10,7 @@ public class InstructorRole_Tests
         var role = InstructorRole.Reconstitute(1, "Lead");
 
         Assert.Equal(1, role.Id);
-        Assert.Equal("Lead", role.RoleName);
+        Assert.Equal("Lead", role.Name);
     }
 
     [Fact]
@@ -18,7 +18,7 @@ public class InstructorRole_Tests
     {
         var role = InstructorRole.Reconstitute(2, "  Assistant  ");
 
-        Assert.Equal("Assistant", role.RoleName);
+        Assert.Equal("Assistant", role.Name);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class InstructorRole_Tests
         var role = InstructorRole.Reconstitute(0, "Lead");
 
         Assert.Equal(0, role.Id);
-        Assert.Equal("Lead", role.RoleName);
+        Assert.Equal("Lead", role.Name);
     }
 
     [Theory]
@@ -45,7 +45,7 @@ public class InstructorRole_Tests
     public void Constructor_Should_Throw_When_Name_Invalid(string? name)
     {
         var ex = Assert.Throws<ArgumentException>(() => InstructorRole.Reconstitute(1, name!));
-        Assert.Equal("roleName", ex.ParamName);
+        Assert.Equal("name", ex.ParamName);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class InstructorRole_Tests
         role.Update("Assistant");
 
         Assert.Equal(1, role.Id);
-        Assert.Equal("Assistant", role.RoleName);
+        Assert.Equal("Assistant", role.Name);
     }
 
     [Fact]
@@ -65,6 +65,6 @@ public class InstructorRole_Tests
         var role = InstructorRole.Reconstitute(1, "Lead");
 
         var ex = Assert.Throws<ArgumentException>(() => role.Update("   "));
-        Assert.Equal("roleName", ex.ParamName);
+        Assert.Equal("name", ex.ParamName);
     }
 }
