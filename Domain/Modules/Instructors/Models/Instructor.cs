@@ -12,8 +12,6 @@ public sealed class Instructor
     public InstructorRole Role { get; private set; }
 
     /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
-
-
     [JsonConstructor]
     private Instructor(Guid id, string name, InstructorRole role)
     {

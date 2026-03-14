@@ -13,8 +13,6 @@ public sealed class CourseRegistrationStatus
     public static CourseRegistrationStatus Refunded { get; } = Reconstitute(3, "Refunded");
 
     /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
-
-
     [JsonConstructor]
     private CourseRegistrationStatus(int id, string name)
     {

@@ -8,8 +8,6 @@ public sealed class InstructorRole
     public string Name { get; private set; } = null!;
 
     /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
-
-
     [JsonConstructor]
     private InstructorRole(int id, string name)
     {

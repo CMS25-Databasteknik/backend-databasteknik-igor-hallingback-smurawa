@@ -19,8 +19,6 @@ public sealed class CourseEvent
     public VenueType VenueType { get; private set; }
 
     /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
-
-
     [JsonConstructor]
     private CourseEvent(
         Guid id,

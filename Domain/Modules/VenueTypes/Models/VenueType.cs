@@ -8,8 +8,6 @@ public sealed class VenueType : IEquatable<VenueType>
     public string Name { get; private set; } = null!;
 
     /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
-
-
     [JsonConstructor]
     private VenueType(int id, string name)
     {

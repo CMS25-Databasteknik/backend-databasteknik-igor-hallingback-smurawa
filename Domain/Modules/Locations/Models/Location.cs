@@ -11,8 +11,6 @@ public sealed class Location
     public string City { get; private set; } = null!;
 
     /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
-
-
     [JsonConstructor]
     private Location(int id, string streetName, string postalCode, string city)
     {

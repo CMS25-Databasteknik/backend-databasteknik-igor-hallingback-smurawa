@@ -10,8 +10,6 @@ public sealed class Course
     public int DurationInDays { get; private set; }
 
     /// <summary>For deserialization only — do not call directly. Use <see cref="Create"/> or <see cref="Reconstitute"/>.</summary>
-
-
     [JsonConstructor]
     private Course(
         Guid id,
