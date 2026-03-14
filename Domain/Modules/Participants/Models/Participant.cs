@@ -7,8 +7,8 @@ namespace Backend.Domain.Modules.Participants.Models;
 public sealed class Participant
 {
     public Guid Id { get; }
-    public string FirstName { get; private set; } = string.Empty;
-    public string LastName { get; private set; } = string.Empty;
+    public string FirstName { get; private set; } = null!;
+    public string LastName { get; private set; } = null!;
     public Email Email { get; private set; } = null!;
     public PhoneNumber PhoneNumber { get; private set; } = null!;
     public ParticipantContactType ContactType { get; private set; } = null!;

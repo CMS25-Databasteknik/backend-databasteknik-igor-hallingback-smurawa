@@ -5,5 +5,5 @@ namespace Backend.Presentation.API.Models.VenueType;
 public sealed record UpdateVenueTypeRequest
 {
     [Required]
-    public string Name { get; init; } = string.Empty;
+    public string Name { get; init; } = null!;
 }

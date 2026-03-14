@@ -5,7 +5,7 @@ namespace Backend.Domain.Modules.CourseEventTypes.Models;
 public sealed class CourseEventType
 {
     public int Id { get; }
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; } = null!;
 
     [JsonConstructor]
     private CourseEventType(int id, string name)

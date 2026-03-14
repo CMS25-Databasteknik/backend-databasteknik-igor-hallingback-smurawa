@@ -5,7 +5,7 @@ namespace Backend.Domain.Modules.CourseRegistrationStatuses.Models;
 public sealed class CourseRegistrationStatus
 {
     public int Id { get; }
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; } = null!;
 
     public static CourseRegistrationStatus Pending { get; } = Reconstitute(0, "Pending");
     public static CourseRegistrationStatus Paid { get; } = Reconstitute(1, "Paid");

@@ -6,9 +6,9 @@ namespace Backend.Domain.Modules.Locations.Models;
 public sealed class Location
 {
     public int Id { get; }
-    public string StreetName { get; private set; } = string.Empty;
-    public string PostalCode { get; private set; } = string.Empty;
-    public string City { get; private set; } = string.Empty;
+    public string StreetName { get; private set; } = null!;
+    public string PostalCode { get; private set; } = null!;
+    public string City { get; private set; } = null!;
 
     [JsonConstructor]
     private Location(int id, string streetName, string postalCode, string city)

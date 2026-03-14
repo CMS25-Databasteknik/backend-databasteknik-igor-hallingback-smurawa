@@ -5,7 +5,7 @@ namespace Backend.Domain.Modules.PaymentMethods.Models;
 public sealed class PaymentMethod : IEquatable<PaymentMethod>
 {
     public int Id { get; }
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; } = null!;
 
     [JsonConstructor]
     private PaymentMethod(int id, string name)

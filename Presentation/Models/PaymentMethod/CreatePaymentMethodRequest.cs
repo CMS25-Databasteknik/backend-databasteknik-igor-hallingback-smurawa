@@ -5,5 +5,5 @@ namespace Backend.Presentation.API.Models.PaymentMethod;
 public sealed record CreatePaymentMethodRequest
 {
     [Required]
-    public string Name { get; init; } = string.Empty;
+    public string Name { get; init; } = null!;
 }

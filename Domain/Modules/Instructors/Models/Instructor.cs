@@ -7,7 +7,7 @@ namespace Backend.Domain.Modules.Instructors.Models;
 public sealed class Instructor
 {
     public Guid Id { get; }
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; } = null!;
     public int InstructorRoleId { get; private set; }
     public InstructorRole Role { get; private set; }
 

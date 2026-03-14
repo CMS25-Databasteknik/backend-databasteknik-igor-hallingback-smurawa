@@ -5,7 +5,7 @@ namespace Backend.Domain.Modules.ParticipantContactTypes.Models;
 public sealed class ParticipantContactType : IEquatable<ParticipantContactType>
 {
     public int Id { get; }
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; } = null!;
 
     [JsonConstructor]
     private ParticipantContactType(int id, string name)

@@ -5,7 +5,7 @@ namespace Backend.Domain.Modules.InstructorRoles.Models;
 public sealed class InstructorRole
 {
     public int Id { get; }
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; } = null!;
 
     [JsonConstructor]
     private InstructorRole(int id, string name)

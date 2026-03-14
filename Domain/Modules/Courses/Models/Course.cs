@@ -5,8 +5,8 @@ namespace Backend.Domain.Modules.Courses.Models;
 public sealed class Course
 {
     public Guid Id { get; }
-    public string Title { get; private set; } = string.Empty;
-    public string Description { get; private set; } = string.Empty;
+    public string Title { get; private set; } = null!;
+    public string Description { get; private set; } = null!;
     public int DurationInDays { get; private set; }
 
     [JsonConstructor]

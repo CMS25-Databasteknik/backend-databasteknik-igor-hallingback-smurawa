@@ -5,7 +5,7 @@ namespace Backend.Domain.Modules.VenueTypes.Models;
 public sealed class VenueType : IEquatable<VenueType>
 {
     public int Id { get; }
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; } = null!;
 
     [JsonConstructor]
     private VenueType(int id, string name)

@@ -5,5 +5,5 @@ namespace Backend.Presentation.API.Models.ParticipantContactType;
 public sealed record UpdateParticipantContactTypeRequest
 {
     [Required]
-    public string Name { get; init; } = string.Empty;
+    public string Name { get; init; } = null!;
 }
