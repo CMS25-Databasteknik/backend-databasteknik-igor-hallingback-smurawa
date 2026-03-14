@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace Infrastructure.Persistence.EFC.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTables : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,13 +17,13 @@ namespace Infrastructure.Persistence.EFC.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TypeName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CourseEventTypes_Id", x => x.Id);
-                    table.CheckConstraint("CK_CourseEventTypes_TypeName_NotEmpty", "LTRIM(RTRIM([TypeName])) <> ''");
+                    table.CheckConstraint("CK_CourseEventTypes_TypeName_NotEmpty", "LTRIM(RTRIM([Name])) <> ''");
                 });
 
             migrationBuilder.CreateTable(
@@ -68,13 +66,13 @@ namespace Infrastructure.Persistence.EFC.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_InstructorRoles_Id", x => x.Id);
-                    table.CheckConstraint("CK_InstructorRoles_RoleName_NotEmpty", "LEN([RoleName]) > 0");
+                    table.CheckConstraint("CK_InstructorRoles_RoleName_NotEmpty", "LEN([Name]) > 0");
                 });
 
             migrationBuilder.CreateTable(
@@ -342,47 +340,6 @@ namespace Infrastructure.Persistence.EFC.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "CourseRegistrationStatuses",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 0, "Pending" },
-                    { 1, "Paid" },
-                    { 2, "Cancelled" },
-                    { 3, "Refunded" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ParticipantContactTypes",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Primary" },
-                    { 2, "Billing" },
-                    { 3, "Emergency" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "PaymentMethods",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "Card" },
-                    { 2, "Invoice" },
-                    { 3, "Cash" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "VenueTypes",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "InPerson" },
-                    { 2, "Online" },
-                    { 3, "Hybrid" }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_CourseEventInstructors_InstructorId",
                 table: "CourseEventInstructors",
@@ -404,9 +361,9 @@ namespace Infrastructure.Persistence.EFC.Migrations
                 column: "VenueTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CourseEventTypes_TypeName",
+                name: "IX_CourseEventTypes_Name",
                 table: "CourseEventTypes",
-                column: "TypeName",
+                column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -453,9 +410,9 @@ namespace Infrastructure.Persistence.EFC.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_InstructorRoles_RoleName",
+                name: "IX_InstructorRoles_Name",
                 table: "InstructorRoles",
-                column: "RoleName",
+                column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -553,3 +510,4 @@ namespace Infrastructure.Persistence.EFC.Migrations
         }
     }
 }
+
